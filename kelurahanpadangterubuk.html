@@ -1,28 +1,336 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kelurahan Padang Terubuk</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kelurahan Padang Terubuk</title>
 
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+<!-- GOOGLE FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="assets/css/style.css">
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter', sans-serif;
+}
+
+body{
+  background:#f4f6f9;
+  color:#222;
+}
+
+/* ================= HEADER ================= */
+.header{
+  position:fixed;
+  top:0;
+  width:100%;
+  height:70px;
+  padding:0 30px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:rgba(0,0,0,0.55);
+  backdrop-filter:blur(10px);
+  color:#fff;
+  z-index:1000;
+  transition:.3s;
+}
+
+.header.scrolled{
+  background:#0f1b2d;
+  box-shadow:0 5px 20px rgba(0,0,0,.35);
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:600;
+}
+
+.logo img{
+  height:36px;
+}
+
+/* ================= NAV DESKTOP ================= */
+.nav-desktop{
+  display:flex;
+  gap:30px;
+  align-items:center;
+}
+
+.nav-desktop a{
+  color:#fff;
+  text-decoration:none;
+  position:relative;
+}
+
+/* ===== NAV ITEM ===== */
+.nav-item{
+  position:relative;
+  height:100%;
+  display:flex;
+  align-items:center;
+}
+
+/* ===== DROPDOWN MENYATU ===== */
+.dropdown{
+  position:absolute;
+  top:100%;
+  left:0;
+  background:transparant;
+  min-width:240px;
+  padding:12px;
+  border-radius:0 0 14px 14px;
+  box-shadow:0 25px 45px rgba(0,0,0,.45);
+  opacity:0;
+  visibility:hidden;
+  transform:translateY(-5px);
+  transition:.25s ease;
+  z-index:3000;
+}
+
+/* AKTIF SAAT HOVER MENU ATAU DROPDOWN */
+.nav-item:hover .dropdown,
+.dropdown:hover{
+  opacity:1;
+  visibility:visible;
+  transform:translateY(0);
+}
+
+/* ===== ITEM SUB MENU ===== */
+.dropdown a{
+  display:flex;
+  align-items:center;
+  padding:13px 15px;
+  margin-bottom:8px;
+  background:#111;
+  color:#fff;
+  border-radius:10px;
+  font-weight:500;
+  text-decoration:none;
+  transition:.25s;
+}
+
+.dropdown a:last-child{
+  margin-bottom:0;
+}
+
+.dropdown a:hover{
+  background:#1e6bff;
+  transform:translateX(5px);
+}
+
+
+/* ================= BURGER ================= */
+.menu-btn{
+  font-size:28px;
+  cursor:pointer;
+  display:none;
+  color:#fff;
+}
+
+/* ================= HERO ================= */
+.hero{
+  height:100vh;
+  background:
+    linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
+    url("https://images.unsplash.com/photo-1523217582562-09d0def993a6");
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+.hero h1{
+  color:#fff;
+  font-size:42px;
+}
+
+.hero span{
+  color:#4da3ff;
+}
+
+.hero p{
+  color:#ddd;
+  margin-top:15px;
+}
+
+.btn-primary{
+  display:inline-block;
+  margin-top:25px;
+  padding:14px 34px;
+  background:#1e6bff;
+  color:#fff;
+  text-decoration:none;
+  border-radius:30px;
+  font-weight:600;
+}
+
+/* ================= SECTION ================= */
+.section{
+  padding:80px 20px;
+  max-width:1100px;
+  margin:auto;
+}
+
+.section.light{
+  background:#fff;
+}
+
+.section h2{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.text-center{
+  text-align:center;
+}
+
+/* ================= FOOTER ================= */
+.footer{
+  background:#111;
+  color:#fff;
+  text-align:center;
+  padding:25px;
+}
+
+/* ================= MOBILE MENU ================= */
+.mobile-menu{
+  position:fixed;
+  top:0;
+  left:-100%;
+  width:280px;
+  height:100%;
+  background:#0f1b2d;
+  padding:25px;
+  transition:.35s;
+  z-index:2000;
+}
+
+.mobile-menu.active{
+  left:0;
+}
+
+.mobile-menu a{
+  display:block;
+  color:#fff;
+  text-decoration:none;
+  padding:14px 0;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+.submenu{
+  display:none;
+  padding-left:15px;
+}
+
+.close{
+  text-align:right;
+  font-size:26px;
+  cursor:pointer;
+  color:#fff;
+}
+
+/* ================= HERO VIDEO ================= */
+.hero-video{
+  position:relative;
+  height:100vh;
+  overflow:hidden;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+
+/* VIDEO */
+.hero-video video{
+  position:absolute;
+  top:50%;
+  left:50%;
+  min-width:100%;
+  min-height:100%;
+  transform:translate(-50%, -50%);
+  object-fit:cover;
+  z-index:1;
+}
+
+/* OVERLAY GELAP */
+.hero-video .overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:2;
+}
+
+/* KONTEN */
+.hero-video .hero-content{
+  position:relative;
+  z-index:3;
+  color:#fff;
+  max-width:900px;
+  padding:20px;
+}
+
+.hero-video h1{
+  font-size:42px;
+  font-weight:700;
+}
+
+.hero-video span{
+  color:#4da3ff;
+}
+
+.hero-video p{
+  margin-top:15px;
+  color:#ddd;
+}
+
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:900px){
+  .nav-desktop{display:none;}
+  .menu-btn{display:block;}
+}
+</style>
+
+<link rel="icon" type="image/png" sizes="32x32" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png">
 </head>
+
 <body>
 
 <!-- ================= HEADER ================= -->
-<header class="header">
+<header class="header" id="header">
   <div class="logo">
-    <img src="assets/img/logo.png" alt="Logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo">
     <span>Kelurahan Padang Terubuk</span>
   </div>
 
   <nav class="nav-desktop">
     <a href="#">Beranda</a>
-    <a href="#pelayanan">Pelayanan</a>
+
+    <div class="nav-item">
+      <a href="#pelayanan">Pelayanan ▾</a>
+      <div class="dropdown">
+        <a href="#">Surat Domisili</a>
+        <a href="#">Surat Usaha</a>
+        <a href="#">Surat Tidak Mampu</a>
+      </div>
+    </div>
+
+    <div class="nav-item">
+      <a href="#pelayanan">Pelayanan ▾</a>
+      <div class="dropdown">
+        <a href="#">Surat Domisili</a>
+        <a href="#">Surat Usaha</a>
+        <a href="#">Surat Tidak Mampu</a>
+      </div>
+    </div>
+
     <a href="#profil">Profil</a>
     <a href="#kontak">Kontak</a>
   </nav>
@@ -31,7 +339,14 @@
 </header>
 
 <!-- ================= HERO ================= -->
-<section class="hero">
+<section class="hero-video">
+  <video autoplay muted loop playsinline>
+    <source src="data/video/bgallin.mp4" type="video/mp4">
+    Browser Anda tidak mendukung video.
+  </video>
+
+  <div class="overlay"></div>
+
   <div class="hero-content">
     <h1>
       Selamat Datang di<br>
@@ -47,30 +362,19 @@
   </div>
 </section>
 
-<!-- ================= PELAYANAN ================= -->
-<section class="section" id="pelayanan">
-  <h2>Layanan Administrasi</h2>
-
-  <div class="grid">
-    <a href="#" class="card">Surat Domisili</a>
-    <a href="#" class="card">Surat Usaha</a>
-    <a href="#" class="card">Surat Tidak Mampu</a>
-    <a href="#" class="card">Surat Pengantar</a>
-  </div>
-</section>
 
 <!-- ================= PROFIL ================= -->
 <section class="section light" id="profil">
   <h2>Profil Kelurahan</h2>
   <p class="text-center">
-    Kelurahan Padang Terubuk merupakan bagian dari Kecamatan Senapelan
-    yang berkomitmen memberikan pelayanan cepat, transparan, dan modern.
+    Kelurahan Padang Terubuk berkomitmen memberikan pelayanan cepat,
+    transparan, dan modern berbasis digital.
   </p>
 </section>
 
 <!-- ================= FOOTER ================= -->
 <footer class="footer" id="kontak">
-  <p>© 2026 Kelurahan Padang Terubuk</p>
+  <p>© 2026 Senapelan Satu Pintu</p>
 </footer>
 
 <!-- ================= MOBILE MENU ================= -->
@@ -79,10 +383,7 @@
 
   <a href="#">Beranda</a>
 
-  <a href="javascript:void(0)" onclick="toggleSub()">
-    Pelayanan ▼
-  </a>
-
+  <a href="javascript:void(0)" onclick="toggleSub()">Pelayanan ▼</a>
   <div class="submenu" id="submenuPelayanan">
     <a href="#">Surat Domisili</a>
     <a href="#">Surat Usaha</a>
@@ -93,6 +394,26 @@
   <a href="#kontak">Kontak</a>
 </div>
 
-<script src="assets/js/main.js"></script>
+<script>
+function openMenu(){
+  document.getElementById("mobileMenu").classList.add("active");
+}
+
+function closeMenu(){
+  document.getElementById("mobileMenu").classList.remove("active");
+}
+
+function toggleSub(){
+  const sub = document.getElementById("submenuPelayanan");
+  sub.style.display = sub.style.display === "block" ? "none" : "block";
+}
+
+/* HEADER SCROLL EFFECT */
+window.addEventListener("scroll", function(){
+  const header = document.getElementById("header");
+  header.classList.toggle("scrolled", window.scrollY > 50);
+});
+</script>
+
 </body>
 </html>
