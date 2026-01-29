@@ -337,14 +337,14 @@ body{
 <div class="mobile-menu" id="mobileMenu">
   <div class="close" onclick="closeMenu()">✕</div>
   <a href="#">Beranda</a>
-  <a href="javascript:void(0)" onclick="toggleSub()">Pelayanan ▼</a>
-  <div class="submenu" id="submenuPelayanan">
+  <a href="javascript:void(0)" onclick="toggleSub('submenuPelayanan')">Pelayanan ▼</a>
+<div class="submenu" id="submenuPelayanan">
     <a href="#">SI CEPAT</a>
     <a href="#">Persyaratan</a>
     <a href="#">Unduh Berkas</a>
   </div>
-  <a href="javascript:void(0)" onclick="toggleSub()">Lembaga ▼</a>
-  <div class="submenu" id="submenuLembaga">
+  <a href="javascript:void(0)" onclick="toggleSub('submenuLembaga')">Lembaga ▼</a>
+<div class="submenu" id="submenuLembaga">
     <a href="#">RW (Rukun Warga)</a>
     <a href="#">RT (Rukun Tetangga)</a>
     <a href="#">LPM (Lembaga Pemberdayaan Masyarakat)</a>
@@ -360,19 +360,31 @@ body{
 function openMenu(){
   document.getElementById("mobileMenu").classList.add("active");
 }
+
 function closeMenu(){
   document.getElementById("mobileMenu").classList.remove("active");
 }
-function toggleSub(){
-  const sub=document.getElementById("submenuPelayanan");
-  const sub=document.getElementById("submenuLembaga");
-  sub.style.display=sub.style.display==="block"?"none":"block";
+
+function toggleSub(id){
+  const sub = document.getElementById(id);
+
+  // tutup submenu lain (biar rapi)
+  document.querySelectorAll(".submenu").forEach(el=>{
+    if(el !== sub){
+      el.style.display = "none";
+    }
+  });
+
+  // toggle submenu yang diklik
+  sub.style.display = sub.style.display === "block" ? "none" : "block";
 }
+
 window.addEventListener("scroll",()=>{
   document.getElementById("header")
     .classList.toggle("scrolled",window.scrollY>50);
 });
 </script>
+
 
 </body>
 </html>
