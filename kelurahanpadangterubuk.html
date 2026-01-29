@@ -8,6 +8,9 @@
 <!-- GOOGLE FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 
+<!-- FAVICON -->
+<link rel="icon" type="image/png" sizes="32x32" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png">
+
 <style>
 *{
   margin:0;
@@ -65,6 +68,7 @@ body{
   color:#fff;
   text-decoration:none;
   position:relative;
+  font-weight:500;
 }
 
 /* ===== NAV ITEM ===== */
@@ -75,38 +79,36 @@ body{
   align-items:center;
 }
 
-/* ===== DROPDOWN MENYATU ===== */
+/* ===== DROPDOWN MENYATU (FIXED) ===== */
 .dropdown{
   position:absolute;
   top:100%;
   left:0;
-  background:transparant;
+  background:#0f1b2d;
   min-width:240px;
   padding:12px;
   border-radius:0 0 14px 14px;
   box-shadow:0 25px 45px rgba(0,0,0,.45);
   opacity:0;
   visibility:hidden;
-  transform:translateY(-5px);
   transition:.25s ease;
   z-index:3000;
 }
 
-/* AKTIF SAAT HOVER MENU ATAU DROPDOWN */
+/* AKTIF SAAT HOVER */
 .nav-item:hover .dropdown,
 .dropdown:hover{
   opacity:1;
   visibility:visible;
-  transform:translateY(0);
 }
 
 /* ===== ITEM SUB MENU ===== */
 .dropdown a{
   display:flex;
   align-items:center;
-  padding:13px 15px;
+  padding:14px 16px;
   margin-bottom:8px;
-  background:#111;
+  background:linear-gradient(180deg,#111,#1a1a1a);
   color:#fff;
   border-radius:10px;
   font-weight:500;
@@ -120,9 +122,8 @@ body{
 
 .dropdown a:hover{
   background:#1e6bff;
-  transform:translateX(5px);
+  transform:translateX(6px);
 }
-
 
 /* ================= BURGER ================= */
 .menu-btn{
@@ -132,32 +133,55 @@ body{
   color:#fff;
 }
 
-/* ================= HERO ================= */
-.hero{
+/* ================= HERO VIDEO ================= */
+.hero-video{
+  position:relative;
   height:100vh;
-  background:
-    linear-gradient(rgba(0,0,0,.6), rgba(0,0,0,.6)),
-    url("https://images.unsplash.com/photo-1523217582562-09d0def993a6");
-  background-size:cover;
-  background-position:center;
+  overflow:hidden;
   display:flex;
   align-items:center;
   justify-content:center;
   text-align:center;
 }
 
-.hero h1{
-  color:#fff;
-  font-size:42px;
+.hero-video video{
+  position:absolute;
+  top:50%;
+  left:50%;
+  min-width:100%;
+  min-height:100%;
+  transform:translate(-50%, -50%);
+  object-fit:cover;
+  z-index:1;
 }
 
-.hero span{
+.hero-video .overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:2;
+}
+
+.hero-video .hero-content{
+  position:relative;
+  z-index:3;
+  color:#fff;
+  max-width:900px;
+  padding:20px;
+}
+
+.hero-video h1{
+  font-size:42px;
+  font-weight:700;
+}
+
+.hero-video span{
   color:#4da3ff;
 }
 
-.hero p{
-  color:#ddd;
+.hero-video p{
   margin-top:15px;
+  color:#ddd;
 }
 
 .btn-primary{
@@ -236,71 +260,12 @@ body{
   color:#fff;
 }
 
-/* ================= HERO VIDEO ================= */
-.hero-video{
-  position:relative;
-  height:100vh;
-  overflow:hidden;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-}
-
-/* VIDEO */
-.hero-video video{
-  position:absolute;
-  top:50%;
-  left:50%;
-  min-width:100%;
-  min-height:100%;
-  transform:translate(-50%, -50%);
-  object-fit:cover;
-  z-index:1;
-}
-
-/* OVERLAY GELAP */
-.hero-video .overlay{
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  z-index:2;
-}
-
-/* KONTEN */
-.hero-video .hero-content{
-  position:relative;
-  z-index:3;
-  color:#fff;
-  max-width:900px;
-  padding:20px;
-}
-
-.hero-video h1{
-  font-size:42px;
-  font-weight:700;
-}
-
-.hero-video span{
-  color:#4da3ff;
-}
-
-.hero-video p{
-  margin-top:15px;
-  color:#ddd;
-}
-
-
 /* ================= RESPONSIVE ================= */
 @media(max-width:900px){
   .nav-desktop{display:none;}
   .menu-btn{display:block;}
 }
 </style>
-
-<link rel="icon" type="image/png" sizes="32x32" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png">
-
-
 </head>
 
 <body>
@@ -344,28 +309,15 @@ body{
 <section class="hero-video">
   <video autoplay muted loop playsinline>
     <source src="data/video/bgallin.mp4" type="video/mp4">
-    Browser Anda tidak mendukung video.
   </video>
-
   <div class="overlay"></div>
-
   <div class="hero-content">
-    <h1>
-      Selamat Datang di<br>
-      <span>Kelurahan Padang Terubuk</span>
-    </h1>
-
-    <p>
-      Jalan Melur No.04 RT 004 RW 005<br>
-      Kecamatan Senapelan
-    </p>
-
+    <h1>Selamat Datang di<br><span>Kelurahan Padang Terubuk</span></h1>
+    <p>Jalan Melur No.04 RT 004 RW 005<br>Kecamatan Senapelan</p>
     <a href="pt/layanan.html" class="btn-primary">Buka Pelayanan</a>
   </div>
 </section>
 
-
-<!-- ================= PROFIL ================= -->
 <section class="section light" id="profil">
   <h2>Profil Kelurahan</h2>
   <p class="text-center">
@@ -374,7 +326,6 @@ body{
   </p>
 </section>
 
-<!-- ================= FOOTER ================= -->
 <footer class="footer" id="kontak">
   <p>© 2026 Senapelan Satu Pintu</p>
 </footer>
@@ -382,16 +333,13 @@ body{
 <!-- ================= MOBILE MENU ================= -->
 <div class="mobile-menu" id="mobileMenu">
   <div class="close" onclick="closeMenu()">✕</div>
-
   <a href="#">Beranda</a>
-
   <a href="javascript:void(0)" onclick="toggleSub()">Pelayanan ▼</a>
   <div class="submenu" id="submenuPelayanan">
     <a href="#">Surat Domisili</a>
     <a href="#">Surat Usaha</a>
     <a href="#">Surat Tidak Mampu</a>
   </div>
-
   <a href="#profil">Profil</a>
   <a href="#kontak">Kontak</a>
 </div>
@@ -400,20 +348,16 @@ body{
 function openMenu(){
   document.getElementById("mobileMenu").classList.add("active");
 }
-
 function closeMenu(){
   document.getElementById("mobileMenu").classList.remove("active");
 }
-
 function toggleSub(){
-  const sub = document.getElementById("submenuPelayanan");
-  sub.style.display = sub.style.display === "block" ? "none" : "block";
+  const sub=document.getElementById("submenuPelayanan");
+  sub.style.display=sub.style.display==="block"?"none":"block";
 }
-
-/* HEADER SCROLL EFFECT */
-window.addEventListener("scroll", function(){
-  const header = document.getElementById("header");
-  header.classList.toggle("scrolled", window.scrollY > 50);
+window.addEventListener("scroll",()=>{
+  document.getElementById("header")
+    .classList.toggle("scrolled",window.scrollY>50);
 });
 </script>
 
