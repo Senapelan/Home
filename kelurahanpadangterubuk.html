@@ -347,41 +347,47 @@ body{
 </style>
 
 <style>
-/* ================= PROFIL LURAH BOX ================= */
-.profil-box{
-  background:#fff;
-  border-radius:16px;
-  padding:28px;
-  display:flex;
-  gap:28px;
-  box-shadow:0 15px 40px rgba(0,0,0,.08);
+/* ===== WRAPPER ===== */
+.profil-wrapper{
+  display:grid;
+  grid-template-columns:2fr 1fr;
+  gap:24px;
 }
 
-/* ===== FOTO ===== */
+/* ===== CARD UMUM ===== */
+.profil-card{
+  background:#fff;
+  border-radius:16px;
+  padding:24px;
+  box-shadow:0 12px 35px rgba(0,0,0,.08);
+}
+
+/* ===== KIRI ===== */
+.profil-kiri{
+  display:flex;
+  gap:24px;
+  align-items:center;
+}
+
+/* FOTO 4x6 */
 .profil-foto{
-  flex:0 0 180px; /* ukuran awal foto */
+  width:160px;
+  flex-shrink:0;
 }
 
 .profil-foto img{
   width:100%;
-  aspect-ratio:3/4; /* ⬅ RASIO 4x6 */
+  aspect-ratio:3/4;
   object-fit:cover;
   border-radius:12px;
 }
 
-/* ===== KONTEN ===== */
-.profil-konten{
-  display:flex;
-  justify-content:space-between;
-  gap:30px;
-  width:100%;
-}
-
+/* SAMBUTAN */
 .sambutan h3{
   font-size:20px;
-  margin-bottom:10px;
-  position:relative;
+  margin-bottom:8px;
   padding-left:12px;
+  position:relative;
 }
 
 .sambutan h3::before{
@@ -396,75 +402,62 @@ body{
 }
 
 .jabatan{
-  margin-top:8px;
   font-size:14px;
   color:#666;
 }
 
-/* ===== JADWAL ===== */
-.jadwal-box{
-  background:#fff;
-  border:1px solid #eee;
-  border-radius:12px;
-  padding:18px 22px;
-  min-width:300px;
+/* ===== KANAN (JADWAL) ===== */
+.profil-kanan h4{
+  margin-bottom:14px;
 }
 
-.jadwal-box h4{
-  margin-bottom:12px;
-  font-size:16px;
-}
-
-.jadwal-box ul{
+.jadwal-list{
   list-style:none;
 }
 
-.jadwal-box li{
+.jadwal-list li{
   display:flex;
   justify-content:space-between;
+  padding:8px 0;
   font-size:14px;
-  padding:6px 0;
   border-bottom:1px dashed #ddd;
 }
 
-.jadwal-box li:last-child{
+.jadwal-list li:last-child{
   border-bottom:none;
 }
 
-/* ===== TABLET ===== */
+/* TABLET */
 @media(max-width:1024px){
-  .profil-konten{
-    flex-direction:column;
+  .profil-wrapper{
+    grid-template-columns:1fr;
   }
 
-  .jadwal-box{
-    width:100%;
+  .profil-kiri{
+    align-items:flex-start;
   }
 }
 
-/* ===== MOBILE ===== */
+/* MOBILE */
 @media(max-width:768px){
-  .profil-box{
+  .profil-kiri{
     flex-direction:column;
     align-items:center;
     text-align:center;
-  }
-
-  .profil-foto{
-    width:150px;
   }
 
   .sambutan h3::before{
     display:none;
   }
 
-  .jadwal-box li{
+  .jadwal-list li{
     flex-direction:column;
+    align-items:flex-start;
     gap:4px;
-    text-align:left;
   }
 }
 
+  
 </style>
 </head>
 
@@ -517,37 +510,37 @@ body{
 </section>
 
 <section class="section">
-  <div class="profil-box">
+  <div class="profil-wrapper">
 
-    <!-- FOTO LURAH -->
-    <div class="profil-foto">
-      <img src="data/foto/lurah.png" alt="Foto Lurah">
-    </div>
-
-    <!-- KONTEN -->
-    <div class="profil-konten">
+    <!-- BOX KIRI -->
+    <div class="profil-card profil-kiri">
+      <div class="profil-foto">
+        <img src="data/foto/lurah.jpg" alt="Foto Lurah">
+      </div>
 
       <div class="sambutan">
-        <h3>Selamat Datang di Web<br>Kelurahan Padang Terubuk</h3>
-        <p class="jabatan">Plt. Lurah</p>
-        <strong>Juni Hardi, S.STP</strong>
+        <h3>Selamat Datang di Web Portal<br>Kecamatan Senapelan</h3>
+        <p class="jabatan">Camat</p>
+        <strong>Wira Setiadi, S.STP., MPA</strong>
       </div>
-
-      <div class="jadwal-box">
-        <h4>Jadwal Pelayanan</h4>
-        <ul>
-          <li><span>Senin – Rabu (Pagi)</span><b>07.30 – 12.00 WIB</b></li>
-          <li><span>Senin – Rabu (Siang)</span><b>13.00 – 16.00 WIB</b></li>
-          <li><span>Kamis (Pagi)</span><b>07.30 – 12.00 WIB</b></li>
-          <li><span>Kamis (Siang)</span><b>13.00 – 16.30 WIB</b></li>
-          <li><span>Jum'at (Pagi)</span><b>07.30 – 11.30 WIB</b></li>
-          <li><span>Jum'at (Siang)</span><b>13.30 – 16.30 WIB</b></li>
-        </ul>
-      </div>
-
     </div>
+
+    <!-- BOX KANAN -->
+    <div class="profil-card profil-kanan">
+      <h4>Jadwal Pelayanan</h4>
+      <ul class="jadwal-list">
+        <li><span>Senin – Rabu (Pagi)</span><b>07.30 – 12.00 WIB</b></li>
+        <li><span>Senin – Rabu (Siang)</span><b>13.00 – 16.00 WIB</b></li>
+        <li><span>Kamis (Pagi)</span><b>07.30 – 12.00 WIB</b></li>
+        <li><span>Kamis (Siang)</span><b>13.00 – 16.30 WIB</b></li>
+        <li><span>Jum'at (Pagi)</span><b>07.30 – 11.30 WIB</b></li>
+        <li><span>Jum'at (Siang)</span><b>13.30 – 16.30 WIB</b></li>
+      </ul>
+    </div>
+
   </div>
 </section>
+
   
 <section class="section light" id="profil">
   <h2 class="text-center">Profil Kelurahan</h2>
