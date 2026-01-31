@@ -11,44 +11,295 @@
 <!-- FAVICON -->
 <link rel="icon" type="image/png" sizes="32x32" href="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png">
 
-<!-- ================= CSS STLYE ================= -->
-<link rel="stylesheet" href="assets/css/style.css">
-  
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:'Inter', sans-serif;
+}
+
+body{
+  background:#fff;
+  color:#222;
+}
+
+/* ================= HEADER ================= */
+.header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 18px;
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(6px);
+  z-index:2000;
+  transition:.3s;
+}
+
+.header.scrolled{
+  background:#0c1f33;
+}
+
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  color:#fff;
+  font-weight:600;
+}
+
+.logo img{
+  width:36px;
+}
+
+/* ================= DESKTOP NAV ================= */
+.nav-desktop{
+  display:flex;
+  gap:20px;
+}
+
+.nav-desktop a{
+  color:#fff;
+  text-decoration:none;
+  font-size:14px;
+}
+
+.nav-item{
+  position:relative;
+}
+
+.dropdown{
+  position:absolute;
+  top:100%;
+  left:0;
+  background:#fff;
+  min-width:220px;
+  border-radius:8px;
+  box-shadow:0 10px 30px rgba(0,0,0,.15);
+  display:none;
+  overflow:hidden;
+}
+
+.nav-item:hover .dropdown{
+  display:block;
+}
+
+.dropdown a{
+  display:block;
+  padding:10px 14px;
+  color:#222;
+  font-size:14px;
+}
+
+/* ================= MENU BUTTON ================= */
+.menu-btn{
+  display:none;
+  font-size:26px;
+  color:#fff;
+  cursor:pointer;
+}
+
+/* ================= HERO ================= */
+.hero-video{
+  height:100vh;
+  position:relative;
+  overflow:hidden;
+}
+
+.hero-video video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.hero-video .overlay{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.45);
+}
+
+.hero-content{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:#fff;
+  padding:20px;
+}
+
+.hero-content h1{
+  font-size:36px;
+}
+
+.hero-content span{
+  color:#ffd34d;
+}
+
+.btn-primary{
+  margin-top:20px;
+  background:#ffd34d;
+  color:#000;
+  padding:12px 22px;
+  border-radius:30px;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* ================= SECTION ================= */
+.section{
+  padding:80px 20px;
+  margin-top:64px;
+}
+
+.light{
+  background:#f6f7f9;
+}
+
+.text-center{
+  text-align:center;
+}
+
+/* ================= FOOTER ================= */
+.footer{
+  background:#0c1f33;
+  color:#fff;
+  text-align:center;
+  padding:20px;
+}
+
+/* ================= MOBILE OVERLAY ================= */
+.menu-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  opacity:0;
+  visibility:hidden;
+  transition:.3s;
+  z-index:1500;
+}
+
+.menu-overlay.active{
+  opacity:1;
+  visibility:visible;
+}
+
+/* ================= MOBILE MENU ================= */
+.mobile-menu{
+  position:fixed;
+  top:0;
+  right:-100%;
+  width:300px;
+  height:100vh;
+  background:#0c1f33;
+  padding:20px;
+  transition:.35s;
+  z-index:1600;
+  overflow-y:auto;
+}
+
+.mobile-menu.active{
+  right:0;
+}
+
+.mobile-menu a{
+  display:block;
+  color:#fff;
+  text-decoration:none;
+  padding:12px 14px;
+  border-radius:8px;
+  margin-bottom:6px;
+  font-size:14px;
+}
+
+.mobile-menu a.active{
+  background:rgba(255,255,255,.08);
+}
+
+/* ================= MOBILE MENU HEADER ================= */
+.mobile-menu-header{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding-bottom:18px;
+  margin-bottom:15px;
+  border-bottom:1px solid rgba(255,255,255,.15);
+}
+
+.mobile-menu-header img{
+  width:42px;
+}
+
+.mobile-menu-title strong{
+  display:block;
+  font-size:15px;
+  color:#fff;
+}
+
+.mobile-menu-title span{
+  font-size:13px;
+  color:rgba(255,255,255,.7);
+}
+
+/* ================= SUBMENU ================= */
+.submenu{
+  display:none;
+  padding-left:10px;
+}
+
+.submenu a{
+  font-size:13px;
+  background:rgba(255,255,255,.05);
+}
+
+/* ================= RESPONSIVE ================= */
+@media(max-width:900px){
+  .nav-desktop{
+    display:none;
+  }
+  .menu-btn{
+    display:block;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<!-- ================= HEADER ================= -->
 <header class="header" id="header">
   <div class="logo">
-    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png">
     <span>Kelurahan Padang Terubuk</span>
   </div>
 
   <nav class="nav-desktop">
     <a href="#">Beranda</a>
-
     <div class="nav-item">
-      <a href="#pelayanan">Pelayanan ▾</a>
+      <a href="#">Pelayanan ▾</a>
       <div class="dropdown">
         <a href="#">SI CEPAT</a>
         <a href="#">Persyaratan</a>
         <a href="#">Unduh Berkas</a>
       </div>
     </div>
-
     <div class="nav-item">
-      <a href="#pelayanan">Lembaga Kelurahan ▾</a>
+      <a href="#">Lembaga ▾</a>
       <div class="dropdown">
-        <a href="#">RW (Rukun Warga)</a>
-        <a href="#">RT (Rukun Tetangga)</a>
-        <a href="#">LPM (Lembaga Pemberdayaan Masyarakat)</a>
-        <a href="#">PKK (Pembinaan Kesejahteraan Keluarga)</a>
+        <a href="#">RW</a>
+        <a href="#">RT</a>
+        <a href="#">LPM</a>
+        <a href="#">PKK</a>
         <a href="#">Karang Taruna</a>
-        <a href="#">LPS (Lembaga Pengelola Sampah)</a>
+        <a href="#">LPS</a>
       </div>
     </div>
-    
     <a href="#profil">Profil</a>
     <a href="#kontak">Kontak</a>
   </nav>
@@ -56,7 +307,6 @@
   <div class="menu-btn" onclick="openMenu()">☰</div>
 </header>
 
-<!-- ================= HERO ================= -->
 <section class="hero-video">
   <video autoplay muted loop playsinline>
     <source src="data/video/bgallin.mp4" type="video/mp4">
@@ -64,71 +314,83 @@
   <div class="overlay"></div>
   <div class="hero-content">
     <h1>SELAMAT DATANG DI<br><span>KELURAHAN PADANG TERUBUK</span></h1>
-    <p>Jalan Melur No.04 RT 004 RW 005 Kelurahan Padang Terubuk<br>Kecamatan Senapelan - Pekanbaru</p>
-    <a href="pt/layanan.html" class="btn-primary">Buka Pelayanan</a>
+    <p>Jalan Melur No.04 RT 004 RW 005<br>Kecamatan Senapelan - Pekanbaru</p>
+    <a href="#" class="btn-primary">Buka Pelayanan</a>
   </div>
 </section>
 
 <section class="section light" id="profil">
-  <h2>Profil Kelurahan</h2>
-  <p class="text-center">
-    Kelurahan Padang Terubuk berkomitmen memberikan pelayanan cepat,
-    transparan, dan modern berbasis digital.
-  </p>
+  <h2 class="text-center">Profil Kelurahan</h2>
+  <p class="text-center">Pelayanan cepat, transparan, dan modern berbasis digital.</p>
 </section>
 
 <footer class="footer" id="kontak">
-  <p>© 2026 Senapelan Satu Pintu</p>
+  © 2026 Senapelan Satu Pintu
 </footer>
 
-<!-- ================= MOBILE MENU ================= -->
 <div class="menu-overlay"></div>
 
 <div class="mobile-menu" id="mobileMenu">
-
-  <!-- header mobile menu -->
   <div class="mobile-menu-header">
-    <img src="data/foto/favico/favico.png" alt="Logo Pemko">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png">
     <div class="mobile-menu-title">
       <strong>Kecamatan Senapelan</strong>
       <span>Kota Pekanbaru</span>
     </div>
   </div>
 
-  <!-- tombol close (disembunyikan oleh CSS, tetap aman) -->
-  <div class="close" onclick="closeMenu()">✕</div>
-
   <a href="#" class="active">Beranda</a>
 
-  <a href="javascript:void(0)" onclick="toggleSub('submenuPelayanan')">
-    Pelayanan
-  </a>
+  <a href="javascript:void(0)" onclick="toggleSub('submenuPelayanan')">Pelayanan</a>
   <div class="submenu" id="submenuPelayanan">
     <a href="#">SI CEPAT</a>
     <a href="#">Persyaratan</a>
     <a href="#">Unduh Berkas</a>
   </div>
 
-  <a href="javascript:void(0)" onclick="toggleSub('submenuLembaga')">
-    Lembaga
-  </a>
+  <a href="javascript:void(0)" onclick="toggleSub('submenuLembaga')">Lembaga</a>
   <div class="submenu" id="submenuLembaga">
-    <a href="#">RW (Rukun Warga)</a>
-    <a href="#">RT (Rukun Tetangga)</a>
-    <a href="#">LPM (Lembaga Pemberdayaan Masyarakat)</a>
-    <a href="#">PKK (Pembinaan Kesejahteraan Keluarga)</a>
+    <a href="#">RW</a>
+    <a href="#">RT</a>
+    <a href="#">LPM</a>
+    <a href="#">PKK</a>
     <a href="#">Karang Taruna</a>
-    <a href="#">LPS (Lembaga Pengelola Sampah)</a>
+    <a href="#">LPS</a>
   </div>
 
   <a href="#profil">Profil</a>
   <a href="#kontak">Kontak</a>
-
 </div>
 
+<script>
+const mobileMenu = document.getElementById("mobileMenu");
+const overlay = document.querySelector(".menu-overlay");
 
-<!-- ================= Java Script ================= -->
-<script src="assets/js/main.js"></script>
+function openMenu(){
+  mobileMenu.classList.add("active");
+  overlay.classList.add("active");
+}
+
+function closeMenu(){
+  mobileMenu.classList.remove("active");
+  overlay.classList.remove("active");
+}
+
+overlay.addEventListener("click", closeMenu);
+
+function toggleSub(id){
+  const sub = document.getElementById(id);
+  document.querySelectorAll(".submenu").forEach(el=>{
+    if(el !== sub) el.style.display = "none";
+  });
+  sub.style.display = sub.style.display === "block" ? "none" : "block";
+}
+
+window.addEventListener("scroll",()=>{
+  document.getElementById("header")
+    .classList.toggle("scrolled", window.scrollY > 50);
+});
+</script>
 
 </body>
 </html>
