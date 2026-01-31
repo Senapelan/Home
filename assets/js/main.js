@@ -1,6 +1,5 @@
 const mobileMenu = document.getElementById("mobileMenu");
 const overlay = document.querySelector(".menu-overlay");
-const menuBtn = document.querySelector(".menu-btn");
 
 /* buka menu */
 function openMenu(){
