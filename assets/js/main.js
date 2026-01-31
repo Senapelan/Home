@@ -6,16 +6,21 @@ function closeMenu(){
   document.getElementById("mobileMenu").classList.remove("active");
 }
 
-function toggleSub(){
-  const sub = document.getElementById("submenuPelayanan");
+function toggleSub(id){
+  const sub = document.getElementById(id);
+
+  // tutup submenu lain (biar rapi)
+  document.querySelectorAll(".submenu").forEach(el=>{
+    if(el !== sub){
+      el.style.display = "none";
+    }
+  });
+
+  // toggle submenu yang diklik
   sub.style.display = sub.style.display === "block" ? "none" : "block";
 }
 
-const links = document.querySelectorAll(".nav-desktop a");
-const current = location.pathname.split("/").pop();
-
-links.forEach(link => {
-  if(link.getAttribute("href") === current){
-    link.classList.add("active");
-  }
+window.addEventListener("scroll",()=>{
+  document.getElementById("header")
+    .classList.toggle("scrolled",window.scrollY>50);
 });
