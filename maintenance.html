@@ -3,44 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Maintenance | Senapelan Satu Pintu</title>
+  <title>Maintenance | Website Kelurahan</title>
 
-  <!-- FONT -->
+  <!-- GOOGLE FONT -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-  <!-- FAVICON -->
-<link rel="icon" type="image/png" sizes="32x32" href="data/foto/favico/favico.png">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="assets/css/maintenance.css">
+  <style>
+    /* ================= RESET ================= */
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html, body{
+      width:100%;
+      overflow-x:hidden;
+      font-family:'Inter', sans-serif;
+    }
+
+    /* ================= MAINTENANCE PAGE ================= */
+
+    body{
+      min-height:100vh;
+      background:linear-gradient(135deg, #0b2a4a, #0f3a66);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .maintenance-wrapper{
+      width:100%;
+      padding:24px;
+    }
+
+    .maintenance-card{
+      max-width:900px;
+      margin:auto;
+      background:#ffffff;
+      border-radius:22px;
+      padding:34px;
+      text-align:center;
+      box-shadow:0 25px 55px rgba(0,0,0,.28);
+      animation:fadeUp .6s ease;
+    }
+
+    /* ================= IMAGE ================= */
+
+    .maintenance-image{
+      width:100%;
+      max-height:420px;
+      object-fit:contain;
+      margin-bottom:28px;
+    }
+
+    /* ================= TEXT ================= */
+
+    .maintenance-card h1{
+      font-size:28px;
+      font-weight:700;
+      color:#0b2a4a;
+      margin-bottom:14px;
+    }
+
+    .maintenance-card p{
+      font-size:16px;
+      line-height:1.7;
+      color:#444;
+      margin-bottom:18px;
+    }
+
+    .maintenance-note{
+      display:block;
+      font-size:14px;
+      color:#777;
+    }
+
+    /* ================= BUTTON ================= */
+
+    .maintenance-action{
+      margin-top:38px;
+      display:flex;
+      justify-content:center;
+    }
+
+    .btn-back{
+      width:100%;
+      max-width:340px;
+      padding:18px 30px;
+      border:none;
+      border-radius:16px;
+      background:linear-gradient(135deg, #0b2a4a, #0f3a66);
+      color:#ffffff;
+      font-size:15px;
+      font-weight:600;
+      letter-spacing:.4px;
+      cursor:pointer;
+      box-shadow:0 12px 28px rgba(11,42,74,.4);
+      transition:all .25s ease;
+    }
+
+    .btn-back:hover{
+      transform:translateY(-3px);
+      box-shadow:0 18px 40px rgba(11,42,74,.5);
+    }
+
+    .btn-back:active{
+      transform:scale(.97);
+    }
+
+    /* ================= ANIMATION ================= */
+
+    @keyframes fadeUp{
+      from{
+        opacity:0;
+        transform:translateY(30px);
+      }
+      to{
+        opacity:1;
+        transform:translateY(0);
+      }
+    }
+
+    /* ================= RESPONSIVE ================= */
+
+    @media(max-width:768px){
+      .maintenance-card{
+        padding:26px;
+        border-radius:18px;
+      }
+
+      .maintenance-image{
+        max-height:320px;
+      }
+
+      .maintenance-card h1{
+        font-size:22px;
+      }
+
+      .maintenance-card p{
+        font-size:15px;
+      }
+    }
+
+    @media(max-width:480px){
+      .maintenance-image{
+        max-height:240px;
+      }
+
+      .btn-back{
+        font-size:14px;
+        padding:16px 22px;
+      }
+    }
+  </style>
 </head>
 
-<body class="maintenance-page">
+<body>
 
   <main class="maintenance-wrapper">
     <div class="maintenance-card">
 
-      <img src="data/foto/maintenance.png" 
-           alt="Website dalam perawatan"
-           class="maintenance-image">
+      <img
+        src="assets/images/maintenance.png"
+        alt="Website Sedang Maintenance"
+        class="maintenance-image"
+      >
 
       <h1>Website Sedang Dalam Perawatan</h1>
+
       <p>
-        Kami sedang melakukan peningkatan sistem untuk memberikan
-        pelayanan yang lebih baik kepada masyarakat.<br>Hubungi Admin jika ada permasalahan : 0821-7008-9590
+        Kami sedang melakukan peningkatan sistem dan layanan
+        untuk memberikan pelayanan yang lebih optimal kepada masyarakat.
       </p>
 
       <span class="maintenance-note">
-  Terima kasih atas pengertiannya 🙏
-</span>
+        Terima kasih atas pengertiannya 🙏
+      </span>
 
-<button class="btn-back" onclick="goBack()">
-  ← Kembali
-</button>
+      <div class="maintenance-action">
+        <button class="btn-back" onclick="goBack()">
+          ← Kembali ke Halaman Sebelumnya
+        </button>
+      </div>
 
-</div>
-
+    </div>
   </main>
 
-<script src="assets/js/maintenance.js"></script>
+  <script>
+    // ================= SMART BACK BUTTON =================
+    function goBack(){
+      const referrer = document.referrer;
+
+      if(referrer && referrer !== window.location.href){
+        window.history.back();
+      }else{
+        window.location.replace("index.html");
+      }
+    }
+  </script>
+
 </body>
 </html>
