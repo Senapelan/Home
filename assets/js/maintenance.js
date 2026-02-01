@@ -1,8 +1,10 @@
-// ================= BACK BUTTON =================
+// ================= SMART BACK BUTTON =================
 function goBack(){
-  if(document.referrer){
+  const ref = document.referrer;
+
+  if(ref && ref !== window.location.href){
     window.history.back();
   }else{
-    window.location.href = "index.html";
+    window.location.replace("index.html");
   }
 }
