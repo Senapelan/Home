@@ -193,12 +193,39 @@ const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKNZfjllpbSe0hVmqy
 let editMode=false;
 let maxAnggota=10;
 
-function cekKK(){
-  const kk = document.getElementById('noKK').value.trim();
-  if(!kk) {
-    alert("No KK wajib diisi");
-    return;
+async function cekKK(){
+  const kk = document.getElementById('noKK').value;
+  if(!kk) return alert("No KK wajib diisi");
+
+  const res = await fetch("URL_WEB_APP_KAMU",{
+    method:"POST",
+    body:JSON.stringify({
+      action:"cekKK",
+      no_kk:kk
+    })
+  });
+
+  const data = await res.json();
+
+  document.getElementById('infoKK').style.display='block';
+  document.getElementById('infoNoKK').innerText=kk;
+  cards.innerHTML='';
+
+  if(data.status === "BARU"){
+    alert("KK belum terdata. Silakan isi data baru.");
+    tambahAnggota();
+    setReadOnly(false);
   }
+
+  if(data.status === "ADA"){
+    alert("KK ditemukan. Memuat data keluarga…");
+    loadKK(kk); // ⬅️ lanjut ke step berikutnya
+  }
+}
+
+function loadKK(noKK){
+  alert("Fitur load KK lama siap, lanjut ke step berikutnya 🔜");
+}
 
   // info UI
   document.getElementById('infoKK').style.display = 'block';
