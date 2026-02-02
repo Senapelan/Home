@@ -302,7 +302,7 @@ function tambahAnggota(){
     <div class="grid">
       <div>
         <label>Status Anggota</label>
-        <select>
+        <select onchange="handleStatus(this)">
           <option>Aktif</option>
           <option>Meninggal</option>
           <option>Pindah</option>
@@ -343,6 +343,55 @@ function simpanData(){
   alert("Nanti disambung ke Spreadsheet 👍");
 }
 </script>
+
+<script>
+function handleStatus(select){
+  const card = select.closest('.card');
+  const body = card.querySelector('.card-body');
+  const badge = card.querySelector('.badge');
+  const inputs = body.querySelectorAll('input, select');
+
+  const status = select.value;
+
+  if(status === 'Tidak Aktif' || status === 'Meninggal'){
+    inputs.forEach(el=>{
+      if(el.tagName === 'SELECT'){
+        el.value = '-';
+      } else {
+        el.value = '-';
+      }
+      el.disabled = true;
+    });
+
+    select.disabled = false; // status tetap bisa diubah
+
+    badge.className = 'badge inactive';
+    badge.innerText = status;
+
+    body.style.display = 'none';
+  }
+
+  else if(status === 'Pindah'){
+    inputs.forEach(el=>{
+      el.disabled = false;
+    });
+
+    badge.className = 'badge inactive';
+    badge.innerText = 'Pindah';
+  }
+
+  else{ // Aktif
+    inputs.forEach(el=>{
+      if(el.value === '-') el.value = '';
+      el.disabled = false;
+    });
+
+    badge.className = 'badge active';
+    badge.innerText = 'Aktif';
+  }
+}
+</script>
+
 
 </body>
 </html>
