@@ -95,6 +95,26 @@ button{
   background:#f1f5f9;
 }
 
+.card.status-aktif {
+  border-left: 6px solid #16a34a;
+  background: #f0fdf4;
+}
+
+.card.status-pindah {
+  border-left: 6px solid #ea580c;
+  background: #fff7ed;
+}
+
+.card.status-meninggal {
+  border-left: 6px solid #334155;
+  background: #f1f5f9;
+}
+
+.card.status-nonaktif {
+  border-left: 6px solid #64748b;
+  background: #f8fafc;
+}
+
 .badge{
   padding:4px 10px;
   border-radius:20px;
@@ -302,7 +322,7 @@ function tambahAnggota(){
     <div class="grid">
       <div>
         <label>Status Anggota</label>
-        <select onchange="handleStatus(this)">
+        <select onchange="confirmStatusChange(this)">
           <option>Aktif</option>
           <option>Meninggal</option>
           <option>Pindah</option>
@@ -340,47 +360,61 @@ function resetForm(){
 }
 
 function simpanData(){
-  alert("Nanti disambung ke Spreadsheet 👍");
+  const ok = confirm(
+    "Apakah Anda yakin menyimpan perubahan data keluarga ini?"
+  );
+
+  if(!ok) return;
+
+  alert("Data siap dikirim ke Spreadsheet 👍");
 }
 </script>
 
 <script>
-function handleStatus(select){
+<select onchange=
   const card = select.closest('.card');
   const body = card.querySelector('.card-body');
   const badge = card.querySelector('.badge');
   const inputs = body.querySelectorAll('input, select');
 
+  // reset kelas warna
+  card.classList.remove(
+    'status-aktif',
+    'status-pindah',
+    'status-meninggal',
+    'status-nonaktif'
+  );
+
   const status = select.value;
 
   if(status === 'Tidak Aktif' || status === 'Meninggal'){
     inputs.forEach(el=>{
-      if(el.tagName === 'SELECT'){
+      if(el !== select){
         el.value = '-';
-      } else {
-        el.value = '-';
+        el.disabled = true;
       }
-      el.disabled = true;
     });
-
-    select.disabled = false; // status tetap bisa diubah
 
     badge.className = 'badge inactive';
     badge.innerText = status;
+
+    card.classList.add(
+      status === 'Meninggal' ? 'status-meninggal' : 'status-nonaktif'
+    );
 
     body.style.display = 'none';
   }
 
   else if(status === 'Pindah'){
-    inputs.forEach(el=>{
-      el.disabled = false;
-    });
+    inputs.forEach(el=>el.disabled=false);
 
     badge.className = 'badge inactive';
     badge.innerText = 'Pindah';
+
+    card.classList.add('status-pindah');
   }
 
-  else{ // Aktif
+  else { // Aktif
     inputs.forEach(el=>{
       if(el.value === '-') el.value = '';
       el.disabled = false;
@@ -388,9 +422,31 @@ function handleStatus(select){
 
     badge.className = 'badge active';
     badge.innerText = 'Aktif';
+
+    card.classList.add('status-aktif');
   }
 }
 </script>
+
+<script>
+function confirmStatusChange(select){
+  const status = select.value;
+
+  if(status === 'Meninggal' || status === 'Tidak Aktif'){
+    const ok = confirm(
+      `Status "${status}" akan mengosongkan seluruh data anggota ini.\n\nLanjutkan?`
+    );
+
+    if(!ok){
+      select.value = 'Aktif';
+      return;
+    }
+  }
+
+  handleStatus(select);
+}
+</script>
+
 
 
 </body>
