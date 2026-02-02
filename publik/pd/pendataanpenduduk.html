@@ -1,1 +1,262 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Input Data KK</title>
 
+<style>
+:root{
+  --primary:#2563eb;
+  --secondary:#0f172a;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --muted:#64748b;
+}
+
+*{box-sizing:border-box;font-family:Inter,system-ui,sans-serif}
+
+body{
+  background:var(--bg);
+  margin:0;
+  padding:20px;
+  color:#0f172a;
+}
+
+.container{
+  max-width:1100px;
+  margin:auto;
+}
+
+/* ================= HEADER ================= */
+h1{
+  margin-bottom:16px;
+}
+
+/* ================= CEK KK ================= */
+.kk-check{
+  background:var(--card);
+  border:1px solid var(--border);
+  padding:16px;
+  border-radius:12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.kk-check input{
+  flex:1;
+  padding:12px;
+  font-size:16px;
+}
+
+button{
+  padding:12px 16px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.btn-primary{background:var(--primary);color:white}
+.btn-secondary{background:#e5e7eb}
+.btn-danger{background:#dc2626;color:white}
+
+/* ================= INFO KK ================= */
+.info-kk{
+  margin-top:16px;
+  padding:16px;
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:12px;
+  display:none;
+}
+
+/* ================= KARTU ANGGOTA ================= */
+.cards{
+  margin-top:16px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  margin-bottom:12px;
+  overflow:hidden;
+}
+
+.card-header{
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  cursor:pointer;
+  background:#f1f5f9;
+}
+
+.badge{
+  padding:4px 10px;
+  border-radius:20px;
+  font-size:12px;
+  font-weight:600;
+}
+
+.badge.active{background:#dcfce7;color:#166534}
+.badge.inactive{background:#f1f5f9;color:#475569}
+
+.card-body{
+  padding:16px;
+  display:none;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:12px;
+}
+
+label{
+  font-size:13px;
+  color:var(--muted);
+}
+
+input,select{
+  width:100%;
+  padding:10px;
+  margin-top:4px;
+}
+
+/* ================= FOOTER BUTTON ================= */
+.actions{
+  margin-top:20px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1>📋 Form Input Data Kartu Keluarga</h1>
+
+<!-- CEK KK -->
+<div class="kk-check">
+  <input type="text" id="noKK" placeholder="Masukkan Nomor KK">
+  <button class="btn-primary" onclick="cekKK()">Cek Data</button>
+</div>
+
+<!-- INFO KK -->
+<div class="info-kk" id="infoKK">
+  <strong>Info Keluarga</strong><br>
+  No KK: <span id="infoNoKK"></span><br>
+  Kode Keluarga: <span id="infoKode">Auto</span>
+</div>
+
+<!-- KARTU ANGGOTA -->
+<div class="cards" id="cards"></div>
+
+<!-- ACTIONS -->
+<div class="actions">
+  <button class="btn-secondary" onclick="tambahAnggota()">+ Tambah Anggota</button>
+  <button class="btn-primary" onclick="enableEdit()">Edit Data</button>
+  <button class="btn-primary" onclick="simpanData()">Update Data</button>
+  <button class="btn-danger" onclick="resetForm()">Batal / Reset</button>
+</div>
+
+</div>
+
+<script>
+let editMode=false;
+let maxAnggota=10;
+
+function cekKK(){
+  const kk=document.getElementById('noKK').value;
+  if(!kk) return alert("No KK wajib diisi");
+
+  document.getElementById('infoKK').style.display='block';
+  document.getElementById('infoNoKK').innerText=kk;
+
+  // simulasi KK baru
+  cards.innerHTML='';
+  tambahAnggota();
+  setReadOnly(true);
+}
+
+function tambahAnggota(){
+  if(document.querySelectorAll('.card').length>=maxAnggota){
+    alert("Maksimal 10 anggota");
+    return;
+  }
+
+  const idx=document.querySelectorAll('.card').length+1;
+  const card=document.createElement('div');
+  card.className='card';
+
+  card.innerHTML=`
+  <div class="card-header" onclick="toggleCard(this)">
+    <div>👤 Anggota ${idx}</div>
+    <span class="badge active">Aktif</span>
+  </div>
+  <div class="card-body">
+    <div class="grid">
+      <div>
+        <label>Nama Lengkap</label>
+        <input type="text">
+      </div>
+      <div>
+        <label>NIK</label>
+        <input type="text">
+      </div>
+      <div>
+        <label>Jenis Kelamin</label>
+        <select>
+          <option>-</option>
+          <option>Laki-laki</option>
+          <option>Perempuan</option>
+        </select>
+      </div>
+      <div>
+        <label>Status Hubungan</label>
+        <select>
+          <option>-</option>
+          <option>Kepala Keluarga</option>
+          <option>Istri</option>
+          <option>Anak</option>
+          <option>Orang Tua</option>
+        </select>
+      </div>
+    </div>
+  </div>`;
+  document.getElementById('cards').appendChild(card);
+}
+
+function toggleCard(header){
+  const body=header.nextElementSibling;
+  body.style.display=body.style.display==='block'?'none':'block';
+}
+
+function enableEdit(){
+  setReadOnly(false);
+}
+
+function setReadOnly(state){
+  editMode=!state;
+  document.querySelectorAll('input,select').forEach(el=>{
+    el.disabled=state;
+  });
+}
+
+function resetForm(){
+  setReadOnly(true);
+  alert("Perubahan dibatalkan");
+}
+
+function simpanData(){
+  alert("Nanti disambung ke Spreadsheet 👍");
+}
+</script>
+
+</body>
+</html>
