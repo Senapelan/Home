@@ -188,21 +188,55 @@ input,select{
 </div>
 
 <script>
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwowAdwzVAEpGqmJlKQewO5G84pAFRIWgT9--oLhR6Gcs63GxsADqU7whnuF-sp3byk/exec";
+
 let editMode=false;
 let maxAnggota=10;
 
 function cekKK(){
-  const kk=document.getElementById('noKK').value;
-  if(!kk) return alert("No KK wajib diisi");
+  const kk = document.getElementById('noKK').value.trim();
+  if(!kk) {
+    alert("No KK wajib diisi");
+    return;
+  }
 
-  document.getElementById('infoKK').style.display='block';
-  document.getElementById('infoNoKK').innerText=kk;
+  // info UI
+  document.getElementById('infoKK').style.display = 'block';
+  document.getElementById('infoNoKK').innerText = kk;
+  document.getElementById('cards').innerHTML = '';
 
-  // simulasi KK baru
-  cards.innerHTML='';
-  tambahAnggota();
-  setReadOnly(true);
+  fetch(WEB_APP_URL, {
+    method: "POST",
+    body: JSON.stringify({
+      action: "cekKK",
+      no_kk: kk
+    })
+  })
+  .then(res => res.json())
+  .then(res => {
+    if(res.status === "ADA"){
+      document.getElementById('infoKode').innerText = "TERDATA";
+      alert("KK sudah terdata. Data akan ditampilkan (step berikutnya).");
+
+      // sementara: tampilkan 1 kartu dummy
+      tambahAnggota();
+      setReadOnly(true);
+    }
+
+    if(res.status === "BARU"){
+      document.getElementById('infoKode').innerText = "BARU";
+      alert("KK belum terdata. Silakan isi data baru.");
+
+      tambahAnggota();
+      setReadOnly(false);
+    }
+  })
+  .catch(err=>{
+    console.error(err);
+    alert("Gagal terhubung ke server");
+  });
 }
+
 
 function tambahAnggota(){
   if(document.querySelectorAll('.card').length>=10){
