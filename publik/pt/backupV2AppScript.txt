@@ -2,6 +2,7 @@ const SPREADSHEET_ID = "1XsgW5ddSWZlvKyrlRLpMKCkvngUKxOCKUK59SqeBMNw";
 const SHEET_DATA = "DATA_PENDUDUK";
 const SHEET_DB = "DATABASE_UTAMA";
 
+/* ================= DO POST ================= */
 function doPost(e) {
   const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
   const dataSheet = ss.getSheetByName(SHEET_DATA);
@@ -24,7 +25,7 @@ function doPost(e) {
 }
 
 /* ================= CEK KK ================= */
-function cekKK(noKK, dataSheet, dbSheet) {
+function cekKK(noKK, dataSheet) {
   const data = dataSheet.getDataRange().getValues();
   let ditemukan = [];
 
@@ -41,35 +42,45 @@ function cekKK(noKK, dataSheet, dbSheet) {
   }
 
   return ContentService.createTextOutput(
-  JSON.stringify({
-    status: "ADA",
-    anggota: ditemukan.map(r=>{
-      r[14] = formatDate(r[14]);
-      r[21] = formatDate(r[21]);
-      return r;
+    JSON.stringify({
+      status: "ADA",
+      keluarga: {
+        alamat: ditemukan[0][2],
+        rt: ditemukan[0][3],
+        rw: ditemukan[0][4],
+        kelurahan: ditemukan[0][5],
+        kecamatan: ditemukan[0][6],
+        kota: ditemukan[0][7],
+        provinsi: ditemukan[0][8]
+      },
+      anggota: ditemukan.map(r => {
+        r[14] = formatDate(r[14]);
+        r[21] = formatDate(r[21]);
+        return r;
+      })
     })
-  })
-).setMimeType(ContentService.MimeType.JSON);
+  ).setMimeType(ContentService.MimeType.JSON);
 }
 
-/* ================= Helper rubah tanggal ================= */
-function formatDate(val){
+/* ================= FORMAT DATE ================= */
+function formatDate(val) {
   if (!val) return "";
   const d = new Date(val);
   if (isNaN(d)) return val;
   return Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd");
 }
 
-
-/* ================= SIMPAN / UPDATE KK ================= */
+/* ================= SIMPAN KK ================= */
 function simpanKK(body, dataSheet, dbSheet) {
   const noKK = body.no_kk;
-  const kodeKeluarga = body.kode_keluarga || buatKodeKeluarga();
-  const anggota = body.anggota;
+  const kodeKeluarga =
+    getKodeKeluarga(noKK, dataSheet) || buatKodeKeluarga();
+
+  const anggota = body.anggota || [];
   const petugas = body.petugas || "Admin Web";
   const now = new Date();
 
-  // Hapus data lama KK ini (untuk update)
+  // hapus data lama
   const data = dataSheet.getDataRange().getValues();
   for (let i = data.length - 1; i > 0; i--) {
     if (data[i][1] == noKK) {
@@ -77,8 +88,16 @@ function simpanKK(body, dataSheet, dbSheet) {
     }
   }
 
-  // Simpan ulang anggota
+  // cari kepala & istri
+  const kepala = anggota.find(a => a.status_hubungan === "Kepala Keluarga");
+  const istri = anggota.find(a => a.status_hubungan === "Istri");
+
   anggota.forEach((a, i) => {
+    if (a.status_hubungan === "Anak") {
+      if (kepala) a.ayah = kepala.nama;
+      if (istri) a.ibu = istri.nama;
+    }
+
     dataSheet.appendRow([
       kodeKeluarga,
       noKK,
@@ -119,39 +138,23 @@ function simpanKK(body, dataSheet, dbSheet) {
     ]);
   });
 
-  // Update DATABASE_UTAMA
-  const dbData = dbSheet.getDataRange().getValues();
-  let row = -1;
-  for (let i = 1; i < dbData.length; i++) {
-    if (dbData[i][1] == noKK) {
-      row = i + 1;
-      break;
-    }
-  }
-
-  if (row === -1) {
-    dbSheet.appendRow([
-      "BLOK-01",
-      noKK,
-      kodeKeluarga,
-      "WEB",
-      petugas,
-      now,
-      now,
-      "Input awal",
-      "AKTIF"
-    ]);
-  } else {
-    dbSheet.getRange(row, 7).setValue(now);
-    dbSheet.getRange(row, 8).setValue("Update data keluarga");
-  }
-
   return ContentService.createTextOutput(
     JSON.stringify({ status: "OK", kode_keluarga: kodeKeluarga })
   ).setMimeType(ContentService.MimeType.JSON);
 }
 
-/* ================= GENERATE KODE KELUARGA ================= */
+/* ================= GET KODE KELUARGA ================= */
+function getKodeKeluarga(noKK, sheet) {
+  const data = sheet.getDataRange().getValues();
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][1] == noKK) {
+      return data[i][0];
+    }
+  }
+  return null;
+}
+
+/* ================= GENERATE KODE ================= */
 function buatKodeKeluarga() {
   return "KK-" + Utilities.getUuid().substring(0, 8).toUpperCase();
 }
