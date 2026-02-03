@@ -1,0 +1,157 @@
+const SPREADSHEET_ID = "1XsgW5ddSWZlvKyrlRLpMKCkvngUKxOCKUK59SqeBMNw";
+const SHEET_DATA = "DATA_PENDUDUK";
+const SHEET_DB = "DATABASE_UTAMA";
+
+function doPost(e) {
+  const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+  const dataSheet = ss.getSheetByName(SHEET_DATA);
+  const dbSheet = ss.getSheetByName(SHEET_DB);
+
+  const body = JSON.parse(e.postData.contents);
+  const action = body.action;
+
+  if (action === "cekKK") {
+    return cekKK(body.no_kk, dataSheet, dbSheet);
+  }
+
+  if (action === "simpanKK") {
+    return simpanKK(body, dataSheet, dbSheet);
+  }
+
+  return ContentService.createTextOutput(
+    JSON.stringify({ status: "ERROR", message: "Action tidak dikenali" })
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ================= CEK KK ================= */
+function cekKK(noKK, dataSheet, dbSheet) {
+  const data = dataSheet.getDataRange().getValues();
+  let ditemukan = [];
+
+  for (let i = 1; i < data.length; i++) {
+    if (data[i][1] == noKK) {
+      ditemukan.push(data[i]);
+    }
+  }
+
+  if (ditemukan.length === 0) {
+    return ContentService.createTextOutput(
+      JSON.stringify({ status: "BARU" })
+    ).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  return ContentService.createTextOutput(
+  JSON.stringify({
+    status: "ADA",
+    anggota: ditemukan.map(r=>{
+      r[14] = formatDate(r[14]);
+      r[21] = formatDate(r[21]);
+      return r;
+    })
+  })
+).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ================= Helper rubah tanggal ================= */
+function formatDate(val){
+  if (!val) return "";
+  const d = new Date(val);
+  if (isNaN(d)) return val;
+  return Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd");
+}
+
+
+/* ================= SIMPAN / UPDATE KK ================= */
+function simpanKK(body, dataSheet, dbSheet) {
+  const noKK = body.no_kk;
+  const kodeKeluarga = body.kode_keluarga || buatKodeKeluarga();
+  const anggota = body.anggota;
+  const petugas = body.petugas || "Admin Web";
+  const now = new Date();
+
+  // Hapus data lama KK ini (untuk update)
+  const data = dataSheet.getDataRange().getValues();
+  for (let i = data.length - 1; i > 0; i--) {
+    if (data[i][1] == noKK) {
+      dataSheet.deleteRow(i + 1);
+    }
+  }
+
+  // Simpan ulang anggota
+  anggota.forEach((a, i) => {
+    dataSheet.appendRow([
+      kodeKeluarga,
+      noKK,
+      body.alamat || "-",
+      body.rt || "-",
+      body.rw || "-",
+      body.kelurahan || "-",
+      body.kecamatan || "-",
+      body.kota || "-",
+      body.provinsi || "-",
+      i + 1,
+      a.nama || "-",
+      a.nik || "-",
+      a.jk || "-",
+      a.tempat_lahir || "-",
+      a.tgl_lahir || "-",
+      a.agama || "-",
+      a.pendidikan || "-",
+      a.pekerjaan || "-",
+      a.gol_darah || "-",
+      a.status_hubungan || "-",
+      a.status_kawin || "-",
+      a.tgl_kawin || "-",
+      a.kewarganegaraan || "-",
+      a.status_anggota || "-",
+      a.no_paspor || "-",
+      a.nikitap || "-",
+      a.ayah || "-",
+      a.ibu || "-",
+      a.status_kekayaan || "-",
+      a.status_lps || "-",
+      a.status_kesehatan || "-",
+      "WEB",
+      petugas,
+      now,
+      now,
+      "Update dari Web"
+    ]);
+  });
+
+  // Update DATABASE_UTAMA
+  const dbData = dbSheet.getDataRange().getValues();
+  let row = -1;
+  for (let i = 1; i < dbData.length; i++) {
+    if (dbData[i][1] == noKK) {
+      row = i + 1;
+      break;
+    }
+  }
+
+  if (row === -1) {
+    dbSheet.appendRow([
+      "BLOK-01",
+      noKK,
+      kodeKeluarga,
+      "WEB",
+      petugas,
+      now,
+      now,
+      "Input awal",
+      "AKTIF"
+    ]);
+  } else {
+    dbSheet.getRange(row, 7).setValue(now);
+    dbSheet.getRange(row, 8).setValue("Update data keluarga");
+  }
+
+  return ContentService.createTextOutput(
+    JSON.stringify({ status: "OK", kode_keluarga: kodeKeluarga })
+  ).setMimeType(ContentService.MimeType.JSON);
+}
+
+/* ================= GENERATE KODE KELUARGA ================= */
+function buatKodeKeluarga() {
+  return "KK-" + Utilities.getUuid().substring(0, 8).toUpperCase();
+}
