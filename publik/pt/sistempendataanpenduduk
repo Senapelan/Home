@@ -1,0 +1,1345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pendataan Penduduk</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            background: rgba(255,255,255,0.2);
+            padding: 15px;
+            border-radius: 50%;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .main-content {
+            padding: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid var(--gray-200);
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--gray-900);
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .card-title i {
+            color: var(--primary);
+        }
+        
+        .search-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto 20px;
+        }
+        
+        input, select {
+            flex: 1;
+            padding: 14px 18px;
+            border: 2px solid var(--gray-300);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+        
+        .btn {
+            padding: 14px 28px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #0da271;
+            transform: translateY(-2px);
+        }
+        
+        .btn-warning {
+            background: var(--warning);
+            color: white;
+        }
+        
+        .btn-warning:hover {
+            background: #e68a00;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+        
+        .btn-outline:hover {
+            background: var(--gray-100);
+        }
+        
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .form-group {
+            margin-bottom: 5px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+        }
+        
+        .required::after {
+            content: " *";
+            color: var(--danger);
+        }
+        
+        .member-card {
+            border: 2px solid var(--gray-200);
+            border-radius: 15px;
+            margin-bottom: 25px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .member-card.active {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.02);
+        }
+        
+        .member-card.pindah {
+            border-color: var(--gray-900);
+            background: rgba(55, 65, 81, 0.02);
+        }
+        
+        .member-card.meninggal {
+            border-color: var(--danger);
+            background: rgba(239, 68, 68, 0.02);
+        }
+        
+        .member-card.tidak-aktif {
+            border-color: var(--warning);
+            background: rgba(245, 158, 11, 0.02);
+        }
+        
+        .member-header {
+            background: var(--gray-100);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+        }
+        
+        .member-header:hover {
+            background: var(--gray-200);
+        }
+        
+        .member-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            color: var(--gray-900);
+        }
+        
+        .member-number {
+            background: var(--primary);
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .status-indicator {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-aktif {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+        
+        .status-pindah {
+            background: rgba(55, 65, 81, 0.15);
+            color: var(--gray-900);
+        }
+        
+        .status-meninggal {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--danger);
+        }
+        
+        .status-tidak-aktif {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+        
+        .member-content {
+            padding: 25px;
+            display: none;
+        }
+        
+        .member-content.show {
+            display: block;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 18px 25px;
+            border-radius: 12px;
+            color: white;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.4s ease;
+        }
+        
+        .notification.show {
+            transform: translateX(0);
+        }
+        
+        .notification.success {
+            background: var(--success);
+        }
+        
+        .notification.error {
+            background: var(--danger);
+        }
+        
+        .notification.warning {
+            background: var(--warning);
+        }
+        
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            display: none;
+        }
+        
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid var(--gray-300);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .form-section {
+            margin-bottom: 35px;
+            padding-bottom: 25px;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        
+        .form-section:last-child {
+            border-bottom: none;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-left: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .view-mode .form-control {
+            background: var(--gray-100);
+            border: 1px solid var(--gray-300);
+            padding: 12px 15px;
+            border-radius: 8px;
+            color: var(--gray-700);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .address-info {
+            background: var(--gray-50);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-style: italic;
+            color: var(--gray-600);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                border-radius: 10px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .input-group {
+                flex-direction: column;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+        
+        .auto-filled {
+            background-color: #f0f9ff !important;
+            color: #0369a1 !important;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+    
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-users"></i>
+                <div>
+                    <h1>Sistem Pendataan Penduduk</h1>
+                    <p class="subtitle">Kelola data penduduk dengan terintegrasi Google Spreadsheet</p>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="search-section">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-search"></i> Cek Data Keluarga</h2>
+                    <p style="margin-bottom: 20px; color: var(--gray-700);">Masukkan Nomor KK untuk memeriksa apakah data sudah tersedia</p>
+                    
+                    <div class="input-group">
+                        <input type="text" id="noKKSearch" placeholder="Masukkan Nomor Kartu Keluarga (16 digit)" maxlength="16">
+                        <button class="btn btn-primary" onclick="checkKK()">
+                            <i class="fas fa-search"></i> Cek Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="petugasInputSection" class="hidden">
+                <div class="card">
+                    <h2 class="card-title"><i class="fas fa-user-tie"></i> Identitas Petugas Input</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="required">Petugas Input</label>
+                            <select id="petugasInput" required>
+                                <option value="">- Pilih Petugas -</option>
+                                <option value="Admin Kelurahan">Admin Kelurahan</option>
+                                <option value="Petugas Lapangan">Petugas Lapangan</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Tanggal Input</label>
+                            <input type="date" id="tanggalInput" value="<?php echo date('Y-m-d'); ?>">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="dataSection" class="hidden">
+                <div id="anggotaContainer">
+                    <!-- Anggota keluarga akan ditambahkan di sini -->
+                </div>
+                
+                <div id="tambahAnggotaSection" class="hidden">
+                    <div class="action-buttons">
+                        <button class="btn btn-outline" onclick="tambahAnggota()">
+                            <i class="fas fa-user-plus"></i> Tambah Anggota Keluarga
+                        </button>
+                        <button class="btn btn-primary" onclick="simpanSemua()">
+                            <i class="fas fa-save"></i> Simpan Semua Data
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="viewDataSection" class="hidden">
+                <div id="viewDataContent">
+                    <!-- Data tampil di sini -->
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-warning" onclick="editData()">
+                        <i class="fas fa-edit"></i> Edit Data
+                    </button>
+                    <button class="btn btn-outline" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Data Baru
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Variabel global
+        let anggotaCounter = 0;
+        let keluargaData = {};
+        let isEditMode = false;
+        let existingKKData = null;
+        let kepalaKeluargaData = {};
+        
+        // Data dropdown
+        const dropdownData = {
+            agama: ['Islam', 'Kristen Protestan', 'Kristen Katolik', 'Hindu', 'Buddha', 'Konghucu', 'Lainnya'],
+            pendidikan: ['Tidak Sekolah', 'SD/Sederajat', 'SMP/Sederajat', 'SMA/Sederajat', 'D1/D2/D3', 'S1/D4', 'S2', 'S3'],
+            pekerjaan: [
+                'Tidak Bekerja', 'Pelajar/Mahasiswa', 'PNS', 'TNI/Polri', 'Pegawai Swasta', 
+                'Wiraswasta', 'Petani', 'Nelayan', 'Pensiunan', 'Ibu Rumah Tangga', 'Lainnya'
+            ],
+            golonganDarah: ['-', 'A', 'B', 'AB', 'O'],
+            hubunganKeluarga: [
+                'Kepala Keluarga', 'Istri', 'Anak', 'Menantu', 'Cucu', 
+                'Orang Tua', 'Mertua', 'Famili Lain', 'Lainnya'
+            ],
+            statusPerkawinan: ['Belum Kawin', 'Kawin', 'Cerai Hidup', 'Cerai Mati'],
+            kewarganegaraan: ['WNI', 'WNA'],
+            statusAnggota: ['Aktif', 'Meninggal', 'Pindah', 'Tidak Aktif'],
+            statusKekayaan: ['-', 'Mampu', 'Tidak Mampu'],
+            statusLPS: ['-', 'Peserta LPS', 'Peserta Subsidi Silang', 'Peserta DLHK', 'Tidak Ikut LPS', 'Belum Terdata'],
+            statusKesehatan: ['-', 'Memiliki BPJS', 'Memiliki BPJS dan BPJS Tenaga Kerja', 'Tidak memiliki BPJS'],
+            sumberData: ['Sensus', 'Registrasi', 'Survei', 'Lainnya']
+        };
+        
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            setupEventListeners();
+        });
+        
+        function setupEventListeners() {
+            // Enter untuk search
+            document.getElementById('noKKSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') checkKK();
+            });
+        }
+        
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-exclamation-triangle'}"></i>
+                ${message}
+            `;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 10);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 400);
+            }, 3000);
+        }
+        
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
+        
+        async function checkKK() {
+            const noKK = document.getElementById('noKKSearch').value.trim();
+            
+            if (!noKK) {
+                showNotification('Harap masukkan Nomor KK', 'error');
+                return;
+            }
+            
+            if (noKK.length !== 16) {
+                showNotification('Nomor KK harus 16 digit', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            try {
+                // Simulasi cek ke Google Apps Script
+                const response = await google.script.run
+                    .withSuccessHandler(handleCheckKKResponse)
+                    .withFailureHandler(handleError)
+                    .checkKK(noKK);
+                    
+                // handleCheckKKResponse akan dipanggil oleh Apps Script
+            } catch (error) {
+                showLoading(false);
+                handleError(error);
+            }
+        }
+        
+        function handleCheckKKResponse(result) {
+            showLoading(false);
+            
+            if (result.exists) {
+                // Data ditemukan, tampilkan data
+                existingKKData = result.data;
+                isEditMode = false;
+                tampilkanDataKeluarga(result.data);
+            } else {
+                // Data tidak ditemukan, buka mode input
+                isEditMode = false;
+                keluargaData = {
+                    No_KK: document.getElementById('noKKSearch').value.trim(),
+                    anggota: []
+                };
+                
+                document.getElementById('petugasInputSection').classList.remove('hidden');
+                document.getElementById('dataSection').classList.remove('hidden');
+                document.getElementById('viewDataSection').classList.add('hidden');
+                
+                tambahAnggota(true); // Tambah anggota pertama (Kepala Keluarga)
+                showNotification('Nomor KK belum terdaftar. Silakan input data baru.', 'warning');
+            }
+        }
+        
+        function handleError(error) {
+            showLoading(false);
+            console.error('Error:', error);
+            showNotification('Terjadi kesalahan: ' + error.message, 'error');
+        }
+        
+        function tambahAnggota(isKepalaKeluarga = false) {
+            if (anggotaCounter >= 10) {
+                showNotification('Maksimal 10 anggota keluarga', 'warning');
+                return;
+            }
+            
+            anggotaCounter++;
+            const anggotaNumber = anggotaCounter;
+            
+            // Generate ID Anggota
+            const idAnggota = anggotaNumber.toString().padStart(2, '0');
+            
+            // Generate Kode Keluarga jika belum ada
+            if (!keluargaData.Kode_Keluarga && anggotaNumber === 1) {
+                keluargaData.Kode_Keluarga = 'KK' + Date.now().toString().slice(-6);
+            }
+            
+            const anggotaCard = document.createElement('div');
+            anggotaCard.className = 'member-card active';
+            anggotaCard.id = `anggota-${anggotaNumber}`;
+            anggotaCard.innerHTML = `
+                <div class="member-header" onclick="toggleAnggota(${anggotaNumber})">
+                    <div class="member-title">
+                        <span class="member-number">${anggotaNumber}</span>
+                        <span>Anggota Keluarga ${anggotaNumber}</span>
+                        <span class="status-indicator status-aktif">Aktif</span>
+                    </div>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="member-content" id="content-${anggotaNumber}">
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-home"></i> Alamat Keluarga</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="required">Alamat</label>
+                                <input type="text" id="alamat-${anggotaNumber}" class="address-field" ${anggotaNumber > 1 ? 'readonly' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">RT</label>
+                                <input type="text" id="rt-${anggotaNumber}" class="address-field" maxlength="3" ${anggotaNumber > 1 ? 'readonly' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">RW</label>
+                                <input type="text" id="rw-${anggotaNumber}" class="address-field" maxlength="3" ${anggotaNumber > 1 ? 'readonly' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Kelurahan</label>
+                                <input type="text" id="kelurahan-${anggotaNumber}" class="address-field" ${anggotaNumber > 1 ? 'readonly' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Kecamatan</label>
+                                <input type="text" id="kecamatan-${anggotaNumber}" class="address-field" ${anggotaNumber > 1 ? 'readonly' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Kota/Kabupaten</label>
+                                <input type="text" id="kota-${anggotaNumber}" class="address-field" ${anggotaNumber > 1 ? 'readonly' : ''}>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Provinsi</label>
+                                <input type="text" id="provinsi-${anggotaNumber}" class="address-field" ${anggotaNumber > 1 ? 'readonly' : ''}>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-id-card"></i> Identitas Dasar</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="required">Nama Lengkap</label>
+                                <input type="text" id="nama-${anggotaNumber}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">NIK</label>
+                                <input type="text" id="nik-${anggotaNumber}" maxlength="16" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Jenis Kelamin</label>
+                                <select id="jenisKelamin-${anggotaNumber}" required>
+                                    <option value="">- Pilih -</option>
+                                    <option value="Laki-laki">Laki-laki</option>
+                                    <option value="Perempuan">Perempuan</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Tempat Lahir</label>
+                                <input type="text" id="tempatLahir-${anggotaNumber}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Tanggal Lahir</label>
+                                <input type="date" id="tanggalLahir-${anggotaNumber}" required>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Agama</label>
+                                <select id="agama-${anggotaNumber}" required>
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.agama.map(a => `<option value="${a}">${a}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Pendidikan</label>
+                                <select id="pendidikan-${anggotaNumber}" required>
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.pendidikan.map(p => `<option value="${p}">${p}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Pekerjaan</label>
+                                <select id="pekerjaan-${anggotaNumber}" required>
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.pekerjaan.map(p => `<option value="${p}">${p}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Golongan Darah</label>
+                                <select id="golDarah-${anggotaNumber}">
+                                    ${dropdownData.golonganDarah.map(g => `<option value="${g}">${g}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-users"></i> Status & Relasi Keluarga</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="required">Status Hubungan</label>
+                                <select id="hubunganKeluarga-${anggotaNumber}" required onchange="updateHubunganKeluarga(${anggotaNumber})">
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.hubunganKeluarga.map(h => `<option value="${h}" ${isKepalaKeluarga && h === 'Kepala Keluarga' ? 'selected' : ''}>${h}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Status Perkawinan</label>
+                                <select id="statusPerkawinan-${anggotaNumber}" required>
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.statusPerkawinan.map(s => `<option value="${s}">${s}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Tanggal Perkawinan</label>
+                                <input type="date" id="tanggalPerkawinan-${anggotaNumber}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-globe"></i> Kewarganegaraan & Imigrasi</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label class="required">Kewarganegaraan</label>
+                                <select id="kewarganegaraan-${anggotaNumber}" required>
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.kewarganegaraan.map(k => `<option value="${k}">${k}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="required">Status Anggota</label>
+                                <select id="statusAnggota-${anggotaNumber}" required onchange="updateStatusCard(${anggotaNumber})">
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.statusAnggota.map(s => `<option value="${s}">${s}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>No. Paspor</label>
+                                <input type="text" id="noPaspor-${anggotaNumber}">
+                            </div>
+                            <div class="form-group">
+                                <label>NIKITAP</label>
+                                <input type="text" id="nikitap-${anggotaNumber}">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-user-friends"></i> Data Orang Tua</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nama Ayah</label>
+                                <input type="text" id="namaAyah-${anggotaNumber}" class="ortu-field">
+                            </div>
+                            <div class="form-group">
+                                <label>Nama Ibu</label>
+                                <input type="text" id="namaIbu-${anggotaNumber}" class="ortu-field">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-section">
+                        <h3 class="section-title"><i class="fas fa-clipboard-check"></i> Status Administratif</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Status Kekayaan</label>
+                                <select id="statusKekayaan-${anggotaNumber}">
+                                    ${dropdownData.statusKekayaan.map(s => `<option value="${s}">${s}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Status LPS</label>
+                                <select id="statusLPS-${anggotaNumber}">
+                                    ${dropdownData.statusLPS.map(s => `<option value="${s}">${s}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Status Kesehatan</label>
+                                <select id="statusKesehatan-${anggotaNumber}">
+                                    ${dropdownData.statusKesehatan.map(s => `<option value="${s}">${s}</option>`).join('')}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Sumber Data</label>
+                                <select id="sumberData-${anggotaNumber}">
+                                    <option value="">- Pilih -</option>
+                                    ${dropdownData.sumberData.map(s => `<option value="${s}">${s}</option>`).join('')}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('anggotaContainer').appendChild(anggotaCard);
+            
+            // Jika ini kepala keluarga, set status khusus
+            if (isKepalaKeluarga) {
+                document.getElementById(`hubunganKeluarga-${anggotaNumber}`).value = 'Kepala Keluarga';
+                document.getElementById(`hubunganKeluarga-${anggotaNumber}`).disabled = true;
+                
+                // Simpan data kepala keluarga
+                kepalaKeluargaData = {
+                    id: anggotaNumber,
+                    nama: '',
+                    jenisKelamin: ''
+                };
+            }
+            
+            // Tampilkan section tambah anggota
+            document.getElementById('tambahAnggotaSection').classList.remove('hidden');
+            
+            // Auto expand card pertama
+            if (anggotaNumber === 1) {
+                setTimeout(() => {
+                    toggleAnggota(1);
+                }, 300);
+            }
+        }
+        
+        function toggleAnggota(anggotaNumber) {
+            const content = document.getElementById(`content-${anggotaNumber}`);
+            const icon = document.querySelector(`#anggota-${anggotaNumber} .member-header i`);
+            
+            if (content.classList.contains('show')) {
+                content.classList.remove('show');
+                icon.classList.remove('fa-chevron-up');
+                icon.classList.add('fa-chevron-down');
+            } else {
+                content.classList.add('show');
+                icon.classList.remove('fa-chevron-down');
+                icon.classList.add('fa-chevron-up');
+            }
+        }
+        
+        function updateHubunganKeluarga(anggotaNumber) {
+            const hubungan = document.getElementById(`hubunganKeluarga-${anggotaNumber}`).value;
+            const jenisKelamin = document.getElementById(`jenisKelamin-${anggotaNumber}`).value;
+            
+            // Jika hubungan adalah Anak, auto-isi nama orang tua
+            if (hubungan === 'Anak' && kepalaKeluargaData.nama) {
+                if (kepalaKeluargaData.jenisKelamin === 'Laki-laki') {
+                    document.getElementById(`namaAyah-${anggotaNumber}`).value = kepalaKeluargaData.nama;
+                    document.getElementById(`namaAyah-${anggotaNumber}`).classList.add('auto-filled');
+                    
+                    // Cari istri jika ada
+                    for (let i = 1; i < anggotaNumber; i++) {
+                        if (document.getElementById(`hubunganKeluarga-${i}`)?.value === 'Istri') {
+                            document.getElementById(`namaIbu-${anggotaNumber}`).value = document.getElementById(`nama-${i}`).value;
+                            document.getElementById(`namaIbu-${anggotaNumber}`).classList.add('auto-filled');
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Simpan data jika ini kepala keluarga
+            if (hubungan === 'Kepala Keluarga') {
+                kepalaKeluargaData = {
+                    id: anggotaNumber,
+                    nama: document.getElementById(`nama-${anggotaNumber}`).value,
+                    jenisKelamin: jenisKelamin
+                };
+            }
+        }
+        
+        function updateStatusCard(anggotaNumber) {
+            const status = document.getElementById(`statusAnggota-${anggotaNumber}`).value;
+            const card = document.getElementById(`anggota-${anggotaNumber}`);
+            const statusIndicator = card.querySelector('.status-indicator');
+            
+            // Hapus semua kelas status
+            card.classList.remove('active', 'pindah', 'meninggal', 'tidak-aktif');
+            statusIndicator.classList.remove('status-aktif', 'status-pindah', 'status-meninggal', 'status-tidak-aktif');
+            
+            // Tambahkan kelas sesuai status
+            switch(status) {
+                case 'Aktif':
+                    card.classList.add('active');
+                    statusIndicator.classList.add('status-aktif');
+                    statusIndicator.textContent = 'Aktif';
+                    break;
+                case 'Pindah':
+                    card.classList.add('pindah');
+                    statusIndicator.classList.add('status-pindah');
+                    statusIndicator.textContent = 'Pindah';
+                    break;
+                case 'Meninggal':
+                    card.classList.add('meninggal');
+                    statusIndicator.classList.add('status-meninggal');
+                    statusIndicator.textContent = 'Meninggal';
+                    break;
+                case 'Tidak Aktif':
+                    card.classList.add('tidak-aktif');
+                    statusIndicator.classList.add('status-tidak-aktif');
+                    statusIndicator.textContent = 'Tidak Aktif';
+                    break;
+            }
+        }
+        
+        async function simpanSemua() {
+            // Validasi petugas input
+            const petugas = document.getElementById('petugasInput').value;
+            if (!petugas) {
+                showNotification('Harap pilih Petugas Input', 'error');
+                return;
+            }
+            
+            // Kumpulkan data dari semua anggota
+            const anggotaData = [];
+            
+            for (let i = 1; i <= anggotaCounter; i++) {
+                const data = getAnggotaData(i);
+                if (!data) {
+                    showNotification(`Data anggota ${i} belum lengkap`, 'error');
+                    return;
+                }
+                anggotaData.push(data);
+            }
+            
+            // Siapkan data keluarga
+            const keluargaDataToSave = {
+                Kode_Keluarga: keluargaData.Kode_Keluarga,
+                No_KK: keluargaData.No_KK,
+                anggota: anggotaData,
+                petugas: petugas,
+                tanggalInput: document.getElementById('tanggalInput').value || new Date().toISOString().split('T')[0]
+            };
+            
+            showLoading(true);
+            
+            try {
+                const response = await google.script.run
+                    .withSuccessHandler(handleSaveResponse)
+                    .withFailureHandler(handleError)
+                    .saveData(keluargaDataToSave);
+                    
+                // handleSaveResponse akan dipanggil oleh Apps Script
+            } catch (error) {
+                showLoading(false);
+                handleError(error);
+            }
+        }
+        
+        function getAnggotaData(anggotaNumber) {
+            // Validasi data wajib
+            const requiredFields = [
+                `alamat-${anggotaNumber}`, `rt-${anggotaNumber}`, `rw-${anggotaNumber}`,
+                `kelurahan-${anggotaNumber}`, `kecamatan-${anggotaNumber}`, `kota-${anggotaNumber}`,
+                `provinsi-${anggotaNumber}`, `nama-${anggotaNumber}`, `nik-${anggotaNumber}`,
+                `jenisKelamin-${anggotaNumber}`, `tempatLahir-${anggotaNumber}`, `tanggalLahir-${anggotaNumber}`,
+                `agama-${anggotaNumber}`, `pendidikan-${anggotaNumber}`, `pekerjaan-${anggotaNumber}`,
+                `hubunganKeluarga-${anggotaNumber}`, `statusPerkawinan-${anggotaNumber}`,
+                `kewarganegaraan-${anggotaNumber}`, `statusAnggota-${anggotaNumber}`
+            ];
+            
+            for (const fieldId of requiredFields) {
+                const element = document.getElementById(fieldId);
+                if (!element || !element.value.trim()) {
+                    element?.focus();
+                    return null;
+                }
+            }
+            
+            return {
+                ID_Anggota: anggotaNumber.toString().padStart(2, '0'),
+                Alamat: document.getElementById(`alamat-${anggotaNumber}`).value,
+                RT: document.getElementById(`rt-${anggotaNumber}`).value,
+                RW: document.getElementById(`rw-${anggotaNumber}`).value,
+                Kelurahan: document.getElementById(`kelurahan-${anggotaNumber}`).value,
+                Kecamatan: document.getElementById(`kecamatan-${anggotaNumber}`).value,
+                Kota_Kabupaten: document.getElementById(`kota-${anggotaNumber}`).value,
+                Provinsi: document.getElementById(`provinsi-${anggotaNumber}`).value,
+                Nama: document.getElementById(`nama-${anggotaNumber}`).value,
+                NIK: document.getElementById(`nik-${anggotaNumber}`).value,
+                Jenis_Kelamin: document.getElementById(`jenisKelamin-${anggotaNumber}`).value,
+                Tempat_Lahir: document.getElementById(`tempatLahir-${anggotaNumber}`).value,
+                Tanggal_Lahir: document.getElementById(`tanggalLahir-${anggotaNumber}`).value,
+                Agama: document.getElementById(`agama-${anggotaNumber}`).value,
+                Pendidikan: document.getElementById(`pendidikan-${anggotaNumber}`).value,
+                Pekerjaan: document.getElementById(`pekerjaan-${anggotaNumber}`).value,
+                Gol_Darah: document.getElementById(`golDarah-${anggotaNumber}`).value,
+                Status_Hubungan_Keluarga: document.getElementById(`hubunganKeluarga-${anggotaNumber}`).value,
+                Status_Perkawinan: document.getElementById(`statusPerkawinan-${anggotaNumber}`).value,
+                Tanggal_Perkawinan: document.getElementById(`tanggalPerkawinan-${anggotaNumber}`).value || '-',
+                Kewarganegaraan: document.getElementById(`kewarganegaraan-${anggotaNumber}`).value,
+                Status_Anggota: document.getElementById(`statusAnggota-${anggotaNumber}`).value,
+                No_Paspor: document.getElementById(`noPaspor-${anggotaNumber}`).value || '-',
+                NIKITAP: document.getElementById(`nikitap-${anggotaNumber}`).value || '-',
+                Nama_Ayah: document.getElementById(`namaAyah-${anggotaNumber}`).value || '-',
+                Nama_Ibu: document.getElementById(`namaIbu-${anggotaNumber}`).value || '-',
+                Status_Kekayaan: document.getElementById(`statusKekayaan-${anggotaNumber}`).value,
+                Status_LPS: document.getElementById(`statusLPS-${anggotaNumber}`).value,
+                Status_Kesehatan: document.getElementById(`statusKesehatan-${anggotaNumber}`).value,
+                Sumber_Data: document.getElementById(`sumberData-${anggotaNumber}`).value || '-'
+            };
+        }
+        
+        function handleSaveResponse(result) {
+            showLoading(false);
+            
+            if (result.success) {
+                showNotification('Data berhasil disimpan!', 'success');
+                
+                // Reset form setelah 2 detik
+                setTimeout(() => {
+                    resetForm();
+                }, 2000);
+            } else {
+                showNotification('Gagal menyimpan data: ' + result.message, 'error');
+            }
+        }
+        
+        function tampilkanDataKeluarga(data) {
+            document.getElementById('dataSection').classList.add('hidden');
+            document.getElementById('petugasInputSection').classList.add('hidden');
+            document.getElementById('viewDataSection').classList.remove('hidden');
+            
+            const container = document.getElementById('viewDataContent');
+            container.innerHTML = '';
+            
+            // Kelompokkan data per keluarga
+            const keluargaGroups = {};
+            data.forEach(item => {
+                if (!keluargaGroups[item.Kode_Keluarga]) {
+                    keluargaGroups[item.Kode_Keluarga] = [];
+                }
+                keluargaGroups[item.Kode_Keluarga].push(item);
+            });
+            
+            // Tampilkan data per keluarga
+            Object.entries(keluargaGroups).forEach(([kodeKeluarga, anggota]) => {
+                const familyCard = document.createElement('div');
+                familyCard.className = 'card';
+                familyCard.innerHTML = `
+                    <h2 class="card-title">
+                        <i class="fas fa-home"></i> 
+                        Keluarga ${kodeKeluarga} - KK: ${anggota[0].No_KK}
+                    </h2>
+                    <div style="margin-bottom: 20px; padding: 15px; background: #f8f9fa; border-radius: 10px;">
+                        <strong>Alamat:</strong> ${anggota[0].Alamat}, RT ${anggota[0].RT}/RW ${anggota[0].RW}<br>
+                        ${anggota[0].Kelurahan}, ${anggota[0].Kecamatan}, ${anggota[0].Kota_Kabupaten}, ${anggota[0].Provinsi}
+                    </div>
+                `;
+                
+                anggota.forEach((item, index) => {
+                    familyCard.innerHTML += `
+                        <div class="member-card ${getStatusClass(item.Status_Anggota)}">
+                            <div class="member-header">
+                                <div class="member-title">
+                                    <span class="member-number">${item.ID_Anggota}</span>
+                                    <span>${item.Nama} (${item.Status_Hubungan_Keluarga})</span>
+                                    <span class="status-indicator ${getStatusIndicatorClass(item.Status_Anggota)}">
+                                        ${item.Status_Anggota}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="member-content show">
+                                <div class="view-mode">
+                                    <div class="form-grid">
+                                        <div class="form-group">
+                                            <label>NIK</label>
+                                            <div class="form-control">${item.NIK}</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Jenis Kelamin</label>
+                                            <div class="form-control">${item.Jenis_Kelamin}</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>TTL</label>
+                                            <div class="form-control">${item.Tempat_Lahir}, ${formatDate(item.Tanggal_Lahir)}</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Agama</label>
+                                            <div class="form-control">${item.Agama}</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Pendidikan</label>
+                                            <div class="form-control">${item.Pendidikan}</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Pekerjaan</label>
+                                            <div class="form-control">${item.Pekerjaan}</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Status Perkawinan</label>
+                                            <div class="form-control">${item.Status_Perkawinan}</div>
+                                        </div>
+                                        <div class="form-group">
+                                            <label>Status Kesehatan</label>
+                                            <div class="form-control">${item.Status_Kesehatan}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.appendChild(familyCard);
+            });
+        }
+        
+        function getStatusClass(status) {
+            switch(status) {
+                case 'Aktif': return 'active';
+                case 'Pindah': return 'pindah';
+                case 'Meninggal': return 'meninggal';
+                case 'Tidak Aktif': return 'tidak-aktif';
+                default: return '';
+            }
+        }
+        
+        function getStatusIndicatorClass(status) {
+            switch(status) {
+                case 'Aktif': return 'status-aktif';
+                case 'Pindah': return 'status-pindah';
+                case 'Meninggal': return 'status-meninggal';
+                case 'Tidak Aktif': return 'status-tidak-aktif';
+                default: return '';
+            }
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID');
+        }
+        
+        function editData() {
+            // Konversi ke mode edit
+            isEditMode = true;
+            
+            // Sembunyikan view mode
+            document.getElementById('viewDataSection').classList.add('hidden');
+            
+            // Tampilkan input mode
+            document.getElementById('petugasInputSection').classList.remove('hidden');
+            document.getElementById('dataSection').classList.remove('hidden');
+            
+            // Kosongkan container anggota
+            document.getElementById('anggotaContainer').innerHTML = '';
+            anggotaCounter = 0;
+            
+            // Isi dengan data yang ada
+            if (existingKKData && existingKKData.length > 0) {
+                keluargaData = {
+                    Kode_Keluarga: existingKKData[0].Kode_Keluarga,
+                    No_KK: existingKKData[0].No_KK
+                };
+                
+                // Tambahkan setiap anggota
+                existingKKData.forEach((anggota, index) => {
+                    setTimeout(() => {
+                        tambahAnggota(index === 0);
+                        
+                        // Isi data setelah card dibuat
+                        setTimeout(() => {
+                            fillAnggotaData(index + 1, anggota);
+                        }, 100);
+                    }, index * 100);
+                });
+            }
+        }
+        
+        function fillAnggotaData(anggotaNumber, data) {
+            // Isi semua field
+            const fields = {
+                'alamat': data.Alamat,
+                'rt': data.RT,
+                'rw': data.RW,
+                'kelurahan': data.Kelurahan,
+                'kecamatan': data.Kecamatan,
+                'kota': data.Kota_Kabupaten,
+                'provinsi': data.Provinsi,
+                'nama': data.Nama,
+                'nik': data.NIK,
+                'jenisKelamin': data.Jenis_Kelamin,
+                'tempatLahir': data.Tempat_Lahir,
+                'tanggalLahir': data.Tanggal_Lahir.split('T')[0],
+                'agama': data.Agama,
+                'pendidikan': data.Pendidikan,
+                'pekerjaan': data.Pekerjaan,
+                'golDarah': data.Gol_Darah,
+                'hubunganKeluarga': data.Status_Hubungan_Keluarga,
+                'statusPerkawinan': data.Status_Perkawinan,
+                'tanggalPerkawinan': data.Tanggal_Perkawinan !== '-' ? data.Tanggal_Perkawinan.split('T')[0] : '',
+                'kewarganegaraan': data.Kewarganegaraan,
+                'statusAnggota': data.Status_Anggota,
+                'noPaspor': data.No_Paspor !== '-' ? data.No_Paspor : '',
+                'nikitap': data.NIKITAP !== '-' ? data.NIKITAP : '',
+                'namaAyah': data.Nama_Ayah !== '-' ? data.Nama_Ayah : '',
+                'namaIbu': data.Nama_Ibu !== '-' ? data.Nama_Ibu : '',
+                'statusKekayaan': data.Status_Kekayaan,
+                'statusLPS': data.Status_LPS,
+                'statusKesehatan': data.Status_Kesehatan,
+                'sumberData': data.Sumber_Data !== '-' ? data.Sumber_Data : ''
+            };
+            
+            // Set nilai untuk setiap field
+            Object.entries(fields).forEach(([field, value]) => {
+                const element = document.getElementById(`${field}-${anggotaNumber}`);
+                if (element) {
+                    element.value = value;
+                    
+                    // Trigger change event untuk update UI
+                    if (field === 'statusAnggota') {
+                        updateStatusCard(anggotaNumber);
+                    }
+                    if (field === 'hubunganKeluarga') {
+                        element.dispatchEvent(new Event('change'));
+                    }
+                }
+            });
+            
+            // Jika ini kepala keluarga, simpan datanya
+            if (data.Status_Hubungan_Keluarga === 'Kepala Keluarga') {
+                kepalaKeluargaData = {
+                    id: anggotaNumber,
+                    nama: data.Nama,
+                    jenisKelamin: data.Jenis_Kelamin
+                };
+            }
+        }
+        
+        function resetForm() {
+            // Reset semua state
+            anggotaCounter = 0;
+            keluargaData = {};
+            isEditMode = false;
+            existingKKData = null;
+            kepalaKeluargaData = {};
+            
+            // Clear semua input
+            document.getElementById('noKKSearch').value = '';
+            document.getElementById('petugasInput').value = '';
+            document.getElementById('tanggalInput').value = new Date().toISOString().split('T')[0];
+            document.getElementById('anggotaContainer').innerHTML = '';
+            
+            // Sembunyikan semua section kecuali search
+            document.getElementById('petugasInputSection').classList.add('hidden');
+            document.getElementById('dataSection').classList.add('hidden');
+            document.getElementById('viewDataSection').classList.add('hidden');
+            
+            showNotification('Form telah direset. Silakan masukkan Nomor KK baru.', 'success');
+        }
+    </script>
+</body>
+</html>
