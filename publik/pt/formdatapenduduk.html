@@ -172,6 +172,43 @@ input,select{
   <strong>Info Keluarga</strong><br>
   No KK: <span id="infoNoKK"></span><br>
   Kode Keluarga: <span id="infoKode">Auto</span>
+  <hr style="margin:12px 0">
+
+<div class="grid">
+  <div>
+    <label>Alamat</label>
+    <input id="alamat">
+  </div>
+  <div>
+    <label>RT</label>
+    <input id="rt">
+  </div>
+  <div>
+    <label>RW</label>
+    <input id="rw">
+  </div>
+  <div>
+    <label>Kelurahan</label>
+    <input id="kelurahan" value="Padang Terubuk">
+  </div>
+  <div>
+    <label>Kecamatan</label>
+    <input id="kecamatan" value="Senapelan">
+  </div>
+  <div>
+    <label>Kota</label>
+    <input id="kota" value="Pekanbaru">
+  </div>
+  <div>
+    <label>Provinsi</label>
+    <input id="provinsi" value="Riau">
+  </div>
+  <div>
+    <label>Petugas</label>
+    <input id="petugas" value="Admin Kelurahan">
+  </div>
+</div>
+
 </div>
 
 <!-- KARTU ANGGOTA -->
@@ -343,7 +380,7 @@ function tambahAnggota(){
     <div class="grid">
       <div>
         <label>Status Hubungan Keluarga</label>
-        <select>
+        <select onchange="handleHubungan(this)">
           <option>-</option>
           <option>Kepala Keluarga</option>
           <option>Istri</option>
@@ -570,18 +607,20 @@ async function simpanData(){
   });
 
   const payload = {
-    action: "simpanKK",
-    no_kk: document.getElementById('noKK').value,
-    alamat: "-",
-    rt: "-",
-    rw: "-",
-    kelurahan: "Padang Terubuk",
-    kecamatan: "Senapelan",
-    kota: "Pekanbaru",
-    provinsi: "Riau",
-    anggota: anggota,
-    petugas: "Admin Kelurahan"
-  };
+  action: "simpanKK",
+  no_kk: document.getElementById('noKK').value,
+
+  alamat: document.getElementById('alamat').value,
+  rt: document.getElementById('rt').value,
+  rw: document.getElementById('rw').value,
+  kelurahan: document.getElementById('kelurahan').value,
+  kecamatan: document.getElementById('kecamatan').value,
+  kota: document.getElementById('kota').value,
+  provinsi: document.getElementById('provinsi').value,
+  petugas: document.getElementById('petugas').value,
+
+  anggota: anggota
+};
 
   const res = await fetch(WEB_APP_URL,{
     method:"POST",
@@ -626,6 +665,54 @@ function toInputDate(val){
 
   return "";
 }</script>
+
+<script>
+function getOrtu(){
+  let ayah = "";
+  let ibu  = "";
+
+  document.querySelectorAll('.card').forEach(card=>{
+    const inputs = card.querySelectorAll('input, select');
+    const nama = inputs[0].value;
+    const hubungan = inputs[9].value; // ⚠️ index ASLI kamu
+
+    if(hubungan === "Kepala Keluarga") ayah = nama;
+    if(hubungan === "Istri") ibu = nama;
+  });
+
+  return { ayah, ibu };
+}
+
+function handleHubungan(select){
+  if(!editMode) return;
+
+  const card = select.closest('.card');
+  const inputs = card.querySelectorAll('input, select');
+
+  const ayahInput = inputs[15]; // Nama Ayah
+  const ibuInput  = inputs[16]; // Nama Ibu
+
+  if(select.value === "Anak"){
+    const ortu = getOrtu();
+
+    if(!ortu.ayah || !ortu.ibu){
+      alert("Data Kepala Keluarga dan Istri harus ada terlebih dahulu");
+      select.value = "-";
+      return;
+    }
+
+    ayahInput.value = ortu.ayah;
+    ibuInput.value  = ortu.ibu;
+
+    ayahInput.readOnly = true;
+    ibuInput.readOnly  = true;
+  } else {
+    ayahInput.readOnly = false;
+    ibuInput.readOnly  = false;
+  }
+}
+</script>
+
 
 
 </body>
