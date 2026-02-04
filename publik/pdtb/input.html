@@ -15,6 +15,7 @@
             --accent-blue: #60a5fa;
             --success-green: #10b981;
             --warning-orange: #f59e0b;
+            --danger-red: #ef4444;
         }
         
         body {
@@ -155,7 +156,7 @@
         
         .required-field::after {
             content: " *";
-            color: #ef4444;
+            color: var(--danger-red);
         }
         
         .info-box {
@@ -315,6 +316,11 @@
             font-size: 0.85rem;
             color: #6b7280;
             margin-top: 5px;
+        }
+        
+        .form-check-input:checked {
+            background-color: var(--secondary-blue);
+            border-color: var(--secondary-blue);
         }
     </style>
 </head>
@@ -554,7 +560,6 @@
                             <option value="Banten">Banten</option>
                             <option value="DI Yogyakarta">DI Yogyakarta</option>
                             <option value="Bali">Bali</option>
-                            <!-- Tambahkan provinsi lain sesuai kebutuhan -->
                         </select>
                     </div>
                     
@@ -741,18 +746,16 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script>
+        // Configuration - GANTI DENGAN DATA ANDA
+        const CONFIG = {
+            WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxaFi_SYb6hr0HBgPn_FlexA-lIeIsLoWQC2-i8rAK12ysSCyEDGd2gQ_kA2ghkQ7DRLw/exec'
+        };
+
         // Global Variables
         let currentStep = 1;
         let members = [];
         let totalMembers = 0;
         let familyData = {};
-        
-        // Initialize date pickers
-        flatpickr(".date-picker", {
-            dateFormat: "Y-m-d",
-            locale: "id",
-            maxDate: "today"
-        });
         
         // Initialize
         document.addEventListener('DOMContentLoaded', function() {
@@ -761,11 +764,25 @@
             if (savedKK) {
                 document.getElementById('noKK').value = savedKK;
                 localStorage.removeItem('noKKBaru');
+                // Auto-check KK
+                setTimeout(() => checkKK(), 500);
             }
             
             // Add first member card (Kepala Keluarga)
             addMemberCard(true);
+            
+            // Initialize date pickers
+            initializeDatePickers();
         });
+        
+        // Initialize date pickers
+        function initializeDatePickers() {
+            flatpickr(".date-picker", {
+                dateFormat: "Y-m-d",
+                locale: "id",
+                maxDate: "today"
+            });
+        }
         
         // Step Navigation
         function nextStep(step) {
@@ -833,16 +850,25 @@
             
             if (!namaPetugas) {
                 alert('Pilih nama petugas terlebih dahulu');
+                document.getElementById('namaPetugas').focus();
                 return false;
             }
             
             if (!sumberData) {
                 alert('Pilih sumber data terlebih dahulu');
+                document.getElementById('sumberData').focus();
                 return false;
             }
             
             if (!noKK || noKK.length !== 16) {
                 alert('Nomor KK harus 16 digit');
+                document.getElementById('noKK').focus();
+                return false;
+            }
+            
+            // Check if KK already exists
+            if (document.getElementById('kkWarning').style.display === 'block') {
+                alert('Nomor KK sudah terdaftar. Silakan edit data yang sudah ada.');
                 return false;
             }
             
@@ -850,15 +876,46 @@
         }
         
         function validateStep2() {
-            const requiredFields = ['alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kotaKabupaten', 'provinsi', 'kodePos'];
+            const requiredFields = [
+                {id: 'alamat', name: 'Alamat Lengkap'},
+                {id: 'rt', name: 'RT'},
+                {id: 'rw', name: 'RW'},
+                {id: 'kelurahan', name: 'Kelurahan'},
+                {id: 'kecamatan', name: 'Kecamatan'},
+                {id: 'kotaKabupaten', name: 'Kota/Kabupaten'},
+                {id: 'provinsi', name: 'Provinsi'},
+                {id: 'kodePos', name: 'Kode Pos'}
+            ];
             
             for (const field of requiredFields) {
-                const element = document.getElementById(field);
+                const element = document.getElementById(field.id);
                 if (!element.value.trim()) {
-                    alert(`Field ${element.previousElementSibling.textContent} harus diisi`);
+                    alert(`Field "${field.name}" harus diisi`);
                     element.focus();
                     return false;
                 }
+            }
+            
+            // Validate RT/RW format
+            const rt = document.getElementById('rt').value;
+            const rw = document.getElementById('rw').value;
+            if (!/^\d{3}$/.test(rt)) {
+                alert('RT harus 3 digit angka (contoh: 001)');
+                document.getElementById('rt').focus();
+                return false;
+            }
+            if (!/^\d{3}$/.test(rw)) {
+                alert('RW harus 3 digit angka (contoh: 002)');
+                document.getElementById('rw').focus();
+                return false;
+            }
+            
+            // Validate Kode Pos
+            const kodePos = document.getElementById('kodePos').value;
+            if (!/^\d{5}$/.test(kodePos)) {
+                alert('Kode Pos harus 5 digit angka');
+                document.getElementById('kodePos').focus();
+                return false;
             }
             
             return true;
@@ -878,9 +935,37 @@
             }
             
             // Validate each member
-            for (const member of members) {
-                if (!member.namaLengkap || !member.nik) {
-                    alert('Semua anggota harus memiliki nama dan NIK');
+            for (let i = 0; i < members.length; i++) {
+                const member = members[i];
+                const memberNumber = i + 1;
+                
+                if (!member.namaLengkap || !member.namaLengkap.trim()) {
+                    alert(`Anggota ${memberNumber}: Nama Lengkap harus diisi`);
+                    document.getElementById(`nama${memberNumber}`).focus();
+                    return false;
+                }
+                
+                if (!member.nik || member.nik.length !== 16) {
+                    alert(`Anggota ${memberNumber}: NIK harus 16 digit`);
+                    document.getElementById(`nik${memberNumber}`).focus();
+                    return false;
+                }
+                
+                if (!member.jenisKelamin) {
+                    alert(`Anggota ${memberNumber}: Jenis Kelamin harus dipilih`);
+                    document.getElementById(`gender${memberNumber}`).focus();
+                    return false;
+                }
+                
+                if (!member.agama) {
+                    alert(`Anggota ${memberNumber}: Agama harus dipilih`);
+                    document.getElementById(`agama${memberNumber}`).focus();
+                    return false;
+                }
+                
+                if (!member.tanggalLahir) {
+                    alert(`Anggota ${memberNumber}: Tanggal Lahir harus diisi`);
+                    document.getElementById(`tanggalLahir${memberNumber}`).focus();
                     return false;
                 }
             }
@@ -900,23 +985,20 @@
             showLoading();
             
             try {
-                // Simulate API call
-                setTimeout(() => {
-                    // For demo: 30% chance KK exists
-                    const exists = Math.random() < 0.3;
-                    
-                    if (exists) {
-                        document.getElementById('kkWarning').style.display = 'block';
-                        document.getElementById('kkSuccess').style.display = 'none';
-                        document.getElementById('btnNext1').disabled = true;
-                    } else {
-                        document.getElementById('kkWarning').style.display = 'none';
-                        document.getElementById('kkSuccess').style.display = 'block';
-                        document.getElementById('btnNext1').disabled = false;
-                    }
-                    
-                    hideLoading();
-                }, 1000);
+                const response = await fetch(`${CONFIG.WEB_APP_URL}?action=checkKK&noKK=${noKK}`);
+                const data = await response.json();
+                
+                if (data.found) {
+                    document.getElementById('kkWarning').style.display = 'block';
+                    document.getElementById('kkSuccess').style.display = 'none';
+                    document.getElementById('btnNext1').disabled = true;
+                } else {
+                    document.getElementById('kkWarning').style.display = 'none';
+                    document.getElementById('kkSuccess').style.display = 'block';
+                    document.getElementById('btnNext1').disabled = false;
+                }
+                
+                hideLoading();
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -946,6 +1028,9 @@
                 provinsi: document.getElementById('provinsi').value,
                 kodePos: document.getElementById('kodePos').value
             };
+            
+            // Collect all member data
+            collectMemberData();
         }
         
         // Add Member Card
@@ -1397,48 +1482,6 @@
             }
         }
         
-        // Show summary
-        function showSummary() {
-            // Collect all member data
-            collectMemberData();
-            
-            // Update family summary
-            document.getElementById('summaryData').innerHTML = `
-                <div class="col-md-6">
-                    <p><strong>Nomor KK:</strong> ${familyData.noKK}</p>
-                    <p><strong>Alamat:</strong> ${familyData.alamat}</p>
-                    <p><strong>RT/RW:</strong> ${familyData.rt}/${familyData.rw}</p>
-                    <p><strong>Kelurahan:</strong> ${familyData.kelurahan}</p>
-                </div>
-                <div class="col-md-6">
-                    <p><strong>Kecamatan:</strong> ${familyData.kecamatan}</p>
-                    <p><strong>Kota/Kab:</strong> ${familyData.kotaKabupaten}</p>
-                    <p><strong>Provinsi:</strong> ${familyData.provinsi}</p>
-                    <p><strong>Kode Pos:</strong> ${familyData.kodePos}</p>
-                </div>
-            `;
-            
-            // Update members summary
-            let membersHTML = '';
-            members.forEach((member, index) => {
-                membersHTML += `
-                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
-                        <div>
-                            <strong>${index + 1}. ${member.namaLengkap}</strong>
-                            <div class="text-muted small">
-                                ${member.statusHubungan} • ${member.nik} • ${member.jenisKelamin}
-                            </div>
-                        </div>
-                        <span class="badge bg-${member.statusAnggota === 'Hidup' ? 'success' : 'secondary'}">
-                            ${member.statusAnggota}
-                        </span>
-                    </div>
-                `;
-            });
-            document.getElementById('summaryMembers').innerHTML = membersHTML;
-            document.getElementById('totalMembers').textContent = members.length;
-        }
-        
         // Collect member data from form
         function collectMemberData() {
             members = [];
@@ -1475,6 +1518,57 @@
             }
         }
         
+        // Show summary
+        function showSummary() {
+            // Collect all member data
+            collectMemberData();
+            
+            // Update family summary
+            document.getElementById('summaryData').innerHTML = `
+                <div class="col-md-6">
+                    <p><strong>Nomor KK:</strong> ${familyData.noKK}</p>
+                    <p><strong>Alamat:</strong> ${familyData.alamat}</p>
+                    <p><strong>RT/RW:</strong> ${familyData.rt}/${familyData.rw}</p>
+                    <p><strong>Kelurahan:</strong> ${familyData.kelurahan}</p>
+                    <p><strong>Petugas:</strong> ${familyData.namaPetugas}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Kecamatan:</strong> ${familyData.kecamatan}</p>
+                    <p><strong>Kota/Kab:</strong> ${familyData.kotaKabupaten}</p>
+                    <p><strong>Provinsi:</strong> ${familyData.provinsi}</p>
+                    <p><strong>Kode Pos:</strong> ${familyData.kodePos}</p>
+                    <p><strong>Sumber Data:</strong> ${familyData.sumberData}</p>
+                </div>
+            `;
+            
+            // Update members summary
+            let membersHTML = '';
+            members.forEach((member, index) => {
+                const statusClass = {
+                    'Hidup': 'bg-success',
+                    'Meninggal': 'bg-danger',
+                    'Pindah': 'bg-secondary',
+                    'Pisah KK': 'bg-warning'
+                }[member.statusAnggota] || 'bg-secondary';
+                
+                membersHTML += `
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div>
+                            <strong>${index + 1}. ${member.namaLengkap}</strong>
+                            <div class="text-muted small">
+                                ${member.statusHubungan} • ${member.nik} • ${member.jenisKelamin}
+                            </div>
+                        </div>
+                        <span class="badge ${statusClass}">
+                            ${member.statusAnggota}
+                        </span>
+                    </div>
+                `;
+            });
+            document.getElementById('summaryMembers').innerHTML = membersHTML;
+            document.getElementById('totalMembers').textContent = members.length;
+        }
+        
         // Submit data
         async function submitData() {
             // Validate checkboxes
@@ -1499,25 +1593,32 @@
             showLoading();
             
             try {
-                // Simulate API call
-                setTimeout(() => {
-                    // Generate family ID
-                    const familyId = `KK-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`;
-                    
+                const response = await fetch(CONFIG.WEB_APP_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'saveFamily',
+                        familyData: submitData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
                     // Show success modal
-                    document.getElementById('generatedFamilyId').textContent = familyId;
+                    document.getElementById('generatedFamilyId').textContent = result.familyId || 'KK-001';
                     document.getElementById('saveTimestamp').textContent = new Date().toLocaleString('id-ID');
                     document.getElementById('totalMembers').textContent = members.length;
                     
                     const successModal = new bootstrap.Modal(document.getElementById('successModal'));
                     successModal.show();
-                    
-                    hideLoading();
-                    
-                    // In real implementation, save to Google Apps Script
-                    // await saveToGoogleSheets(submitData);
-                    
-                }, 2000);
+                } else {
+                    alert('Gagal menyimpan data: ' + (result.error || 'Unknown error'));
+                }
+                
+                hideLoading();
                 
             } catch (error) {
                 console.error('Error:', error);
@@ -1538,25 +1639,6 @@
         
         function hideLoading() {
             document.getElementById('loadingOverlay').style.display = 'none';
-        }
-        
-        // Real implementation for saving to Google Sheets
-        async function saveToGoogleSheets(data) {
-            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxaFi_SYb6hr0HBgPn_FlexA-lIeIsLoWQC2-i8rAK12ysSCyEDGd2gQ_kA2ghkQ7DRLw/exec';
-            
-            const response = await fetch(WEB_APP_URL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'saveFamily',
-                    familyData: data
-                })
-            });
-            
-            const result = await response.json();
-            return result;
         }
     </script>
 </body>
