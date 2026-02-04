@@ -1507,16 +1507,7 @@
                 
                 
                 // Send data to Google Apps Script
-                const response = await fetch(CONFIG.WEB_APP_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'saveFamily',
-                        familyData: submitData
-                    })
-                });
+                const response = await fetch(`${CONFIG.WEB_APP_URL}?action=saveFamily&data=${encodeURIComponent(JSON.stringify(submitData))}`);
                 
                 const result = await response.json();
                 console.log('Save response:', result);
