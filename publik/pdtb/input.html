@@ -1440,56 +1440,67 @@
         
         // Submit data - SYNC DENGAN Code.gs (menggunakan GET method untuk GitHub Pages)
         async function submitData() {
-            // Collect final data
-            collectMemberData();
-            
-            const submitData = {
-                family: familyData,
-                anggota: members
-            };
-            
-            // Debug log
-            console.log('Data to submit:', submitData);
-            
-            showLoading();
-            
-            try {
-                // METHOD 1: GET Request (bekerja untuk GitHub Pages)
-                const dataStr = encodeURIComponent(JSON.stringify(submitData));
-                const url = `${CONFIG.WEB_APP_URL}?action=saveFamily&data=${dataStr}`;
+    // Collect final data
+    collectMemberData();
+    
+    const submitData = {
+        family: familyData,
+        anggota: members
+    };
+    
+    console.log('Data to submit:', submitData);
+    
+    showLoading();
+    
+    try {
+        // METHOD 1: JSONP dengan callback (bekerja untuk GitHub Pages)
+        const dataStr = encodeURIComponent(JSON.stringify(submitData));
+        const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2);
+        
+        // Buat script element untuk JSONP
+        return new Promise((resolve, reject) => {
+            window[callbackName] = function(response) {
+                // Cleanup
+                delete window[callbackName];
+                document.body.removeChild(script);
                 
-                console.log('Sending to URL:', url);
+                hideLoading();
                 
-                const response = await fetch(url, {
-                    method: 'GET',
-                    mode: 'no-cors' // Important for GitHub Pages
-                });
-                
-                // Parse response
-                const result = await response.json();
-                console.log('Response:', result);
-                
-                if (result.success) {
+                if (response.success) {
                     // Show success modal
-                    document.getElementById('generatedFamilyId').textContent = result.familyId || 'KK-001';
+                    document.getElementById('generatedFamilyId').textContent = response.familyId || 'KK-001';
                     document.getElementById('saveTimestamp').textContent = new Date().toLocaleString('id-ID');
                     document.getElementById('totalMembers').textContent = members.length;
                     
                     const successModal = new bootstrap.Modal(document.getElementById('successModal'));
                     successModal.show();
+                    resolve(response);
                 } else {
-                    alert('Gagal menyimpan data: ' + (result.error || 'Unknown error'));
+                    alert('Gagal menyimpan data: ' + (response.error || 'Unknown error'));
+                    reject(response);
                 }
-                
+            };
+            
+            // Create script tag untuk JSONP
+            const script = document.createElement('script');
+            script.src = `${CONFIG.WEB_APP_URL}?action=saveFamily&data=${dataStr}&callback=${callbackName}`;
+            script.onerror = function() {
+                delete window[callbackName];
+                document.body.removeChild(script);
                 hideLoading();
-                
-            } catch (error) {
-                console.error('Error saving data:', error);
-                
-                // Fallback: Try with iframe method (bekerja untuk CORS)
-                tryFallbackMethod(submitData);
-            }
-        }
+                alert('Gagal terhubung ke server. Coba lagi.');
+                reject(new Error('Network error'));
+            };
+            
+            document.body.appendChild(script);
+        });
+        
+    } catch (error) {
+        console.error('Error:', error);
+        hideLoading();
+        alert('Terjadi kesalahan: ' + error.message);
+    }
+}
         
         // Fallback method menggunakan iframe
         function tryFallbackMethod(submitData) {
