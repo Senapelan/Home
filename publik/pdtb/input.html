@@ -773,7 +773,7 @@
     <script>
         // Configuration - SYNC DENGAN Code.gs ANDA
         const CONFIG = {
-            WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxQUOCzTeyo1ZUgTbR8idVKvtluoipz_U0-N1VmPtKsjgIhJscMx6Qe1tzbShV7MkbRqw/exec'
+            WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbw9tqN1y5EW7MmN0WqjRhQhtvWAfAHbt1p1rYYAZ5qe9aJZjfZXvVsopiGNJArhE1QdZQ/exec'
         };
 
         // Global Variables
@@ -1586,39 +1586,32 @@ async function submitData() {
     
     showLoading();
     
-    // Collect final data with proper structure
+    // Collect final data
     collectMemberData();
     
     const submitData = {
-        action: 'saveFamily',
         familyData: familyData,
         anggota: members
     };
     
     console.log('Data to submit:', submitData);
-    console.log('Web App URL:', CONFIG.WEB_APP_URL);
     
     try {
-        // ===== METODE 1: Menggunakan JSONP via GET =====
-        // Ini adalah metode paling kompatibel dengan GitHub Pages
+        // Encode data untuk URL
         const dataStr = encodeURIComponent(JSON.stringify(submitData));
         const url = `${CONFIG.WEB_APP_URL}?action=saveFamily&data=${dataStr}`;
         
-        console.log('Trying URL:', url);
+        console.log('Sending GET request to:', url);
         
-        const response = await fetch(url, {
-            method: 'GET',
-            headers: {
-                'Accept': 'application/json'
-            }
-        });
+        // Gunakan fetch sederhana
+        const response = await fetch(url);
         
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP error: ${response.status}`);
         }
         
         const result = await response.json();
-        console.log('Response:', result);
+        console.log('Server response:', result);
         
         if (result.success) {
             // Show success modal
@@ -1629,34 +1622,18 @@ async function submitData() {
             const successModal = new bootstrap.Modal(document.getElementById('successModal'));
             successModal.show();
             
-            // Reset form after successful submission
+            // Reset form
             setTimeout(() => {
                 resetForm();
             }, 3000);
             
         } else {
-            showError(result.error || 'Gagal menyimpan data');
+            alert('Error: ' + (result.error || 'Gagal menyimpan data'));
         }
         
     } catch (error) {
-        console.error('Error Method 1:', error);
-        
-        // ===== METODE 2: Menggunakan Form Submission =====
-        try {
-            console.log('Trying Method 2: Form submission');
-            await submitDataFormMethod(submitData);
-        } catch (formError) {
-            console.error('Error Method 2:', formError);
-            
-            // ===== METODE 3: Menggunakan Google Forms workaround =====
-            try {
-                console.log('Trying Method 3: Workaround method');
-                await submitDataWorkaround(submitData);
-            } catch (workaroundError) {
-                console.error('Error Method 3:', workaroundError);
-                showError('Tidak dapat terhubung ke server. Coba lagi atau periksa koneksi internet.');
-            }
-        }
+        console.error('Error:', error);
+        alert('Terjadi kesalahan: ' + error.message);
     } finally {
         hideLoading();
         isSubmitting = false;
