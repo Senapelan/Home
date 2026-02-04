@@ -259,6 +259,16 @@
             background-color: #ffe6e6;
             color: #e74c3c;
         }
+
+        .kondisi-sedimen {
+            background-color: #ffe6e6;
+            color: #e74c3c;
+        }
+
+        .kondisi-tersumbat {
+            background-color: #ffe6e6;
+            color: #e74c3c;
+        }
         
         .status {
             padding: 5px 12px;
@@ -461,6 +471,8 @@
                     <option value="Baik">Baik</option>
                     <option value="Sedang">Sedang</option>
                     <option value="Rusak">Rusak</option>
+                    <option value="Sedimen">Sedimen</option>
+                    <option value="Tersumbat">Tersumbat</option>
                 </select>
                 <select id="status-filter" class="filter-select">
                     <option value="">Semua Status</option>
@@ -499,6 +511,22 @@
                 <div class="summary-text">
                     <h3 id="rusak-count">0</h3>
                     <p>Kondisi Rusak</p>
+                </div>
+                <div class="summary-card summary-3">
+                <div class="summary-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="summary-text">
+                    <h3 id="sedimen-count">0</h3>
+                    <p>Kondisi sedimen</p>
+                </div>
+                    <div class="summary-card summary-3">
+                <div class="summary-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="summary-text">
+                    <h3 id="tersumbat-count">0</h3>
+                    <p>Kondisi tersumbat</p>
                 </div>
             </div>
             <div class="summary-card summary-4">
@@ -643,6 +671,8 @@
             
             const baikCount = allData.filter(item => item.KONDISI === 'Baik').length;
             const rusakCount = allData.filter(item => item.KONDISI === 'Rusak').length;
+            const sedimenCount = allData.filter(item => item.KONDISI === 'sedimen').length;
+            const tersumbatCount = allData.filter(item => item.KONDISI === 'tersumbat').length;
             
             // Menghitung jumlah pelapor unik yang aktif
             const pelaporAktif = [...new Set(allData
@@ -652,6 +682,8 @@
             
             document.getElementById('baik-count').textContent = baikCount;
             document.getElementById('rusak-count').textContent = rusakCount;
+            document.getElementById('sedimen-count').textContent = sedimenCount;
+            document.getElementById('tersumbat-count').textContent = tersumbatCount;
             document.getElementById('pelapor-count').textContent = pelaporAktif;
         }
         
@@ -738,6 +770,8 @@
                 if (item.KONDISI === 'Baik') kondisiClass = 'kondisi-baik';
                 else if (item.KONDISI === 'Sedang') kondisiClass = 'kondisi-sedang';
                 else if (item.KONDISI === 'Rusak') kondisiClass = 'kondisi-rusak';
+                else if (item.KONDISI === 'sedimen') kondisiClass = 'kondisi-sedimen';
+                else if (item.KONDISI === 'tersumbat') kondisiClass = 'kondisi-tersumbat';
                 
                 // Menentukan kelas CSS untuk status
                 let statusClass = '';
