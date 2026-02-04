@@ -322,6 +322,17 @@
         .uppercase-input {
             text-transform: uppercase;
         }
+        
+        /* Debug info */
+        .debug-info {
+            font-size: 0.8rem;
+            color: #666;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -662,16 +673,21 @@
                     </div>
                 </div>
 
+                <!-- Debug Info (Optional) -->
+                <div class="debug-info" id="debugInfo">
+                    <strong>Debug Data:</strong> <span id="debugData"></span>
+                </div>
+
                 <!-- Confirmation Checkboxes -->
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="confirmData">
+                    <input class="form-check-input" type="checkbox" id="confirmData" checked>
                     <label class="form-check-label" for="confirmData">
                         Saya telah memverifikasi semua data di atas sudah benar dan sesuai
                     </label>
                 </div>
                 
                 <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="confirmPrivacy">
+                    <input class="form-check-input" type="checkbox" id="confirmPrivacy" checked>
                     <label class="form-check-label" for="confirmPrivacy">
                         Saya setuju data ini disimpan sesuai peraturan perlindungan data pribadi
                     </label>
@@ -721,6 +737,35 @@
                     <button type="button" class="btn btn-outline-primary" onclick="printData()">
                         <i class="bi bi-printer me-2"></i>Cetak Data
                     </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Error -->
+    <div class="modal fade" id="errorModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i>Error!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="errorMessage">Terjadi kesalahan saat menyimpan data.</p>
+                    <div class="mt-3">
+                        <button class="btn btn-outline-secondary btn-sm" onclick="toggleDebugInfo()">
+                            <i class="bi bi-bug me-1"></i>Show Debug Info
+                        </button>
+                    </div>
+                    <div class="debug-info mt-3" id="modalDebugInfo" style="display: none;">
+                        <strong>Error Details:</strong>
+                        <pre id="errorDetails" class="mt-2 small"></pre>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 </div>
             </div>
         </div>
@@ -832,11 +877,6 @@
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
         
-        // Step Validation - REMOVED ALL VALIDATION
-        function validateStep(step) {
-            return true; // No validation required
-        }
-        
         // Check KK in Database
         async function checkKK() {
             const noKK = document.getElementById('noKK').value;
@@ -892,6 +932,13 @@
                 provinsi: document.getElementById('provinsi').value || '',
                 kodePos: document.getElementById('kodePos').value || ''
             };
+            
+            // Convert to uppercase
+            familyData.alamat = familyData.alamat.toUpperCase();
+            familyData.kelurahan = familyData.kelurahan.toUpperCase();
+            familyData.kecamatan = familyData.kecamatan.toUpperCase();
+            familyData.kotaKabupaten = familyData.kotaKabupaten.toUpperCase();
+            familyData.provinsi = familyData.provinsi.toUpperCase();
         }
         
         // Add Member Card
@@ -1437,50 +1484,31 @@
             document.getElementById('totalMembers').textContent = members.length;
         }
         
-        // Submit data
+        // Submit data with error handling
         async function submitData() {
-            // Validate checkboxes (optional)
-            if (!document.getElementById('confirmData').checked) {
-                if (!confirm('Anda belum mencentang verifikasi data. Lanjutkan penyimpanan?')) {
-                    return;
-                }
-            }
-            
-            if (!document.getElementById('confirmPrivacy').checked) {
-                if (!confirm('Anda belum menyetujui peraturan perlindungan data. Lanjutkan penyimpanan?')) {
-                    return;
-                }
-            }
-            
             // Collect final data
             collectMemberData();
-            
-            // Check if at least one member has data
-            const hasData = members.some(member => 
-                member.namaLengkap || member.nik || member.tempatLahir
-            );
-            
-            if (!hasData) {
-                if (!confirm('Data anggota keluarga masih kosong. Simpan data keluarga saja?')) {
-                    return;
-                }
-            }
             
             const submitData = {
                 family: familyData,
                 anggota: members
             };
             
-            // Convert all family text to uppercase
-            submitData.family.alamat = submitData.family.alamat.toUpperCase();
-            submitData.family.kelurahan = submitData.family.kelurahan.toUpperCase();
-            submitData.family.kecamatan = submitData.family.kecamatan.toUpperCase();
-            submitData.family.kotaKabupaten = submitData.family.kotaKabupaten.toUpperCase();
-            submitData.family.provinsi = submitData.family.provinsi.toUpperCase();
+            // Show debug data (optional)
+            document.getElementById('debugData').textContent = JSON.stringify(submitData, null, 2);
+            document.getElementById('debugInfo').style.display = 'block';
+            
+            console.log('Data to submit:', submitData);
             
             showLoading();
             
             try {
+                // First test the connection
+                const testResponse = await fetch(CONFIG.WEB_APP_URL + '?action=testConnection');
+                const testData = await testResponse.json();
+                console.log('Connection test:', testData);
+                
+                // Send data to Google Apps Script
                 const response = await fetch(CONFIG.WEB_APP_URL, {
                     method: 'POST',
                     headers: {
@@ -1493,6 +1521,7 @@
                 });
                 
                 const result = await response.json();
+                console.log('Save response:', result);
                 
                 if (result.success) {
                     // Show success modal
@@ -1503,16 +1532,35 @@
                     const successModal = new bootstrap.Modal(document.getElementById('successModal'));
                     successModal.show();
                 } else {
-                    alert('Gagal menyimpan data: ' + (result.error || 'Unknown error'));
+                    // Show error details
+                    showError('Gagal menyimpan data: ' + (result.error || 'Unknown error'), result);
                 }
                 
                 hideLoading();
                 
             } catch (error) {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan saat menyimpan data');
+                console.error('Error saving data:', error);
+                showError('Terjadi kesalahan saat menyimpan data: ' + error.message, error);
                 hideLoading();
             }
+        }
+        
+        // Show error modal with details
+        function showError(message, errorDetails = null) {
+            document.getElementById('errorMessage').textContent = message;
+            
+            if (errorDetails) {
+                document.getElementById('errorDetails').textContent = JSON.stringify(errorDetails, null, 2);
+            }
+            
+            const errorModal = new bootstrap.Modal(document.getElementById('errorModal'));
+            errorModal.show();
+        }
+        
+        // Toggle debug info
+        function toggleDebugInfo() {
+            const debugInfo = document.getElementById('modalDebugInfo');
+            debugInfo.style.display = debugInfo.style.display === 'none' ? 'block' : 'none';
         }
         
         // Print data
