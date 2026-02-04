@@ -1,1 +1,1025 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Drainase Kelurahan</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 25px 0;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .logo i {
+            font-size: 2.5rem;
+            color: #3498db;
+            background-color: white;
+            padding: 15px;
+            border-radius: 50%;
+        }
+        
+        .logo-text h1 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .logo-text p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .last-update {
+            background-color: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+        }
+        
+        .controls {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .search-box {
+            flex-grow: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 1px solid #ddd;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .search-box input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .search-box i {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #7f8c8d;
+        }
+        
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .filter-select {
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: white;
+            color: #333;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s;
+        }
+        
+        .filter-select:focus {
+            border-color: #3498db;
+        }
+        
+        .data-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        
+        .summary-card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            transition: transform 0.3s;
+        }
+        
+        .summary-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .summary-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+        
+        .summary-1 .summary-icon {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+        
+        .summary-2 .summary-icon {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+        }
+        
+        .summary-3 .summary-icon {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .summary-4 .summary-icon {
+            background: linear-gradient(135deg, #f39c12, #d35400);
+        }
+        
+        .summary-text h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+        
+        .summary-text p {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        .table-container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: #2c3e50;
+            color: white;
+        }
+        
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        tbody tr {
+            border-bottom: 1px solid #eee;
+            transition: background-color 0.2s;
+        }
+        
+        tbody tr:hover {
+            background-color: #f9f9f9;
+        }
+        
+        td {
+            padding: 15px;
+        }
+        
+        .kondisi {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .kondisi-baik {
+            background-color: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .kondisi-sedang {
+            background-color: #fff9e6;
+            color: #f39c12;
+        }
+        
+        .kondisi-rusak {
+            background-color: #ffe6e6;
+            color: #e74c3c;
+        }
+        
+        .status {
+            padding: 5px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-align: center;
+            display: inline-block;
+        }
+        
+        .status-aktif {
+            background-color: #d5f4e6;
+            color: #27ae60;
+        }
+        
+        .status-tidak-aktif {
+            background-color: #ffe6e6;
+            color: #e74c3c;
+        }
+        
+        .foto-cell {
+            max-width: 100px;
+        }
+        
+        .foto-thumbnail {
+            width: 80px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .foto-thumbnail:hover {
+            transform: scale(1.5);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .modal-content img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        
+        .close-modal:hover {
+            color: #3498db;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .pagination button {
+            padding: 8px 15px;
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .pagination button:hover {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .pagination button.active {
+            background-color: #2c3e50;
+            color: white;
+            border-color: #2c3e50;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 40px;
+            font-size: 1.2rem;
+            color: #7f8c8d;
+        }
+        
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            color: #e74c3c;
+            background-color: #ffe6e6;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 20px;
+        }
+        
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-box {
+                min-width: 100%;
+            }
+            
+            .filters {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .table-container {
+                overflow-x: auto;
+            }
+            
+            table {
+                min-width: 800px;
+            }
+            
+            th, td {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-water"></i>
+                    <div class="logo-text">
+                        <h1>Data Drainase Kelurahan</h1>
+                        <p>Sistem Monitoring dan Pelaporan Saluran Drainase</p>
+                    </div>
+                </div>
+                <div class="last-update">
+                    <i class="fas fa-sync-alt"></i> Terakhir diperbarui: <span id="last-update-time">-</span>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="controls">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="search-input" placeholder="Cari data drainase...">
+            </div>
+            <div class="filters">
+                <select id="kondisi-filter" class="filter-select">
+                    <option value="">Semua Kondisi</option>
+                    <option value="Baik">Baik</option>
+                    <option value="Sedang">Sedang</option>
+                    <option value="Rusak">Rusak</option>
+                </select>
+                <select id="status-filter" class="filter-select">
+                    <option value="">Semua Status</option>
+                    <option value="Aktif">Aktif</option>
+                    <option value="Tidak Aktif">Tidak Aktif</option>
+                </select>
+                <select id="jenis-filter" class="filter-select">
+                    <option value="">Semua Jenis</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="data-summary">
+            <div class="summary-card summary-1">
+                <div class="summary-icon">
+                    <i class="fas fa-tint"></i>
+                </div>
+                <div class="summary-text">
+                    <h3 id="total-data">0</h3>
+                    <p>Total Data Drainase</p>
+                </div>
+            </div>
+            <div class="summary-card summary-2">
+                <div class="summary-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="summary-text">
+                    <h3 id="baik-count">0</h3>
+                    <p>Kondisi Baik</p>
+                </div>
+            </div>
+            <div class="summary-card summary-3">
+                <div class="summary-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </div>
+                <div class="summary-text">
+                    <h3 id="rusak-count">0</h3>
+                    <p>Kondisi Rusak</p>
+                </div>
+            </div>
+            <div class="summary-card summary-4">
+                <div class="summary-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <div class="summary-text">
+                    <h3 id="pelapor-count">0</h3>
+                    <p>Pelapor Aktif</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="table-container">
+            <div class="loading" id="loading-indicator">
+                <i class="fas fa-spinner fa-spin"></i> Memuat data drainase...
+            </div>
+            
+            <div class="error-message" id="error-message" style="display: none;">
+                <i class="fas fa-exclamation-circle"></i> 
+                <p id="error-text">Gagal memuat data. Silakan coba lagi nanti.</p>
+                <button onclick="loadData()" style="margin-top: 15px; padding: 10px 20px; background-color: #3498db; color: white; border: none; border-radius: 5px; cursor: pointer;">
+                    <i class="fas fa-redo"></i> Muat Ulang Data
+                </button>
+            </div>
+            
+            <div id="table-content" style="display: none;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>NO</th>
+                            <th>JENIS</th>
+                            <th>ALAMAT DRAINASE</th>
+                            <th>RT</th>
+                            <th>RW</th>
+                            <th>PANJANG</th>
+                            <th>LEBAR</th>
+                            <th>TINGGI</th>
+                            <th>KONDISI</th>
+                            <th>FOTO</th>
+                            <th>TITIK LOKASI</th>
+                            <th>NAMA PELAPOR</th>
+                            <th>STATUS PELAPOR</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Data akan dimuat di sini -->
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="no-data" id="no-data-message" style="display: none;">
+                <i class="fas fa-database"></i>
+                <p>Tidak ada data yang ditemukan.</p>
+            </div>
+        </div>
+        
+        <div class="pagination" id="pagination" style="display: none;">
+            <!-- Tombol pagination akan dibuat secara dinamis -->
+        </div>
+    </div>
+    
+    <div id="image-modal" class="modal">
+        <span class="close-modal" id="close-modal">&times;</span>
+        <div class="modal-content">
+            <img id="modal-image" src="" alt="Foto Drainase">
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Sistem Data Drainase Kelurahan. Data diambil dari Google Spreadsheet.</p>
+            <p>Spreadsheet ID: 1JkckxnrxFlsjFsiwE1wZJt3FB3pctm2zd1E2HS1NByI | Sheet: DRAINASE</p>
+        </div>
+    </footer>
 
+    <script>
+        // Konfigurasi Google Sheets
+        const SPREADSHEET_ID = '1JkckxnrxFlsjFsiwE1wZJt3FB3pctm2zd1E2HS1NByI';
+        const SHEET_NAME = 'DRAINASE';
+        const API_KEY = 'AIzaSyC0QJOIYYGgYk6XwcKzmstjIV1hj5gvnts'; // API key untuk demo (harap diganti dengan API key Anda)
+        
+        // Variabel global
+        let allData = [];
+        let filteredData = [];
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        
+        // Fungsi untuk memuat data dari Google Sheets
+        async function loadData() {
+            showLoading();
+            hideError();
+            hideTable();
+            
+            try {
+                // Membuat URL untuk mengambil data dari Google Sheets
+                const url = `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}/values/${SHEET_NAME}?key=${API_KEY}`;
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (!data.values || data.values.length === 0) {
+                    throw new Error('Tidak ada data ditemukan di spreadsheet');
+                }
+                
+                // Mengonversi data array menjadi array of objects
+                const headers = data.values[0];
+                allData = data.values.slice(1).map((row, index) => {
+                    const obj = {};
+                    headers.forEach((header, i) => {
+                        obj[header] = row[i] || '';
+                    });
+                    // Menambahkan ID unik untuk setiap baris
+                    obj.id = index + 1;
+                    return obj;
+                });
+                
+                // Memperbarui UI dengan data
+                updateSummary();
+                populateFilterOptions();
+                filterData();
+                updateLastUpdateTime();
+                
+                hideLoading();
+                showTable();
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showError(`Gagal memuat data: ${error.message}`);
+                hideLoading();
+            }
+        }
+        
+        // Fungsi untuk memperbarui ringkasan data
+        function updateSummary() {
+            document.getElementById('total-data').textContent = allData.length;
+            
+            const baikCount = allData.filter(item => item.KONDISI === 'Baik').length;
+            const rusakCount = allData.filter(item => item.KONDISI === 'Rusak').length;
+            
+            // Menghitung jumlah pelapor unik yang aktif
+            const pelaporAktif = [...new Set(allData
+                .filter(item => item.STATUS_PELAPOR === 'Aktif')
+                .map(item => item.NAMA_PELAPOR)
+            )].length;
+            
+            document.getElementById('baik-count').textContent = baikCount;
+            document.getElementById('rusak-count').textContent = rusakCount;
+            document.getElementById('pelapor-count').textContent = pelaporAktif;
+        }
+        
+        // Fungsi untuk mengisi opsi filter
+        function populateFilterOptions() {
+            const jenisFilter = document.getElementById('jenis-filter');
+            
+            // Mengumpulkan semua jenis unik dari data
+            const jenisSet = new Set();
+            allData.forEach(item => {
+                if (item.JENIS) {
+                    jenisSet.add(item.JENIS);
+                }
+            });
+            
+            // Menambahkan opsi filter berdasarkan jenis
+            jenisSet.forEach(jenis => {
+                const option = document.createElement('option');
+                option.value = jenis;
+                option.textContent = jenis;
+                jenisFilter.appendChild(option);
+            });
+        }
+        
+        // Fungsi untuk memfilter data berdasarkan kriteria pencarian
+        function filterData() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const kondisiFilter = document.getElementById('kondisi-filter').value;
+            const statusFilter = document.getElementById('status-filter').value;
+            const jenisFilter = document.getElementById('jenis-filter').value;
+            
+            filteredData = allData.filter(item => {
+                // Filter berdasarkan pencarian
+                const searchMatch = !searchTerm || 
+                    item.JENIS?.toLowerCase().includes(searchTerm) ||
+                    item.ALAMAT_DRAINASE?.toLowerCase().includes(searchTerm) ||
+                    item.RT?.toLowerCase().includes(searchTerm) ||
+                    item.RW?.toLowerCase().includes(searchTerm) ||
+                    item.NAMA_PELAPOR?.toLowerCase().includes(searchTerm);
+                
+                // Filter berdasarkan kondisi
+                const kondisiMatch = !kondisiFilter || item.KONDISI === kondisiFilter;
+                
+                // Filter berdasarkan status pelapor
+                const statusMatch = !statusFilter || item.STATUS_PELAPOR === statusFilter;
+                
+                // Filter berdasarkan jenis
+                const jenisMatch = !jenisFilter || item.JENIS === jenisFilter;
+                
+                return searchMatch && kondisiMatch && statusMatch && jenisMatch;
+            });
+            
+            // Reset ke halaman pertama setelah filter
+            currentPage = 1;
+            
+            // Memperbarui tabel
+            renderTable();
+        }
+        
+        // Fungsi untuk merender tabel dengan data yang difilter
+        function renderTable() {
+            const tableBody = document.getElementById('table-body');
+            tableBody.innerHTML = '';
+            
+            // Menghitung data untuk halaman saat ini
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageData = filteredData.slice(startIndex, endIndex);
+            
+            if (pageData.length === 0) {
+                document.getElementById('no-data-message').style.display = 'block';
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('no-data-message').style.display = 'none';
+            
+            // Membuat baris tabel untuk setiap data
+            pageData.forEach(item => {
+                const row = document.createElement('tr');
+                
+                // Menentukan kelas CSS untuk kondisi
+                let kondisiClass = '';
+                if (item.KONDISI === 'Baik') kondisiClass = 'kondisi-baik';
+                else if (item.KONDISI === 'Sedang') kondisiClass = 'kondisi-sedang';
+                else if (item.KONDISI === 'Rusak') kondisiClass = 'kondisi-rusak';
+                
+                // Menentukan kelas CSS untuk status
+                let statusClass = '';
+                if (item.STATUS_PELAPOR === 'Aktif') statusClass = 'status-aktif';
+                else if (item.STATUS_PELAPOR === 'Tidak Aktif') statusClass = 'status-tidak-aktif';
+                
+                row.innerHTML = `
+                    <td>${item.NO || item.id}</td>
+                    <td>${item.JENIS || '-'}</td>
+                    <td>${item.ALAMAT_DRAINASE || '-'}</td>
+                    <td>${item.RT || '-'}</td>
+                    <td>${item.RW || '-'}</td>
+                    <td>${item.PANJANG ? item.PANJANG + ' m' : '-'}</td>
+                    <td>${item.LEBAR ? item.LEBAR + ' m' : '-'}</td>
+                    <td>${item.TINGGI ? item.TINGGI + ' m' : '-'}</td>
+                    <td><span class="kondisi ${kondisiClass}">${item.KONDISI || '-'}</span></td>
+                    <td class="foto-cell">
+                        ${item.FOTO ? 
+                            `<img src="${item.FOTO}" alt="Foto Drainase" class="foto-thumbnail" onclick="showImage('${item.FOTO}')">` : 
+                            '-'
+                        }
+                    </td>
+                    <td>${item.TITIK_LOKASI || '-'}</td>
+                    <td>${item.NAMA_PELAPOR || '-'}</td>
+                    <td><span class="status ${statusClass}">${item.STATUS_PELAPOR || '-'}</span></td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+            
+            // Membuat pagination
+            renderPagination();
+        }
+        
+        // Fungsi untuk merender kontrol pagination
+        function renderPagination() {
+            const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+            
+            if (totalPages <= 1) {
+                document.getElementById('pagination').style.display = 'none';
+                return;
+            }
+            
+            document.getElementById('pagination').style.display = 'flex';
+            
+            const paginationDiv = document.getElementById('pagination');
+            paginationDiv.innerHTML = '';
+            
+            // Tombol sebelumnya
+            const prevButton = document.createElement('button');
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevButton.disabled = currentPage === 1;
+            prevButton.onclick = () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                }
+            };
+            paginationDiv.appendChild(prevButton);
+            
+            // Tombol nomor halaman
+            const maxVisiblePages = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+            let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+            
+            // Sesuaikan jika halaman awal terlalu dekat dengan akhir
+            if (endPage - startPage + 1 < maxVisiblePages) {
+                startPage = Math.max(1, endPage - maxVisiblePages + 1);
+            }
+            
+            // Tombol halaman pertama
+            if (startPage > 1) {
+                const firstButton = document.createElement('button');
+                firstButton.textContent = '1';
+                firstButton.onclick = () => {
+                    currentPage = 1;
+                    renderTable();
+                };
+                paginationDiv.appendChild(firstButton);
+                
+                if (startPage > 2) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.style.padding = '8px 5px';
+                    paginationDiv.appendChild(ellipsis);
+                }
+            }
+            
+            // Tombol halaman
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.textContent = i;
+                if (i === currentPage) {
+                    pageButton.classList.add('active');
+                }
+                pageButton.onclick = () => {
+                    currentPage = i;
+                    renderTable();
+                };
+                paginationDiv.appendChild(pageButton);
+            }
+            
+            // Tombol halaman terakhir
+            if (endPage < totalPages) {
+                if (endPage < totalPages - 1) {
+                    const ellipsis = document.createElement('span');
+                    ellipsis.textContent = '...';
+                    ellipsis.style.padding = '8px 5px';
+                    paginationDiv.appendChild(ellipsis);
+                }
+                
+                const lastButton = document.createElement('button');
+                lastButton.textContent = totalPages;
+                lastButton.onclick = () => {
+                    currentPage = totalPages;
+                    renderTable();
+                };
+                paginationDiv.appendChild(lastButton);
+            }
+            
+            // Tombol selanjutnya
+            const nextButton = document.createElement('button');
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.onclick = () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                }
+            };
+            paginationDiv.appendChild(nextButton);
+        }
+        
+        // Fungsi untuk memperbarui waktu pembaruan terakhir
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const options = { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            };
+            const formattedTime = now.toLocaleDateString('id-ID', options);
+            document.getElementById('last-update-time').textContent = formattedTime;
+        }
+        
+        // Fungsi untuk menampilkan gambar dalam modal
+        function showImage(imageUrl) {
+            const modal = document.getElementById('image-modal');
+            const modalImage = document.getElementById('modal-image');
+            
+            modalImage.src = imageUrl;
+            modal.style.display = 'flex';
+        }
+        
+        // Fungsi untuk menyembunyikan modal gambar
+        function closeImageModal() {
+            const modal = document.getElementById('image-modal');
+            modal.style.display = 'none';
+        }
+        
+        // Fungsi untuk menampilkan indikator loading
+        function showLoading() {
+            document.getElementById('loading-indicator').style.display = 'block';
+        }
+        
+        // Fungsi untuk menyembunyikan indikator loading
+        function hideLoading() {
+            document.getElementById('loading-indicator').style.display = 'none';
+        }
+        
+        // Fungsi untuk menampilkan pesan error
+        function showError(message) {
+            document.getElementById('error-text').textContent = message;
+            document.getElementById('error-message').style.display = 'block';
+        }
+        
+        // Fungsi untuk menyembunyikan pesan error
+        function hideError() {
+            document.getElementById('error-message').style.display = 'none';
+        }
+        
+        // Fungsi untuk menampilkan tabel
+        function showTable() {
+            document.getElementById('table-content').style.display = 'block';
+        }
+        
+        // Fungsi untuk menyembunyikan tabel
+        function hideTable() {
+            document.getElementById('table-content').style.display = 'none';
+        }
+        
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Memuat data saat halaman dimuat
+            loadData();
+            
+            // Event listener untuk pencarian
+            document.getElementById('search-input').addEventListener('input', filterData);
+            
+            // Event listener untuk filter
+            document.getElementById('kondisi-filter').addEventListener('change', filterData);
+            document.getElementById('status-filter').addEventListener('change', filterData);
+            document.getElementById('jenis-filter').addEventListener('change', filterData);
+            
+            // Event listener untuk modal gambar
+            document.getElementById('close-modal').addEventListener('click', closeImageModal);
+            document.getElementById('image-modal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeImageModal();
+                }
+            });
+            
+            // Event listener untuk tombol refresh data
+            document.getElementById('last-update-time').parentElement.addEventListener('click', loadData);
+        });
+        
+        // Data contoh untuk demonstrasi jika API tidak berfungsi
+        const sampleData = [
+            {
+                NO: 1,
+                JENIS: "Saluran Terbuka",
+                ALAMAT_DRAINASE: "Jl. Melati No. 10",
+                RT: "01",
+                RW: "03",
+                PANJANG: "15",
+                LEBAR: "0.5",
+                TINGGI: "0.6",
+                KONDISI: "Baik",
+                FOTO: "https://images.unsplash.com/photo-1621451537084-482c73073a0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                TITIK_LOKASI: "-6.912, 107.613",
+                NAMA_PELAPOR: "Budi Santoso",
+                STATUS_PELAPOR: "Aktif"
+            },
+            {
+                NO: 2,
+                JENIS: "Gorong-gorong",
+                ALAMAT_DRAINASE: "Jl. Mawar No. 5",
+                RT: "02",
+                RW: "03",
+                PANJANG: "8",
+                LEBAR: "0.8",
+                TINGGI: "1",
+                KONDISI: "Rusak",
+                FOTO: "https://images.unsplash.com/photo-1517365895738-15cc4c4d10c6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                TITIK_LOKASI: "-6.913, 107.614",
+                NAMA_PELAPOR: "Siti Rahayu",
+                STATUS_PELAPOR: "Aktif"
+            },
+            {
+                NO: 3,
+                JENIS: "Saluran Tertutup",
+                ALAMAT_DRAINASE: "Jl. Kenanga No. 12",
+                RT: "03",
+                RW: "04",
+                PANJANG: "20",
+                LEBAR: "0.6",
+                TINGGI: "0.7",
+                KONDISI: "Sedang",
+                FOTO: "https://images.unsplash.com/photo-1589939705384-5185137a7f0f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80",
+                TITIK_LOKASI: "-6.914, 107.615",
+                NAMA_PELAPOR: "Ahmad Fauzi",
+                STATUS_PELAPOR: "Tidak Aktif"
+            }
+        ];
+        
+        // Jika API tidak berfungsi, gunakan data contoh
+        window.fallbackToSampleData = function() {
+            allData = sampleData;
+            updateSummary();
+            populateFilterOptions();
+            filterData();
+            updateLastUpdateTime();
+            hideLoading();
+            showTable();
+            showError("Menggunakan data contoh karena koneksi API terbatas. Data sebenarnya akan diambil dari Google Spreadsheet saat API key valid.");
+        };
+        
+        // Coba gunakan data contoh jika API gagal
+        setTimeout(() => {
+            if (allData.length === 0) {
+                window.fallbackToSampleData();
+            }
+        }, 3000);
+    </script>
+</body>
+</html>
