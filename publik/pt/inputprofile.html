@@ -6,17 +6,13 @@
     <title>Sistem Profile Pegawai - Kelurahan/Kecamatan Pekanbaru</title>
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Cropper.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
     <style>
         :root {
-            --primary: #1e40af;
-            --primary-light: #3b82f6;
-            --primary-dark: #1e3a8a;
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
             --success: #10b981;
             --danger: #ef4444;
             --warning: #f59e0b;
-            --info: #06b6d4;
             --gray-50: #f9fafb;
             --gray-100: #f3f4f6;
             --gray-200: #e5e7eb;
@@ -25,11 +21,6 @@
             --gray-500: #6b7280;
             --gray-700: #374151;
             --gray-900: #111827;
-            --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
-            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-            --radius: 12px;
-            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         
         * {
@@ -39,11 +30,10 @@
         }
         
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
             color: var(--gray-900);
-            line-height: 1.6;
         }
         
         .container {
@@ -52,48 +42,45 @@
             padding: 20px;
         }
         
-        /* Login Card */
+        /* Login */
         .login-container {
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
         .login-card {
             background: white;
-            border-radius: var(--radius);
-            padding: 48px 40px;
-            box-shadow: var(--shadow-lg);
+            border-radius: 16px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             width: 100%;
-            max-width: 440px;
+            max-width: 400px;
             text-align: center;
-            animation: fadeIn 0.5s ease-out;
         }
         
-        .login-logo {
+        .login-icon {
             font-size: 48px;
             color: var(--primary);
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
         
         .login-title {
-            font-size: 28px;
+            font-size: 24px;
             font-weight: 700;
             color: var(--primary-dark);
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         .login-subtitle {
             color: var(--gray-500);
-            margin-bottom: 32px;
-            font-size: 15px;
+            margin-bottom: 30px;
         }
         
         .form-group {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
             text-align: left;
         }
         
@@ -102,40 +89,36 @@
             margin-bottom: 8px;
             font-weight: 600;
             color: var(--gray-700);
-            font-size: 14px;
         }
         
         .form-input {
             width: 100%;
-            padding: 14px 16px;
+            padding: 12px 16px;
             border: 2px solid var(--gray-200);
             border-radius: 10px;
             font-size: 16px;
-            transition: var(--transition);
-            background: var(--gray-50);
+            transition: all 0.3s;
         }
         
         .form-input:focus {
             outline: none;
             border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
         }
         
         .btn {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            gap: 10px;
-            padding: 16px 32px;
+            gap: 8px;
+            padding: 14px 28px;
             border: none;
             border-radius: 10px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 0.3s;
             text-decoration: none;
-            width: 100%;
         }
         
         .btn-primary {
@@ -146,16 +129,16 @@
         .btn-primary:hover {
             background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: var(--shadow-md);
-        }
-        
-        .btn-danger {
-            background: var(--danger);
-            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
         }
         
         .btn-success {
             background: var(--success);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
             color: white;
         }
         
@@ -164,34 +147,21 @@
             color: white;
         }
         
-        .btn-sm {
-            padding: 10px 20px;
-            font-size: 14px;
-        }
-        
         /* Main Content */
         .main-content {
             display: none;
-            animation: fadeIn 0.5s ease-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         
         /* Header */
         .app-header {
             background: white;
-            border-radius: var(--radius);
-            padding: 24px 32px;
+            border-radius: 16px;
+            padding: 24px;
             margin-bottom: 24px;
-            box-shadow: var(--shadow-md);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 20px;
         }
         
         .header-title {
@@ -209,7 +179,6 @@
             font-size: 24px;
             font-weight: 700;
             color: var(--primary-dark);
-            margin-bottom: 4px;
         }
         
         .header-text p {
@@ -217,7 +186,7 @@
             font-size: 14px;
         }
         
-        /* Cards Container */
+        /* Cards */
         .cards-container {
             display: grid;
             gap: 24px;
@@ -226,20 +195,18 @@
         
         .card {
             background: white;
-            border-radius: var(--radius);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: var(--shadow);
-            transition: var(--transition);
-            border: 1px solid var(--gray-200);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
         }
         
         .card:hover {
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-light);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         }
         
         .card-header {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             padding: 20px 24px;
             display: flex;
@@ -279,18 +246,10 @@
         /* Photo Section */
         .photo-section {
             background: var(--gray-50);
-            border-radius: var(--radius);
+            border-radius: 12px;
             padding: 24px;
             margin: 24px 0;
             border: 2px dashed var(--gray-300);
-        }
-        
-        .photo-section h4 {
-            margin-bottom: 20px;
-            color: var(--gray-700);
-            display: flex;
-            align-items: center;
-            gap: 10px;
         }
         
         .photo-container {
@@ -323,28 +282,6 @@
             color: var(--gray-300);
         }
         
-        .photo-upload-btn {
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .photo-upload-btn input {
-            position: absolute;
-            left: 0;
-            top: 0;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            cursor: pointer;
-        }
-        
-        .photo-info {
-            font-size: 13px;
-            color: var(--gray-500);
-            text-align: center;
-            max-width: 300px;
-        }
-        
         /* Pegawai Card Layout */
         .pegawai-card-layout {
             display: grid;
@@ -356,75 +293,16 @@
             .pegawai-card-layout {
                 grid-template-columns: 1fr;
             }
-        }
-        
-        /* Crop Modal */
-        .crop-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        
-        .crop-container {
-            background: white;
-            border-radius: var(--radius);
-            padding: 32px;
-            max-width: 1000px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-        }
-        
-        .crop-header {
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        
-        .crop-header h3 {
-            color: var(--gray-900);
-            font-size: 20px;
-        }
-        
-        .crop-content {
-            display: grid;
-            grid-template-columns: 1fr 250px;
-            gap: 24px;
-        }
-        
-        @media (max-width: 768px) {
-            .crop-content {
-                grid-template-columns: 1fr;
+            
+            .app-header {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
             }
-        }
-        
-        .crop-preview-container {
-            text-align: center;
-        }
-        
-        .crop-preview {
-            width: 160px;
-            height: 200px;
-            margin: 0 auto;
-            border: 2px solid var(--gray-300);
-            border-radius: 8px;
-            overflow: hidden;
-            background: var(--gray-100);
-        }
-        
-        .crop-actions {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            margin-top: 24px;
-            flex-wrap: wrap;
+            
+            .header-title {
+                flex-direction: column;
+            }
         }
         
         /* Loading */
@@ -435,8 +313,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
-            z-index: 1001;
+            background: rgba(255, 255, 255, 0.9);
+            z-index: 1000;
             align-items: center;
             justify-content: center;
             flex-direction: column;
@@ -448,8 +326,8 @@
         }
         
         .spinner {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             border: 5px solid var(--gray-200);
             border-top: 5px solid var(--primary);
             border-radius: 50%;
@@ -464,19 +342,18 @@
         /* Notification */
         .notification {
             position: fixed;
-            top: 24px;
-            right: 24px;
+            top: 20px;
+            right: 20px;
             padding: 16px 24px;
-            border-radius: var(--radius);
+            border-radius: 10px;
             color: white;
             font-weight: 600;
-            z-index: 1002;
-            animation: slideIn 0.3s ease-out;
+            z-index: 1001;
+            animation: slideIn 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             max-width: 400px;
-            box-shadow: var(--shadow-lg);
         }
         
         .notification.success {
@@ -488,7 +365,7 @@
         }
         
         .notification.info {
-            background: var(--info);
+            background: var(--primary);
         }
         
         @keyframes slideIn {
@@ -502,14 +379,14 @@
             }
         }
         
-        /* Add Card Button */
+        /* Add Card Section */
         .add-card-section {
             text-align: center;
             margin: 40px 0;
             padding: 32px;
             background: white;
-            border-radius: var(--radius);
-            box-shadow: var(--shadow);
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
         }
         
         .card-counter {
@@ -517,59 +394,13 @@
             color: var(--gray-500);
             font-size: 14px;
         }
-        
-        /* Responsive */
-        @media (max-width: 768px) {
-            .app-header {
-                flex-direction: column;
-                text-align: center;
-                padding: 20px;
-            }
-            
-            .header-title {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .card-header {
-                flex-direction: column;
-                gap: 16px;
-                text-align: center;
-            }
-            
-            .card-actions {
-                width: 100%;
-                justify-content: center;
-            }
-            
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .login-card {
-                padding: 32px 24px;
-            }
-        }
-        
-        /* Utility */
-        .text-center { text-align: center; }
-        .mb-1 { margin-bottom: 8px; }
-        .mb-2 { margin-bottom: 16px; }
-        .mb-3 { margin-bottom: 24px; }
-        .mb-4 { margin-bottom: 32px; }
-        .mt-2 { margin-top: 16px; }
-        .mt-3 { margin-top: 24px; }
-        .mt-4 { margin-top: 32px; }
-        .d-none { display: none !important; }
-        .d-flex { display: flex !important; }
-        .w-100 { width: 100%; }
     </style>
 </head>
 <body>
     <!-- Login Section -->
     <div class="login-container" id="loginSection">
         <div class="login-card">
-            <div class="login-logo">
+            <div class="login-icon">
                 <i class="fas fa-user-shield"></i>
             </div>
             <h1 class="login-title">Sistem Profile Pegawai</h1>
@@ -589,14 +420,12 @@
                 <input type="password" id="password" class="form-input" placeholder="Masukkan password" value="123456">
             </div>
             
-            <button class="btn btn-primary" onclick="login()">
+            <button class="btn btn-primary" onclick="login()" style="width: 100%;">
                 <i class="fas fa-sign-in-alt"></i> Login ke Sistem
             </button>
             
-            <div class="mt-3 text-center">
-                <small style="color: var(--gray-500);">
-                    <i class="fas fa-info-circle"></i> Default: Admin / 123456
-                </small>
+            <div style="margin-top: 20px; color: var(--gray-500); font-size: 14px;">
+                <i class="fas fa-info-circle"></i> Default: Admin / 123456
             </div>
         </div>
     </div>
@@ -614,14 +443,14 @@
                     <p>Kelurahan/Kecamatan - Pemerintah Kota Pekanbaru</p>
                 </div>
             </div>
-            <button class="btn btn-danger btn-sm" onclick="logout()">
+            <button class="btn btn-danger" onclick="logout()">
                 <i class="fas fa-sign-out-alt"></i> Logout
             </button>
         </header>
 
         <!-- Kantor Card -->
         <div class="cards-container">
-            <div class="card" id="kantorCard">
+            <div class="card">
                 <div class="card-header">
                     <h3><i class="fas fa-building"></i> Profil Kantor</h3>
                     <div class="card-actions">
@@ -678,20 +507,19 @@
                                 <i class="fas fa-landmark"></i>
                             </div>
                             <div>
-                                <button class="btn btn-primary photo-upload-btn" onclick="document.getElementById('kantorPhotoInput').click()">
+                                <button class="btn btn-primary" onclick="document.getElementById('kantorPhotoInput').click()">
                                     <i class="fas fa-upload"></i> Pilih Foto Lambang
                                 </button>
-                                <input type="file" id="kantorPhotoInput" accept="image/*" class="d-none" 
-                                       onchange="handlePhotoUpload(this, 'kantor')">
-                                <p class="photo-info mt-2">
-                                    <i class="fas fa-info-circle"></i> Ukuran: 4:5 (1080x1350px)<br>
-                                    Format: JPG/PNG - Maks 5MB
+                                <input type="file" id="kantorPhotoInput" accept="image/*" style="display: none;" 
+                                       onchange="handlePhotoUpload('kantor')">
+                                <p style="color: var(--gray-500); font-size: 14px; margin-top: 8px;">
+                                    <i class="fas fa-info-circle"></i> Ukuran: 4:5 (1080x1350px)
                                 </p>
                             </div>
                         </div>
                     </div>
                     
-                    <div class="text-center">
+                    <div style="text-align: center; margin-top: 24px;">
                         <button class="btn btn-success" onclick="saveKantorData()">
                             <i class="fas fa-save"></i> Simpan Data Kantor
                         </button>
@@ -712,38 +540,6 @@
         </div>
     </div>
 
-    <!-- Crop Modal -->
-    <div class="crop-modal" id="cropModal">
-        <div class="crop-container">
-            <div class="crop-header">
-                <h3><i class="fas fa-crop-alt"></i> Crop Foto - Rasio 4:5</h3>
-                <p style="color: var(--gray-500);">Atur foto sesuai dengan area yang diinginkan</p>
-            </div>
-            
-            <div class="crop-content">
-                <div>
-                    <div id="cropperImage" style="max-height: 500px;"></div>
-                </div>
-                <div class="crop-preview-container">
-                    <h4 style="margin-bottom: 16px; color: var(--gray-700);">Preview 1080x1350px</h4>
-                    <div class="crop-preview"></div>
-                    <p style="color: var(--gray-500); margin-top: 12px; font-size: 14px;">
-                        <i class="fas fa-info-circle"></i> Foto akan di-crop sesuai preview
-                    </p>
-                </div>
-            </div>
-            
-            <div class="crop-actions">
-                <button class="btn btn-danger" onclick="cancelCrop()">
-                    <i class="fas fa-times"></i> Batal
-                </button>
-                <button class="btn btn-success" onclick="applyCrop()">
-                    <i class="fas fa-check"></i> Terapkan Crop
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- Loading Overlay -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="spinner"></div>
@@ -753,46 +549,52 @@
     <!-- Notification -->
     <div class="notification" id="notification"></div>
 
-    <!-- Scripts -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script>
         // ============ KONFIGURASI ============
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNUiCr1NyedWtoZr1fu0VzOi0KkCv9cVEDJILJrNXLomztjzkLP8TmzIe_ug6LJavnBg/dev
+        // ⚠️ GANTI INI DENGAN URL APPS SCRIPT ANDA ⚠️
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNUiCr1NyedWtoZr1fu0VzOi0KkCv9cVEDJILJrNXLomztjzkLP8TmzIe_ug6LJavnBg/exec';
         
         const CONFIG = {
-            MAX_CARDS: 10,
-            DEFAULT_PHOTO_WIDTH: 1080,
-            DEFAULT_PHOTO_HEIGHT: 1350,
-            PHOTO_ASPECT_RATIO: 4/5
+            MAX_CARDS: 10
         };
         // ======================================
-
-        // ============ VARIABLES ============
+        
+        // ============ STATE VARIABLES ============
         let currentUser = null;
-        let cropper = null;
-        let currentPhotoType = null;
-        let currentPhotoCardId = null;
-        let photoBlob = null;
         let pegawaiCards = [];
         let cardCounter = 0;
-        let photoCache = {};
-        // ===================================
-
-        // ============ APPS SCRIPT FUNCTIONS ============
+        // =========================================
         
-        async function callAppsScript(action, data = {}) {
-            const payload = { action, ...data };
+        // ============ API FUNCTIONS ============
+        
+        async function callAPI(action, data = {}) {
+            showLoading('Memproses...');
+            
+            // Build URL with query parameters
+            let url = APPS_SCRIPT_URL + '?action=' + encodeURIComponent(action);
+            
+            // Add data as query parameters
+            Object.keys(data).forEach(key => {
+                if (data[key] !== null && data[key] !== undefined) {
+                    url += '&' + encodeURIComponent(key) + '=' + encodeURIComponent(data[key]);
+                }
+            });
+            
+            console.log('API Call:', url);
             
             try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-                
-                return await response.json();
+                const response = await fetch(url);
+                const result = await response.json();
+                console.log('API Response:', result);
+                hideLoading();
+                return result;
             } catch (error) {
-                console.error('Apps Script error:', error);
-                return { success: false, message: error.message };
+                console.error('API Error:', error);
+                hideLoading();
+                return {
+                    success: false,
+                    message: 'Koneksi gagal: ' + error.message
+                };
             }
         }
         
@@ -801,15 +603,13 @@
         async function login() {
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value.trim();
-
+            
             if (!username || !password) {
                 showNotification('Harap isi username dan password', 'error');
                 return;
             }
-
-            showLoading('Memeriksa kredensial...');
-
-            const result = await callAppsScript('login', { username, password });
+            
+            const result = await callAPI('login', { username, password });
             
             if (result.success) {
                 currentUser = username;
@@ -821,68 +621,59 @@
                 await loadKantorData();
                 await loadPegawaiData();
             } else {
-                showNotification(result.message || 'Username atau password salah', 'error');
+                showNotification(result.message || 'Login gagal', 'error');
             }
-            
-            hideLoading();
         }
         
         function logout() {
-            if (confirm('Anda yakin ingin logout?')) {
+            if (confirm('Yakin ingin logout?')) {
                 currentUser = null;
-                document.getElementById('loginSection').style.display = 'flex';
                 document.getElementById('mainContent').style.display = 'none';
+                document.getElementById('loginSection').style.display = 'flex';
                 document.getElementById('username').value = '';
                 document.getElementById('password').value = '';
                 showNotification('Anda telah logout', 'info');
             }
         }
         
-        // ============ KANTOR DATA FUNCTIONS ============
+        // ============ KANTOR FUNCTIONS ============
         
         async function loadKantorData() {
-            showLoading('Memuat data kantor...');
+            const result = await callAPI('getProfile');
             
-            try {
-                const result = await callAppsScript('getData', { sheet: 'PROFILE' });
+            if (result.success && result.data) {
+                const data = result.data;
+                document.getElementById('nama_kelurahan').value = data.nama_kelurahan || '';
+                document.getElementById('alamat').value = data.alamat || '';
+                document.getElementById('rt').value = data.rt || '';
+                document.getElementById('rw').value = data.rw || '';
+                document.getElementById('kelurahan').value = data.kelurahan || '';
+                document.getElementById('kecamatan').value = data.kecamatan || '';
+                document.getElementById('kota').value = data.kota || 'Pekanbaru';
+                document.getElementById('provinsi').value = data.provinsi || 'Riau';
+                document.getElementById('kode_pos').value = data.kode_pos || '';
                 
-                if (result.success && result.data && result.data.length > 1) {
-                    const latestRow = result.data[result.data.length - 1];
-                    
-                    document.getElementById('nama_kelurahan').value = latestRow[1] || '';
-                    document.getElementById('alamat').value = latestRow[2] || '';
-                    document.getElementById('rt').value = latestRow[3] || '';
-                    document.getElementById('rw').value = latestRow[4] || '';
-                    document.getElementById('kelurahan').value = latestRow[5] || '';
-                    document.getElementById('kecamatan').value = latestRow[6] || '';
-                    document.getElementById('kota').value = latestRow[7] || '';
-                    document.getElementById('provinsi').value = latestRow[8] || '';
-                    document.getElementById('kode_pos').value = latestRow[9] || '';
-                    
-                    if (latestRow[10]) {
-                        updatePhotoPreview('kantor', latestRow[10]);
-                    }
+                if (data.foto_url) {
+                    updatePhotoPreview('kantor', data.foto_url);
                 }
-            } catch (error) {
-                console.error('Error loading kantor data:', error);
             }
-            
-            hideLoading();
         }
         
         async function saveKantorData() {
-            // Validasi
-            const requiredFields = ['nama_kelurahan', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kode_pos'];
+            // Validation
+            const requiredFields = [
+                'nama_kelurahan', 'alamat', 'rt', 'rw', 
+                'kelurahan', 'kecamatan', 'kode_pos'
+            ];
+            
             for (const field of requiredFields) {
                 const value = document.getElementById(field).value.trim();
                 if (!value) {
-                    showNotification(`Harap isi field ${field.replace('_', ' ').toUpperCase()}`, 'error');
+                    showNotification(`Harap isi ${field.replace('_', ' ').toUpperCase()}`, 'error');
                     document.getElementById(field).focus();
                     return;
                 }
             }
-            
-            showLoading('Menyimpan data kantor...');
             
             const kantorData = {
                 nama_kelurahan: document.getElementById('nama_kelurahan').value,
@@ -894,21 +685,19 @@
                 kota: document.getElementById('kota').value || 'Pekanbaru',
                 provinsi: document.getElementById('provinsi').value || 'Riau',
                 kode_pos: document.getElementById('kode_pos').value,
-                foto_url: photoCache['kantor'] || ''
+                foto_url: ''
             };
             
-            const result = await callAppsScript('saveProfile', kantorData);
+            const result = await callAPI('saveProfile', kantorData);
             
             if (result.success) {
                 showNotification('Data kantor berhasil disimpan!', 'success');
             } else {
                 showNotification('Gagal menyimpan: ' + result.message, 'error');
             }
-            
-            hideLoading();
         }
         
-        // ============ PEGAWAI DATA FUNCTIONS ============
+        // ============ PEGAWAI FUNCTIONS ============
         
         function addPegawaiCard() {
             if (cardCounter >= CONFIG.MAX_CARDS) {
@@ -917,7 +706,7 @@
             }
             
             cardCounter++;
-            const cardId = 'pegawai_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const cardId = 'pegawai_' + Date.now();
             
             const cardHTML = `
                 <div class="card" id="${cardId}">
@@ -962,7 +751,7 @@
                                     </div>
                                 </div>
                                 
-                                <div class="text-center mt-3">
+                                <div style="text-align: center; margin-top: 24px;">
                                     <button class="btn btn-success" onclick="savePegawaiData('${cardId}')">
                                         <i class="fas fa-save"></i> Simpan Data Pegawai
                                     </button>
@@ -976,14 +765,13 @@
                                         <i class="fas fa-user"></i>
                                     </div>
                                     <div>
-                                        <button class="btn btn-primary photo-upload-btn" onclick="document.getElementById('photoInput_${cardId}').click()">
+                                        <button class="btn btn-primary" onclick="document.getElementById('photoInput_${cardId}').click()">
                                             <i class="fas fa-upload"></i> Upload Foto
                                         </button>
-                                        <input type="file" id="photoInput_${cardId}" accept="image/*" class="d-none"
-                                               onchange="handlePhotoUpload(this, 'pegawai', '${cardId}')">
-                                        <p class="photo-info mt-2">
-                                            <i class="fas fa-info-circle"></i> Ukuran: 4:5 (1080x1350px)<br>
-                                            Wajib seragam, latar belakang polos
+                                        <input type="file" id="photoInput_${cardId}" accept="image/*" style="display: none;"
+                                               onchange="handlePhotoUpload('pegawai', '${cardId}')">
+                                        <p style="color: var(--gray-500); font-size: 14px; margin-top: 8px;">
+                                            <i class="fas fa-info-circle"></i> Ukuran: 4:5 (1080x1350px)
                                         </p>
                                     </div>
                                 </div>
@@ -1001,7 +789,7 @@
         }
         
         async function savePegawaiData(cardId) {
-            // Validasi
+            // Validation
             const requiredFields = ['nama', 'nip', 'jabatan', 'pangkat', 'email', 'nohp'];
             const fieldNames = ['Nama', 'NIP', 'Jabatan', 'Pangkat', 'Email', 'No. HP'];
             
@@ -1014,8 +802,6 @@
                 }
             }
             
-            showLoading('Menyimpan data pegawai...');
-            
             const pegawaiData = {
                 card_id: cardId,
                 nama: document.getElementById(`nama_${cardId}`).value,
@@ -1024,10 +810,10 @@
                 pangkat: document.getElementById(`pangkat_${cardId}`).value,
                 email: document.getElementById(`email_${cardId}`).value,
                 nohp: document.getElementById(`nohp_${cardId}`).value,
-                foto_url: photoCache[cardId] || ''
+                foto_url: ''
             };
             
-            const result = await callAppsScript('savePegawai', pegawaiData);
+            const result = await callAPI('savePegawai', pegawaiData);
             
             if (result.success) {
                 showNotification('Data pegawai berhasil disimpan!', 'success');
@@ -1038,180 +824,97 @@
             } else {
                 showNotification('Gagal menyimpan: ' + result.message, 'error');
             }
-            
-            hideLoading();
         }
         
         async function deletePegawaiCard(cardId) {
             if (!confirm('Hapus data pegawai ini? Data akan dihapus permanen.')) return;
             
-            showLoading('Menghapus data pegawai...');
+            showLoading('Menghapus data...');
             
-            try {
-                // Find card index
+            const result = await callAPI('deletePegawai', { card_id: cardId });
+            
+            if (result.success) {
+                // Remove from DOM
+                document.getElementById(cardId).remove();
+                
+                // Remove from array
                 const cardIndex = pegawaiCards.findIndex(card => card.id === cardId);
                 if (cardIndex !== -1) {
-                    // Remove from DOM
-                    document.getElementById(cardId).remove();
-                    
-                    // Remove from array
                     pegawaiCards.splice(cardIndex, 1);
                     cardCounter--;
                     updateCardCounter();
-                    
-                    // Mark as deleted in spreadsheet (if saved)
-                    const result = await callAppsScript('deletePegawai', { card_id: cardId });
-                    
-                    if (result.success) {
-                        showNotification('Data pegawai berhasil dihapus', 'success');
-                    }
                 }
-            } catch (error) {
-                console.error('Error deleting card:', error);
-                showNotification('Error menghapus data', 'error');
+                
+                showNotification('Data pegawai berhasil dihapus', 'success');
+            } else {
+                showNotification('Gagal menghapus: ' + result.message, 'error');
             }
             
             hideLoading();
         }
         
         async function loadPegawaiData() {
-            showLoading('Memuat data pegawai...');
+            const result = await callAPI('getPegawai');
             
-            try {
-                const result = await callAppsScript('getData', { sheet: 'DATA_PEGAWAI' });
-                
-                if (result.success && result.data && result.data.length > 1) {
-                    // Skip header row
-                    for (let i = 1; i < result.data.length; i++) {
-                        const row = result.data[i];
-                        if (row[9] !== 'deleted' && row[9] !== 'DELETED') {
-                            // Add card for each active pegawai
-                            addPegawaiCard();
-                            const latestCard = pegawaiCards[pegawaiCards.length - 1];
-                            const cardId = latestCard.id;
-                            
-                            // Populate data
-                            document.getElementById(`nama_${cardId}`).value = row[2] || '';
-                            document.getElementById(`nip_${cardId}`).value = row[3] || '';
-                            document.getElementById(`jabatan_${cardId}`).value = row[4] || '';
-                            document.getElementById(`pangkat_${cardId}`).value = row[5] || '';
-                            document.getElementById(`email_${cardId}`).value = row[6] || '';
-                            document.getElementById(`nohp_${cardId}`).value = row[7] || '';
-                            
-                            if (row[8]) {
-                                updatePhotoPreview(cardId, row[8]);
-                            }
-                            
-                            latestCard.saved = true;
-                        }
+            if (result.success && result.data && result.data.length > 0) {
+                result.data.forEach((pegawai, index) => {
+                    addPegawaiCard();
+                    const latestCard = pegawaiCards[pegawaiCards.length - 1];
+                    const cardId = latestCard.id;
+                    
+                    document.getElementById(`nama_${cardId}`).value = pegawai.nama || '';
+                    document.getElementById(`nip_${cardId}`).value = pegawai.nip || '';
+                    document.getElementById(`jabatan_${cardId}`).value = pegawai.jabatan || '';
+                    document.getElementById(`pangkat_${cardId}`).value = pegawai.pangkat || '';
+                    document.getElementById(`email_${cardId}`).value = pegawai.email || '';
+                    document.getElementById(`nohp_${cardId}`).value = pegawai.nohp || '';
+                    
+                    if (pegawai.foto_url) {
+                        updatePhotoPreview(cardId, pegawai.foto_url);
                     }
-                }
-            } catch (error) {
-                console.error('Error loading pegawai data:', error);
+                    
+                    latestCard.saved = true;
+                });
             }
-            
-            hideLoading();
         }
         
         // ============ PHOTO FUNCTIONS ============
         
-        function handlePhotoUpload(input, type, cardId = null) {
-            const file = input.files[0];
+        function handlePhotoUpload(type, cardId = null) {
+            const inputId = type === 'kantor' ? 'kantorPhotoInput' : `photoInput_${cardId}`;
+            const file = document.getElementById(inputId).files[0];
+            
             if (!file) return;
             
-            // Validasi file
+            // Basic validation
             if (!file.type.match('image.*')) {
-                showNotification('Harap pilih file gambar (JPG, PNG)', 'error');
+                showNotification('Harap pilih file gambar (JPG/PNG)', 'error');
                 return;
             }
             
-            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            if (file.size > 5 * 1024 * 1024) { // 5MB
                 showNotification('Ukuran file maksimal 5MB', 'error');
                 return;
             }
             
-            currentPhotoType = type;
-            currentPhotoCardId = cardId;
-            
             const reader = new FileReader();
             reader.onload = function(e) {
-                document.getElementById('cropModal').style.display = 'flex';
-                
-                // Initialize cropper
-                const image = document.createElement('img');
-                image.id = 'imageToCrop';
-                image.src = e.target.result;
-                
-                const container = document.getElementById('cropperImage');
-                container.innerHTML = '';
-                container.appendChild(image);
-                
-                setTimeout(() => {
-                    cropper = new Cropper(image, {
-                        aspectRatio: CONFIG.PHOTO_ASPECT_RATIO,
-                        viewMode: 2,
-                        autoCropArea: 1,
-                        responsive: true,
-                        restore: false,
-                        guides: true,
-                        center: true,
-                        highlight: false,
-                        cropBoxMovable: true,
-                        cropBoxResizable: true,
-                        toggleDragModeOnDblclick: false,
-                        preview: '.crop-preview'
-                    });
-                }, 100);
+                if (type === 'kantor') {
+                    updatePhotoPreview('kantor', e.target.result);
+                } else if (cardId) {
+                    updatePhotoPreview(cardId, e.target.result);
+                }
             };
             reader.readAsDataURL(file);
         }
         
-        function applyCrop() {
-            if (!cropper) return;
-            
-            showLoading('Memproses foto...');
-            
-            // Get cropped canvas
-            const canvas = cropper.getCroppedCanvas({
-                width: CONFIG.DEFAULT_PHOTO_WIDTH,
-                height: CONFIG.DEFAULT_PHOTO_HEIGHT
-            });
-            
-            // Convert to blob
-            canvas.toBlob(blob => {
-                // Create preview URL
-                const previewUrl = URL.createObjectURL(blob);
-                
-                // Update preview
-                if (currentPhotoType === 'kantor') {
-                    updatePhotoPreview('kantor', previewUrl);
-                    photoCache['kantor'] = previewUrl;
-                } else if (currentPhotoType === 'pegawai' && currentPhotoCardId) {
-                    updatePhotoPreview(currentPhotoCardId, previewUrl);
-                    photoCache[currentPhotoCardId] = previewUrl;
-                }
-                
-                showNotification('Foto berhasil di-crop dan siap diupload', 'success');
-                cancelCrop();
-                hideLoading();
-                
-            }, 'image/jpeg', 0.95);
-        }
-        
         function updatePhotoPreview(targetId, imageUrl) {
-            const previewId = targetId === 'kantor' ? 'kantorPhotoPreview' : `photoPreview_${targetId}`;
+            const previewId = targetId === 'kantor' ? 
+                'kantorPhotoPreview' : `photoPreview_${targetId}`;
             const previewDiv = document.getElementById(previewId);
             
             if (previewDiv) {
-                previewDiv.innerHTML = `<img src="${imageUrl}" alt="Foto Preview">`;
-            }
-        }
-        
-        function cancelCrop() {
-            document.getElementById('cropModal').style.display = 'none';
-            if (cropper) {
-                cropper.destroy();
-                cropper = null;
+                previewDiv.innerHTML = `<img src="${imageUrl}" alt="Preview">`;
             }
         }
         
@@ -1234,15 +937,13 @@
             document.getElementById('cardCounter').textContent = 
                 `${cardCounter}/${CONFIG.MAX_CARDS} Data Pegawai`;
                 
-            const addButton = document.getElementById('addCardBtn');
+            const addBtn = document.getElementById('addCardBtn');
             if (cardCounter >= CONFIG.MAX_CARDS) {
-                addButton.disabled = true;
-                addButton.style.opacity = '0.6';
-                addButton.innerHTML = '<i class="fas fa-ban"></i> Maksimal 10 Data';
+                addBtn.disabled = true;
+                addBtn.style.opacity = '0.6';
             } else {
-                addButton.disabled = false;
-                addButton.style.opacity = '1';
-                addButton.innerHTML = '<i class="fas fa-plus"></i> Tambah Data Pegawai Baru';
+                addBtn.disabled = false;
+                addBtn.style.opacity = '1';
             }
         }
         
@@ -1252,7 +953,6 @@
             notification.className = `notification ${type}`;
             notification.style.display = 'flex';
             
-            // Auto hide after 5 seconds
             setTimeout(() => {
                 notification.style.display = 'none';
             }, 5000);
@@ -1270,65 +970,30 @@
         // ============ INITIALIZATION ============
         
         document.addEventListener('DOMContentLoaded', function() {
-            // Test connection to Apps Script
+            // Test connection
             showLoading('Mengecek koneksi...');
             
-            fetch(APPS_SCRIPT_URL)
+            fetch(APPS_SCRIPT_URL + '?action=test')
                 .then(response => response.json())
                 .then(data => {
-                    if (data.status === 'API Ready') {
-                        console.log('✅ Connected to Apps Script API');
+                    if (data.success) {
+                        console.log('✅ Connected to Apps Script');
                         showNotification('Sistem siap digunakan', 'success');
                     }
                 })
                 .catch(error => {
-                    console.error('Connection error:', error);
-                    showNotification('Periksa koneksi internet Anda', 'error');
+                    console.warn('⚠️ Connection test failed');
                 })
                 .finally(() => {
                     hideLoading();
                 });
             
-            // Initialize card counter
             updateCardCounter();
             
-            // Auto focus on username
+            // Auto focus
             setTimeout(() => {
                 document.getElementById('username').focus();
             }, 500);
-        });
-        
-        // Keyboard shortcuts
-        document.addEventListener('keydown', function(e) {
-            // Ctrl + Enter to save
-            if (e.ctrlKey && e.key === 'Enter') {
-                const activeElement = document.activeElement;
-                if (activeElement.type === 'text' || activeElement.type === 'textarea') {
-                    // Find and click the nearest save button
-                    const card = activeElement.closest('.card');
-                    if (card) {
-                        const saveButton = card.querySelector('.btn-success');
-                        if (saveButton) saveButton.click();
-                    }
-                }
-            }
-            
-            // Escape to close crop modal
-            if (e.key === 'Escape') {
-                cancelCrop();
-            }
-        });
-        
-        // Auto-save confirmation
-        window.addEventListener('beforeunload', function(e) {
-            if (cardCounter > 0) {
-                const unsavedCards = pegawaiCards.filter(card => !card.saved);
-                if (unsavedCards.length > 0) {
-                    e.preventDefault();
-                    e.returnValue = 'Anda memiliki data yang belum disimpan. Yakin ingin meninggalkan halaman?';
-                    return e.returnValue;
-                }
-            }
         });
     </script>
 </body>
