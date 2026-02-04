@@ -154,11 +154,6 @@
             box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
         }
         
-        .required-field::after {
-            content: " *";
-            color: var(--danger-red);
-        }
-        
         .info-box {
             background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);
             border-left: 5px solid var(--secondary-blue);
@@ -322,6 +317,11 @@
             background-color: var(--secondary-blue);
             border-color: var(--secondary-blue);
         }
+        
+        /* Style untuk uppercase input */
+        .uppercase-input {
+            text-transform: uppercase;
+        }
     </style>
 </head>
 <body>
@@ -392,15 +392,15 @@
                         <li>Pastikan nomor KK valid 16 digit</li>
                         <li>Data petugas wajib diisi untuk audit trail</li>
                         <li>KK akan dicek otomatis di database</li>
-                        <li>Field bertanda <span class="text-danger">*</span> wajib diisi</li>
+                        <li>Field Nama diubah otomatis menjadi HURUF BESAR</li>
                     </ul>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Nama Petugas Penginput</label>
-                        <select class="form-select form-select-custom" id="namaPetugas" required>
-                            <option value="" selected disabled>Pilih Petugas...</option>
+                        <label class="form-label-custom">Nama Petugas Penginput</label>
+                        <select class="form-select form-select-custom" id="namaPetugas">
+                            <option value="" selected>Pilih Petugas...</option>
                             <option value="Admin Kelurahan">Admin Kelurahan</option>
                             <option value="Petugas Lapangan">Petugas Lapangan</option>
                             <option value="Petugas Sensus">Petugas Sensus</option>
@@ -409,9 +409,9 @@
                     </div>
                     
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Sumber Data</label>
-                        <select class="form-select form-select-custom" id="sumberData" required>
-                            <option value="" selected disabled>Pilih Sumber...</option>
+                        <label class="form-label-custom">Sumber Data</label>
+                        <select class="form-select form-select-custom" id="sumberData">
+                            <option value="" selected>Pilih Sumber...</option>
                             <option value="Registrasi di kantor Lurah">Registrasi di kantor Lurah</option>
                             <option value="Pendataan langsung">Pendataan langsung</option>
                             <option value="Melalui Survey">Melalui Survey</option>
@@ -424,14 +424,12 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Nomor Kartu Keluarga (KK)</label>
+                        <label class="form-label-custom">Nomor Kartu Keluarga (KK)</label>
                         <input type="text" 
                                class="form-control form-control-custom" 
                                id="noKK" 
                                maxlength="16"
-                               pattern="[0-9]{16}"
-                               placeholder="16 digit angka"
-                               required>
+                               placeholder="16 digit angka">
                         <div class="hint-text">
                             <i class="bi bi-exclamation-circle me-1"></i>
                             Contoh: 3273010101010001
@@ -483,95 +481,82 @@
                         <li>RT/RW sesuai data kelurahan</li>
                         <li>Kode pos akan memvalidasi wilayah</li>
                         <li>Data alamat akan otomatis ke semua anggota</li>
+                        <li>Nama tempat diubah otomatis menjadi HURUF BESAR</li>
                     </ul>
                 </div>
 
                 <div class="row">
                     <div class="col-md-12 mb-3">
-                        <label class="form-label-custom required-field">Alamat Lengkap</label>
-                        <textarea class="form-control form-control-custom" 
+                        <label class="form-label-custom">Alamat Lengkap</label>
+                        <textarea class="form-control form-control-custom uppercase-input" 
                                   id="alamat" 
                                   rows="2" 
-                                  placeholder="Jl. Merdeka No. 123, Gang Melati"
-                                  required></textarea>
+                                  placeholder="JL. MERDEKA NO. 123, GANG MELATI"></textarea>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label class="form-label-custom required-field">RT</label>
+                        <label class="form-label-custom">RT</label>
                         <input type="text" 
                                class="form-control form-control-custom" 
                                id="rt" 
                                maxlength="3"
-                               placeholder="001"
-                               required>
+                               placeholder="001">
                     </div>
                     
                     <div class="col-md-3 mb-3">
-                        <label class="form-label-custom required-field">RW</label>
+                        <label class="form-label-custom">RW</label>
                         <input type="text" 
                                class="form-control form-control-custom" 
                                id="rw" 
                                maxlength="3"
-                               placeholder="002"
-                               required>
+                               placeholder="002">
                     </div>
                     
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Kelurahan</label>
+                        <label class="form-label-custom">Kelurahan</label>
                         <input type="text" 
-                               class="form-control form-control-custom" 
+                               class="form-control form-control-custom uppercase-input" 
                                id="kelurahan" 
-                               placeholder="Kelurahan Sukajadi"
-                               required>
+                               placeholder="KELURAHAN SUKAJADI">
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Kecamatan</label>
+                        <label class="form-label-custom">Kecamatan</label>
                         <input type="text" 
-                               class="form-control form-control-custom" 
+                               class="form-control form-control-custom uppercase-input" 
                                id="kecamatan" 
-                               placeholder="Kecamatan Bogor Tengah"
-                               required>
+                               placeholder="KECAMATAN BOGOR TENGAH">
                     </div>
                     
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Kota/Kabupaten</label>
+                        <label class="form-label-custom">Kota/Kabupaten</label>
                         <input type="text" 
-                               class="form-control form-control-custom" 
+                               class="form-control form-control-custom uppercase-input" 
                                id="kotaKabupaten" 
-                               placeholder="Kota Bogor"
-                               required>
+                               placeholder="KOTA BOGOR">
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Provinsi</label>
-                        <select class="form-select form-select-custom" id="provinsi" required>
-                            <option value="" selected disabled>Pilih Provinsi...</option>
-                            <option value="DKI Jakarta">DKI Jakarta</option>
-                            <option value="Jawa Barat">Jawa Barat</option>
-                            <option value="Jawa Tengah">Jawa Tengah</option>
-                            <option value="Jawa Timur">Jawa Timur</option>
-                            <option value="Banten">Banten</option>
-                            <option value="DI Yogyakarta">DI Yogyakarta</option>
-                            <option value="Bali">Bali</option>
-                        </select>
+                        <label class="form-label-custom">Provinsi</label>
+                        <input type="text" 
+                               class="form-control form-control-custom uppercase-input" 
+                               id="provinsi" 
+                               placeholder="JAWA BARAT">
                     </div>
                     
                     <div class="col-md-6 mb-3">
-                        <label class="form-label-custom required-field">Kode Pos</label>
+                        <label class="form-label-custom">Kode Pos</label>
                         <input type="text" 
                                class="form-control form-control-custom" 
                                id="kodePos" 
                                maxlength="5"
-                               pattern="[0-9]{5}"
-                               placeholder="16125"
-                               required>
+                               placeholder="16125">
                     </div>
                 </div>
 
@@ -679,14 +664,14 @@
 
                 <!-- Confirmation Checkboxes -->
                 <div class="form-check mb-3">
-                    <input class="form-check-input" type="checkbox" id="confirmData" required>
+                    <input class="form-check-input" type="checkbox" id="confirmData">
                     <label class="form-check-label" for="confirmData">
                         Saya telah memverifikasi semua data di atas sudah benar dan sesuai
                     </label>
                 </div>
                 
                 <div class="form-check mb-4">
-                    <input class="form-check-input" type="checkbox" id="confirmPrivacy" required>
+                    <input class="form-check-input" type="checkbox" id="confirmPrivacy">
                     <label class="form-check-label" for="confirmPrivacy">
                         Saya setuju data ini disimpan sesuai peraturan perlindungan data pribadi
                     </label>
@@ -746,7 +731,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script>
-        // Configuration - GANTI DENGAN DATA ANDA
+        // Configuration
         const CONFIG = {
             WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxaFi_SYb6hr0HBgPn_FlexA-lIeIsLoWQC2-i8rAK12ysSCyEDGd2gQ_kA2ghkQ7DRLw/exec'
         };
@@ -773,7 +758,29 @@
             
             // Initialize date pickers
             initializeDatePickers();
+            
+            // Setup uppercase conversion
+            setupUppercaseInputs();
         });
+        
+        // Setup uppercase conversion for inputs
+        function setupUppercaseInputs() {
+            // For all uppercase-input class elements
+            document.addEventListener('input', function(e) {
+                if (e.target.classList.contains('uppercase-input')) {
+                    e.target.value = e.target.value.toUpperCase();
+                }
+                
+                // Special handling for name fields
+                if (e.target.classList.contains('member-name') || 
+                    e.target.classList.contains('member-birthplace') ||
+                    e.target.classList.contains('member-job') ||
+                    e.target.classList.contains('member-father') ||
+                    e.target.classList.contains('member-mother')) {
+                    e.target.value = e.target.value.toUpperCase();
+                }
+            });
+        }
         
         // Initialize date pickers
         function initializeDatePickers() {
@@ -786,10 +793,6 @@
         
         // Step Navigation
         function nextStep(step) {
-            if (!validateStep(currentStep)) {
-                return;
-            }
-            
             // Hide current step
             document.getElementById(`step${currentStep}Content`).style.display = 'none';
             document.getElementById(`step${currentStep}`).classList.remove('active');
@@ -829,148 +832,9 @@
             document.getElementById('progressBar').style.width = `${progress}%`;
         }
         
-        // Step Validation
+        // Step Validation - REMOVED ALL VALIDATION
         function validateStep(step) {
-            switch(step) {
-                case 1:
-                    return validateStep1();
-                case 2:
-                    return validateStep2();
-                case 3:
-                    return validateStep3();
-                default:
-                    return true;
-            }
-        }
-        
-        function validateStep1() {
-            const namaPetugas = document.getElementById('namaPetugas').value;
-            const sumberData = document.getElementById('sumberData').value;
-            const noKK = document.getElementById('noKK').value;
-            
-            if (!namaPetugas) {
-                alert('Pilih nama petugas terlebih dahulu');
-                document.getElementById('namaPetugas').focus();
-                return false;
-            }
-            
-            if (!sumberData) {
-                alert('Pilih sumber data terlebih dahulu');
-                document.getElementById('sumberData').focus();
-                return false;
-            }
-            
-            if (!noKK || noKK.length !== 16) {
-                alert('Nomor KK harus 16 digit');
-                document.getElementById('noKK').focus();
-                return false;
-            }
-            
-            // Check if KK already exists
-            if (document.getElementById('kkWarning').style.display === 'block') {
-                alert('Nomor KK sudah terdaftar. Silakan edit data yang sudah ada.');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        function validateStep2() {
-            const requiredFields = [
-                {id: 'alamat', name: 'Alamat Lengkap'},
-                {id: 'rt', name: 'RT'},
-                {id: 'rw', name: 'RW'},
-                {id: 'kelurahan', name: 'Kelurahan'},
-                {id: 'kecamatan', name: 'Kecamatan'},
-                {id: 'kotaKabupaten', name: 'Kota/Kabupaten'},
-                {id: 'provinsi', name: 'Provinsi'},
-                {id: 'kodePos', name: 'Kode Pos'}
-            ];
-            
-            for (const field of requiredFields) {
-                const element = document.getElementById(field.id);
-                if (!element.value.trim()) {
-                    alert(`Field "${field.name}" harus diisi`);
-                    element.focus();
-                    return false;
-                }
-            }
-            
-            // Validate RT/RW format
-            const rt = document.getElementById('rt').value;
-            const rw = document.getElementById('rw').value;
-            if (!/^\d{3}$/.test(rt)) {
-                alert('RT harus 3 digit angka (contoh: 001)');
-                document.getElementById('rt').focus();
-                return false;
-            }
-            if (!/^\d{3}$/.test(rw)) {
-                alert('RW harus 3 digit angka (contoh: 002)');
-                document.getElementById('rw').focus();
-                return false;
-            }
-            
-            // Validate Kode Pos
-            const kodePos = document.getElementById('kodePos').value;
-            if (!/^\d{5}$/.test(kodePos)) {
-                alert('Kode Pos harus 5 digit angka');
-                document.getElementById('kodePos').focus();
-                return false;
-            }
-            
-            return true;
-        }
-        
-        function validateStep3() {
-            if (members.length === 0) {
-                alert('Minimal ada 1 anggota keluarga (Kepala Keluarga)');
-                return false;
-            }
-            
-            // Check if kepala keluarga exists
-            const kepalaKeluarga = members.find(m => m.statusHubungan === 'Kepala Keluarga');
-            if (!kepalaKeluarga) {
-                alert('Harus ada Kepala Keluarga');
-                return false;
-            }
-            
-            // Validate each member
-            for (let i = 0; i < members.length; i++) {
-                const member = members[i];
-                const memberNumber = i + 1;
-                
-                if (!member.namaLengkap || !member.namaLengkap.trim()) {
-                    alert(`Anggota ${memberNumber}: Nama Lengkap harus diisi`);
-                    document.getElementById(`nama${memberNumber}`).focus();
-                    return false;
-                }
-                
-                if (!member.nik || member.nik.length !== 16) {
-                    alert(`Anggota ${memberNumber}: NIK harus 16 digit`);
-                    document.getElementById(`nik${memberNumber}`).focus();
-                    return false;
-                }
-                
-                if (!member.jenisKelamin) {
-                    alert(`Anggota ${memberNumber}: Jenis Kelamin harus dipilih`);
-                    document.getElementById(`gender${memberNumber}`).focus();
-                    return false;
-                }
-                
-                if (!member.agama) {
-                    alert(`Anggota ${memberNumber}: Agama harus dipilih`);
-                    document.getElementById(`agama${memberNumber}`).focus();
-                    return false;
-                }
-                
-                if (!member.tanggalLahir) {
-                    alert(`Anggota ${memberNumber}: Tanggal Lahir harus diisi`);
-                    document.getElementById(`tanggalLahir${memberNumber}`).focus();
-                    return false;
-                }
-            }
-            
-            return true;
+            return true; // No validation required
         }
         
         // Check KK in Database
@@ -978,7 +842,7 @@
             const noKK = document.getElementById('noKK').value;
             
             if (!noKK || noKK.length !== 16) {
-                alert('Masukkan nomor KK 16 digit terlebih dahulu');
+                alert('Nomor KK harus 16 digit');
                 return;
             }
             
@@ -1016,21 +880,18 @@
         // Save Family Data (temporary)
         function saveFamilyData() {
             familyData = {
-                namaPetugas: document.getElementById('namaPetugas').value,
-                sumberData: document.getElementById('sumberData').value,
-                noKK: document.getElementById('noKK').value,
-                alamat: document.getElementById('alamat').value,
-                rt: document.getElementById('rt').value,
-                rw: document.getElementById('rw').value,
-                kelurahan: document.getElementById('kelurahan').value,
-                kecamatan: document.getElementById('kecamatan').value,
-                kotaKabupaten: document.getElementById('kotaKabupaten').value,
-                provinsi: document.getElementById('provinsi').value,
-                kodePos: document.getElementById('kodePos').value
+                namaPetugas: document.getElementById('namaPetugas').value || '',
+                sumberData: document.getElementById('sumberData').value || '',
+                noKK: document.getElementById('noKK').value || '',
+                alamat: document.getElementById('alamat').value || '',
+                rt: document.getElementById('rt').value || '',
+                rw: document.getElementById('rw').value || '',
+                kelurahan: document.getElementById('kelurahan').value || '',
+                kecamatan: document.getElementById('kecamatan').value || '',
+                kotaKabupaten: document.getElementById('kotaKabupaten').value || '',
+                provinsi: document.getElementById('provinsi').value || '',
+                kodePos: document.getElementById('kodePos').value || ''
             };
-            
-            // Collect all member data
-            collectMemberData();
         }
         
         // Add Member Card
@@ -1080,7 +941,7 @@
                             <div class="row">
                                 <!-- Hubungan Keluarga -->
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label-custom required-field">Status Hubungan Keluarga</label>
+                                    <label class="form-label-custom">Status Hubungan Keluarga</label>
                                     <select class="form-select form-select-custom member-relation" 
                                             id="hubungan${memberNumber}" 
                                             onchange="updateRelation(${memberNumber})"
@@ -1098,7 +959,7 @@
                                 
                                 <!-- Status Anggota -->
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label-custom required-field">Status Anggota</label>
+                                    <label class="form-label-custom">Status Anggota</label>
                                     <select class="form-select form-select-custom member-status" 
                                             id="statusAnggota${memberNumber}"
                                             onchange="updateStatusDisplay(${memberNumber})">
@@ -1125,14 +986,14 @@
                             
                             <div class="row">
                                 <div class="col-md-8 mb-3">
-                                    <label class="form-label-custom required-field">Nama Lengkap</label>
-                                    <input type="text" class="form-control form-control-custom member-name" 
-                                           id="nama${memberNumber}" placeholder="Nama sesuai KTP" required>
+                                    <label class="form-label-custom">Nama Lengkap</label>
+                                    <input type="text" class="form-control form-control-custom uppercase-input member-name" 
+                                           id="nama${memberNumber}" placeholder="NAMA SESUAI KTP">
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label-custom required-field">Jenis Kelamin</label>
-                                    <select class="form-select form-select-custom member-gender" id="gender${memberNumber}" required>
-                                        <option value="" selected disabled>Pilih...</option>
+                                    <label class="form-label-custom">Jenis Kelamin</label>
+                                    <select class="form-select form-select-custom member-gender" id="gender${memberNumber}">
+                                        <option value="" selected>Pilih...</option>
                                         <option value="Laki-laki">Laki-laki</option>
                                         <option value="Perempuan">Perempuan</option>
                                     </select>
@@ -1141,27 +1002,27 @@
                             
                             <div class="row">
                                 <div class="col-md-6 mb-3">
-                                    <label class="form-label-custom required-field">NIK</label>
+                                    <label class="form-label-custom">NIK</label>
                                     <input type="text" class="form-control form-control-custom member-nik" 
-                                           id="nik${memberNumber}" maxlength="16" placeholder="16 digit NIK" required>
+                                           id="nik${memberNumber}" maxlength="16" placeholder="16 digit NIK">
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label-custom required-field">Tempat Lahir</label>
-                                    <input type="text" class="form-control form-control-custom member-birthplace" 
-                                           id="tempatLahir${memberNumber}" placeholder="Kota Kelahiran" required>
+                                    <label class="form-label-custom">Tempat Lahir</label>
+                                    <input type="text" class="form-control form-control-custom uppercase-input member-birthplace" 
+                                           id="tempatLahir${memberNumber}" placeholder="KOTA KELAHIRAN">
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label-custom required-field">Tanggal Lahir</label>
+                                    <label class="form-label-custom">Tanggal Lahir</label>
                                     <input type="text" class="form-control form-control-custom date-picker member-birthdate" 
-                                           id="tanggalLahir${memberNumber}" placeholder="YYYY-MM-DD" required>
+                                           id="tanggalLahir${memberNumber}" placeholder="YYYY-MM-DD">
                                 </div>
                             </div>
                             
                             <div class="row">
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label-custom required-field">Agama</label>
-                                    <select class="form-select form-select-custom member-religion" id="agama${memberNumber}" required>
-                                        <option value="" selected disabled>Pilih...</option>
+                                    <label class="form-label-custom">Agama</label>
+                                    <select class="form-select form-select-custom member-religion" id="agama${memberNumber}">
+                                        <option value="" selected>Pilih...</option>
                                         <option value="Islam">Islam</option>
                                         <option value="Kristen">Kristen</option>
                                         <option value="Katolik">Katolik</option>
@@ -1171,9 +1032,9 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label-custom required-field">Pendidikan</label>
-                                    <select class="form-select form-select-custom member-education" id="pendidikan${memberNumber}" required>
-                                        <option value="" selected disabled>Pilih...</option>
+                                    <label class="form-label-custom">Pendidikan</label>
+                                    <select class="form-select form-select-custom member-education" id="pendidikan${memberNumber}">
+                                        <option value="" selected>Pilih...</option>
                                         <option value="Tidak Sekolah">Tidak Sekolah</option>
                                         <option value="SD">SD</option>
                                         <option value="SMP">SMP</option>
@@ -1184,14 +1045,14 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label-custom required-field">Pekerjaan</label>
-                                    <input type="text" class="form-control form-control-custom member-job" 
-                                           id="pekerjaan${memberNumber}" placeholder="Pekerjaan" required>
+                                    <label class="form-label-custom">Pekerjaan</label>
+                                    <input type="text" class="form-control form-control-custom uppercase-input member-job" 
+                                           id="pekerjaan${memberNumber}" placeholder="PEKERJAAN">
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="form-label-custom required-field">Golongan Darah</label>
-                                    <select class="form-select form-select-custom member-blood" id="golDarah${memberNumber}" required>
-                                        <option value="" selected disabled>Pilih...</option>
+                                    <label class="form-label-custom">Golongan Darah</label>
+                                    <select class="form-select form-select-custom member-blood" id="golDarah${memberNumber}">
+                                        <option value="" selected>Pilih...</option>
                                         <option value="A">A</option>
                                         <option value="B">B</option>
                                         <option value="AB">AB</option>
@@ -1231,8 +1092,8 @@
                             
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label-custom required-field">Kewarganegaraan</label>
-                                    <select class="form-select form-select-custom member-citizen" id="kewarganegaraan${memberNumber}" required>
+                                    <label class="form-label-custom">Kewarganegaraan</label>
+                                    <select class="form-select form-select-custom member-citizen" id="kewarganegaraan${memberNumber}">
                                         <option value="Warga Negara Indonesia" selected>Warga Negara Indonesia</option>
                                         <option value="Warga Negara Asing">Warga Negara Asing</option>
                                     </select>
@@ -1261,13 +1122,13 @@
                                 <div class="row">
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label-custom">Nama Ayah</label>
-                                        <input type="text" class="form-control form-control-custom member-father" 
+                                        <input type="text" class="form-control form-control-custom uppercase-input member-father" 
                                                id="namaAyah${memberNumber}" readonly>
                                         <span class="auto-fill-badge">Auto-fill</span>
                                     </div>
                                     <div class="col-md-6 mb-3">
                                         <label class="form-label-custom">Nama Ibu</label>
-                                        <input type="text" class="form-control form-control-custom member-mother" 
+                                        <input type="text" class="form-control form-control-custom uppercase-input member-mother" 
                                                id="namaIbu${memberNumber}" readonly>
                                         <span class="auto-fill-badge">Auto-fill</span>
                                     </div>
@@ -1281,17 +1142,17 @@
                             
                             <div class="row">
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label-custom required-field">Status Kekayaan</label>
-                                    <select class="form-select form-select-custom" id="statusKekayaan${memberNumber}" required>
-                                        <option value="" selected disabled>Pilih...</option>
+                                    <label class="form-label-custom">Status Kekayaan</label>
+                                    <select class="form-select form-select-custom" id="statusKekayaan${memberNumber}">
+                                        <option value="" selected>Pilih...</option>
                                         <option value="Mampu">Mampu</option>
                                         <option value="Tidak Mampu">Tidak Mampu</option>
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label-custom required-field">Status LPS</label>
-                                    <select class="form-select form-select-custom" id="statusLPS${memberNumber}" required>
-                                        <option value="" selected disabled>Pilih...</option>
+                                    <label class="form-label-custom">Status LPS</label>
+                                    <select class="form-select form-select-custom" id="statusLPS${memberNumber}">
+                                        <option value="" selected>Pilih...</option>
                                         <option value="Peserta LPS">Peserta LPS</option>
                                         <option value="Peserta Subsidi Silang">Peserta Subsidi Silang</option>
                                         <option value="Peserta DLHK">Peserta DLHK</option>
@@ -1299,9 +1160,9 @@
                                     </select>
                                 </div>
                                 <div class="col-md-4 mb-3">
-                                    <label class="form-label-custom required-field">Status Kesehatan</label>
-                                    <select class="form-select form-select-custom" id="statusKesehatan${memberNumber}" required>
-                                        <option value="" selected disabled>Pilih...</option>
+                                    <label class="form-label-custom">Status Kesehatan</label>
+                                    <select class="form-select form-select-custom" id="statusKesehatan${memberNumber}">
+                                        <option value="" selected>Pilih...</option>
                                         <option value="Memiliki BPJS">Memiliki BPJS</option>
                                         <option value="Memiliki BPJS dan BPJS Ketenagakerjaan">Memiliki BPJS dan BPJS Ketenagakerjaan</option>
                                         <option value="Tidak Memiliki BPJS">Tidak Memiliki BPJS</option>
@@ -1396,11 +1257,11 @@
             const isteri = members.find(m => m.statusHubungan === 'Isteri');
             
             if (kepalaKeluarga) {
-                document.getElementById(`namaAyah${memberNumber}`).value = kepalaKeluarga.namaLengkap;
+                document.getElementById(`namaAyah${memberNumber}`).value = kepalaKeluarga.namaLengkap || '';
             }
             
             if (isteri) {
-                document.getElementById(`namaIbu${memberNumber}`).value = isteri.namaLengkap;
+                document.getElementById(`namaIbu${memberNumber}`).value = isteri.namaLengkap || '';
             }
         }
         
@@ -1491,28 +1352,35 @@
                 if (!card) continue;
                 
                 const member = {
-                    statusHubungan: document.getElementById(`hubungan${i}`).value,
-                    statusAnggota: document.getElementById(`statusAnggota${i}`).value,
-                    namaLengkap: document.getElementById(`nama${i}`).value,
-                    nik: document.getElementById(`nik${i}`).value,
-                    jenisKelamin: document.getElementById(`gender${i}`).value,
-                    tempatLahir: document.getElementById(`tempatLahir${i}`).value,
-                    tanggalLahir: document.getElementById(`tanggalLahir${i}`).value,
-                    agama: document.getElementById(`agama${i}`).value,
-                    pendidikan: document.getElementById(`pendidikan${i}`).value,
-                    pekerjaan: document.getElementById(`pekerjaan${i}`).value,
-                    golDarah: document.getElementById(`golDarah${i}`).value,
-                    statusPerkawinan: document.getElementById(`statusPerkawinan${i}`).value,
-                    tanggalPerkawinan: document.getElementById(`tanggalPerkawinan${i}`).value,
-                    kewarganegaraan: document.getElementById(`kewarganegaraan${i}`).value,
-                    noPaspor: document.getElementById(`noPaspor${i}`).value,
-                    nokitap: document.getElementById(`nokitap${i}`).value,
-                    namaAyah: document.getElementById(`namaAyah${i}`).value,
-                    namaIbu: document.getElementById(`namaIbu${i}`).value,
-                    statusKekayaan: document.getElementById(`statusKekayaan${i}`).value,
-                    statusLPS: document.getElementById(`statusLPS${i}`).value,
-                    statusKesehatan: document.getElementById(`statusKesehatan${i}`).value
+                    statusHubungan: document.getElementById(`hubungan${i}`)?.value || '',
+                    statusAnggota: document.getElementById(`statusAnggota${i}`)?.value || 'Hidup',
+                    namaLengkap: document.getElementById(`nama${i}`)?.value || '',
+                    nik: document.getElementById(`nik${i}`)?.value || '',
+                    jenisKelamin: document.getElementById(`gender${i}`)?.value || '',
+                    tempatLahir: document.getElementById(`tempatLahir${i}`)?.value || '',
+                    tanggalLahir: document.getElementById(`tanggalLahir${i}`)?.value || '',
+                    agama: document.getElementById(`agama${i}`)?.value || '',
+                    pendidikan: document.getElementById(`pendidikan${i}`)?.value || '',
+                    pekerjaan: document.getElementById(`pekerjaan${i}`)?.value || '',
+                    golDarah: document.getElementById(`golDarah${i}`)?.value || '',
+                    statusPerkawinan: document.getElementById(`statusPerkawinan${i}`)?.value || '',
+                    tanggalPerkawinan: document.getElementById(`tanggalPerkawinan${i}`)?.value || '',
+                    kewarganegaraan: document.getElementById(`kewarganegaraan${i}`)?.value || 'Warga Negara Indonesia',
+                    noPaspor: document.getElementById(`noPaspor${i}`)?.value || '',
+                    nokitap: document.getElementById(`nokitap${i}`)?.value || '',
+                    namaAyah: document.getElementById(`namaAyah${i}`)?.value || '',
+                    namaIbu: document.getElementById(`namaIbu${i}`)?.value || '',
+                    statusKekayaan: document.getElementById(`statusKekayaan${i}`)?.value || '',
+                    statusLPS: document.getElementById(`statusLPS${i}`)?.value || '',
+                    statusKesehatan: document.getElementById(`statusKesehatan${i}`)?.value || ''
                 };
+                
+                // Convert to uppercase
+                member.namaLengkap = member.namaLengkap.toUpperCase();
+                member.tempatLahir = member.tempatLahir.toUpperCase();
+                member.pekerjaan = member.pekerjaan.toUpperCase();
+                member.namaAyah = member.namaAyah.toUpperCase();
+                member.namaIbu = member.namaIbu.toUpperCase();
                 
                 members.push(member);
             }
@@ -1526,18 +1394,18 @@
             // Update family summary
             document.getElementById('summaryData').innerHTML = `
                 <div class="col-md-6">
-                    <p><strong>Nomor KK:</strong> ${familyData.noKK}</p>
-                    <p><strong>Alamat:</strong> ${familyData.alamat}</p>
-                    <p><strong>RT/RW:</strong> ${familyData.rt}/${familyData.rw}</p>
-                    <p><strong>Kelurahan:</strong> ${familyData.kelurahan}</p>
-                    <p><strong>Petugas:</strong> ${familyData.namaPetugas}</p>
+                    <p><strong>Nomor KK:</strong> ${familyData.noKK || '-'}</p>
+                    <p><strong>Alamat:</strong> ${familyData.alamat || '-'}</p>
+                    <p><strong>RT/RW:</strong> ${familyData.rt || '-'}/${familyData.rw || '-'}</p>
+                    <p><strong>Kelurahan:</strong> ${familyData.kelurahan || '-'}</p>
+                    <p><strong>Petugas:</strong> ${familyData.namaPetugas || '-'}</p>
                 </div>
                 <div class="col-md-6">
-                    <p><strong>Kecamatan:</strong> ${familyData.kecamatan}</p>
-                    <p><strong>Kota/Kab:</strong> ${familyData.kotaKabupaten}</p>
-                    <p><strong>Provinsi:</strong> ${familyData.provinsi}</p>
-                    <p><strong>Kode Pos:</strong> ${familyData.kodePos}</p>
-                    <p><strong>Sumber Data:</strong> ${familyData.sumberData}</p>
+                    <p><strong>Kecamatan:</strong> ${familyData.kecamatan || '-'}</p>
+                    <p><strong>Kota/Kab:</strong> ${familyData.kotaKabupaten || '-'}</p>
+                    <p><strong>Provinsi:</strong> ${familyData.provinsi || '-'}</p>
+                    <p><strong>Kode Pos:</strong> ${familyData.kodePos || '-'}</p>
+                    <p><strong>Sumber Data:</strong> ${familyData.sumberData || '-'}</p>
                 </div>
             `;
             
@@ -1554,9 +1422,9 @@
                 membersHTML += `
                     <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
                         <div>
-                            <strong>${index + 1}. ${member.namaLengkap}</strong>
+                            <strong>${index + 1}. ${member.namaLengkap || 'Belum diisi'}</strong>
                             <div class="text-muted small">
-                                ${member.statusHubungan} • ${member.nik} • ${member.jenisKelamin}
+                                ${member.statusHubungan || '-'} • ${member.nik || 'NIK belum diisi'} • ${member.jenisKelamin || '-'}
                             </div>
                         </div>
                         <span class="badge ${statusClass}">
@@ -1571,24 +1439,44 @@
         
         // Submit data
         async function submitData() {
-            // Validate checkboxes
+            // Validate checkboxes (optional)
             if (!document.getElementById('confirmData').checked) {
-                alert('Harap konfirmasi verifikasi data');
-                return;
+                if (!confirm('Anda belum mencentang verifikasi data. Lanjutkan penyimpanan?')) {
+                    return;
+                }
             }
             
             if (!document.getElementById('confirmPrivacy').checked) {
-                alert('Harap setuju dengan peraturan perlindungan data');
-                return;
+                if (!confirm('Anda belum menyetujui peraturan perlindungan data. Lanjutkan penyimpanan?')) {
+                    return;
+                }
             }
             
             // Collect final data
             collectMemberData();
             
+            // Check if at least one member has data
+            const hasData = members.some(member => 
+                member.namaLengkap || member.nik || member.tempatLahir
+            );
+            
+            if (!hasData) {
+                if (!confirm('Data anggota keluarga masih kosong. Simpan data keluarga saja?')) {
+                    return;
+                }
+            }
+            
             const submitData = {
                 family: familyData,
                 anggota: members
             };
+            
+            // Convert all family text to uppercase
+            submitData.family.alamat = submitData.family.alamat.toUpperCase();
+            submitData.family.kelurahan = submitData.family.kelurahan.toUpperCase();
+            submitData.family.kecamatan = submitData.family.kecamatan.toUpperCase();
+            submitData.family.kotaKabupaten = submitData.family.kotaKabupaten.toUpperCase();
+            submitData.family.provinsi = submitData.family.provinsi.toUpperCase();
             
             showLoading();
             
