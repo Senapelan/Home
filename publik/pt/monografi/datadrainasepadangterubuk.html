@@ -465,7 +465,7 @@
                 <select id="status-filter" class="filter-select">
                     <option value="">Semua Status</option>
                     <option value="DIPROSESs">DI PROSES</option>
-                    <option value="BELUM">BELUM</option>
+                    <option value="TIDAK ADA">TIDAK ADA</option>
                 </select>
                 <select id="jenis-filter" class="filter-select">
                     <option value="">Semua Jenis</option>
@@ -646,7 +646,7 @@
             
             // Menghitung jumlah pelapor unik yang aktif
             const pelaporAktif = [...new Set(allData
-                .filter(item => item.STATUS_DRAINASE === 'Aktif')
+                .filter(item => item.TINDAKAN === 'Aktif')
                 .map(item => item.NAMA_PELAPOR)
             )].length;
             
@@ -696,7 +696,7 @@
                 const kondisiMatch = !kondisiFilter || item.KONDISI === kondisiFilter;
                 
                 // Filter berdasarkan status pelapor
-                const statusMatch = !statusFilter || item.STATUS_DRAINASE === statusFilter;
+                const statusMatch = !statusFilter || item.TINDAKAN === statusFilter;
                 
                 // Filter berdasarkan jenis
                 const jenisMatch = !jenisFilter || item.JENIS === jenisFilter;
@@ -741,8 +741,8 @@
                 
                 // Menentukan kelas CSS untuk status
                 let statusClass = '';
-                if (item.STATUS_DRAINASE === 'DI PROSES') statusClass = 'status-aktif';
-                else if (item.STATUS_DRAINASE === 'BELUM') statusClass = 'status-tidak-aktif';
+                if (item.TINDAKAN === 'DI PROSES') statusClass = 'status-aktif';
+                else if (item.TINDAKAN === 'TIDAK ADA') statusClass = 'status-tidak-aktif';
                 
                 row.innerHTML = `
                     <td>${item.NO || item.id}</td>
@@ -762,7 +762,7 @@
                     </td>
                     <td>${item.TITIK_LOKASI || '-'}</td>
                     <td>${item.NAMA_PELAPOR || '-'}</td>
-                    <td><span class="status ${statusClass}">${item.STATUS_DRAINASE || '-'}</span></td>
+                    <td><span class="status ${statusClass}">${item.TINDAKAN || '-'}</span></td>
                 `;
                 
                 tableBody.appendChild(row);
