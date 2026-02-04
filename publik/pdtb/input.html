@@ -1,1 +1,1563 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Data Keluarga Baru - Sistem Penduduk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #3b82f6;
+            --light-blue: #eff6ff;
+            --accent-blue: #60a5fa;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #2563eb 100%);
+            color: white;
+            padding: 2rem 0;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 6px 25px rgba(30, 58, 138, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-main {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header-custom {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            border-bottom: 3px solid var(--accent-blue);
+            padding: 1.5rem;
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success-custom {
+            background: linear-gradient(135deg, var(--success-green) 0%, #34d399 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .btn-warning-custom {
+            background: linear-gradient(135deg, var(--warning-orange) 0%, #fbbf24 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .member-card {
+            border: 2px solid #e0f2fe;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .member-card:hover {
+            border-color: var(--accent-blue);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .member-card-header {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .member-card-header.collapsed {
+            border-bottom: 2px solid #e0f2fe;
+        }
+        
+        .member-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-hidup { background-color: #d1fae5; color: #065f46; }
+        .status-meninggal { background-color: #fee2e2; color: #991b1b; }
+        .status-pindah { background-color: #e5e7eb; color: #374151; }
+        .status-pisah { background-color: #fed7aa; color: #9a3412; }
+        
+        .form-section {
+            padding: 25px;
+            background: white;
+        }
+        
+        .form-label-custom {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+        }
+        
+        .form-control-custom, .form-select-custom {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control-custom:focus, .form-select-custom:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: #ef4444;
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);
+            border-left: 5px solid var(--secondary-blue);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .spinner-custom {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0f2fe;
+            border-top: 5px solid var(--secondary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .stepper {
+            display: flex;
+            justify-content: space-between;
+            margin: 40px 0;
+            position: relative;
+        }
+        
+        .stepper::before {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #e5e7eb;
+            z-index: 1;
+        }
+        
+        .step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            flex: 1;
+        }
+        
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: white;
+            border: 3px solid #e5e7eb;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: bold;
+            color: #6b7280;
+        }
+        
+        .step.active .step-circle {
+            border-color: var(--secondary-blue);
+            background: var(--secondary-blue);
+            color: white;
+        }
+        
+        .step.completed .step-circle {
+            border-color: var(--success-green);
+            background: var(--success-green);
+            color: white;
+        }
+        
+        .step-label {
+            font-size: 0.9rem;
+            color: #6b7280;
+            font-weight: 500;
+        }
+        
+        .step.active .step-label {
+            color: var(--primary-blue);
+            font-weight: 600;
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.6);
+        }
+        
+        .alert-custom {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .relation-hint {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        
+        .auto-fill-badge {
+            background: #dbeafe;
+            color: var(--primary-blue);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--secondary-blue) 0%, var(--accent-blue) 100%);
+        }
+        
+        .hint-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-custom"></div>
+    </div>
 
+    <!-- Header -->
+    <div class="header-section">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-2">
+                        <i class="bi bi-house-add-fill me-3"></i>Input Data Keluarga Baru
+                    </h1>
+                    <p class="mb-0 opacity-75">Formulir Penginputan Data Kartu Keluarga</p>
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-outline-light" onclick="window.location.href='index.html'">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-4 mb-5">
+        <!-- Stepper -->
+        <div class="stepper" id="formStepper">
+            <div class="step active" id="step1">
+                <div class="step-circle">1</div>
+                <div class="step-label">Data Petugas & KK</div>
+            </div>
+            <div class="step" id="step2">
+                <div class="step-circle">2</div>
+                <div class="step-label">Alamat Keluarga</div>
+            </div>
+            <div class="step" id="step3">
+                <div class="step-circle">3</div>
+                <div class="step-label">Anggota Keluarga</div>
+            </div>
+            <div class="step" id="step4">
+                <div class="step-circle">4</div>
+                <div class="step-label">Konfirmasi</div>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress mb-4" style="height: 8px;">
+            <div class="progress-bar progress-bar-custom" id="progressBar" style="width: 25%"></div>
+        </div>
+
+        <!-- Form Container -->
+        <div class="card card-main">
+            <!-- Step 1: Petugas & KK -->
+            <div class="form-section" id="step1Content">
+                <h3 class="mb-4 text-primary">
+                    <i class="bi bi-person-badge me-2"></i>Data Petugas & Kartu Keluarga
+                </h3>
+                
+                <div class="info-box">
+                    <h6 class="fw-bold mb-2">
+                        <i class="bi bi-info-circle me-2"></i>Informasi Penting:
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Pastikan nomor KK valid 16 digit</li>
+                        <li>Data petugas wajib diisi untuk audit trail</li>
+                        <li>KK akan dicek otomatis di database</li>
+                        <li>Field bertanda <span class="text-danger">*</span> wajib diisi</li>
+                    </ul>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Nama Petugas Penginput</label>
+                        <select class="form-select form-select-custom" id="namaPetugas" required>
+                            <option value="" selected disabled>Pilih Petugas...</option>
+                            <option value="Admin Kelurahan">Admin Kelurahan</option>
+                            <option value="Petugas Lapangan">Petugas Lapangan</option>
+                            <option value="Petugas Sensus">Petugas Sensus</option>
+                            <option value="Operator Data">Operator Data</option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Sumber Data</label>
+                        <select class="form-select form-select-custom" id="sumberData" required>
+                            <option value="" selected disabled>Pilih Sumber...</option>
+                            <option value="Registrasi di kantor Lurah">Registrasi di kantor Lurah</option>
+                            <option value="Pendataan langsung">Pendataan langsung</option>
+                            <option value="Melalui Survey">Melalui Survey</option>
+                            <option value="Melalui WEB">Melalui WEB</option>
+                            <option value="Melalui Sensus">Melalui Sensus</option>
+                            <option value="Data Migrasi">Data Migrasi</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Nomor Kartu Keluarga (KK)</label>
+                        <input type="text" 
+                               class="form-control form-control-custom" 
+                               id="noKK" 
+                               maxlength="16"
+                               pattern="[0-9]{16}"
+                               placeholder="16 digit angka"
+                               required>
+                        <div class="hint-text">
+                            <i class="bi bi-exclamation-circle me-1"></i>
+                            Contoh: 3273010101010001
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-end h-100">
+                            <button class="btn btn-primary-custom w-100" onclick="checkKK()" id="btnCekKK">
+                                <i class="bi bi-search me-2"></i>Cek KK di Database
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning alert-custom mt-3" id="kkWarning" style="display: none;">
+                    <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                    <strong>Perhatian!</strong> Nomor KK ini sudah terdaftar. 
+                    <a href="#" class="alert-link" onclick="redirectToEdit()">Klik untuk edit data</a>
+                </div>
+
+                <div class="alert alert-success alert-custom mt-3" id="kkSuccess" style="display: none;">
+                    <i class="bi bi-check-circle-fill me-2"></i>
+                    <strong>KK tersedia!</strong> Silakan lanjutkan pengisian data.
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button class="btn btn-outline-secondary" onclick="window.location.href='index.html'">
+                        <i class="bi bi-x-circle me-2"></i>Batal
+                    </button>
+                    <button class="btn btn-primary-custom" onclick="nextStep(2)" id="btnNext1">
+                        Lanjut <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Alamat Keluarga -->
+            <div class="form-section" id="step2Content" style="display: none;">
+                <h3 class="mb-4 text-primary">
+                    <i class="bi bi-geo-alt-fill me-2"></i>Alamat Tempat Tinggal
+                </h3>
+
+                <div class="info-box">
+                    <h6 class="fw-bold mb-2">
+                        <i class="bi bi-lightbulb-fill me-2"></i>Tips Pengisian:
+                    </h6>
+                    <ul class="mb-0">
+                        <li>Alamat sesuai KTP/Kartu Keluarga</li>
+                        <li>RT/RW sesuai data kelurahan</li>
+                        <li>Kode pos akan memvalidasi wilayah</li>
+                        <li>Data alamat akan otomatis ke semua anggota</li>
+                    </ul>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label-custom required-field">Alamat Lengkap</label>
+                        <textarea class="form-control form-control-custom" 
+                                  id="alamat" 
+                                  rows="2" 
+                                  placeholder="Jl. Merdeka No. 123, Gang Melati"
+                                  required></textarea>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">RT</label>
+                        <input type="text" 
+                               class="form-control form-control-custom" 
+                               id="rt" 
+                               maxlength="3"
+                               placeholder="001"
+                               required>
+                    </div>
+                    
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">RW</label>
+                        <input type="text" 
+                               class="form-control form-control-custom" 
+                               id="rw" 
+                               maxlength="3"
+                               placeholder="002"
+                               required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Kelurahan</label>
+                        <input type="text" 
+                               class="form-control form-control-custom" 
+                               id="kelurahan" 
+                               placeholder="Kelurahan Sukajadi"
+                               required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Kecamatan</label>
+                        <input type="text" 
+                               class="form-control form-control-custom" 
+                               id="kecamatan" 
+                               placeholder="Kecamatan Bogor Tengah"
+                               required>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Kota/Kabupaten</label>
+                        <input type="text" 
+                               class="form-control form-control-custom" 
+                               id="kotaKabupaten" 
+                               placeholder="Kota Bogor"
+                               required>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Provinsi</label>
+                        <select class="form-select form-select-custom" id="provinsi" required>
+                            <option value="" selected disabled>Pilih Provinsi...</option>
+                            <option value="DKI Jakarta">DKI Jakarta</option>
+                            <option value="Jawa Barat">Jawa Barat</option>
+                            <option value="Jawa Tengah">Jawa Tengah</option>
+                            <option value="Jawa Timur">Jawa Timur</option>
+                            <option value="Banten">Banten</option>
+                            <option value="DI Yogyakarta">DI Yogyakarta</option>
+                            <option value="Bali">Bali</option>
+                            <!-- Tambahkan provinsi lain sesuai kebutuhan -->
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Kode Pos</label>
+                        <input type="text" 
+                               class="form-control form-control-custom" 
+                               id="kodePos" 
+                               maxlength="5"
+                               pattern="[0-9]{5}"
+                               placeholder="16125"
+                               required>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button class="btn btn-outline-secondary" onclick="prevStep(1)">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </button>
+                    <button class="btn btn-primary-custom" onclick="nextStep(3)">
+                        Lanjut <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 3: Anggota Keluarga -->
+            <div class="form-section" id="step3Content" style="display: none;">
+                <h3 class="mb-4 text-primary">
+                    <i class="bi bi-people-fill me-2"></i>Data Anggota Keluarga
+                </h3>
+
+                <div class="alert alert-info alert-custom mb-4">
+                    <i class="bi bi-info-circle-fill me-2"></i>
+                    <strong>Urutan Pengisian:</strong> 1. Kepala Keluarga → 2. Isteri → 3. Anak → 4. Orang Tua → 5. Menantu → 6. Family Lain
+                </div>
+
+                <!-- Member Cards Container -->
+                <div id="memberCardsContainer">
+                    <!-- Kartu anggota akan ditambahkan secara dinamis -->
+                </div>
+
+                <!-- Add Member Button -->
+                <div class="text-center mb-4">
+                    <button class="btn btn-success-custom" onclick="addMemberCard()" id="btnAddMember">
+                        <i class="bi bi-person-plus me-2"></i>Tambah Anggota Keluarga
+                    </button>
+                    <div class="hint-text mt-2">
+                        Maksimal 10 anggota per keluarga
+                    </div>
+                </div>
+
+                <!-- Status Legend -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h6 class="mb-3 fw-bold">Keterangan Status Anggota:</h6>
+                        <div class="d-flex flex-wrap gap-2">
+                            <span class="status-badge status-hidup">
+                                <i class="bi bi-heart-fill me-1"></i>Hidup
+                            </span>
+                            <span class="status-badge status-meninggal">
+                                <i class="bi bi-x-circle-fill me-1"></i>Meninggal
+                            </span>
+                            <span class="status-badge status-pindah">
+                                <i class="bi bi-arrow-right-circle-fill me-1"></i>Pindah
+                            </span>
+                            <span class="status-badge status-pisah">
+                                <i class="bi bi-slash-circle-fill me-1"></i>Pisah KK
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button class="btn btn-outline-secondary" onclick="prevStep(2)">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </button>
+                    <button class="btn btn-primary-custom" onclick="nextStep(4)">
+                        Lanjut <i class="bi bi-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 4: Konfirmasi -->
+            <div class="form-section" id="step4Content" style="display: none;">
+                <h3 class="mb-4 text-primary">
+                    <i class="bi bi-check-circle-fill me-2"></i>Konfirmasi Data
+                </h3>
+
+                <div class="alert alert-success alert-custom mb-4">
+                    <i class="bi bi-check-lg me-2"></i>
+                    <strong>Data siap disimpan!</strong> Review semua data sebelum submit.
+                </div>
+
+                <!-- Summary Data -->
+                <div class="card card-main mb-4">
+                    <div class="card-header-custom">
+                        <h5 class="mb-0">Ringkasan Data Keluarga</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row" id="summaryData">
+                            <!-- Data ringkasan akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anggota Summary -->
+                <div class="card card-main mb-4">
+                    <div class="card-header-custom">
+                        <h5 class="mb-0">Daftar Anggota Keluarga</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="summaryMembers">
+                            <!-- Daftar anggota akan diisi oleh JavaScript -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Confirmation Checkboxes -->
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="confirmData" required>
+                    <label class="form-check-label" for="confirmData">
+                        Saya telah memverifikasi semua data di atas sudah benar dan sesuai
+                    </label>
+                </div>
+                
+                <div class="form-check mb-4">
+                    <input class="form-check-input" type="checkbox" id="confirmPrivacy" required>
+                    <label class="form-check-label" for="confirmPrivacy">
+                        Saya setuju data ini disimpan sesuai peraturan perlindungan data pribadi
+                    </label>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <button class="btn btn-outline-secondary" onclick="prevStep(3)">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </button>
+                    <button class="btn btn-success-custom" onclick="submitData()" id="btnSubmit">
+                        <i class="bi bi-save-fill me-2"></i>Simpan Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Button -->
+    <div class="floating-btn" onclick="window.location.href='index.html'" title="Kembali ke Beranda">
+        <i class="bi bi-house-door"></i>
+    </div>
+
+    <!-- Modal Success -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle-fill me-2"></i>Berhasil!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-5">
+                    <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                    <h4 class="mt-4 mb-3">Data Berhasil Disimpan!</h4>
+                    <p class="text-muted mb-4">Data keluarga telah tersimpan di database.</p>
+                    <div class="alert alert-info text-start">
+                        <strong>ID Keluarga:</strong> <span id="generatedFamilyId">KK-001</span><br>
+                        <strong>Jumlah Anggota:</strong> <span id="totalMembers">0</span> orang<br>
+                        <strong>Waktu:</strong> <span id="saveTimestamp"></span>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary-custom" data-bs-dismiss="modal" onclick="window.location.href='index.html'">
+                        <i class="bi bi-house me-2"></i>Kembali ke Beranda
+                    </button>
+                    <button type="button" class="btn btn-outline-primary" onclick="printData()">
+                        <i class="bi bi-printer me-2"></i>Cetak Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+    <script>
+        // Global Variables
+        let currentStep = 1;
+        let members = [];
+        let totalMembers = 0;
+        let familyData = {};
+        
+        // Initialize date pickers
+        flatpickr(".date-picker", {
+            dateFormat: "Y-m-d",
+            locale: "id",
+            maxDate: "today"
+        });
+        
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-load KK from previous page
+            const savedKK = localStorage.getItem('noKKBaru');
+            if (savedKK) {
+                document.getElementById('noKK').value = savedKK;
+                localStorage.removeItem('noKKBaru');
+            }
+            
+            // Add first member card (Kepala Keluarga)
+            addMemberCard(true);
+        });
+        
+        // Step Navigation
+        function nextStep(step) {
+            if (!validateStep(currentStep)) {
+                return;
+            }
+            
+            // Hide current step
+            document.getElementById(`step${currentStep}Content`).style.display = 'none';
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // Show next step
+            currentStep = step;
+            document.getElementById(`step${currentStep}Content`).style.display = 'block';
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            // Update progress bar
+            const progress = (step / 4) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            
+            // If going to step 3, save family data
+            if (step === 3) {
+                saveFamilyData();
+            }
+            
+            // If going to step 4, show summary
+            if (step === 4) {
+                showSummary();
+            }
+        }
+        
+        function prevStep(step) {
+            // Hide current step
+            document.getElementById(`step${currentStep}Content`).style.display = 'none';
+            document.getElementById(`step${currentStep}`).classList.remove('active');
+            
+            // Show previous step
+            currentStep = step;
+            document.getElementById(`step${currentStep}Content`).style.display = 'block';
+            document.getElementById(`step${currentStep}`).classList.add('active');
+            
+            // Update progress bar
+            const progress = (step / 4) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+        }
+        
+        // Step Validation
+        function validateStep(step) {
+            switch(step) {
+                case 1:
+                    return validateStep1();
+                case 2:
+                    return validateStep2();
+                case 3:
+                    return validateStep3();
+                default:
+                    return true;
+            }
+        }
+        
+        function validateStep1() {
+            const namaPetugas = document.getElementById('namaPetugas').value;
+            const sumberData = document.getElementById('sumberData').value;
+            const noKK = document.getElementById('noKK').value;
+            
+            if (!namaPetugas) {
+                alert('Pilih nama petugas terlebih dahulu');
+                return false;
+            }
+            
+            if (!sumberData) {
+                alert('Pilih sumber data terlebih dahulu');
+                return false;
+            }
+            
+            if (!noKK || noKK.length !== 16) {
+                alert('Nomor KK harus 16 digit');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        function validateStep2() {
+            const requiredFields = ['alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 'kotaKabupaten', 'provinsi', 'kodePos'];
+            
+            for (const field of requiredFields) {
+                const element = document.getElementById(field);
+                if (!element.value.trim()) {
+                    alert(`Field ${element.previousElementSibling.textContent} harus diisi`);
+                    element.focus();
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        function validateStep3() {
+            if (members.length === 0) {
+                alert('Minimal ada 1 anggota keluarga (Kepala Keluarga)');
+                return false;
+            }
+            
+            // Check if kepala keluarga exists
+            const kepalaKeluarga = members.find(m => m.statusHubungan === 'Kepala Keluarga');
+            if (!kepalaKeluarga) {
+                alert('Harus ada Kepala Keluarga');
+                return false;
+            }
+            
+            // Validate each member
+            for (const member of members) {
+                if (!member.namaLengkap || !member.nik) {
+                    alert('Semua anggota harus memiliki nama dan NIK');
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Check KK in Database
+        async function checkKK() {
+            const noKK = document.getElementById('noKK').value;
+            
+            if (!noKK || noKK.length !== 16) {
+                alert('Masukkan nomor KK 16 digit terlebih dahulu');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                // Simulate API call
+                setTimeout(() => {
+                    // For demo: 30% chance KK exists
+                    const exists = Math.random() < 0.3;
+                    
+                    if (exists) {
+                        document.getElementById('kkWarning').style.display = 'block';
+                        document.getElementById('kkSuccess').style.display = 'none';
+                        document.getElementById('btnNext1').disabled = true;
+                    } else {
+                        document.getElementById('kkWarning').style.display = 'none';
+                        document.getElementById('kkSuccess').style.display = 'block';
+                        document.getElementById('btnNext1').disabled = false;
+                    }
+                    
+                    hideLoading();
+                }, 1000);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat mengecek KK');
+                hideLoading();
+            }
+        }
+        
+        function redirectToEdit() {
+            const noKK = document.getElementById('noKK').value;
+            localStorage.setItem('editKK', noKK);
+            window.location.href = 'edit.html';
+        }
+        
+        // Save Family Data (temporary)
+        function saveFamilyData() {
+            familyData = {
+                namaPetugas: document.getElementById('namaPetugas').value,
+                sumberData: document.getElementById('sumberData').value,
+                noKK: document.getElementById('noKK').value,
+                alamat: document.getElementById('alamat').value,
+                rt: document.getElementById('rt').value,
+                rw: document.getElementById('rw').value,
+                kelurahan: document.getElementById('kelurahan').value,
+                kecamatan: document.getElementById('kecamatan').value,
+                kotaKabupaten: document.getElementById('kotaKabupaten').value,
+                provinsi: document.getElementById('provinsi').value,
+                kodePos: document.getElementById('kodePos').value
+            };
+        }
+        
+        // Add Member Card
+        function addMemberCard(isFirst = false) {
+            if (totalMembers >= 10) {
+                alert('Maksimal 10 anggota per keluarga');
+                return;
+            }
+            
+            totalMembers++;
+            const memberNumber = totalMembers;
+            
+            // Determine default values
+            let defaultHubungan = 'Kepala Keluarga';
+            let defaultStatus = 'Hidup';
+            let isKepalaDisabled = false;
+            
+            if (!isFirst) {
+                // Check if kepala keluarga already exists
+                const existingKepala = members.find(m => m.statusHubungan === 'Kepala Keluarga');
+                defaultHubungan = existingKepala ? 'Isteri' : 'Kepala Keluarga';
+                isKepalaDisabled = !!existingKepala;
+            }
+            
+            // Create card HTML
+            const cardHTML = `
+                <div class="member-card" id="memberCard${memberNumber}">
+                    <div class="member-card-header" data-bs-toggle="collapse" 
+                         data-bs-target="#memberCollapse${memberNumber}" aria-expanded="true">
+                        <span class="member-number">${memberNumber}</span>
+                        <strong>Anggota ${memberNumber}</strong>
+                        <span class="badge bg-primary ms-2" id="memberStatusBadge${memberNumber}">${defaultHubungan}</span>
+                        <span class="status-badge status-hidup ms-2" id="statusDisplay${memberNumber}">
+                            <i class="bi bi-heart-fill me-1"></i>${defaultStatus}
+                        </span>
+                        <i class="bi bi-chevron-down float-end"></i>
+                    </div>
+                    
+                    <div class="collapse show" id="memberCollapse${memberNumber}" data-bs-parent="#memberCardsContainer">
+                        <div class="p-4">
+                            <!-- Relationship Hint -->
+                            <div class="relation-hint" id="relationHint${memberNumber}">
+                                <i class="bi bi-lightbulb me-2"></i>
+                                ${getRelationHint(defaultHubungan)}
+                            </div>
+                            
+                            <div class="row">
+                                <!-- Hubungan Keluarga -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom required-field">Status Hubungan Keluarga</label>
+                                    <select class="form-select form-select-custom member-relation" 
+                                            id="hubungan${memberNumber}" 
+                                            onchange="updateRelation(${memberNumber})"
+                                            ${isKepalaDisabled && defaultHubungan === 'Kepala Keluarga' ? 'disabled' : ''}>
+                                        <option value="Kepala Keluarga" ${defaultHubungan === 'Kepala Keluarga' ? 'selected' : ''}>
+                                            Kepala Keluarga
+                                        </option>
+                                        <option value="Isteri" ${defaultHubungan === 'Isteri' ? 'selected' : ''}>Isteri</option>
+                                        <option value="Anak">Anak</option>
+                                        <option value="Orang Tua">Orang Tua</option>
+                                        <option value="Menantu">Menantu</option>
+                                        <option value="Family Lain">Family Lain</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Status Anggota -->
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom required-field">Status Anggota</label>
+                                    <select class="form-select form-select-custom member-status" 
+                                            id="statusAnggota${memberNumber}"
+                                            onchange="updateStatusDisplay(${memberNumber})">
+                                        <option value="Hidup" selected>Hidup</option>
+                                        <option value="Meninggal">Meninggal</option>
+                                        <option value="Pindah">Pindah</option>
+                                        <option value="Pisah KK">Pisah KK</option>
+                                    </select>
+                                </div>
+                                
+                                <!-- Remove Button -->
+                                <div class="col-md-4 mb-3 d-flex align-items-end">
+                                    <button class="btn btn-outline-danger w-100" onclick="removeMember(${memberNumber})"
+                                            ${memberNumber === 1 ? 'disabled' : ''}>
+                                        <i class="bi bi-trash me-2"></i>Hapus Anggota
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Basic Identity -->
+                            <h6 class="mt-4 mb-3 text-primary">
+                                <i class="bi bi-person-vcard me-2"></i>Identitas Dasar
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-8 mb-3">
+                                    <label class="form-label-custom required-field">Nama Lengkap</label>
+                                    <input type="text" class="form-control form-control-custom member-name" 
+                                           id="nama${memberNumber}" placeholder="Nama sesuai KTP" required>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom required-field">Jenis Kelamin</label>
+                                    <select class="form-select form-select-custom member-gender" id="gender${memberNumber}" required>
+                                        <option value="" selected disabled>Pilih...</option>
+                                        <option value="Laki-laki">Laki-laki</option>
+                                        <option value="Perempuan">Perempuan</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <label class="form-label-custom required-field">NIK</label>
+                                    <input type="text" class="form-control form-control-custom member-nik" 
+                                           id="nik${memberNumber}" maxlength="16" placeholder="16 digit NIK" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label-custom required-field">Tempat Lahir</label>
+                                    <input type="text" class="form-control form-control-custom member-birthplace" 
+                                           id="tempatLahir${memberNumber}" placeholder="Kota Kelahiran" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label-custom required-field">Tanggal Lahir</label>
+                                    <input type="text" class="form-control form-control-custom date-picker member-birthdate" 
+                                           id="tanggalLahir${memberNumber}" placeholder="YYYY-MM-DD" required>
+                                </div>
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label-custom required-field">Agama</label>
+                                    <select class="form-select form-select-custom member-religion" id="agama${memberNumber}" required>
+                                        <option value="" selected disabled>Pilih...</option>
+                                        <option value="Islam">Islam</option>
+                                        <option value="Kristen">Kristen</option>
+                                        <option value="Katolik">Katolik</option>
+                                        <option value="Hindu">Hindu</option>
+                                        <option value="Buddha">Buddha</option>
+                                        <option value="Konghucu">Konghucu</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label-custom required-field">Pendidikan</label>
+                                    <select class="form-select form-select-custom member-education" id="pendidikan${memberNumber}" required>
+                                        <option value="" selected disabled>Pilih...</option>
+                                        <option value="Tidak Sekolah">Tidak Sekolah</option>
+                                        <option value="SD">SD</option>
+                                        <option value="SMP">SMP</option>
+                                        <option value="SMA">SMA</option>
+                                        <option value="D1/D2/D3">D1/D2/D3</option>
+                                        <option value="S1">S1</option>
+                                        <option value="S2/S3">S2/S3</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label-custom required-field">Pekerjaan</label>
+                                    <input type="text" class="form-control form-control-custom member-job" 
+                                           id="pekerjaan${memberNumber}" placeholder="Pekerjaan" required>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="form-label-custom required-field">Golongan Darah</label>
+                                    <select class="form-select form-select-custom member-blood" id="golDarah${memberNumber}" required>
+                                        <option value="" selected disabled>Pilih...</option>
+                                        <option value="A">A</option>
+                                        <option value="B">B</option>
+                                        <option value="AB">AB</option>
+                                        <option value="O">O</option>
+                                        <option value="Tidak Tahu">Tidak Tahu</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <!-- Marriage Status -->
+                            <h6 class="mt-4 mb-3 text-primary">
+                                <i class="bi bi-heart-fill me-2"></i>Status Perkawinan
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom">Status Perkawinan</label>
+                                    <select class="form-select form-select-custom member-marital" id="statusPerkawinan${memberNumber}">
+                                        <option value="" selected>Belum Kawin</option>
+                                        <option value="Kawin Tercatat">Kawin Tercatat</option>
+                                        <option value="Kawin Tidak Tercatat">Kawin Tidak Tercatat</option>
+                                        <option value="Cerai Mati">Cerai Mati</option>
+                                        <option value="Cerai Hidup">Cerai Hidup</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom">Tanggal Perkawinan</label>
+                                    <input type="text" class="form-control form-control-custom date-picker" 
+                                           id="tanggalPerkawinan${memberNumber}" placeholder="YYYY-MM-DD">
+                                </div>
+                            </div>
+                            
+                            <!-- Citizenship -->
+                            <h6 class="mt-4 mb-3 text-primary">
+                                <i class="bi bi-globe me-2"></i>Kewarganegaraan
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom required-field">Kewarganegaraan</label>
+                                    <select class="form-select form-select-custom member-citizen" id="kewarganegaraan${memberNumber}" required>
+                                        <option value="Warga Negara Indonesia" selected>Warga Negara Indonesia</option>
+                                        <option value="Warga Negara Asing">Warga Negara Asing</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom">No. Paspor</label>
+                                    <input type="text" class="form-control form-control-custom" 
+                                           id="noPaspor${memberNumber}" placeholder="Untuk WNA">
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom">NO. KITAP</label>
+                                    <input type="text" class="form-control form-control-custom" 
+                                           id="nokitap${memberNumber}" placeholder="Untuk WNA">
+                                </div>
+                            </div>
+                            
+                            <!-- Parents Info (for Anak) -->
+                            <div id="parentsInfo${memberNumber}" style="display: none;">
+                                <h6 class="mt-4 mb-3 text-primary">
+                                    <i class="bi bi-people me-2"></i>Data Orang Tua
+                                </h6>
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle me-2"></i>
+                                    Data orang tua akan diisi otomatis berdasarkan Kepala Keluarga dan Isteri
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label-custom">Nama Ayah</label>
+                                        <input type="text" class="form-control form-control-custom member-father" 
+                                               id="namaAyah${memberNumber}" readonly>
+                                        <span class="auto-fill-badge">Auto-fill</span>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label-custom">Nama Ibu</label>
+                                        <input type="text" class="form-control form-control-custom member-mother" 
+                                               id="namaIbu${memberNumber}" readonly>
+                                        <span class="auto-fill-badge">Auto-fill</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Administrative Status -->
+                            <h6 class="mt-4 mb-3 text-primary">
+                                <i class="bi bi-clipboard-data me-2"></i>Status Administratif
+                            </h6>
+                            
+                            <div class="row">
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom required-field">Status Kekayaan</label>
+                                    <select class="form-select form-select-custom" id="statusKekayaan${memberNumber}" required>
+                                        <option value="" selected disabled>Pilih...</option>
+                                        <option value="Mampu">Mampu</option>
+                                        <option value="Tidak Mampu">Tidak Mampu</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom required-field">Status LPS</label>
+                                    <select class="form-select form-select-custom" id="statusLPS${memberNumber}" required>
+                                        <option value="" selected disabled>Pilih...</option>
+                                        <option value="Peserta LPS">Peserta LPS</option>
+                                        <option value="Peserta Subsidi Silang">Peserta Subsidi Silang</option>
+                                        <option value="Peserta DLHK">Peserta DLHK</option>
+                                        <option value="Tidak Ikut LPS">Tidak Ikut LPS</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4 mb-3">
+                                    <label class="form-label-custom required-field">Status Kesehatan</label>
+                                    <select class="form-select form-select-custom" id="statusKesehatan${memberNumber}" required>
+                                        <option value="" selected disabled>Pilih...</option>
+                                        <option value="Memiliki BPJS">Memiliki BPJS</option>
+                                        <option value="Memiliki BPJS dan BPJS Ketenagakerjaan">Memiliki BPJS dan BPJS Ketenagakerjaan</option>
+                                        <option value="Tidak Memiliki BPJS">Tidak Memiliki BPJS</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add card to container
+            document.getElementById('memberCardsContainer').insertAdjacentHTML('beforeend', cardHTML);
+            
+            // Initialize date picker for this card
+            flatpickr(`#tanggalLahir${memberNumber}`, {
+                dateFormat: "Y-m-d",
+                locale: "id",
+                maxDate: "today"
+            });
+            
+            flatpickr(`#tanggalPerkawinan${memberNumber}`, {
+                dateFormat: "Y-m-d",
+                locale: "id"
+            });
+            
+            // Update member count display
+            updateMemberCount();
+        }
+        
+        // Get relation hint text
+        function getRelationHint(relation) {
+            const hints = {
+                'Kepala Keluarga': 'Harus laki-laki, dewasa, dan menanggung keluarga',
+                'Isteri': 'Harus perempuan dan sudah menikah dengan Kepala Keluarga',
+                'Anak': 'Data orang tua akan diisi otomatis',
+                'Orang Tua': 'Orang tua dari Kepala Keluarga atau Isteri',
+                'Menantu': 'Pasangan dari anak yang sudah menikah',
+                'Family Lain': 'Kerabat lain yang tinggal serumah'
+            };
+            return hints[relation] || 'Isi data sesuai hubungan keluarga';
+        }
+        
+        // Update relation hint and parents info
+        function updateRelation(memberNumber) {
+            const hubungan = document.getElementById(`hubungan${memberNumber}`).value;
+            const hintElement = document.getElementById(`relationHint${memberNumber}`);
+            const parentsElement = document.getElementById(`parentsInfo${memberNumber}`);
+            const badgeElement = document.getElementById(`memberStatusBadge${memberNumber}`);
+            
+            // Update hint
+            hintElement.innerHTML = `<i class="bi bi-lightbulb me-2"></i>${getRelationHint(hubungan)}`;
+            
+            // Update badge
+            badgeElement.textContent = hubungan;
+            
+            // Show/hide parents info
+            if (hubungan === 'Anak') {
+                parentsElement.style.display = 'block';
+                autoFillParents(memberNumber);
+            } else {
+                parentsElement.style.display = 'none';
+            }
+            
+            // Disable Kepala Keluarga option for other members if already exists
+            if (hubungan === 'Kepala Keluarga') {
+                disableKepalaKeluargaForOthers(memberNumber);
+            }
+        }
+        
+        // Update status display
+        function updateStatusDisplay(memberNumber) {
+            const status = document.getElementById(`statusAnggota${memberNumber}`).value;
+            const displayElement = document.getElementById(`statusDisplay${memberNumber}`);
+            
+            // Update class and text
+            const statusClasses = {
+                'Hidup': 'status-hidup',
+                'Meninggal': 'status-meninggal',
+                'Pindah': 'status-pindah',
+                'Pisah KK': 'status-pisah'
+            };
+            
+            displayElement.className = `status-badge ${statusClasses[status] || 'status-hidup'}`;
+            displayElement.innerHTML = `<i class="bi bi-heart-fill me-1"></i>${status}`;
+        }
+        
+        // Auto-fill parents for Anak
+        function autoFillParents(memberNumber) {
+            // Find Kepala Keluarga and Isteri from existing members
+            const kepalaKeluarga = members.find(m => m.statusHubungan === 'Kepala Keluarga');
+            const isteri = members.find(m => m.statusHubungan === 'Isteri');
+            
+            if (kepalaKeluarga) {
+                document.getElementById(`namaAyah${memberNumber}`).value = kepalaKeluarga.namaLengkap;
+            }
+            
+            if (isteri) {
+                document.getElementById(`namaIbu${memberNumber}`).value = isteri.namaLengkap;
+            }
+        }
+        
+        // Disable Kepala Keluarga option for other members
+        function disableKepalaKeluargaForOthers(currentMember) {
+            const relationSelects = document.querySelectorAll('.member-relation');
+            relationSelects.forEach((select, index) => {
+                const memberNum = index + 1;
+                if (memberNum !== currentMember) {
+                    const kepalaOption = select.querySelector('option[value="Kepala Keluarga"]');
+                    if (kepalaOption) {
+                        kepalaOption.disabled = true;
+                    }
+                }
+            });
+        }
+        
+        // Remove member
+        function removeMember(memberNumber) {
+            if (memberNumber === 1) {
+                alert('Kepala Keluarga tidak dapat dihapus');
+                return;
+            }
+            
+            if (confirm('Hapus anggota ini?')) {
+                const card = document.getElementById(`memberCard${memberNumber}`);
+                card.remove();
+                
+                // Update member numbers
+                updateMemberNumbers();
+                updateMemberCount();
+            }
+        }
+        
+        // Update member numbers after removal
+        function updateMemberNumbers() {
+            const cards = document.querySelectorAll('.member-card');
+            cards.forEach((card, index) => {
+                const memberNumber = index + 1;
+                const numberSpan = card.querySelector('.member-number');
+                const headerText = card.querySelector('.member-card-header strong');
+                
+                // Update number
+                card.id = `memberCard${memberNumber}`;
+                numberSpan.textContent = memberNumber;
+                headerText.textContent = `Anggota ${memberNumber}`;
+                
+                // Update all IDs in the card
+                const elements = card.querySelectorAll('[id]');
+                elements.forEach(el => {
+                    const oldId = el.id;
+                    const newId = oldId.replace(/\d+$/, memberNumber);
+                    el.id = newId;
+                });
+                
+                // Update data-bs-target
+                const header = card.querySelector('.member-card-header');
+                header.setAttribute('data-bs-target', `#memberCollapse${memberNumber}`);
+                
+                // Update collapse id
+                const collapse = card.querySelector('.collapse');
+                collapse.id = `memberCollapse${memberNumber}`;
+            });
+        }
+        
+        // Update member count display
+        function updateMemberCount() {
+            const cards = document.querySelectorAll('.member-card');
+            totalMembers = cards.length;
+            
+            // Disable add button if max reached
+            const addButton = document.getElementById('btnAddMember');
+            if (totalMembers >= 10) {
+                addButton.disabled = true;
+                addButton.innerHTML = '<i class="bi bi-person-x me-2"></i>Maksimal 10 Anggota';
+            } else {
+                addButton.disabled = false;
+                addButton.innerHTML = '<i class="bi bi-person-plus me-2"></i>Tambah Anggota Keluarga';
+            }
+        }
+        
+        // Show summary
+        function showSummary() {
+            // Collect all member data
+            collectMemberData();
+            
+            // Update family summary
+            document.getElementById('summaryData').innerHTML = `
+                <div class="col-md-6">
+                    <p><strong>Nomor KK:</strong> ${familyData.noKK}</p>
+                    <p><strong>Alamat:</strong> ${familyData.alamat}</p>
+                    <p><strong>RT/RW:</strong> ${familyData.rt}/${familyData.rw}</p>
+                    <p><strong>Kelurahan:</strong> ${familyData.kelurahan}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Kecamatan:</strong> ${familyData.kecamatan}</p>
+                    <p><strong>Kota/Kab:</strong> ${familyData.kotaKabupaten}</p>
+                    <p><strong>Provinsi:</strong> ${familyData.provinsi}</p>
+                    <p><strong>Kode Pos:</strong> ${familyData.kodePos}</p>
+                </div>
+            `;
+            
+            // Update members summary
+            let membersHTML = '';
+            members.forEach((member, index) => {
+                membersHTML += `
+                    <div class="d-flex justify-content-between align-items-center border-bottom pb-2 mb-2">
+                        <div>
+                            <strong>${index + 1}. ${member.namaLengkap}</strong>
+                            <div class="text-muted small">
+                                ${member.statusHubungan} • ${member.nik} • ${member.jenisKelamin}
+                            </div>
+                        </div>
+                        <span class="badge bg-${member.statusAnggota === 'Hidup' ? 'success' : 'secondary'}">
+                            ${member.statusAnggota}
+                        </span>
+                    </div>
+                `;
+            });
+            document.getElementById('summaryMembers').innerHTML = membersHTML;
+            document.getElementById('totalMembers').textContent = members.length;
+        }
+        
+        // Collect member data from form
+        function collectMemberData() {
+            members = [];
+            
+            for (let i = 1; i <= totalMembers; i++) {
+                const card = document.getElementById(`memberCard${i}`);
+                if (!card) continue;
+                
+                const member = {
+                    statusHubungan: document.getElementById(`hubungan${i}`).value,
+                    statusAnggota: document.getElementById(`statusAnggota${i}`).value,
+                    namaLengkap: document.getElementById(`nama${i}`).value,
+                    nik: document.getElementById(`nik${i}`).value,
+                    jenisKelamin: document.getElementById(`gender${i}`).value,
+                    tempatLahir: document.getElementById(`tempatLahir${i}`).value,
+                    tanggalLahir: document.getElementById(`tanggalLahir${i}`).value,
+                    agama: document.getElementById(`agama${i}`).value,
+                    pendidikan: document.getElementById(`pendidikan${i}`).value,
+                    pekerjaan: document.getElementById(`pekerjaan${i}`).value,
+                    golDarah: document.getElementById(`golDarah${i}`).value,
+                    statusPerkawinan: document.getElementById(`statusPerkawinan${i}`).value,
+                    tanggalPerkawinan: document.getElementById(`tanggalPerkawinan${i}`).value,
+                    kewarganegaraan: document.getElementById(`kewarganegaraan${i}`).value,
+                    noPaspor: document.getElementById(`noPaspor${i}`).value,
+                    nokitap: document.getElementById(`nokitap${i}`).value,
+                    namaAyah: document.getElementById(`namaAyah${i}`).value,
+                    namaIbu: document.getElementById(`namaIbu${i}`).value,
+                    statusKekayaan: document.getElementById(`statusKekayaan${i}`).value,
+                    statusLPS: document.getElementById(`statusLPS${i}`).value,
+                    statusKesehatan: document.getElementById(`statusKesehatan${i}`).value
+                };
+                
+                members.push(member);
+            }
+        }
+        
+        // Submit data
+        async function submitData() {
+            // Validate checkboxes
+            if (!document.getElementById('confirmData').checked) {
+                alert('Harap konfirmasi verifikasi data');
+                return;
+            }
+            
+            if (!document.getElementById('confirmPrivacy').checked) {
+                alert('Harap setuju dengan peraturan perlindungan data');
+                return;
+            }
+            
+            // Collect final data
+            collectMemberData();
+            
+            const submitData = {
+                family: familyData,
+                anggota: members
+            };
+            
+            showLoading();
+            
+            try {
+                // Simulate API call
+                setTimeout(() => {
+                    // Generate family ID
+                    const familyId = `KK-${String(Math.floor(Math.random() * 999) + 1).padStart(3, '0')}`;
+                    
+                    // Show success modal
+                    document.getElementById('generatedFamilyId').textContent = familyId;
+                    document.getElementById('saveTimestamp').textContent = new Date().toLocaleString('id-ID');
+                    document.getElementById('totalMembers').textContent = members.length;
+                    
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    
+                    hideLoading();
+                    
+                    // In real implementation, save to Google Apps Script
+                    // await saveToGoogleSheets(submitData);
+                    
+                }, 2000);
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menyimpan data');
+                hideLoading();
+            }
+        }
+        
+        // Print data
+        function printData() {
+            window.print();
+        }
+        
+        // Loading functions
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+        
+        // Real implementation for saving to Google Sheets
+        async function saveToGoogleSheets(data) {
+            const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxaFi_SYb6hr0HBgPn_FlexA-lIeIsLoWQC2-i8rAK12ysSCyEDGd2gQ_kA2ghkQ7DRLw/exec';
+            
+            const response = await fetch(WEB_APP_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'saveFamily',
+                    familyData: data
+                })
+            });
+            
+            const result = await response.json();
+            return result;
+        }
+    </script>
+</body>
+</html>
