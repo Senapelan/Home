@@ -1,1 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Head sama dengan input.html -->
+</head>
+<body>
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="spinner-custom"></div>
+    </div>
 
+    <!-- Header -->
+    <div class="header-section">
+        <div class="container">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h1 class="mb-2">
+                        <i class="bi bi-pencil-square me-3"></i>Edit Data Keluarga
+                    </h1>
+                    <p class="mb-0 opacity-75">Perbarui data keluarga yang sudah terdaftar</p>
+                </div>
+                <div class="text-end">
+                    <button class="btn btn-outline-light" onclick="window.location.href='index.html'">
+                        <i class="bi bi-arrow-left me-2"></i>Kembali
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container mt-4 mb-5">
+        <!-- Info Box -->
+        <div class="alert alert-info alert-custom">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong>Mode Edit:</strong> Anda dapat mengubah data keluarga dan anggota. 
+            Perubahan akan dicatat dalam audit log.
+        </div>
+
+        <div id="editContainer">
+            <!-- Data akan di-load dari database -->
+            <div class="text-center py-5">
+                <div class="spinner-border text-primary mb-3"></div>
+                <p>Memuat data keluarga...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load data from localStorage or URL parameter
+        document.addEventListener('DOMContentLoaded', async function() {
+            const noKK = localStorage.getItem('editKK') || getUrlParameter('noKK');
+            
+            if (!noKK) {
+                alert('Tidak ada data KK untuk diedit');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                // Load family data from API
+                const familyData = await loadFamilyData(noKK);
+                
+                if (familyData.error) {
+                    throw new Error(familyData.error);
+                }
+                
+                // Render edit form
+                renderEditForm(familyData);
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Gagal memuat data: ' + error.message);
+                window.location.href = 'index.html';
+            }
+        });
+        
+        async function loadFamilyData(noKK) {
+            // Simulate API call
+            return new Promise(resolve => {
+                setTimeout(() => {
+                    resolve({
+                        family: {
+                            noKK: noKK,
+                            alamat: "Jl. Merdeka No. 123",
+                            rt: "001",
+                            rw: "002",
+                            kelurahan: "Kelurahan Sukajadi",
+                            kecamatan: "Kecamatan Bogor Tengah",
+                            kotaKabupaten: "Kota Bogor",
+                            provinsi: "Jawa Barat",
+                            kodePos: "16125",
+                            namaPetugas: "Admin Kelurahan",
+                            sumberData: "Registrasi di kantor Lurah"
+                        },
+                        members: [
+                            {
+                                idAnggota: "KK-001-01",
+                                statusHubungan: "Kepala Keluarga",
+                                namaLengkap: "BUDI SANTOSO",
+                                nik: "3273010101010001",
+                                jenisKelamin: "Laki-laki",
+                                tempatLahir: "Jakarta",
+                                tanggalLahir: "1980-05-15",
+                                statusAnggota: "Hidup"
+                            },
+                            {
+                                idAnggota: "KK-001-02",
+                                statusHubungan: "Isteri",
+                                namaLengkap: "SITI AMINAH",
+                                nik: "3273010101010002",
+                                jenisKelamin: "Perempuan",
+                                tempatLahir: "Bandung",
+                                tanggalLahir: "1982-08-20",
+                                statusAnggota: "Hidup"
+                            }
+                        ]
+                    });
+                }, 1000);
+            });
+        }
+        
+        function renderEditForm(data) {
+            // Similar structure to input.html but with pre-filled data
+            document.getElementById('editContainer').innerHTML = `
+                <!-- Form edit akan di-render di sini -->
+                <div class="card card-main">
+                    <!-- Form fields pre-filled with data -->
+                </div>
+            `;
+        }
+        
+        function getUrlParameter(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        function showLoading() {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        }
+        
+        function hideLoading() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
