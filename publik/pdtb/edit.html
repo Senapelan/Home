@@ -1,7 +1,249 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <!-- Head sama dengan input.html -->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Data Keluarga - Sistem Penduduk</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        :root {
+            --primary-blue: #1e3a8a;
+            --secondary-blue: #3b82f6;
+            --light-blue: #eff6ff;
+            --accent-blue: #60a5fa;
+            --success-green: #10b981;
+            --warning-orange: #f59e0b;
+            --danger-red: #ef4444;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8fafc 0%, #f0f9ff 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+        
+        .header-section {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #2563eb 100%);
+            color: white;
+            padding: 2rem 0;
+            border-radius: 0 0 25px 25px;
+            box-shadow: 0 6px 25px rgba(30, 58, 138, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-main {
+            border: none;
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        
+        .card-header-custom {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            border-bottom: 3px solid var(--accent-blue);
+            padding: 1.5rem;
+        }
+        
+        .btn-primary-custom {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        .btn-success-custom {
+            background: linear-gradient(135deg, var(--success-green) 0%, #34d399 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .member-card {
+            border: 2px solid #e0f2fe;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .member-card-header {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .member-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+        
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-hidup { background-color: #d1fae5; color: #065f46; }
+        .status-meninggal { background-color: #fee2e2; color: #991b1b; }
+        .status-pindah { background-color: #e5e7eb; color: #374151; }
+        .status-pisah { background-color: #fed7aa; color: #9a3412; }
+        
+        .form-section {
+            padding: 25px;
+            background: white;
+        }
+        
+        .form-label-custom {
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-bottom: 8px;
+        }
+        
+        .form-control-custom, .form-select-custom {
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+        
+        .form-control-custom:focus, .form-select-custom:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 0.25rem rgba(96, 165, 250, 0.25);
+        }
+        
+        .required-field::after {
+            content: " *";
+            color: var(--danger-red);
+        }
+        
+        .info-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f7fa 100%);
+            border-left: 5px solid var(--secondary-blue);
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            display: none;
+            backdrop-filter: blur(5px);
+        }
+        
+        .spinner-custom {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0f2fe;
+            border-top: 5px solid var(--secondary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .floating-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 6px 20px rgba(30, 58, 138, 0.4);
+            z-index: 1000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 10px 25px rgba(30, 58, 138, 0.6);
+        }
+        
+        .alert-custom {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .relation-hint {
+            background: #fef3c7;
+            border: 1px solid #fbbf24;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+        
+        .auto-fill-badge {
+            background: #dbeafe;
+            color: var(--primary-blue);
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .hint-text {
+            font-size: 0.85rem;
+            color: #6b7280;
+            margin-top: 5px;
+        }
+        
+        .view-mode {
+            background-color: #f8fafc;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 10px;
+        }
+        
+        .edit-mode {
+            background-color: white;
+        }
+    </style>
 </head>
 <body>
     <!-- Loading Overlay -->
@@ -28,9 +270,9 @@
         </div>
     </div>
 
+    <!-- Main Content -->
     <div class="container mt-4 mb-5">
-        <!-- Info Box -->
-        <div class="alert alert-info alert-custom">
+        <div class="alert alert-info alert-custom mb-4">
             <i class="bi bi-info-circle-fill me-2"></i>
             <strong>Mode Edit:</strong> Anda dapat mengubah data keluarga dan anggota. 
             Perubahan akan dicatat dalam audit log.
@@ -45,7 +287,50 @@
         </div>
     </div>
 
+    <!-- Floating Button -->
+    <div class="floating-btn" onclick="window.location.href='index.html'" title="Kembali ke Beranda">
+        <i class="bi bi-house-door"></i>
+    </div>
+
+    <!-- Modal Success -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">
+                        <i class="bi bi-check-circle-fill me-2"></i>Berhasil!
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center py-5">
+                    <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+                    <h4 class="mt-4 mb-3">Data Berhasil Diperbarui!</h4>
+                    <p class="text-muted mb-4">Perubahan data keluarga telah tersimpan di database.</p>
+                </div>
+                <div class="modal-footer justify-content-center">
+                    <button type="button" class="btn btn-primary-custom" data-bs-dismiss="modal" onclick="window.location.href='index.html'">
+                        <i class="bi bi-house me-2"></i>Kembali ke Beranda
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
     <script>
+        // Configuration
+        const CONFIG = {
+            WEB_APP_URL: 'https://script.google.com/macros/s/AKfycbxaFi_SYb6hr0HBgPn_FlexA-lIeIsLoWQC2-i8rAK12ysSCyEDGd2gQ_kA2ghkQ7DRLw/exec'
+        };
+
+        // Global Variables
+        let familyData = {};
+        let membersData = [];
+        let editMode = false;
+
         // Load data from localStorage or URL parameter
         document.addEventListener('DOMContentLoaded', async function() {
             const noKK = localStorage.getItem('editKK') || getUrlParameter('noKK');
@@ -60,14 +345,18 @@
             
             try {
                 // Load family data from API
-                const familyData = await loadFamilyData(noKK);
+                const response = await fetch(`${CONFIG.WEB_APP_URL}?action=getFamily&noKK=${noKK}`);
+                const data = await response.json();
                 
-                if (familyData.error) {
-                    throw new Error(familyData.error);
+                if (data.error) {
+                    throw new Error(data.error);
                 }
                 
+                familyData = data.family;
+                membersData = data.members;
+                
                 // Render edit form
-                renderEditForm(familyData);
+                renderEditForm();
                 hideLoading();
                 
             } catch (error) {
@@ -77,66 +366,529 @@
             }
         });
         
-        async function loadFamilyData(noKK) {
-            // Simulate API call
-            return new Promise(resolve => {
-                setTimeout(() => {
-                    resolve({
-                        family: {
-                            noKK: noKK,
-                            alamat: "Jl. Merdeka No. 123",
-                            rt: "001",
-                            rw: "002",
-                            kelurahan: "Kelurahan Sukajadi",
-                            kecamatan: "Kecamatan Bogor Tengah",
-                            kotaKabupaten: "Kota Bogor",
-                            provinsi: "Jawa Barat",
-                            kodePos: "16125",
-                            namaPetugas: "Admin Kelurahan",
-                            sumberData: "Registrasi di kantor Lurah"
-                        },
-                        members: [
-                            {
-                                idAnggota: "KK-001-01",
-                                statusHubungan: "Kepala Keluarga",
-                                namaLengkap: "BUDI SANTOSO",
-                                nik: "3273010101010001",
-                                jenisKelamin: "Laki-laki",
-                                tempatLahir: "Jakarta",
-                                tanggalLahir: "1980-05-15",
-                                statusAnggota: "Hidup"
-                            },
-                            {
-                                idAnggota: "KK-001-02",
-                                statusHubungan: "Isteri",
-                                namaLengkap: "SITI AMINAH",
-                                nik: "3273010101010002",
-                                jenisKelamin: "Perempuan",
-                                tempatLahir: "Bandung",
-                                tanggalLahir: "1982-08-20",
-                                statusAnggota: "Hidup"
-                            }
-                        ]
-                    });
-                }, 1000);
-            });
+        // Render edit form
+        function renderEditForm() {
+            const editContainer = document.getElementById('editContainer');
+            
+            editContainer.innerHTML = `
+                <div class="card card-main">
+                    <div class="card-header-custom">
+                        <h4 class="mb-0">
+                            <i class="bi bi-house-door-fill me-2"></i>
+                            Edit Data Keluarga - ${familyData.noKK}
+                        </h4>
+                        <p class="text-muted mb-0 mt-1">
+                            ${familyData.alamat}, RT ${familyData.rt}/RW ${familyData.rw}
+                        </p>
+                    </div>
+                    
+                    <div class="form-section">
+                        <!-- Family Info -->
+                        <div class="info-box mb-4">
+                            <h6 class="fw-bold mb-2">
+                                <i class="bi bi-info-circle me-2"></i>Informasi Keluarga:
+                            </h6>
+                            <div class="row" id="familyInfoView">
+                                <div class="col-md-6">
+                                    <p><strong>No. KK:</strong> ${familyData.noKK}</p>
+                                    <p><strong>Alamat:</strong> ${familyData.alamat}</p>
+                                    <p><strong>RT/RW:</strong> ${familyData.rt}/${familyData.rw}</p>
+                                    <p><strong>Kelurahan:</strong> ${familyData.kelurahan}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Kecamatan:</strong> ${familyData.kecamatan}</p>
+                                    <p><strong>Kota/Kab:</strong> ${familyData.kotaKabupaten}</p>
+                                    <p><strong>Provinsi:</strong> ${familyData.provinsi}</p>
+                                    <p><strong>Kode Pos:</strong> ${familyData.kodePos}</p>
+                                </div>
+                            </div>
+                            <div id="familyInfoEdit" style="display: none;">
+                                <!-- Edit form for family info -->
+                                ${renderFamilyEditForm()}
+                            </div>
+                        </div>
+                        
+                        <!-- Members List -->
+                        <h4 class="mb-4">
+                            <i class="bi bi-people-fill me-2"></i>Anggota Keluarga
+                        </h4>
+                        
+                        <div class="alert alert-warning alert-custom mb-4">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            <strong>Perhatian:</strong> Urutan anggota keluarga tetap sesuai aturan: 
+                            1. Kepala Keluarga → 2. Isteri → 3. Anak → 4. Orang Tua → 5. Menantu → 6. Family Lain
+                        </div>
+                        
+                        <div id="membersContainer">
+                            ${renderMembersList()}
+                        </div>
+                        
+                        <!-- Action Buttons -->
+                        <div class="d-flex justify-content-between mt-4">
+                            <button class="btn btn-outline-secondary" onclick="window.location.href='index.html'">
+                                <i class="bi bi-x-circle me-2"></i>Batal
+                            </button>
+                            <div>
+                                <button class="btn btn-primary-custom me-2" onclick="toggleEditMode()" id="btnToggleEdit">
+                                    <i class="bi bi-pencil-square me-2"></i>Edit Data
+                                </button>
+                                <button class="btn btn-success-custom" onclick="saveChanges()" id="btnSave" style="display: none;">
+                                    <i class="bi bi-save-fill me-2"></i>Simpan Perubahan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Initialize date pickers
+            initializeDatePickers();
         }
         
-        function renderEditForm(data) {
-            // Similar structure to input.html but with pre-filled data
-            document.getElementById('editContainer').innerHTML = `
-                <!-- Form edit akan di-render di sini -->
-                <div class="card card-main">
-                    <!-- Form fields pre-filled with data -->
+        // Render family edit form
+        function renderFamilyEditForm() {
+            return `
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Alamat Lengkap</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editAlamat" value="${familyData.alamat}" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">RT</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editRT" value="${familyData.rt}" maxlength="3" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">RW</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editRW" value="${familyData.rw}" maxlength="3" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-custom required-field">Kelurahan</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editKelurahan" value="${familyData.kelurahan}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-custom required-field">Kecamatan</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editKecamatan" value="${familyData.kecamatan}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-custom required-field">Kota/Kabupaten</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editKotaKabupaten" value="${familyData.kotaKabupaten}" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Provinsi</label>
+                        <select class="form-select form-select-custom" id="editProvinsi" required>
+                            <option value="DKI Jakarta" ${familyData.provinsi === 'DKI Jakarta' ? 'selected' : ''}>DKI Jakarta</option>
+                            <option value="Jawa Barat" ${familyData.provinsi === 'Jawa Barat' ? 'selected' : ''}>Jawa Barat</option>
+                            <option value="Jawa Tengah" ${familyData.provinsi === 'Jawa Tengah' ? 'selected' : ''}>Jawa Tengah</option>
+                            <option value="Jawa Timur" ${familyData.provinsi === 'Jawa Timur' ? 'selected' : ''}>Jawa Timur</option>
+                            <option value="Banten" ${familyData.provinsi === 'Banten' ? 'selected' : ''}>Banten</option>
+                            <option value="DI Yogyakarta" ${familyData.provinsi === 'DI Yogyakarta' ? 'selected' : ''}>DI Yogyakarta</option>
+                            <option value="Bali" ${familyData.provinsi === 'Bali' ? 'selected' : ''}>Bali</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">Kode Pos</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editKodePos" value="${familyData.kodePos}" maxlength="5" required>
+                    </div>
                 </div>
             `;
         }
         
+        // Render members list
+        function renderMembersList() {
+            let membersHTML = '';
+            
+            membersData.forEach((member, index) => {
+                const memberNumber = index + 1;
+                
+                membersHTML += `
+                    <div class="member-card">
+                        <div class="member-card-header" data-bs-toggle="collapse" 
+                             data-bs-target="#memberCollapse${memberNumber}" aria-expanded="false">
+                            <span class="member-number">${memberNumber}</span>
+                            <strong>${member.namaLengkap}</strong>
+                            <span class="badge bg-primary ms-2">${member.statusHubungan}</span>
+                            <span class="status-badge ${getStatusClass(member.statusAnggota)} ms-2">
+                                <i class="bi bi-heart-fill me-1"></i>${member.statusAnggota}
+                            </span>
+                            <i class="bi bi-chevron-down float-end"></i>
+                        </div>
+                        
+                        <div class="collapse" id="memberCollapse${memberNumber}">
+                            <div class="p-4 view-mode" id="memberView${memberNumber}">
+                                <!-- View Mode -->
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <p><strong>NIK:</strong> ${member.nik}</p>
+                                        <p><strong>Jenis Kelamin:</strong> ${member.jenisKelamin}</p>
+                                        <p><strong>Tempat/Tgl Lahir:</strong> ${member.tempatLahir}, ${formatDate(member.tanggalLahir)}</p>
+                                        <p><strong>Agama:</strong> ${member.agama || '-'}</p>
+                                        <p><strong>Pendidikan:</strong> ${member.pendidikan || '-'}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <p><strong>Pekerjaan:</strong> ${member.pekerjaan || '-'}</p>
+                                        <p><strong>Gol. Darah:</strong> ${member.golDarah || '-'}</p>
+                                        <p><strong>Status Perkawinan:</strong> ${member.statusPerkawinan || '-'}</p>
+                                        <p><strong>Kewarganegaraan:</strong> ${member.kewarganegaraan || '-'}</p>
+                                        <p><strong>ID Anggota:</strong> ${member.idAnggota || '-'}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="p-4 edit-mode" id="memberEdit${memberNumber}" style="display: none;">
+                                <!-- Edit Mode -->
+                                ${renderMemberEditForm(member, memberNumber)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            return membersHTML;
+        }
+        
+        // Render member edit form
+        function renderMemberEditForm(member, memberNumber) {
+            return `
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-custom">Status Hubungan</label>
+                        <select class="form-select form-select-custom" id="editHubungan${memberNumber}">
+                            <option value="Kepala Keluarga" ${member.statusHubungan === 'Kepala Keluarga' ? 'selected' : ''}>Kepala Keluarga</option>
+                            <option value="Isteri" ${member.statusHubungan === 'Isteri' ? 'selected' : ''}>Isteri</option>
+                            <option value="Anak" ${member.statusHubungan === 'Anak' ? 'selected' : ''}>Anak</option>
+                            <option value="Orang Tua" ${member.statusHubungan === 'Orang Tua' ? 'selected' : ''}>Orang Tua</option>
+                            <option value="Menantu" ${member.statusHubungan === 'Menantu' ? 'selected' : ''}>Menantu</option>
+                            <option value="Family Lain" ${member.statusHubungan === 'Family Lain' ? 'selected' : ''}>Family Lain</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-custom">Status Anggota</label>
+                        <select class="form-select form-select-custom" id="editStatusAnggota${memberNumber}">
+                            <option value="Hidup" ${member.statusAnggota === 'Hidup' ? 'selected' : ''}>Hidup</option>
+                            <option value="Meninggal" ${member.statusAnggota === 'Meninggal' ? 'selected' : ''}>Meninggal</option>
+                            <option value="Pindah" ${member.statusAnggota === 'Pindah' ? 'selected' : ''}>Pindah</option>
+                            <option value="Pisah KK" ${member.statusAnggota === 'Pisah KK' ? 'selected' : ''}>Pisah KK</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label-custom required-field">Nama Lengkap</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editNama${memberNumber}" value="${member.namaLengkap}" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label-custom required-field">Jenis Kelamin</label>
+                        <select class="form-select form-select-custom" id="editGender${memberNumber}" required>
+                            <option value="Laki-laki" ${member.jenisKelamin === 'Laki-laki' ? 'selected' : ''}>Laki-laki</option>
+                            <option value="Perempuan" ${member.jenisKelamin === 'Perempuan' ? 'selected' : ''}>Perempuan</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label-custom required-field">NIK</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editNIK${memberNumber}" value="${member.nik}" maxlength="16" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">Tempat Lahir</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editTempatLahir${memberNumber}" value="${member.tempatLahir}" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">Tanggal Lahir</label>
+                        <input type="text" class="form-control form-control-custom date-picker" 
+                               id="editTanggalLahir${memberNumber}" value="${member.tanggalLahir}" required>
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">Agama</label>
+                        <select class="form-select form-select-custom" id="editAgama${memberNumber}" required>
+                            <option value="Islam" ${member.agama === 'Islam' ? 'selected' : ''}>Islam</option>
+                            <option value="Kristen" ${member.agama === 'Kristen' ? 'selected' : ''}>Kristen</option>
+                            <option value="Katolik" ${member.agama === 'Katolik' ? 'selected' : ''}>Katolik</option>
+                            <option value="Hindu" ${member.agama === 'Hindu' ? 'selected' : ''}>Hindu</option>
+                            <option value="Buddha" ${member.agama === 'Buddha' ? 'selected' : ''}>Buddha</option>
+                            <option value="Konghucu" ${member.agama === 'Konghucu' ? 'selected' : ''}>Konghucu</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">Pendidikan</label>
+                        <select class="form-select form-select-custom" id="editPendidikan${memberNumber}" required>
+                            <option value="Tidak Sekolah" ${member.pendidikan === 'Tidak Sekolah' ? 'selected' : ''}>Tidak Sekolah</option>
+                            <option value="SD" ${member.pendidikan === 'SD' ? 'selected' : ''}>SD</option>
+                            <option value="SMP" ${member.pendidikan === 'SMP' ? 'selected' : ''}>SMP</option>
+                            <option value="SMA" ${member.pendidikan === 'SMA' ? 'selected' : ''}>SMA</option>
+                            <option value="D1/D2/D3" ${member.pendidikan === 'D1/D2/D3' ? 'selected' : ''}>D1/D2/D3</option>
+                            <option value="S1" ${member.pendidikan === 'S1' ? 'selected' : ''}>S1</option>
+                            <option value="S2/S3" ${member.pendidikan === 'S2/S3' ? 'selected' : ''}>S2/S3</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">Pekerjaan</label>
+                        <input type="text" class="form-control form-control-custom" 
+                               id="editPekerjaan${memberNumber}" value="${member.pekerjaan}" required>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label-custom required-field">Gol. Darah</label>
+                        <select class="form-select form-select-custom" id="editGolDarah${memberNumber}" required>
+                            <option value="A" ${member.golDarah === 'A' ? 'selected' : ''}>A</option>
+                            <option value="B" ${member.golDarah === 'B' ? 'selected' : ''}>B</option>
+                            <option value="AB" ${member.golDarah === 'AB' ? 'selected' : ''}>AB</option>
+                            <option value="O" ${member.golDarah === 'O' ? 'selected' : ''}>O</option>
+                            <option value="Tidak Tahu" ${member.golDarah === 'Tidak Tahu' ? 'selected' : ''}>Tidak Tahu</option>
+                        </select>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Toggle edit mode
+        function toggleEditMode() {
+            editMode = !editMode;
+            
+            if (editMode) {
+                // Switch to edit mode
+                document.getElementById('familyInfoView').style.display = 'none';
+                document.getElementById('familyInfoEdit').style.display = 'block';
+                
+                // Switch members to edit mode
+                membersData.forEach((member, index) => {
+                    const memberNumber = index + 1;
+                    document.getElementById(`memberView${memberNumber}`).style.display = 'none';
+                    document.getElementById(`memberEdit${memberNumber}`).style.display = 'block';
+                });
+                
+                document.getElementById('btnToggleEdit').innerHTML = '<i class="bi bi-eye me-2"></i>Lihat Data';
+                document.getElementById('btnSave').style.display = 'inline-block';
+                
+            } else {
+                // Switch to view mode
+                document.getElementById('familyInfoView').style.display = 'block';
+                document.getElementById('familyInfoEdit').style.display = 'none';
+                
+                // Switch members to view mode
+                membersData.forEach((member, index) => {
+                    const memberNumber = index + 1;
+                    document.getElementById(`memberView${memberNumber}`).style.display = 'block';
+                    document.getElementById(`memberEdit${memberNumber}`).style.display = 'none';
+                });
+                
+                document.getElementById('btnToggleEdit').innerHTML = '<i class="bi bi-pencil-square me-2"></i>Edit Data';
+                document.getElementById('btnSave').style.display = 'none';
+            }
+        }
+        
+        // Save changes
+        async function saveChanges() {
+            if (!validateEditData()) {
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                // Collect updated data
+                const updatedFamily = {
+                    noKK: familyData.noKK,
+                    alamat: document.getElementById('editAlamat').value,
+                    rt: document.getElementById('editRT').value,
+                    rw: document.getElementById('editRW').value,
+                    kelurahan: document.getElementById('editKelurahan').value,
+                    kecamatan: document.getElementById('editKecamatan').value,
+                    kotaKabupaten: document.getElementById('editKotaKabupaten').value,
+                    provinsi: document.getElementById('editProvinsi').value,
+                    kodePos: document.getElementById('editKodePos').value,
+                    namaPetugas: familyData.namaPetugas
+                };
+                
+                const updatedMembers = [];
+                membersData.forEach((member, index) => {
+                    const memberNumber = index + 1;
+                    updatedMembers.push({
+                        idAnggota: member.idAnggota,
+                        statusHubungan: document.getElementById(`editHubungan${memberNumber}`).value,
+                        statusAnggota: document.getElementById(`editStatusAnggota${memberNumber}`).value,
+                        namaLengkap: document.getElementById(`editNama${memberNumber}`).value,
+                        nik: document.getElementById(`editNIK${memberNumber}`).value,
+                        jenisKelamin: document.getElementById(`editGender${memberNumber}`).value,
+                        tempatLahir: document.getElementById(`editTempatLahir${memberNumber}`).value,
+                        tanggalLahir: document.getElementById(`editTanggalLahir${memberNumber}`).value,
+                        agama: document.getElementById(`editAgama${memberNumber}`).value,
+                        pendidikan: document.getElementById(`editPendidikan${memberNumber}`).value,
+                        pekerjaan: document.getElementById(`editPekerjaan${memberNumber}`).value,
+                        golDarah: document.getElementById(`editGolDarah${memberNumber}`).value
+                    });
+                });
+                
+                const submitData = {
+                    family: updatedFamily,
+                    anggota: updatedMembers
+                };
+                
+                // Send update request
+                const response = await fetch(CONFIG.WEB_APP_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'updateFamily',
+                        familyData: submitData
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update local data
+                    familyData = updatedFamily;
+                    membersData = updatedMembers;
+                    
+                    // Switch back to view mode
+                    toggleEditMode();
+                    
+                    // Refresh view
+                    renderEditForm();
+                    
+                    // Show success modal
+                    const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+                    successModal.show();
+                    
+                } else {
+                    alert('Gagal memperbarui data: ' + (result.error || 'Unknown error'));
+                }
+                
+                hideLoading();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Terjadi kesalahan saat menyimpan perubahan');
+                hideLoading();
+            }
+        }
+        
+        // Validate edit data
+        function validateEditData() {
+            // Validate family data
+            const familyFields = [
+                {id: 'editAlamat', name: 'Alamat'},
+                {id: 'editRT', name: 'RT'},
+                {id: 'editRW', name: 'RW'},
+                {id: 'editKelurahan', name: 'Kelurahan'},
+                {id: 'editKecamatan', name: 'Kecamatan'},
+                {id: 'editKotaKabupaten', name: 'Kota/Kabupaten'},
+                {id: 'editProvinsi', name: 'Provinsi'},
+                {id: 'editKodePos', name: 'Kode Pos'}
+            ];
+            
+            for (const field of familyFields) {
+                const element = document.getElementById(field.id);
+                if (!element.value.trim()) {
+                    alert(`Field "${field.name}" harus diisi`);
+                    element.focus();
+                    return false;
+                }
+            }
+            
+            // Validate RT/RW format
+            const rt = document.getElementById('editRT').value;
+            const rw = document.getElementById('editRW').value;
+            if (!/^\d{3}$/.test(rt)) {
+                alert('RT harus 3 digit angka (contoh: 001)');
+                document.getElementById('editRT').focus();
+                return false;
+            }
+            if (!/^\d{3}$/.test(rw)) {
+                alert('RW harus 3 digit angka (contoh: 002)');
+                document.getElementById('editRW').focus();
+                return false;
+            }
+            
+            // Validate Kode Pos
+            const kodePos = document.getElementById('editKodePos').value;
+            if (!/^\d{5}$/.test(kodePos)) {
+                alert('Kode Pos harus 5 digit angka');
+                document.getElementById('editKodePos').focus();
+                return false;
+            }
+            
+            // Validate members data
+            for (let i = 0; i < membersData.length; i++) {
+                const memberNumber = i + 1;
+                
+                const nama = document.getElementById(`editNama${memberNumber}`).value;
+                const nik = document.getElementById(`editNIK${memberNumber}`).value;
+                
+                if (!nama || !nama.trim()) {
+                    alert(`Anggota ${memberNumber}: Nama Lengkap harus diisi`);
+                    document.getElementById(`editNama${memberNumber}`).focus();
+                    return false;
+                }
+                
+                if (!nik || nik.length !== 16) {
+                    alert(`Anggota ${memberNumber}: NIK harus 16 digit`);
+                    document.getElementById(`editNIK${memberNumber}`).focus();
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+        
+        // Initialize date pickers
+        function initializeDatePickers() {
+            flatpickr(".date-picker", {
+                dateFormat: "Y-m-d",
+                locale: "id",
+                maxDate: "today"
+            });
+        }
+        
+        // Get status class
+        function getStatusClass(status) {
+            const classes = {
+                'Hidup': 'status-hidup',
+                'Meninggal': 'status-meninggal',
+                'Pindah': 'status-pindah',
+                'Pisah KK': 'status-pisah'
+            };
+            return classes[status] || 'status-hidup';
+        }
+        
+        // Format date
+        function formatDate(dateString) {
+            if (!dateString) return '-';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric'
+            });
+        }
+        
+        // Get URL parameter
         function getUrlParameter(name) {
             const urlParams = new URLSearchParams(window.location.search);
             return urlParams.get(name);
         }
         
+        // Loading functions
         function showLoading() {
             document.getElementById('loadingOverlay').style.display = 'flex';
         }
