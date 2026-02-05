@@ -4,7 +4,7 @@
 
 // Google Apps Script Web App URL
 // GANTI DENGAN URL APPS SCRIPT ANDA SETELAH DEPLOY
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxYOUR_APPS_SCRIPT_ID/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx_idtLPGT_wK9N9BNmjqCBExK50gGonoi_uoUv58Kg95Zyk5_sV8I8meD5B85urtp4XQ/exec';
 
 // Google Drive Folder ID untuk foto
 const DRIVE_FOLDER_ID = '1JFC4y14WCQjthAh7XZZUdQ-58kEsg1Ck';
