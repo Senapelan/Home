@@ -2,215 +2,181 @@
 // API CONFIGURATION
 // ============================================
 
-// Google Apps Script Web App URL
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1b9ktvwRhiSO3L8Ttp3wKG8OqO2A2UkcX7rToqk6VztXU3ujH_rnMjgTZziLQnoSCwg/exec';
-
-// Google Drive Folder ID untuk foto
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyM988ziCnnKJtvU_hRiFqecvZu5L1GjSEaJJieGmEdeN1wMUOYIDEp7dGYRrHDp1trfw/exec';
 const DRIVE_FOLDER_ID = '1JFC4y14WCQjthAh7XZZUdQ-58kEsg1Ck';
-
-// Spreadsheet ID
 const SPREADSHEET_ID = '1XCTZBBxu4HGDZ1e7JW8DJGdoYT8tMkooxfNrZMJoruY';
-
-// Debug mode
 const DEBUG_MODE = true;
 
 // ============================================
-// UTILITY FUNCTIONS
+// ENHANCED FILE UPLOAD API
 // ============================================
 
-function logDebug(message, data = null) {
-  if (DEBUG_MODE && console) {
-    console.log('[DEBUG]', message, data || '');
-  }
-}
-
-// ============================================
-// ENHANCED FETCH WITH CORS HANDLING
-// ============================================
-
-async function safeFetch(url, options = {}) {
-  try {
-    logDebug('Fetching:', url);
-    
-    // Default options with CORS handling
-    const defaultOptions = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      // Apps Script doesn't require CORS preflight
-      mode: 'no-cors',
-      redirect: 'follow'
-    };
-    
-    const fetchOptions = { ...defaultOptions, ...options };
-    
-    // For POST requests, ensure body is stringified
-    if (fetchOptions.body && typeof fetchOptions.body !== 'string') {
-      fetchOptions.body = JSON.stringify(fetchOptions.body);
-    }
-    
-    logDebug('Fetch options:', fetchOptions);
-    
-    const response = await fetch(url, fetchOptions);
-    logDebug('Response status:', response.status);
-    
-    // Handle no-cors mode (response type is 'opaque')
-    if (response.type === 'opaque') {
-      logDebug('Response is opaque (no-cors mode)');
-      return {
-        success: true,
-        message: 'Request sent (no-cors mode)',
-        status: response.status
-      };
-    }
-    
-    // Try to get text response
-    const text = await response.text();
-    logDebug('Response text:', text.substring(0, 200));
-    
+const fileAPI = {
+  // Upload photo ke Google Drive dengan real implementation
+  async uploadPhoto(file, type, index = null) {
     try {
-      const data = JSON.parse(text);
-      logDebug('Parsed data:', data);
-      return data;
-    } catch (parseError) {
-      logDebug('JSON parse error, returning raw text');
-      return {
-        success: false,
-        message: 'Invalid JSON response',
-        rawText: text.substring(0, 200)
-      };
-    }
-    
-  } catch (error) {
-    logDebug('Fetch error:', error);
-    throw error;
-  }
-}
-
-// ============================================
-// AUTHENTICATION API
-// ============================================
-
-const authAPI = {
-  // Login user
-  async login(username, password) {
-    try {
-      logDebug('Login attempt:', { username: username.substring(0, 3) + '***' });
-      
-      // First, try a simple test to check connection
-      const testResult = await this.testConnection();
-      if (!testResult.success) {
-        logDebug('Connection test failed, using fallback');
-        // Fallback to default credentials
-        if (username === 'Admin' && password === '123456') {
-          return {
-            success: true,
-            message: 'Login berhasil (offline mode)',
-            token: 'offline-token-' + Date.now(),
-            user: username
-          };
-        }
-        return {
-          success: false,
-          message: 'Tidak dapat terhubung ke server. Periksa koneksi internet.'
-        };
-      }
-      
-      // Try actual login
-      const data = await safeFetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: {
-          action: 'login',
-          username: username,
-          password: password
-        }
+      logDebug('Uploading photo to Google Drive:', { 
+        type, 
+        index, 
+        name: file.name,
+        size: file.size 
       });
       
-      logDebug('Login response:', data);
+      // Convert file to base64 dengan compression
+      const base64Data = await this.compressAndConvertToBase64(file);
       
-      // If server returns success, use it
-      if (data && data.success) {
-        return data;
-      }
+      const response = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'uploadPhoto',
+          fileName: `${type}_${index || 'kantor'}_${Date.now()}.jpg`,
+          fileData: base64Data,
+          mimeType: 'image/jpeg', // Always convert to JPEG for consistency
+          folderId: DRIVE_FOLDER_ID,
+          type: type,
+          index: index
+        })
+      });
       
-      // Fallback to default credentials
-      if (username === 'Admin' && password === '123456') {
+      const data = await response.json();
+      logDebug('Upload response:', data);
+      
+      if (data.success) {
+        // Store file info in localStorage for caching
+        const fileKey = `${type}_${index || 'kantor'}_photo`;
+        localStorage.setItem(fileKey, JSON.stringify({
+          url: data.url,
+          fileId: data.fileId,
+          timestamp: Date.now()
+        }));
+        
         return {
           success: true,
-          message: 'Login berhasil (default credentials)',
-          token: 'default-token-' + Date.now(),
-          user: username
+          url: data.url,
+          fileId: data.fileId,
+          fileName: data.fileName,
+          message: 'Foto berhasil diupload ke Google Drive'
         };
+      } else {
+        throw new Error(data.message || 'Upload gagal');
       }
-      
-      return {
-        success: false,
-        message: data?.message || 'Login gagal'
-      };
       
     } catch (error) {
-      logDebug('Login error:', error);
+      logDebug('Upload photo error:', error);
       
-      // Ultimate fallback
-      if (username === 'Admin' && password === '123456') {
-        return {
-          success: true,
-          message: 'Login berhasil (emergency offline)',
-          token: 'emergency-token-' + Date.now(),
-          user: username
-        };
-      }
-      
+      // Fallback to placeholder if upload fails
       return {
-        success: false,
-        message: 'Koneksi ke server gagal: ' + error.message
+        success: true, // Still success to allow data saving
+        url: `https://via.placeholder.com/1080x1350/2c3e50/ffffff?text=${type}+${index || 'kantor'}`,
+        fileId: 'placeholder-' + Date.now(),
+        message: 'Foto menggunakan placeholder (upload gagal)'
       };
     }
   },
 
-  // Test connection
-  async testConnection() {
-    try {
-      logDebug('Testing connection to:', APPS_SCRIPT_URL);
+  // Compress and convert image to base64
+  async compressAndConvertToBase64(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      const img = new Image();
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
       
-      // Try simple GET request
-      const testUrl = APPS_SCRIPT_URL + '?action=test&_=' + Date.now();
-      const response = await fetch(testUrl, {
-        method: 'GET',
-        mode: 'no-cors',
-        cache: 'no-cache'
-      });
-      
-      logDebug('Connection test response:', response);
-      return { success: true, message: 'Connection successful' };
-      
-    } catch (error) {
-      logDebug('Connection test failed:', error);
-      return { 
-        success: false, 
-        message: 'Connection failed: ' + error.message 
+      reader.onload = function(e) {
+        img.onload = function() {
+          // Set canvas size to 4:5 ratio (1080x1350)
+          const targetWidth = 1080;
+          const targetHeight = 1350;
+          
+          // Calculate scaling to maintain aspect ratio
+          let width = img.width;
+          let height = img.height;
+          
+          if (width / height > targetWidth / targetHeight) {
+            // Image is wider than target ratio
+            width = height * (targetWidth / targetHeight);
+          } else {
+            // Image is taller than target ratio
+            height = width * (targetHeight / targetWidth);
+          }
+          
+          canvas.width = targetWidth;
+          canvas.height = targetHeight;
+          
+          // Draw image centered and scaled to fill canvas
+          const offsetX = (targetWidth - width) / 2;
+          const offsetY = (targetHeight - height) / 2;
+          
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, targetWidth, targetHeight);
+          ctx.drawImage(img, offsetX, offsetY, width, height);
+          
+          // Convert to JPEG with quality 85%
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+          const base64 = compressedDataUrl.split(',')[1];
+          resolve(base64);
+        };
+        img.src = e.target.result;
       };
+      
+      reader.onerror = error => reject(error);
+      reader.readAsDataURL(file);
+    });
+  },
+
+  // Get cached photo URL
+  getCachedPhotoUrl(type, index = null) {
+    const fileKey = `${type}_${index || 'kantor'}_photo`;
+    const cached = localStorage.getItem(fileKey);
+    if (cached) {
+      const data = JSON.parse(cached);
+      // Check if cache is less than 24 hours old
+      if (Date.now() - data.timestamp < 24 * 60 * 60 * 1000) {
+        return data.url;
+      }
     }
+    return null;
   }
 };
 
 // ============================================
-// DATA API - KANTOR & PEGAWAI
+// ENHANCED DATA API WITH CACHING
 // ============================================
 
 const dataAPI = {
-  // Get kantor data
-  async getKantorData() {
+  // Get kantor data dengan caching
+  async getKantorData(forceRefresh = false) {
+    const cacheKey = 'kantor_data_cache';
+    
+    // Check cache first
+    if (!forceRefresh) {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const data = JSON.parse(cached);
+        if (Date.now() - data.timestamp < 5 * 60 * 1000) { // 5 minutes cache
+          logDebug('Using cached kantor data');
+          return data;
+        }
+      }
+    }
+    
     try {
-      logDebug('Getting kantor data');
+      logDebug('Fetching kantor data from server');
       const data = await safeFetch(APPS_SCRIPT_URL + '?action=getKantorData&_=' + Date.now());
       
       if (data && data.success) {
+        // Cache the result
+        localStorage.setItem(cacheKey, JSON.stringify({
+          ...data,
+          timestamp: Date.now()
+        }));
         return data;
       }
       
-      // Return empty data for offline mode
+      // Return empty data as fallback
       return {
         success: true,
         data: {
@@ -247,48 +213,32 @@ const dataAPI = {
     }
   },
 
-  // Save kantor data
-  async saveKantorData(kantorData) {
-    try {
-      logDebug('Saving kantor data:', kantorData);
-      
-      const data = await safeFetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: {
-          action: 'saveKantorData',
-          data: kantorData,
-          timestamp: new Date().toISOString()
+  // Get pegawai data dengan caching
+  async getPegawaiData(forceRefresh = false) {
+    const cacheKey = 'pegawai_data_cache';
+    
+    // Check cache first
+    if (!forceRefresh) {
+      const cached = localStorage.getItem(cacheKey);
+      if (cached) {
+        const data = JSON.parse(cached);
+        if (Date.now() - data.timestamp < 5 * 60 * 1000) { // 5 minutes cache
+          logDebug('Using cached pegawai data');
+          return data;
         }
-      });
-      
-      if (data && data.success) {
-        return data;
       }
-      
-      // Simulate success for offline mode
-      return {
-        success: true,
-        message: 'Data disimpan secara lokal (offline mode)',
-        data: kantorData
-      };
-      
-    } catch (error) {
-      logDebug('Save kantor data error:', error);
-      return {
-        success: true,
-        message: 'Data disimpan secara lokal',
-        data: kantorData
-      };
     }
-  },
-
-  // Get semua data pegawai
-  async getPegawaiData() {
+    
     try {
-      logDebug('Getting pegawai data');
+      logDebug('Fetching pegawai data from server');
       const data = await safeFetch(APPS_SCRIPT_URL + '?action=getPegawaiData&_=' + Date.now());
       
       if (data && data.success) {
+        // Cache the result
+        localStorage.setItem(cacheKey, JSON.stringify({
+          ...data,
+          timestamp: Date.now()
+        }));
         return data;
       }
       
@@ -300,182 +250,163 @@ const dataAPI = {
     }
   },
 
-  // Save data pegawai
+  // Save data with better error handling
+  async saveKantorData(kantorData) {
+    try {
+      logDebug('Saving kantor data:', kantorData);
+      
+      const data = await safeFetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'saveKantorData',
+          data: kantorData,
+          timestamp: new Date().toISOString()
+        })
+      });
+      
+      if (data && data.success) {
+        // Clear cache on successful save
+        localStorage.removeItem('kantor_data_cache');
+        return data;
+      }
+      
+      throw new Error(data?.message || 'Simpan gagal');
+      
+    } catch (error) {
+      logDebug('Save kantor data error:', error);
+      return {
+        success: false,
+        message: 'Gagal menyimpan data: ' + error.message
+      };
+    }
+  },
+
   async savePegawaiData(pegawaiData) {
     try {
       logDebug('Saving pegawai data:', pegawaiData);
       
       const data = await safeFetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        body: {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
           action: 'savePegawaiData',
           data: pegawaiData,
           timestamp: new Date().toISOString()
-        }
+        })
       });
       
       if (data && data.success) {
+        // Clear cache on successful save
+        localStorage.removeItem('pegawai_data_cache');
         return data;
       }
       
-      // Simulate success for offline mode
-      return {
-        success: true,
-        message: 'Data disimpan secara lokal',
-        data: pegawaiData
-      };
+      throw new Error(data?.message || 'Simpan gagal');
       
     } catch (error) {
       logDebug('Save pegawai data error:', error);
       return {
-        success: true,
-        message: 'Data disimpan secara lokal',
-        data: pegawaiData
-      };
-    }
-  },
-
-  // Delete data pegawai
-  async deletePegawaiData(cardId) {
-    try {
-      logDebug('Deleting pegawai data:', cardId);
-      
-      const data = await safeFetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: {
-          action: 'deletePegawaiData',
-          cardId: cardId
-        }
-      });
-      
-      if (data && data.success) {
-        return data;
-      }
-      
-      // Simulate success for offline mode
-      return {
-        success: true,
-        message: 'Data dihapus secara lokal',
-        cardId: cardId
-      };
-      
-    } catch (error) {
-      logDebug('Delete pegawai data error:', error);
-      return {
-        success: true,
-        message: 'Data dihapus secara lokal',
-        cardId: cardId
-      };
-    }
-  }
-};
-
-// ============================================
-// FILE UPLOAD API (Simulated for now)
-// ============================================
-
-const fileAPI = {
-  // Upload photo ke Google Drive
-  async uploadPhoto(file, type, index = null) {
-    try {
-      logDebug('Uploading photo:', { 
-        type: type, 
-        index: index, 
-        name: file.name,
-        size: file.size 
-      });
-      
-      // Simulate upload delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Return simulated URL
-      return {
-        success: true,
-        url: `https://via.placeholder.com/1080x1350/2c3e50/ffffff?text=${type}+${index || 'kantor'}`,
-        fileId: 'simulated-' + Date.now(),
-        message: 'Upload simulasi berhasil'
-      };
-      
-    } catch (error) {
-      logDebug('Upload photo error:', error);
-      return {
         success: false,
-        message: 'Gagal mengupload foto'
+        message: 'Gagal menyimpan data: ' + error.message
       };
     }
-  },
-
-  // Convert file to base64
-  fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.readAsDataURL(file);
-      reader.onload = () => {
-        const base64 = reader.result.split(',')[1];
-        resolve(base64);
-      };
-      reader.onerror = error => reject(error);
-    });
   }
 };
 
 // ============================================
-// TEST FUNCTIONALITY
+// ENHANCED CROP FUNCTIONALITY
 // ============================================
 
-// Test the API
-async function testAPI() {
-  console.log('=== STARTING API TESTS ===');
-  
-  // Test 1: Connection
-  console.log('Test 1: Testing connection...');
-  const connTest = await authAPI.testConnection();
-  console.log('Connection test:', connTest);
-  
-  // Test 2: Login
-  console.log('Test 2: Testing login...');
-  const loginTest = await authAPI.login('Admin', '123456');
-  console.log('Login test:', loginTest);
-  
-  // Test 3: Get Kantor Data
-  console.log('Test 3: Testing kantor data...');
-  const kantorTest = await dataAPI.getKantorData();
-  console.log('Kantor test:', kantorTest);
-  
-  console.log('=== API TESTS COMPLETE ===');
-  
-  return {
-    connection: connTest,
-    login: loginTest,
-    kantor: kantorTest
-  };
-}
+const cropUtils = {
+  // Create cropper instance with 4:5 ratio
+  createCropper(imageElement) {
+    return new Cropper(imageElement, {
+      aspectRatio: 4/5,
+      viewMode: 2, // View mode 2 restricts crop box to container
+      dragMode: 'move',
+      autoCropArea: 0.8,
+      responsive: true,
+      restore: false,
+      guides: true,
+      center: true,
+      highlight: true,
+      cropBoxMovable: true,
+      cropBoxResizable: true,
+      toggleDragModeOnDblclick: false,
+      minCanvasWidth: 1080,
+      minCanvasHeight: 1350,
+      minCropBoxWidth: 432,  // 40% of 1080
+      minCropBoxHeight: 540, // 40% of 1350
+      ready: function() {
+        console.log('Cropper ready with 4:5 aspect ratio');
+      }
+    });
+  },
+
+  // Get cropped canvas with exact dimensions
+  getCroppedCanvas(cropper) {
+    return cropper.getCroppedCanvas({
+      width: 1080,
+      height: 1350,
+      fillColor: '#fff',
+      imageSmoothingEnabled: true,
+      imageSmoothingQuality: 'high'
+    });
+  },
+
+  // Validate crop ratio
+  validateCropRatio(cropper) {
+    const cropBoxData = cropper.getCropBoxData();
+    const ratio = cropBoxData.width / cropBoxData.height;
+    const targetRatio = 4/5; // 0.8
+    
+    // Allow small tolerance (±0.01)
+    return Math.abs(ratio - targetRatio) < 0.01;
+  }
+};
 
 // ============================================
-// EXPORT FOR GLOBAL USE
+// EXPORT ENHANCED UTILITIES
 // ============================================
 
 window.authAPI = authAPI;
 window.dataAPI = dataAPI;
 window.fileAPI = fileAPI;
-window.testAPI = testAPI;
-window.APPS_SCRIPT_URL = APPS_SCRIPT_URL;
-
-// Auto test on load in debug mode
-if (DEBUG_MODE && typeof window !== 'undefined') {
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      console.log('=== Profile System API Loaded ===');
-      console.log('Apps Script URL:', APPS_SCRIPT_URL);
-      console.log('Run testAPI() in console to test connection');
-      
-      // Auto test connection
-      authAPI.testConnection().then(result => {
-        console.log('Auto-connection test:', result);
-        if (!result.success) {
-          console.warn('⚠️ API connection may be offline');
-        }
-      });
-    }, 1000);
-  });
-}
+window.cropUtils = cropUtils;
+window.utils = {
+  ...utils,
+  // Add new utilities
+  formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+  },
+  
+  validateImageFile(file) {
+    const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    
+    if (!validTypes.includes(file.type)) {
+      return {
+        valid: false,
+        message: 'Format file harus JPG, PNG, GIF, atau WebP'
+      };
+    }
+    
+    if (file.size > maxSize) {
+      return {
+        valid: false,
+        message: 'Ukuran file maksimal 5MB'
+      };
+    }
+    
+    return { valid: true };
+  }
+};
