@@ -50,6 +50,7 @@
             color: var(--text);
             overflow-x: hidden;
             position: relative;
+            cursor: default;
         }
 
         /* ================= 3D BACKGROUND EFFECT ================= */
@@ -63,251 +64,10 @@
             opacity: 0.03;
         }
 
-        /* ================= MUSIC PERMISSION MODAL ================= */
-        .music-permission-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            opacity: 1;
-            transition: opacity 0.5s ease;
-        }
-
-        .music-permission-modal.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border-radius: 24px;
-            padding: 40px;
-            text-align: center;
-            max-width: 400px;
-            width: 90%;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-            transform: translateY(0);
-            animation: modalAppear 0.6s ease-out;
-        }
-
-        @keyframes modalAppear {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-icon {
-            font-size: 60px;
-            margin-bottom: 20px;
-            animation: musicBounce 2s ease-in-out infinite;
-        }
-
-        @keyframes musicBounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .modal-content h3 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--dark);
-            margin-bottom: 15px;
-        }
-
-        .modal-content p {
-            color: var(--text-light);
-            line-height: 1.6;
-            margin-bottom: 30px;
-            font-size: 16px;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .modal-btn {
-            flex: 1;
-            padding: 16px 20px;
-            border-radius: 50px;
-            border: none;
-            font-family: 'Inter', sans-serif;
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .allow-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            box-shadow: 0 8px 25px rgba(30, 107, 255, 0.4);
-        }
-
-        .allow-btn:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(30, 107, 255, 0.6);
-        }
-
-        .skip-btn {
-            background: transparent;
-            color: var(--text);
-            border: 2px solid #ddd;
-        }
-
-        .skip-btn:hover {
-            background: #f5f5f5;
-            border-color: #ccc;
-        }
-
-        .auto-play-note {
-            color: var(--text-light);
-            font-size: 12px;
-            opacity: 0.8;
-        }
-
-        /* ================= AUDIO PLAYER ================= */
+        /* ================= HAPUS POPUP & AUDIO PLAYER ================= */
+        .music-permission-modal,
         .audio-player-container {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            z-index: 10000;
-        }
-
-        .audio-player {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 50px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            transition: var(--transition);
-            width: 280px;
-        }
-
-        .audio-player:hover {
-            background: rgba(255, 255, 255, 0.25);
-            transform: translateY(-5px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        .audio-player.active {
-            background: rgba(30, 107, 255, 0.3);
-            border-color: rgba(30, 107, 255, 0.5);
-        }
-
-        .audio-btn {
-            background: linear-gradient(135deg, #1e6bff, #4d90ff);
-            border: none;
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 18px;
-            transition: var(--transition);
-            box-shadow: 0 4px 15px rgba(30, 107, 255, 0.4);
-        }
-
-        .audio-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(30, 107, 255, 0.6);
-        }
-
-        .audio-info {
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .audio-title {
-            font-size: 12px;
-            color: rgba(255, 255, 255, 0.9);
-            font-weight: 500;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 2px;
-        }
-
-        .audio-visualizer {
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 2px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .audio-bar {
-            position: absolute;
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #1e6bff, #4d90ff);
-            border-radius: 2px;
-            transition: width 0.1s linear;
-        }
-
-        .volume-control {
-            position: absolute;
-            bottom: 70px;
-            right: 0;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(20px);
-            border-radius: 25px;
-            padding: 15px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(10px);
-            transition: var(--transition);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
-
-        .volume-control.show {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-
-        .volume-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.2);
-            border-radius: 2px;
-            outline: none;
-        }
-
-        .volume-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            border-radius: 50%;
-            background: #1e6bff;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(30, 107, 255, 0.5);
+            display: none !important;
         }
 
         /* ================= GLASS HEADER ================= */
@@ -321,7 +81,7 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 40px;
-            background: rgba(12, 31, 51, 0.9);
+            background: rgba(12, 31, 51, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
             z-index: 1000;
@@ -329,7 +89,7 @@
         }
 
         .header.scrolled {
-            background: rgba(12, 31, 51, 0.95);
+            background: rgba(12, 31, 51, 0.98);
             backdrop-filter: blur(30px);
             height: 70px;
             box-shadow: var(--shadow-lg);
@@ -819,11 +579,12 @@
             font-size: 14px;
         }
 
-        /* ================= SERVICES SECTION ================= */
+        /* ================= SERVICES SECTION - ANIMASI KEREN ================= */
         .services-section {
             padding: 100px 40px;
             background: white;
             position: relative;
+            overflow: hidden;
         }
 
         .section-header {
@@ -869,43 +630,65 @@
         }
 
         .service-card {
-            background: var(--light);
-            border-radius: 20px;
+            background: linear-gradient(135deg, #f8faff, #ffffff);
+            border-radius: 24px;
             padding: 40px 30px;
             text-align: center;
             transition: var(--transition);
             position: relative;
             overflow: hidden;
-            border: 1px solid transparent;
+            border: 1px solid rgba(30, 107, 255, 0.1);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            cursor: pointer;
         }
 
+        /* Floating Animation */
+        @keyframes floatService {
+            0%, 100% {
+                transform: translateY(0) rotateY(0);
+            }
+            50% {
+                transform: translateY(-15px) rotateY(5deg);
+            }
+        }
+
+        .service-card:hover {
+            animation: floatService 2s ease-in-out infinite;
+            border-color: rgba(30, 107, 255, 0.3);
+            box-shadow: 0 25px 50px rgba(30, 107, 255, 0.15);
+        }
+
+        /* Shine Effect */
         .service-card::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
+            left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            opacity: 0;
-            transition: var(--transition);
-            z-index: 1;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transition: left 0.8s;
         }
 
         .service-card:hover::before {
-            opacity: 1;
+            left: 100%;
         }
 
+        /* Icon Container - No White Background */
         .service-icon {
             width: 140px;
             height: 140px;
             margin: 0 auto 25px;
             position: relative;
             z-index: 2;
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: var(--transition);
+            filter: drop-shadow(0 10px 20px rgba(30, 107, 255, 0.2));
         }
 
         .service-icon img {
@@ -914,54 +697,117 @@
             object-fit: contain;
             transition: var(--transition);
             filter: brightness(1);
+            transform-origin: center;
+            background: transparent !important;
         }
 
+        /* Icon Hover Animation */
         .service-card:hover .service-icon {
-            background: transparent;
-            box-shadow: none;
+            transform: scale(1.1) translateY(-5px);
+            filter: drop-shadow(0 15px 30px rgba(30, 107, 255, 0.4));
         }
 
         .service-card:hover .service-icon img {
-            filter: brightness(0) invert(1);
             transform: scale(1.1);
+            filter: brightness(1.1) saturate(1.2);
         }
 
+        /* Title & Description */
         .service-title {
             font-family: 'Poppins', sans-serif;
             font-size: 22px;
             font-weight: 700;
             color: var(--dark);
-            margin-bottom: 15px;
+            margin-bottom: 12px;
             position: relative;
             z-index: 2;
             transition: var(--transition);
         }
 
         .service-card:hover .service-title {
-            color: white;
+            color: var(--primary);
+            transform: translateY(-3px);
         }
 
         .service-desc {
             color: var(--text-light);
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.6;
             position: relative;
             z-index: 2;
             transition: var(--transition);
+            font-weight: 500;
         }
 
         .service-card:hover .service-desc {
-            color: rgba(255, 255, 255, 0.9);
+            color: var(--text);
+            transform: translateY(-2px);
         }
 
-        /* ================= Khusus SI CEPAT ================= */
+        /* Khusus SI CEPAT */
+        .service-card:nth-child(1) .service-title {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .service-card:nth-child(1) .service-desc {
-            font-weight: 600;
             color: var(--primary);
+            font-weight: 600;
         }
 
-        .service-card:nth-child(1):hover .service-desc {
-            color: rgba(255, 255, 255, 0.9);
+        /* Khusus UNDUH BERKAS */
+        .service-card:nth-child(3) .service-title {
+            position: relative;
+            display: inline-block;
+        }
+
+        .service-card:nth-child(3) .service-title::after {
+            content: 'UNDUH BERKAS';
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .service-card:nth-child(3):hover .service-title::after {
+            opacity: 1;
+            animation: slideIn 0.5s ease forwards;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Particle Animation */
+        .service-card::after {
+            content: '';
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(30, 107, 255, 0.1) 0%, transparent 70%);
+            top: -100px;
+            left: -100px;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .service-card:hover::after {
+            opacity: 1;
+            transform: scale(1.5);
         }
 
         /* ================= CONTACT SECTION ================= */
@@ -1023,6 +869,7 @@
             margin-bottom: 25px;
         }
 
+        /* Updated Contact Icon with favico.png */
         .contact-icon {
             width: 60px;
             height: 60px;
@@ -1032,11 +879,19 @@
             align-items: center;
             justify-content: center;
             flex-shrink: 0;
+            padding: 10px;
+            transition: var(--transition);
+        }
+
+        .contact-card:hover .contact-icon {
+            background: rgba(30, 107, 255, 0.2);
+            transform: rotate(10deg) scale(1.1);
         }
 
         .contact-icon img {
-            width: 32px;
-            height: 32px;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
             filter: brightness(0) invert(1);
         }
 
@@ -1051,6 +906,29 @@
             display: block;
             margin-bottom: 5px;
             font-size: 17px;
+        }
+
+        /* Format Kontak Sesuai Request */
+        .contact-details {
+            margin-top: 20px;
+        }
+
+        .contact-item {
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .contact-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .contact-value {
+            color: white;
+            font-weight: 500;
+            font-size: 15px;
         }
 
         .quick-links {
@@ -1187,6 +1065,7 @@
             filter: none !important;
         }
 
+        /* MOBILE NAV MENU - SAMA DENGAN DESKTOP */
         .mobile-nav {
             display: flex;
             flex-direction: column;
@@ -1202,11 +1081,69 @@
             transition: var(--transition);
             font-size: 16px;
             font-weight: 500;
+            position: relative;
+        }
+
+        .mobile-nav a::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transition: width 0.3s ease;
+        }
+
+        .mobile-nav a:hover::before {
+            width: 100%;
         }
 
         .mobile-nav a:hover {
             background: rgba(30, 107, 255, 0.2);
+            color: #a3d4ff;
             transform: translateX(10px);
+        }
+
+        /* Mobile Dropdown Menu */
+        .mobile-dropdown {
+            padding-left: 20px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .mobile-dropdown.active {
+            display: block;
+        }
+
+        .mobile-dropdown a {
+            padding: 14px 20px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.05);
+            margin-bottom: 8px;
+        }
+
+        .mobile-dropdown a:hover {
+            background: rgba(30, 107, 255, 0.2);
+            transform: translateX(15px);
+        }
+
+        /* Dropdown Toggle Arrow */
+        .mobile-nav a.has-dropdown {
+            padding-right: 40px;
+        }
+
+        .mobile-nav a.has-dropdown::after {
+            content: '▾';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-nav a.has-dropdown.active::after {
+            transform: translateY(-50%) rotate(180deg);
         }
 
         .mobile-overlay {
@@ -1273,10 +1210,6 @@
             .hero-title {
                 font-size: clamp(2rem, 4vw, 3rem);
             }
-            
-            .audio-player {
-                width: 240px;
-            }
         }
 
         @media (max-width: 768px) {
@@ -1307,15 +1240,6 @@
                 width: 100%;
                 max-width: 300px;
             }
-            
-            .modal-buttons {
-                flex-direction: column;
-            }
-            
-            .audio-player-container {
-                bottom: 16px;
-                right: 16px;
-            }
         }
 
         @media (max-width: 480px) {
@@ -1338,10 +1262,6 @@
             
             .profile-card,
             .contact-card {
-                padding: 30px 20px;
-            }
-            
-            .modal-content {
                 padding: 30px 20px;
             }
         }
@@ -1383,43 +1303,6 @@
 <body>
     <!-- 3D Background Canvas -->
     <canvas id="bg-canvas"></canvas>
-    
-    <!-- Music Permission Modal -->
-    <div class="music-permission-modal" id="musicModal">
-        <div class="modal-content">
-            <div class="modal-icon">🎵</div>
-            <h3>Hidupkan Musik?</h3>
-            <p>Ingin dengar musik biar lebih semangat hari ini? Musik khas Padang Terubuk siap menemani Anda!</p>
-            <div class="modal-buttons">
-                <button class="modal-btn allow-btn" id="allowMusic">🎵 Putar Musik</button>
-                <button class="modal-btn skip-btn" id="skipMusic">Skip</button>
-            </div>
-            <div class="auto-play-note">
-                <small>Musik akan otomatis terputar setelah Anda mengizinkan</small>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Audio Player -->
-    <div class="audio-player-container">
-        <div class="audio-player" id="audioPlayer">
-            <button class="audio-btn" id="playBtn">
-                <span id="playIcon">▶</span>
-            </button>
-            <div class="audio-info">
-                <div class="audio-title">Padang Terubuk Theme</div>
-                <div class="audio-visualizer">
-                    <div class="audio-bar" id="audioBar"></div>
-                </div>
-            </div>
-            <button class="audio-btn" id="volumeBtn">
-                <span id="volumeIcon">🔊</span>
-            </button>
-        </div>
-        <div class="volume-control" id="volumeControl">
-            <input type="range" min="0" max="100" value="50" class="volume-slider" id="volumeSlider">
-        </div>
-    </div>
     
     <!-- Glass Header -->
     <header class="header" id="header">
@@ -1580,7 +1463,7 @@
                 </div>
                 <h3 class="service-title">Persyaratan</h3>
                 <p class="service-desc">
-                    Informasi lengkap persyaratan berbagai layanan administrasi
+                    Informasi lengkap, persyaratan berbagai layanan administrasi
                 </p>
             </a>
             
@@ -1590,7 +1473,7 @@
                 </div>
                 <h3 class="service-title">Unduh Berkas</h3>
                 <p class="service-desc">
-                    Download formulir dan dokumen resmi kelurahan
+                    Download formulir dan dokumen resmi keluarga
                 </p>
             </a>
             
@@ -1613,21 +1496,31 @@
                 <h3 class="contact-title">Kontak Kami</h3>
                 <div class="contact-info">
                     <div class="contact-icon">
-                        <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z'/%3E%3C/svg%3E" alt="Email">
+                        <!-- Gambar diganti dengan favico.png -->
+                        <img src="data/foto/favico/favico.png" alt="Logo Kelurahan">
                     </div>
                     <div class="contact-text">
                         <strong>Kelurahan Padang Terubuk</strong>
                         Kecamatan Senapelan
                     </div>
                 </div>
-                <div class="contact-text">
-                    <strong>Alamat:</strong><br>
-                    Jalan Melur No. 4 RT 004 RW 005
-                </div>
-                <div class="contact-text">
-                    <strong>No. Tlp:</strong> (0761) 08562<br>
-                    <strong>Email:</strong> terubukberjaya@gmail.com<br>
-                    <strong>WhatsApp:</strong> 0821-7008-9590
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <span class="contact-label">Alamat:</span>
+                        <span class="contact-value">Jalan Melur No. 4 RT 004 RW 005</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-label">No. Tlp:</span>
+                        <span class="contact-value">(0761) 08562</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-label">Email:</span>
+                        <span class="contact-value">terubukberjaya@gmail.com</span>
+                    </div>
+                    <div class="contact-item">
+                        <span class="contact-label">WhatsApp:</span>
+                        <span class="contact-value">0821-7008-9590</span>
+                    </div>
                 </div>
             </div>
             
@@ -1678,164 +1571,86 @@
         
         <nav class="mobile-nav">
             <a href="#home">Beranda</a>
-            <a href="#services">Pelayanan</a>
+            
+            <a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('pelayanan')">Pelayanan</a>
+            <div class="mobile-dropdown" id="pelayanan">
+                <a href="maintenance.html">SI CEPAT</a>
+                <a href="maintenance.html">Persyaratan</a>
+                <a href="maintenance.html">Unduh Berkas</a>
+            </div>
+            
+            <a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('lembaga')">Lembaga</a>
+            <div class="mobile-dropdown" id="lembaga">
+                <a href="maintenance.html">RW</a>
+                <a href="maintenance.html">RT</a>
+                <a href="maintenance.html">LPM</a>
+                <a href="maintenance.html">PKK</a>
+                <a href="maintenance.html">Karang Taruna</a>
+                <a href="maintenance.html">LPS</a>
+            </div>
+            
             <a href="#profile">Profil</a>
+            
+            <a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('publikasi')">Publikasi</a>
+            <div class="mobile-dropdown" id="publikasi">
+                <a href="maintenance.html">Surat Keputusan</a>
+                <a href="maintenance.html">Dokumen</a>
+                <a href="maintenance.html">Peraturan</a>
+                <a href="maintenance.html">Foto Kegiatan</a>
+                <a href="maintenance.html">Video Kegiatan</a>
+            </div>
+            
             <a href="#contact">Kontak</a>
-            <a href="maintenance.html">Publikasi</a>
-            <a href="maintenance.html">Lembaga</a>
         </nav>
     </div>
 
     <!-- JavaScript -->
     <script>
-        // ================= MUSIC PERMISSION SYSTEM =================
-        const musicModal = document.getElementById('musicModal');
-        const allowMusicBtn = document.getElementById('allowMusic');
-        const skipMusicBtn = document.getElementById('skipMusic');
-        
-        // Cek apakah user sudah pernah memilih
-        const musicPermission = localStorage.getItem('musicPermission');
-        
-        if (!musicPermission) {
-            // Tampilkan modal jika belum ada keputusan
-            setTimeout(() => {
-                musicModal.style.display = 'flex';
-            }, 1000);
-        } else if (musicPermission === 'allowed') {
-            // Jika sudah allow, langsung play
-            setTimeout(() => initMusicPlayer(true), 1500);
-            musicModal.style.display = 'none';
-        } else {
-            // Jika skip, jangan tampilkan player
-            musicModal.style.display = 'none';
-            document.querySelector('.audio-player-container').style.display = 'none';
-        }
-        
-        // Handle allow button
-        allowMusicBtn.addEventListener('click', () => {
-            musicModal.classList.add('hidden');
-            localStorage.setItem('musicPermission', 'allowed');
-            setTimeout(() => {
-                musicModal.style.display = 'none';
-                initMusicPlayer(true);
-            }, 500);
-        });
-        
-        // Handle skip button
-        skipMusicBtn.addEventListener('click', () => {
-            musicModal.classList.add('hidden');
-            localStorage.setItem('musicPermission', 'skipped');
-            setTimeout(() => {
-                musicModal.style.display = 'none';
-                document.querySelector('.audio-player-container').style.display = 'none';
-            }, 500);
-        });
-        
-        // ================= MUSIC PLAYER SYSTEM =================
+        // ================= MUSIK OTOMATIS =================
         let bgMusic;
-        let isPlaying = false;
-        let isVolumeOpen = false;
+        let musicStarted = false;
         
-        function initMusicPlayer(autoPlay = false) {
-            // Create audio element
+        function startMusic() {
+            if (musicStarted) return;
+            
             bgMusic = new Audio('data/sound/data/sound/main_music_padangterubuk.mp3');
             bgMusic.loop = true;
             bgMusic.volume = 0.5;
             
-            const audioPlayer = document.getElementById('audioPlayer');
-            const playBtn = document.getElementById('playBtn');
-            const playIcon = document.getElementById('playIcon');
-            const volumeBtn = document.getElementById('volumeBtn');
-            const volumeControl = document.getElementById('volumeControl');
-            const volumeSlider = document.getElementById('volumeSlider');
-            const volumeIcon = document.getElementById('volumeIcon');
-            const audioBar = document.getElementById('audioBar');
-            
-            // Auto play jika diminta
-            if (autoPlay) {
-                bgMusic.play().catch(e => {
-                    console.log('Auto-play failed, waiting for user interaction:', e);
-                    // Fallback: wait for user interaction
-                    document.addEventListener('click', function firstClick() {
-                        bgMusic.play();
-                        playIcon.textContent = '⏸';
-                        audioPlayer.classList.add('active');
-                        isPlaying = true;
-                        document.removeEventListener('click', firstClick);
-                    });
-                });
-                playIcon.textContent = '⏸';
-                audioPlayer.classList.add('active');
-                isPlaying = true;
-            }
-            
-            // Toggle play/pause
-            playBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                if (isPlaying) {
-                    bgMusic.pause();
-                    playIcon.textContent = '▶';
-                    audioPlayer.classList.remove('active');
-                } else {
-                    bgMusic.play().catch(e => console.log('Play failed:', e));
-                    playIcon.textContent = '⏸';
-                    audioPlayer.classList.add('active');
-                }
-                isPlaying = !isPlaying;
+            // Coba play otomatis
+            bgMusic.play().then(() => {
+                console.log('Musik berhasil diputar');
+                musicStarted = true;
+            }).catch(error => {
+                console.log('Menunggu interaksi user...');
+                // Fallback: akan di-trigger oleh event listener di bawah
             });
-            
-            // Update progress bar
-            bgMusic.addEventListener('timeupdate', () => {
-                if (bgMusic.duration) {
-                    const progress = (bgMusic.currentTime / bgMusic.duration) * 100;
-                    audioBar.style.width = `${progress}%`;
-                }
-            });
-            
-            // Reset progress when song ends
-            bgMusic.addEventListener('ended', () => {
-                audioBar.style.width = '0%';
-            });
-            
-            // Volume control
-            volumeBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                isVolumeOpen = !isVolumeOpen;
-                volumeControl.classList.toggle('show', isVolumeOpen);
-            });
-            
-            volumeSlider.addEventListener('input', (e) => {
-                const volume = e.target.value / 100;
-                bgMusic.volume = volume;
-                
-                // Update volume icon
-                if (volume === 0) {
-                    volumeIcon.textContent = '🔇';
-                } else if (volume < 0.5) {
-                    volumeIcon.textContent = '🔉';
-                } else {
-                    volumeIcon.textContent = '🔊';
-                }
-            });
-            
-            // Close volume control when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!volumeControl.contains(e.target) && !volumeBtn.contains(e.target)) {
-                    volumeControl.classList.remove('show');
-                    isVolumeOpen = false;
-                }
-            });
-            
-            // Visualizer animation
-            function animateVisualizer() {
-                if (isPlaying) {
-                    const randomWidth = 20 + Math.random() * 80;
-                    audioBar.style.width = `${randomWidth}%`;
-                }
-                requestAnimationFrame(animateVisualizer);
-            }
-            animateVisualizer();
         }
+        
+        // Trigger musik saat user berinteraksi
+        const startMusicOnInteraction = () => {
+            if (!musicStarted) {
+                startMusic();
+                // Hapus event listeners setelah musik dimulai
+                document.removeEventListener('click', startMusicOnInteraction);
+                document.removeEventListener('touchstart', startMusicOnInteraction);
+                document.removeEventListener('scroll', startMusicOnInteraction);
+                document.removeEventListener('keydown', startMusicOnInteraction);
+                document.removeEventListener('mousemove', startMusicOnInteraction);
+            }
+        };
+        
+        // Tambah event listeners untuk berbagai interaksi
+        document.addEventListener('click', startMusicOnInteraction);
+        document.addEventListener('touchstart', startMusicOnInteraction);
+        document.addEventListener('scroll', startMusicOnInteraction);
+        document.addEventListener('keydown', startMusicOnInteraction);
+        document.addEventListener('mousemove', startMusicOnInteraction);
+        
+        // Coba start musik setelah page load
+        window.addEventListener('load', () => {
+            setTimeout(startMusic, 1000);
+        });
         
         // ================= HEADER SCROLL EFFECT =================
         window.addEventListener('scroll', () => {
@@ -1862,15 +1677,52 @@
             mobileMenu.classList.remove('active');
             mobileOverlay.classList.remove('active');
             document.body.style.overflow = '';
+            closeAllMobileDropdowns();
         });
+        
+        // Mobile dropdown function
+        function toggleMobileDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const button = event.currentTarget;
+            
+            // Close other dropdowns
+            document.querySelectorAll('.mobile-dropdown').forEach(d => {
+                if (d.id !== id) {
+                    d.classList.remove('active');
+                }
+            });
+            
+            // Remove active class from other buttons
+            document.querySelectorAll('.mobile-nav a.has-dropdown').forEach(b => {
+                if (b !== button) {
+                    b.classList.remove('active');
+                }
+            });
+            
+            // Toggle current dropdown
+            dropdown.classList.toggle('active');
+            button.classList.toggle('active');
+        }
+        
+        function closeAllMobileDropdowns() {
+            document.querySelectorAll('.mobile-dropdown').forEach(d => {
+                d.classList.remove('active');
+            });
+            document.querySelectorAll('.mobile-nav a.has-dropdown').forEach(b => {
+                b.classList.remove('active');
+            });
+        }
         
         // Close mobile menu when clicking links
         document.querySelectorAll('.mobile-nav a').forEach(link => {
-            link.addEventListener('click', () => {
-                mobileMenu.classList.remove('active');
-                mobileOverlay.classList.remove('active');
-                document.body.style.overflow = '';
-            });
+            if (!link.classList.contains('has-dropdown')) {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.remove('active');
+                    mobileOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                    closeAllMobileDropdowns();
+                });
+            }
         });
         
         // ================= 3D BACKGROUND =================
@@ -1991,17 +1843,19 @@
             observer.observe(el);
         });
         
-        // ================= LOGO HOVER EFFECT ENHANCEMENT =================
-        const logoImg = document.querySelector('.logo-img');
-        if (logoImg) {
-            logoImg.addEventListener('mouseenter', () => {
-                logoImg.style.transform = 'scale(1.1) rotate(5deg)';
+        // ================= SERVICE CARDS ANIMATION ENHANCEMENT =================
+        const serviceCards = document.querySelectorAll('.service-card');
+        serviceCards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.transform = 'translateY(-10px) rotateY(5deg)';
+                card.style.boxShadow = '0 30px 60px rgba(30, 107, 255, 0.2)';
             });
             
-            logoImg.addEventListener('mouseleave', () => {
-                logoImg.style.transform = 'scale(1) rotate(0deg)';
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = 'translateY(0) rotateY(0)';
+                card.style.boxShadow = '';
             });
-        }
+        });
     </script>
 </body>
 </html>
