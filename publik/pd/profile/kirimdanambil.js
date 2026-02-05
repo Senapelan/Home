@@ -6,10 +6,10 @@
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPAQVZySc1DoKT6-gpfd_n8fUJG43dSOJBJeLvvCsSyUSDFbU0Ez5GaC2030LEZNT9/exec';
 
 // Google Drive Folder ID for photos
-const DRIVE_FOLDER_ID = '1JFC4y14WCQjthAh7XZZUdQ-58kEsg1Ck';
+const DRIVE_FOLDER_ID = '1sdrsaumez3i1drUePpF2JZ8E2owWtgTI';
 
 // Spreadsheet ID
-const SPREADSHEET_ID = '1XCTZBBxu4HGDZ1e7JW8DJGdoYT8tMkooxfNrZMJoruY';
+const SPREADSHEET_ID = '1MsQBevrfycD33zBoTyGPeScQEz0swkhFH413vsEEXy0';
 
 // Debug mode
 const DEBUG_MODE = true;
