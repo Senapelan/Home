@@ -3,7 +3,7 @@
 // ============================================
 
 // Google Apps Script Web App URL
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1b9ktvwRhiSO3L8Ttp3wKG8OqO2A2UkcX7rToqk6VztXU3ujH_rnMjgTZziLQnoSCwg/exec';
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzTjA7PdimuKW3UZqNKksPGaeQyxpNTf3FzAmtKE5HTqev3UcvreuO7jb6D4zqCWM8XFg/exec';
 
 // Google Drive Folder ID untuk foto
 const DRIVE_FOLDER_ID = '1JFC4y14WCQjthAh7XZZUdQ-58kEsg1Ck';
