@@ -260,6 +260,14 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
 
+        .stat-icon.def {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+
+        .stat-icon.plt {
+            background: linear-gradient(135deg, #6b7280, #374151);
+        }
+
         .stat-value {
             font-family: 'Poppins', sans-serif;
             font-size: 2.5rem;
@@ -400,11 +408,6 @@
             color: #374151;
         }
 
-        .status-ending {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--danger);
-        }
-
         /* Jenis LKK Badges */
         .jenis-badge {
             display: inline-flex;
@@ -493,29 +496,6 @@
 
         table.dataTable tbody tr:last-child td {
             border-bottom: none;
-        }
-
-        /* Sisa Masa Jabatan dengan warning */
-        .sisa-masa {
-            font-weight: 600;
-            padding: 4px 10px;
-            border-radius: 12px;
-            font-size: 13px;
-        }
-
-        .sisa-masa.habis {
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--danger);
-        }
-
-        .sisa-masa.segera {
-            background: rgba(245, 158, 11, 0.1);
-            color: var(--warning);
-        }
-
-        .sisa-masa.aman {
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--success);
         }
 
         /* Footer */
@@ -778,6 +758,22 @@
                 <div class="stat-value" id="totalRT">0</div>
                 <div class="stat-label">Rukun Tetangga (RT)</div>
             </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon def">
+                    <i class="fas fa-user-check"></i>
+                </div>
+                <div class="stat-value" id="totalDEF">0</div>
+                <div class="stat-label">Status DEFENITIF</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon plt">
+                    <i class="fas fa-user-clock"></i>
+                </div>
+                <div class="stat-value" id="totalPLT">0</div>
+                <div class="stat-label">Status PLT</div>
+            </div>
         </div>
         
         <!-- Filter Section -->
@@ -806,16 +802,6 @@
                         <option value="">Semua Status</option>
                         <option value="DEFENITIF">DEFENITIF</option>
                         <option value="PLT">PLT</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label class="filter-label">Sisa Masa Jabatan</label>
-                    <select class="filter-select" id="filterSisaMasa">
-                        <option value="">Semua</option>
-                        <option value="habis">Akan Habis (&lt; 6 bulan)</option>
-                        <option value="masih">Masih Lama (&gt;= 6 bulan)</option>
-                        <option value="habis_sekarang">Habis Sekarang</option>
                     </select>
                 </div>
             </div>
@@ -865,66 +851,6 @@
                 </table>
             </div>
         </div>
-        
-        <!-- Legend Section -->
-        <div class="filter-section">
-            <h2 class="filter-title"><i class="fas fa-info-circle"></i> Legenda Status & Jenis LKK</h2>
-            <div style="display: flex; gap: 30px; flex-wrap: wrap; margin-top: 15px;">
-                <div>
-                    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--dark);">Status Jabatan</h3>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="status-badge status-active">AKTIF</div>
-                            <span style="font-size: 14px;">Status aktif (masa jabatan > 6 bulan)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="status-badge status-plt">PLT</div>
-                            <span style="font-size: 14px;">Pelaksana Tugas (aktif)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="status-badge status-ending">AKAN BERAKHIR</div>
-                            <span style="font-size: 14px;">Masa jabatan akan berakhir (kurang dari 6 bulan)</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--dark);">Jenis LKK</h3>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="jenis-badge jenis-lpm">LPM</div>
-                            <span style="font-size: 14px;">Lembaga Pemberdayaan Masyarakat</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="jenis-badge jenis-rw">RW</div>
-                            <span style="font-size: 14px;">Rukun Warga</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="jenis-badge jenis-rt">RT</div>
-                            <span style="font-size: 14px;">Rukun Tetangga</span>
-                        </div>
-                    </div>
-                </div>
-                
-                <div>
-                    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--dark);">Sisa Masa Jabatan</h3>
-                    <div style="display: flex; flex-direction: column; gap: 8px;">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="sisa-masa aman">24 bulan lagi</div>
-                            <span style="font-size: 14px;">Aman (≥ 6 bulan)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="sisa-masa segera">4 bulan lagi</div>
-                            <span style="font-size: 14px;">Segera habis (1-5 bulan)</span>
-                        </div>
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <div class="sisa-masa habis">Masa jabatan berakhir</div>
-                            <span style="font-size: 14px;">Sudah habis</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </main>
     
     <!-- Footer -->
@@ -955,12 +881,14 @@
         
         // Format tanggal untuk masa jabatan
         function formatDate(dateString) {
-            if (!dateString) return '-';
-            // Try different date formats
+            if (!dateString || dateString.trim() === '') return '-';
+            
+            // Coba berbagai format tanggal
             const date = new Date(dateString);
             if (isNaN(date.getTime())) {
-                return dateString; // Return original if can't parse
+                return dateString; // Kembalikan asli jika tidak bisa parse
             }
+            
             return date.toLocaleDateString('id-ID', {
                 day: '2-digit',
                 month: 'long',
@@ -968,96 +896,37 @@
             });
         }
         
-        // Hitung sisa masa jabatan
+        // Deteksi apakah string adalah tanggal valid
+        function isValidDate(dateString) {
+            if (!dateString || dateString.trim() === '') return false;
+            
+            const date = new Date(dateString);
+            return !isNaN(date.getTime());
+        }
+        
+        // Hitung sisa masa jabatan HANYA jika ada tanggal akhir yang valid
         function calculateRemainingTime(endDate) {
-            if (!endDate) return { months: 0, status: 'unknown', days: 0 };
+            if (!isValidDate(endDate)) return null;
             
             const today = new Date();
-            let end;
-            
-            // Try to parse date
-            if (typeof endDate === 'string') {
-                end = new Date(endDate);
-            } else if (endDate instanceof Date) {
-                end = endDate;
-            } else {
-                return { months: 0, status: 'unknown', days: 0 };
-            }
-            
-            if (isNaN(end.getTime())) {
-                return { months: 0, status: 'unknown', days: 0 };
-            }
+            const end = new Date(endDate);
             
             const diffTime = end - today;
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            const diffMonths = Math.floor(diffDays / 30.44); // Average days per month
+            const diffMonths = Math.floor(diffDays / 30.44);
             
-            let status = 'active';
             if (diffMonths <= 0) {
-                status = 'expired';
+                return 'Masa jabatan berakhir';
             } else if (diffMonths < 6) {
-                status = 'ending';
-            }
-            
-            return { 
-                months: diffMonths > 0 ? diffMonths : 0, 
-                status,
-                days: diffDays
-            };
-        }
-        
-        // Format sisa masa jabatan untuk display dengan class CSS
-        function formatRemainingTime(remaining) {
-            if (remaining.status === 'unknown') return { text: '-', class: '' };
-            
-            if (remaining.months <= 0) {
-                return { text: 'Masa jabatan berakhir', class: 'habis' };
-            } else if (remaining.months < 1) {
-                return { text: `${remaining.days} hari lagi`, class: 'segera' };
-            } else if (remaining.months === 1) {
-                return { text: '1 bulan lagi', class: 'segera' };
-            } else if (remaining.months < 6) {
-                return { text: `${remaining.months} bulan lagi`, class: 'segera' };
+                return `${diffMonths} bulan lagi`;
             } else {
-                return { text: `${remaining.months} bulan lagi`, class: 'aman' };
-            }
-        }
-        
-        // Tentukan warna status berdasarkan kondisi
-        function getStatusColor(status, endDate) {
-            if (status === 'PLT' || status === 'plt' || status === 'Plt') {
-                return 'status-plt';
-            }
-            
-            const remaining = calculateRemainingTime(endDate);
-            if (remaining.status === 'ending' || remaining.status === 'expired') {
-                return 'status-ending';
-            } else {
-                return 'status-active';
-            }
-        }
-        
-        // Tentukan teks status
-        function getStatusText(status, endDate) {
-            if (status === 'PLT' || status === 'plt' || status === 'Plt') {
-                return 'PLT';
-            }
-            
-            const remaining = calculateRemainingTime(endDate);
-            if (remaining.status === 'ending') {
-                return 'AKTIF';
-            } else if (remaining.status === 'expired') {
-                return 'BERAKHIR';
-            } else if (remaining.status === 'unknown') {
-                return 'AKTIF';
-            } else {
-                return 'AKTIF';
+                return `${diffMonths} bulan lagi`;
             }
         }
         
         // Tentukan jenis LKK berdasarkan deteksi awalan
         function getJenisLKK(kolomJenis) {
-            if (!kolomJenis) return '';
+            if (!kolomJenis || kolomJenis.trim() === '') return '';
             
             const jenis = kolomJenis.toString().toUpperCase().trim();
             
@@ -1095,6 +964,18 @@
             }
         }
         
+        // Tentukan warna status
+        function getStatusColor(status) {
+            if (!status) return 'status-active';
+            
+            const statusUpper = status.toString().toUpperCase().trim();
+            if (statusUpper === 'PLT') {
+                return 'status-plt';
+            } else {
+                return 'status-active';
+            }
+        }
+        
         // Show notification
         function showNotification(message, type = 'success') {
             const notification = document.getElementById('notification');
@@ -1114,11 +995,10 @@
             showLoading(true);
             
             try {
-                // Method 1: Try using Google Sheets API with CORS proxy
                 const sheetId = '1CTt4PQwL5JZm3IpOUjsd4W0OXfxdb9rIeo2fukniAkY';
                 const sheetName = 'PADANG_TERUBUK';
                 
-                // Use CORS proxy to avoid CORS issues
+                // Gunakan CORS proxy
                 const proxyUrl = 'https://api.allorigins.win/raw?url=';
                 const sheetsUrl = `https://docs.google.com/spreadsheets/d/${sheetId}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(sheetName)}`;
                 
@@ -1140,51 +1020,53 @@
             }
         }
         
-        // Process CSV data dengan struktur baru (Kolom C-J)
+        // Process CSV data dengan struktur sederhana
         function processCSVData(csvText) {
             const rows = csvText.split('\n');
             if (rows.length < 2) return [];
             
-            const headers = rows[0].split(',').map(h => h.trim().replace(/"/g, ''));
             const data = [];
             
             for (let i = 1; i < rows.length; i++) {
                 if (!rows[i].trim()) continue;
                 
-                const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
-                const item = {};
+                // Split dengan comma, tapi handle quotes
+                const cells = [];
+                let currentCell = '';
+                let inQuotes = false;
                 
-                // Map kolom sesuai struktur baru (Kolom C-J)
-                // A: NO, C: NAMA, D: JENIS LKK, E: KECAMATAN/KELURAHAN, 
-                // F: STATUS, G: NOMOR HP, H: AWAL MENJABAT, 
-                // I: AKHIR MENJABAT, J: SISA MASA JABATAN
+                for (let char of rows[i]) {
+                    if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        cells.push(currentCell.trim());
+                        currentCell = '';
+                    } else {
+                        currentCell += char;
+                    }
+                }
+                cells.push(currentCell.trim());
                 
-                // Kolom A: NO
-                if (headers[0]) item['NO'] = cells[0] || '';
+                // Hapus quotes dari sel
+                const cleanCells = cells.map(cell => cell.replace(/"/g, ''));
                 
-                // Kolom C: NAMA (index 2 karena C adalah kolom ke-3)
-                if (headers[2]) item['NAMA'] = cells[2] || '';
+                // Pastikan ada minimal 10 kolom (A-J)
+                while (cleanCells.length < 10) {
+                    cleanCells.push('');
+                }
                 
-                // Kolom D: JENIS LKK
-                if (headers[3]) item['JENIS LKK'] = cells[3] || '';
-                
-                // Kolom E: KECAMATAN/KELURAHAN
-                if (headers[4]) item['KECAMATAN/KELURAHAN'] = cells[4] || '';
-                
-                // Kolom F: STATUS
-                if (headers[5]) item['STATUS'] = cells[5] || '';
-                
-                // Kolom G: NOMOR HP
-                if (headers[6]) item['NOMOR HP'] = cells[6] || '';
-                
-                // Kolom H: AWAL MENJABAT
-                if (headers[7]) item['AWAL MENJABAT'] = cells[7] || '';
-                
-                // Kolom I: AKHIR MENJABAT
-                if (headers[8]) item['AKHIR MENJABAT'] = cells[8] || '';
-                
-                // Kolom J: SISA MASA JABATAN
-                if (headers[9]) item['SISA MASA JABATAN'] = cells[9] || '';
+                // Mapping sederhana: ambil apa adanya dari spreadsheet
+                const item = {
+                    'NO': cleanCells[0] || '', // Kolom A
+                    'NAMA': cleanCells[2] || '', // Kolom C
+                    'JENIS LKK': cleanCells[3] || '', // Kolom D
+                    'KECAMATAN/KELURAHAN': cleanCells[4] || '', // Kolom E
+                    'STATUS': cleanCells[5] || '', // Kolom F
+                    'NOMOR HP': cleanCells[6] || '', // Kolom G
+                    'AWAL MENJABAT': cleanCells[7] || '', // Kolom H
+                    'AKHIR MENJABAT': cleanCells[8] || '', // Kolom I
+                    'SISA MASA JABATAN': cleanCells[9] || '' // Kolom J
+                };
                 
                 item.originalIndex = i;
                 data.push(item);
@@ -1193,7 +1075,7 @@
             return data;
         }
         
-        // Sample data untuk testing dengan struktur baru (Kolom C-J)
+        // Sample data untuk testing
         function getSampleData() {
             return [
                 {
@@ -1226,8 +1108,8 @@
                     "STATUS": "DEFENITIF",
                     "NOMOR HP": "081234567892",
                     "AWAL MENJABAT": "2023-03-01",
-                    "AKHIR MENJABAT": "2026-08-15",
-                    "SISA MASA JABATAN": "30"
+                    "AKHIR MENJABAT": "",
+                    "SISA MASA JABATAN": ""
                 },
                 {
                     "NO": "4",
@@ -1247,7 +1129,7 @@
                     "KECAMATAN/KELURAHAN": "SENAPELAN / PADANG TERUBUK",
                     "STATUS": "DEFENITIF",
                     "NOMOR HP": "081234567894",
-                    "AWAL MENJABAT": "2022-08-01",
+                    "AWAL MENJABAT": "",
                     "AKHIR MENJABAT": "2027-03-20",
                     "SISA MASA JABATAN": "36"
                 },
@@ -1259,8 +1141,8 @@
                     "STATUS": "DEFENITIF",
                     "NOMOR HP": "081234567895",
                     "AWAL MENJABAT": "2023-04-01",
-                    "AKHIR MENJABAT": "2024-09-30",
-                    "SISA MASA JABATAN": "5"
+                    "AKHIR MENJABAT": "",
+                    "SISA MASA JABATAN": ""
                 },
                 {
                     "NO": "7",
@@ -1291,9 +1173,9 @@
                     "KECAMATAN/KELURAHAN": "SENAPELAN / PADANG TERUBUK",
                     "STATUS": "PLT",
                     "NOMOR HP": "081234567898",
-                    "AWAL MENJABAT": "2024-02-01",
-                    "AKHIR MENJABAT": "2024-05-31",
-                    "SISA MASA JABATAN": "1"
+                    "AWAL MENJABAT": "",
+                    "AKHIR MENJABAT": "",
+                    "SISA MASA JABATAN": ""
                 },
                 {
                     "NO": "10",
@@ -1305,49 +1187,40 @@
                     "AWAL MENJABAT": "2022-12-01",
                     "AKHIR MENJABAT": "2028-01-31",
                     "SISA MASA JABATAN": "48"
-                },
-                {
-                    "NO": "11",
-                    "NAMA": "JOKO WIDODO",
-                    "JENIS LKK": "RT. 004",
-                    "KECAMATAN/KELURAHAN": "SENAPELAN / PADANG TERUBUK",
-                    "STATUS": "DEFENITIF",
-                    "NOMOR HP": "081234567800",
-                    "AWAL MENJABAT": "2023-05-01",
-                    "AKHIR MENJABAT": "2024-03-31",
-                    "SISA MASA JABATAN": "2"
-                },
-                {
-                    "NO": "12",
-                    "NAMA": "SUSI PUDJIASTUTI",
-                    "JENIS LKK": "RW. 004",
-                    "KECAMATAN/KELURAHAN": "SENAPELAN / PADANG TERUBUK",
-                    "STATUS": "DEFENITIF",
-                    "NOMOR HP": "081234567801",
-                    "AWAL MENJABAT": "2022-09-01",
-                    "AKHIR MENJABAT": "2026-09-30",
-                    "SISA MASA JABATAN": "33"
                 }
             ];
         }
         
-        // Update statistik dengan deteksi awalan RT/RW
+        // Update statistik dengan deteksi sederhana
         function updateStatistics(data) {
             const total = data.length;
             let lpmCount = 0;
             let rwCount = 0;
             let rtCount = 0;
+            let defCount = 0;
+            let pltCount = 0;
             
             data.forEach(item => {
                 const jenis = item['JENIS LKK'] || '';
-                const jenisClean = getJenisLKK(jenis);
+                const status = item['STATUS'] || '';
                 
-                if (jenisClean === 'LPM') {
+                // Deteksi jenis LKK berdasarkan awalan
+                if (jenis.toUpperCase().includes('LPM')) {
                     lpmCount++;
-                } else if (jenisClean === 'RW') {
+                }
+                if (jenis.toUpperCase().includes('RW')) {
                     rwCount++;
-                } else if (jenisClean === 'RT') {
+                }
+                if (jenis.toUpperCase().includes('RT')) {
                     rtCount++;
+                }
+                
+                // Deteksi status
+                if (status.toUpperCase().includes('DEFENITIF')) {
+                    defCount++;
+                }
+                if (status.toUpperCase().includes('PLT')) {
+                    pltCount++;
                 }
             });
             
@@ -1355,9 +1228,11 @@
             document.getElementById('totalLPM').textContent = lpmCount.toLocaleString();
             document.getElementById('totalRW').textContent = rwCount.toLocaleString();
             document.getElementById('totalRT').textContent = rtCount.toLocaleString();
+            document.getElementById('totalDEF').textContent = defCount.toLocaleString();
+            document.getElementById('totalPLT').textContent = pltCount.toLocaleString();
         }
         
-        // Render tabel data dengan struktur baru (Kolom C-J)
+        // Render tabel data dengan SEDERHANA - tampilkan apa adanya
         function renderTable(data) {
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = '';
@@ -1375,28 +1250,32 @@
             }
             
             data.forEach((item, index) => {
-                // Ambil data sesuai struktur baru (Kolom C-J)
+                // Ambil data apa adanya dari spreadsheet
                 const no = item['NO'] || (index + 1);
                 const nama = item['NAMA'] || '-';
                 const jenis = item['JENIS LKK'] || '-';
                 const wilayah = item['KECAMATAN/KELURAHAN'] || '-';
                 const status = item['STATUS'] || '-';
                 const noHp = item['NOMOR HP'] || '-';
-                const awalJabatan = item['AWAL MENJABAT'] || '-';
-                const akhirJabatan = item['AKHIR MENJABAT'] || '-';
+                const awalJabatan = item['AWAL MENJABAT'] || '';
+                const akhirJabatan = item['AKHIR MENJABAT'] || '';
                 const sisaMasa = item['SISA MASA JABATAN'] || '';
                 
-                // Hitung sisa masa jabatan dari tanggal akhir
-                const remaining = calculateRemainingTime(akhirJabatan);
-                const sisaDisplay = formatRemainingTime(remaining);
-                
-                // Tentukan warna dan teks status
-                const statusColor = getStatusColor(status, akhirJabatan);
-                const statusText = getStatusText(status, akhirJabatan);
+                // Tentukan sisa masa jabatan HANYA jika ada tanggal akhir
+                let sisaDisplay = '';
+                if (akhirJabatan && akhirJabatan.trim() !== '') {
+                    const remaining = calculateRemainingTime(akhirJabatan);
+                    sisaDisplay = remaining || sisaMasa || '';
+                } else {
+                    sisaDisplay = sisaMasa || ''; // Kosong jika tidak ada tanggal
+                }
                 
                 // Tentukan warna badge untuk jenis LKK
                 const jenisClean = getJenisLKK(jenis);
                 const jenisBadgeClass = getJenisBadgeClass(jenis);
+                
+                // Tentukan warna status
+                const statusColor = getStatusColor(status);
                 
                 // Format nomor HP
                 const formattedNoHp = noHp === '-' ? '-' : 
@@ -1408,11 +1287,11 @@
                     <td><strong>${nama}</strong></td>
                     <td><span class="jenis-badge ${jenisBadgeClass}">${jenisClean}</span></td>
                     <td>${wilayah}</td>
-                    <td><span class="status-badge ${statusColor}">${statusText}</span></td>
+                    <td><span class="status-badge ${statusColor}">${status}</span></td>
                     <td>${formattedNoHp}</td>
                     <td>${formatDate(awalJabatan)}</td>
                     <td>${formatDate(akhirJabatan)}</td>
-                    <td><span class="sisa-masa ${sisaDisplay.class}">${sisaDisplay.text}</span></td>
+                    <td>${sisaDisplay}</td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -1432,12 +1311,6 @@
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
                 },
-                columnDefs: [
-                    { responsivePriority: 1, targets: 1 }, // NAMA
-                    { responsivePriority: 2, targets: 2 }, // JENIS LKK
-                    { responsivePriority: 3, targets: 8 }, // SISA MASA
-                    { responsivePriority: 4, targets: 4 }, // STATUS
-                ],
                 buttons: [
                     {
                         extend: 'excel',
@@ -1455,36 +1328,33 @@
             });
         }
         
-        // Filter data
+        // Filter data SEDERHANA
         function filterData() {
             const namaFilter = document.getElementById('filterNama').value.toLowerCase();
             const jenisFilter = document.getElementById('filterJenis').value;
             const statusFilter = document.getElementById('filterStatus').value;
-            const sisaMasaFilter = document.getElementById('filterSisaMasa').value;
             
             filteredData = allData.filter(item => {
-                // Handle different column name formats
                 const nama = (item['NAMA'] || '').toString().toLowerCase();
-                const jenis = item['JENIS LKK'] || '';
-                const jenisClean = getJenisLKK(jenis);
+                const jenis = (item['JENIS LKK'] || '').toString().toUpperCase();
                 const status = (item['STATUS'] || '').toString().toUpperCase();
-                const akhirJabatan = item['AKHIR MENJABAT'] || '';
-                const remaining = calculateRemainingTime(akhirJabatan);
                 
-                const namaMatch = !namaFilter || nama.includes(namaFilter);
-                const jenisMatch = !jenisFilter || jenisClean === jenisFilter;
-                const statusMatch = !statusFilter || status.includes(statusFilter);
-                
-                let sisaMatch = true;
-                if (sisaMasaFilter === 'habis') {
-                    sisaMatch = remaining.status === 'ending' || remaining.status === 'expired';
-                } else if (sisaMasaFilter === 'masih') {
-                    sisaMatch = remaining.status === 'active' && remaining.months >= 6;
-                } else if (sisaMasaFilter === 'habis_sekarang') {
-                    sisaMatch = remaining.status === 'expired';
+                // Deteksi jenis berdasarkan awalan
+                let jenisMatch = true;
+                if (jenisFilter) {
+                    if (jenisFilter === 'RT') {
+                        jenisMatch = jenis.includes('RT');
+                    } else if (jenisFilter === 'RW') {
+                        jenisMatch = jenis.includes('RW');
+                    } else if (jenisFilter === 'LPM') {
+                        jenisMatch = jenis.includes('LPM');
+                    }
                 }
                 
-                return namaMatch && jenisMatch && statusMatch && sisaMatch;
+                const namaMatch = !namaFilter || nama.includes(namaFilter);
+                const statusMatch = !statusFilter || status.includes(statusFilter);
+                
+                return namaMatch && jenisMatch && statusMatch;
             });
             
             updateStatistics(filteredData);
@@ -1503,7 +1373,6 @@
             document.getElementById('filterNama').value = '';
             document.getElementById('filterJenis').value = '';
             document.getElementById('filterStatus').value = '';
-            document.getElementById('filterSisaMasa').value = '';
             
             filteredData = [...allData];
             updateStatistics(filteredData);
@@ -1568,19 +1437,6 @@
             
             // Load data awal
             await refreshData();
-            
-            // Auto-refresh setiap 5 menit
-            setInterval(async () => {
-                console.log('Auto-refreshing data...');
-                const newData = await fetchDataFromGoogleSheets();
-                if (newData.length !== allData.length) {
-                    allData = newData;
-                    filteredData = [...allData];
-                    updateStatistics(allData);
-                    renderTable(filteredData);
-                    showNotification('Data diperbarui otomatis', 'success');
-                }
-            }, 300000); // 5 menit
         }
         
         // Jalankan aplikasi saat halaman dimuat
