@@ -149,12 +149,13 @@ body {
 }
 
 /* =========================
-   HEADER JUDUL MODERN 2026
+   HEADER JUDUL MODERN 2026 - DIPERBARUI
    ========================= */
 header {
     text-align: center;
-    padding: 70px 20px 40px;
+    padding: 60px 40px 30px; /* Diperkecil jarak atas-bawah */
     position: relative;
+    margin-bottom: 20px; /* Jarak ke card utama diperkecil */
 }
 
 header::after {
@@ -169,6 +170,7 @@ header::after {
     border-radius: 2px;
 }
 
+/* PERBAIKAN: Judul dengan huruf besar */
 header h1 {
     font-size: 3rem;
     background: var(--gradient);
@@ -179,25 +181,29 @@ header h1 {
     letter-spacing: -0.5px;
     margin-bottom: 16px;
     text-shadow: 0 10px 30px rgba(0, 102, 255, 0.3);
+    text-transform: uppercase; /* Huruf besar semua */
+    letter-spacing: 1px; /* Sedikit spasi antar huruf */
 }
 
+/* PERBAIKAN: Paragraf dengan padding kiri-kanan lebih lebar */
 header p {
     margin-top: 16px;
     font-size: 1.3rem;
     color: #E6F2FF;
     font-weight: 300;
-    max-width: 800px;
+    max-width: 1000px; /* Lebih lebar dari sebelumnya */
     margin-left: auto;
     margin-right: auto;
     line-height: 1.6;
     position: relative;
     display: inline-block;
+    padding: 0 50px; /* Padding kiri-kanan lebih lebar */
 }
 
 header p::before {
     content: "❝";
     position: absolute;
-    left: -30px;
+    left: 10px; /* Diperbaiki posisi */
     top: -10px;
     color: var(--secondary);
     font-size: 2rem;
@@ -207,7 +213,7 @@ header p::before {
 header p::after {
     content: "❞";
     position: absolute;
-    right: -30px;
+    right: 10px; /* Diperbaiki posisi */
     bottom: -10px;
     color: var(--secondary);
     font-size: 2rem;
@@ -220,18 +226,19 @@ header p::after {
 .container {
     max-width: 1400px;
     margin: auto;
-    padding: 40px 20px 100px;
+    padding: 20px 20px 80px; /* Jarak atas-bawah diperkecil */
     flex: 1;
 }
 
 /* =========================
-   CARD UTAMA MODERN
+   CARD UTAMA MODERN - DIPERBESAR
    ========================= */
 .card-utama {
-    max-width: 600px;
-    margin: 0 auto 100px;
+    max-width: 1000px; /* Lebih lebar untuk desktop */
+    margin: 0 auto 70px; /* Jarak ke grid bawah diperdekat */
     text-align: center;
     position: relative;
+    width: 90%; /* Lebar relative */
 }
 
 .card-utama a {
@@ -240,7 +247,7 @@ header p::after {
     background: var(--glass);
     backdrop-filter: blur(20px);
     border-radius: var(--border-radius);
-    padding: 40px;
+    padding: 50px 40px; /* Padding lebih besar */
     border: 1px solid var(--glass-border);
     box-shadow: var(--shadow);
     transition: var(--transition);
@@ -264,13 +271,62 @@ header p::after {
     border-color: rgba(0, 102, 255, 0.3);
 }
 
-.card-utama img {
-    width: 180px;
-    height: 180px;
-    object-fit: contain;
+/* PERBAIKAN: Gambar card utama dengan efek aura bergerak */
+.card-utama .img-container {
+    position: relative;
+    display: inline-block;
     margin-bottom: 30px;
+}
+
+.card-utama img {
+    width: 250px; /* Lebih besar dari card lainnya */
+    height: 250px; /* Lebih besar dari card lainnya */
+    object-fit: contain;
+    position: relative;
+    z-index: 2;
     filter: drop-shadow(0 10px 20px rgba(0, 102, 255, 0.3));
     transition: var(--transition);
+}
+
+/* Efek aura bergerak di belakang gambar */
+.card-utama .img-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 280px;
+    height: 280px;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.3) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 1;
+    animation: auraPulse 3s ease-in-out infinite;
+    filter: blur(20px);
+}
+
+.card-utama .img-container::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(0, 212, 170, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 1;
+    animation: auraRotate 4s linear infinite;
+    filter: blur(25px);
+}
+
+@keyframes auraPulse {
+    0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+@keyframes auraRotate {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
 }
 
 .card-utama a:hover img {
@@ -279,7 +335,7 @@ header p::after {
 }
 
 .card-utama h3 {
-    font-size: 1.8rem;
+    font-size: 2rem; /* Lebih besar */
     color: #fff;
     font-weight: 600;
     margin-top: 25px;
@@ -293,7 +349,7 @@ header p::after {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 60px;
+    width: 80px; /* Lebih panjang */
     height: 3px;
     background: var(--gradient);
     border-radius: 1.5px;
@@ -307,6 +363,7 @@ header p::after {
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
     gap: 40px;
     justify-items: center;
+    margin-top: 30px; /* Jarak dari card utama */
 }
 
 /* =========================
@@ -357,13 +414,43 @@ header p::after {
     border-color: rgba(0, 102, 255, 0.3);
 }
 
+/* PERBAIKAN: Gambar card dengan efek aura juga */
+.card .img-container {
+    position: relative;
+    display: inline-block;
+    width: 100%;
+    margin-bottom: 25px;
+}
+
 .card img {
     width: 100%;
-    max-height: 140px;
+    max-height: 160px; /* Sedikit lebih besar */
     object-fit: contain;
-    margin-bottom: 25px;
+    position: relative;
+    z-index: 2;
     filter: drop-shadow(0 8px 16px rgba(0, 102, 255, 0.2));
     transition: var(--transition);
+}
+
+/* Efek aura untuk card kelurahan */
+.card .img-container::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.2) 0%, transparent 70%);
+    border-radius: 50%;
+    z-index: 1;
+    animation: auraPulseSmall 4s ease-in-out infinite;
+    filter: blur(15px);
+}
+
+@keyframes auraPulseSmall {
+    0%, 100% { opacity: 0.4; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.7; transform: translate(-50%, -50%) scale(1.05); }
 }
 
 .card a:hover img {
@@ -513,18 +600,70 @@ header p::after {
 /* =========================
    RESPONSIVE DESIGN
    ========================= */
+/* DESKTOP BESAR */
 @media (min-width: 1200px) {
     .grid {
         grid-template-columns: repeat(3, 1fr);
     }
+    
+    .card-utama {
+        max-width: 1200px; /* Lebih lebar di desktop besar */
+    }
+    
+    .card-utama img {
+        width: 280px;
+        height: 280px;
+    }
+    
+    .card-utama .img-container::before {
+        width: 310px;
+        height: 310px;
+    }
+    
+    .card-utama .img-container::after {
+        width: 330px;
+        height: 330px;
+    }
 }
 
+/* DESKTOP / TABLET BESAR */
+@media (min-width: 992px) {
+    .container {
+        padding: 30px 40px 100px;
+    }
+    
+    .card-utama {
+        width: 95%;
+    }
+}
+
+/* TABLET */
 @media (max-width: 1199px) and (min-width: 768px) {
     .grid {
         grid-template-columns: repeat(2, 1fr);
     }
+    
+    .card-utama {
+        max-width: 900px;
+    }
+    
+    .card-utama img {
+        width: 220px;
+        height: 220px;
+    }
+    
+    .card-utama .img-container::before {
+        width: 250px;
+        height: 250px;
+    }
+    
+    .card-utama .img-container::after {
+        width: 270px;
+        height: 270px;
+    }
 }
 
+/* MOBILE - Timeline effect */
 @media (max-width: 767px) {
     .grid {
         grid-template-columns: 1fr;
@@ -532,19 +671,23 @@ header p::after {
     }
     
     header {
-        padding: 50px 20px 30px;
+        padding: 40px 20px 20px;
     }
     
     header h1 {
-        font-size: 2.2rem;
+        font-size: 2rem;
+        letter-spacing: 0.5px;
     }
     
     header p {
         font-size: 1.1rem;
+        padding: 0 30px;
+        max-width: 100%;
     }
     
     .card-utama {
-        margin-bottom: 60px;
+        margin-bottom: 50px;
+        width: 95%;
     }
     
     .card-utama a {
@@ -552,8 +695,61 @@ header p::after {
     }
     
     .card-utama img {
-        width: 140px;
-        height: 140px;
+        width: 180px;
+        height: 180px;
+    }
+    
+    .card-utama .img-container::before {
+        width: 210px;
+        height: 210px;
+    }
+    
+    .card-utama .img-container::after {
+        width: 230px;
+        height: 230px;
+        animation: auraRotate 5s linear infinite;
+    }
+    
+    .card-utama h3 {
+        font-size: 1.6rem;
+    }
+    
+    /* Efek timeline untuk mobile */
+    .grid {
+        position: relative;
+    }
+    
+    .grid::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 3px;
+        height: 100%;
+        background: linear-gradient(to bottom, transparent, var(--secondary), transparent);
+        z-index: 0;
+    }
+    
+    .card {
+        position: relative;
+        z-index: 1;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.8s cubic-bezier(0.22, 0.61, 0.36, 1);
+    }
+    
+    .card.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    
+    .card:nth-child(odd) {
+        animation-delay: 0.2s;
+    }
+    
+    .card:nth-child(even) {
+        animation-delay: 0.4s;
     }
     
     .footer-links {
@@ -566,17 +762,34 @@ header p::after {
     }
 }
 
+/* MOBILE KECIL */
 @media (max-width: 480px) {
     header h1 {
-        font-size: 1.8rem;
+        font-size: 1.6rem;
     }
     
     header p {
         font-size: 1rem;
+        padding: 0 20px;
     }
     
     .card-utama h3 {
-        font-size: 1.5rem;
+        font-size: 1.4rem;
+    }
+    
+    .card-utama img {
+        width: 150px;
+        height: 150px;
+    }
+    
+    .card-utama .img-container::before {
+        width: 180px;
+        height: 180px;
+    }
+    
+    .card-utama .img-container::after {
+        width: 200px;
+        height: 200px;
     }
     
     .card h3 {
@@ -645,7 +858,7 @@ html {
 
 <!-- HEADER -->
 <header>
-    <h1>Selamat Datang di Senapelan Satu Pintu</h1>
+    <h1>SELAMAT DATANG DI SENAPELAN SATU PINTU</h1>
     <p>"Kami berkomitmen memberikan pelayanan cepat, transparan, dan modern berbasis digital."</p>
 </header>
 
@@ -654,7 +867,9 @@ html {
     
     <div class="card card-utama">
         <a href="https://kec-senapelan.pekanbaru.go.id/">
-            <img src="data/foto/kecamatansenapelan.png">
+            <div class="img-container">
+                <img src="data/foto/kecamatansenapelan.png">
+            </div>
             <h3>Website Kecamatan Senapelan</h3>
         </a>
     </div>
@@ -663,42 +878,54 @@ html {
         <!-- GRID CARD BAWAH -->
         <div class="card">
             <a href="https://senapelan.github.io/Home/kelurahankampungbandar.html">
-                <img src="data/foto/kampungbandar.png">
+                <div class="img-container">
+                    <img src="data/foto/kampungbandar.png">
+                </div>
                 <h3>Website Kelurahan Kampung Bandar</h3>
             </a>
         </div>
 
         <div class="card">
             <a href="https://senapelan.github.io/Home/kelurahankampungbaru.html">
-                <img src="data/foto/kampungbaru.png">
+                <div class="img-container">
+                    <img src="data/foto/kampungbaru.png">
+                </div>
                 <h3>Website Kelurahan Kampung Baru</h3>
             </a>
         </div>
 
         <div class="card">
             <a href="https://senapelan.github.io/Home/kelurahankampungdalam.html">
-                <img src="data/foto/kampungdalam.png">
+                <div class="img-container">
+                    <img src="data/foto/kampungdalam.png">
+                </div>
                 <h3>Website Kelurahan Kampung Dalam</h3>
             </a>
         </div>
 
         <div class="card">
             <a href="https://senapelan.github.io/Home/kelurahanpadangbulan.html">
-                <img src="data/foto/padangbulan.png">
+                <div class="img-container">
+                    <img src="data/foto/padangbulan.png">
+                </div>
                 <h3>Website Kelurahan Padang Bulan</h3>
             </a>
         </div>
         
         <div class="card">
             <a href="https://senapelan.github.io/Home/kelurahanpadangterubuk.html">
-                <img src="data/foto/padangterubuk.png">
+                <div class="img-container">
+                    <img src="data/foto/padangterubuk.png">
+                </div>
                 <h3>Website Kelurahan Padang Terubuk</h3>
             </a>
         </div>
 
         <div class="card">
             <a href="https://senapelan.github.io/Home/kelurahansago.html">
-                <img src="data/foto/sago.png">
+                <div class="img-container">
+                    <img src="data/foto/sago.png">
+                </div>
                 <h3>Website Kelurahan Sago</h3>
             </a>
         </div>
@@ -782,6 +1009,36 @@ document.addEventListener('DOMContentLoaded', function() {
             }, 150);
         });
     });
+    
+    // Efek timeline scroll untuk mobile
+    function checkCardVisibility() {
+        const cards = document.querySelectorAll('.card');
+        const windowHeight = window.innerHeight;
+        
+        cards.forEach(card => {
+            const cardTop = card.getBoundingClientRect().top;
+            const cardVisible = 150;
+            
+            if (cardTop < windowHeight - cardVisible) {
+                card.classList.add('visible');
+            }
+        });
+    }
+    
+    // Cek untuk mobile
+    if (window.innerWidth <= 767) {
+        // Inisialisasi timeline
+        const cards = document.querySelectorAll('.card');
+        cards.forEach(card => {
+            card.classList.remove('visible');
+        });
+        
+        // Trigger pertama kali
+        setTimeout(checkCardVisibility, 500);
+        
+        // Trigger saat scroll
+        window.addEventListener('scroll', checkCardVisibility);
+    }
     
     // Efek scroll halus untuk footer links
     const footerLinks = document.querySelectorAll('.footer-links a');
