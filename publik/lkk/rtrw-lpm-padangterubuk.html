@@ -495,6 +495,29 @@
             border-bottom: none;
         }
 
+        /* Sisa Masa Jabatan dengan warning */
+        .sisa-masa {
+            font-weight: 600;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .sisa-masa.habis {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger);
+        }
+
+        .sisa-masa.segera {
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--warning);
+        }
+
+        .sisa-masa.aman {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success);
+        }
+
         /* Footer */
         .footer {
             text-align: center;
@@ -834,7 +857,6 @@
                             <th>AWAL MENJABAT</th>
                             <th>AKHIR MENJABAT</th>
                             <th>SISA MASA JABATAN</th>
-                            <th>KETERANGAN</th>
                         </tr>
                     </thead>
                     <tbody id="tableBody">
@@ -880,6 +902,24 @@
                         <div style="display: flex; align-items: center; gap: 10px;">
                             <div class="jenis-badge jenis-rt">RT</div>
                             <span style="font-size: 14px;">Rukun Tetangga</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 style="font-size: 14px; font-weight: 600; margin-bottom: 10px; color: var(--dark);">Sisa Masa Jabatan</h3>
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="sisa-masa aman">24 bulan lagi</div>
+                            <span style="font-size: 14px;">Aman (≥ 6 bulan)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="sisa-masa segera">4 bulan lagi</div>
+                            <span style="font-size: 14px;">Segera habis (1-5 bulan)</span>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <div class="sisa-masa habis">Masa jabatan berakhir</div>
+                            <span style="font-size: 14px;">Sudah habis</span>
                         </div>
                     </div>
                 </div>
@@ -966,18 +1006,20 @@
             };
         }
         
-        // Format sisa masa jabatan untuk display
+        // Format sisa masa jabatan untuk display dengan class CSS
         function formatRemainingTime(remaining) {
-            if (remaining.status === 'unknown') return '-';
+            if (remaining.status === 'unknown') return { text: '-', class: '' };
             
             if (remaining.months <= 0) {
-                return 'Masa jabatan berakhir';
+                return { text: 'Masa jabatan berakhir', class: 'habis' };
             } else if (remaining.months < 1) {
-                return `${remaining.days} hari lagi`;
+                return { text: `${remaining.days} hari lagi`, class: 'segera' };
             } else if (remaining.months === 1) {
-                return '1 bulan lagi';
+                return { text: '1 bulan lagi', class: 'segera' };
+            } else if (remaining.months < 6) {
+                return { text: `${remaining.months} bulan lagi`, class: 'segera' };
             } else {
-                return `${remaining.months} bulan lagi`;
+                return { text: `${remaining.months} bulan lagi`, class: 'aman' };
             }
         }
         
@@ -1098,7 +1140,7 @@
             }
         }
         
-        // Process CSV data dengan struktur baru
+        // Process CSV data dengan struktur baru (Kolom C-J)
         function processCSVData(csvText) {
             const rows = csvText.split('\n');
             if (rows.length < 2) return [];
@@ -1112,21 +1154,37 @@
                 const cells = rows[i].split(',').map(c => c.trim().replace(/"/g, ''));
                 const item = {};
                 
-                // Map kolom sesuai struktur baru
-                // A: NO, B: NAMA, C: JENIS LKK, D: KECAMATAN/KELURAHAN, 
-                // E: STATUS, F: NOMOR HP, G: AWAL MENJABAT, 
-                // H: AKHIR MENJABAT, I: SISA MASA JABATAN, J: KETERANGAN
+                // Map kolom sesuai struktur baru (Kolom C-J)
+                // A: NO, C: NAMA, D: JENIS LKK, E: KECAMATAN/KELURAHAN, 
+                // F: STATUS, G: NOMOR HP, H: AWAL MENJABAT, 
+                // I: AKHIR MENJABAT, J: SISA MASA JABATAN
                 
+                // Kolom A: NO
                 if (headers[0]) item['NO'] = cells[0] || '';
-                if (headers[1]) item['NAMA'] = cells[1] || '';
-                if (headers[2]) item['JENIS LKK'] = cells[2] || '';
-                if (headers[3]) item['KECAMATAN/KELURAHAN'] = cells[3] || '';
-                if (headers[4]) item['STATUS'] = cells[4] || '';
-                if (headers[5]) item['NOMOR HP'] = cells[5] || '';
-                if (headers[6]) item['AWAL MENJABAT'] = cells[6] || '';
-                if (headers[7]) item['AKHIR MENJABAT'] = cells[7] || '';
-                if (headers[8]) item['SISA MASA JABATAN'] = cells[8] || '';
-                if (headers[9]) item['KETERANGAN'] = cells[9] || '';
+                
+                // Kolom C: NAMA (index 2 karena C adalah kolom ke-3)
+                if (headers[2]) item['NAMA'] = cells[2] || '';
+                
+                // Kolom D: JENIS LKK
+                if (headers[3]) item['JENIS LKK'] = cells[3] || '';
+                
+                // Kolom E: KECAMATAN/KELURAHAN
+                if (headers[4]) item['KECAMATAN/KELURAHAN'] = cells[4] || '';
+                
+                // Kolom F: STATUS
+                if (headers[5]) item['STATUS'] = cells[5] || '';
+                
+                // Kolom G: NOMOR HP
+                if (headers[6]) item['NOMOR HP'] = cells[6] || '';
+                
+                // Kolom H: AWAL MENJABAT
+                if (headers[7]) item['AWAL MENJABAT'] = cells[7] || '';
+                
+                // Kolom I: AKHIR MENJABAT
+                if (headers[8]) item['AKHIR MENJABAT'] = cells[8] || '';
+                
+                // Kolom J: SISA MASA JABATAN
+                if (headers[9]) item['SISA MASA JABATAN'] = cells[9] || '';
                 
                 item.originalIndex = i;
                 data.push(item);
@@ -1135,7 +1193,7 @@
             return data;
         }
         
-        // Sample data untuk testing dengan struktur baru
+        // Sample data untuk testing dengan struktur baru (Kolom C-J)
         function getSampleData() {
             return [
                 {
@@ -1147,8 +1205,7 @@
                     "NOMOR HP": "081234567890",
                     "AWAL MENJABAT": "2022-01-01",
                     "AKHIR MENJABAT": "2025-12-31",
-                    "SISA MASA JABATAN": "24",
-                    "KETERANGAN": "Ketua LPM"
+                    "SISA MASA JABATAN": "24"
                 },
                 {
                     "NO": "2",
@@ -1159,8 +1216,7 @@
                     "NOMOR HP": "081234567891",
                     "AWAL MENJABAT": "2023-02-01",
                     "AKHIR MENJABAT": "2024-06-30",
-                    "SISA MASA JABATAN": "4",
-                    "KETERANGAN": "Ketua RW 001"
+                    "SISA MASA JABATAN": "4"
                 },
                 {
                     "NO": "3",
@@ -1171,8 +1227,7 @@
                     "NOMOR HP": "081234567892",
                     "AWAL MENJABAT": "2023-03-01",
                     "AKHIR MENJABAT": "2026-08-15",
-                    "SISA MASA JABATAN": "30",
-                    "KETERANGAN": "Ketua RT 001"
+                    "SISA MASA JABATAN": "30"
                 },
                 {
                     "NO": "4",
@@ -1183,8 +1238,7 @@
                     "NOMOR HP": "081234567893",
                     "AWAL MENJABAT": "2024-01-15",
                     "AKHIR MENJABAT": "2024-12-31",
-                    "SISA MASA JABATAN": "8",
-                    "KETERANGAN": "Sekretaris LPM"
+                    "SISA MASA JABATAN": "8"
                 },
                 {
                     "NO": "5",
@@ -1195,8 +1249,7 @@
                     "NOMOR HP": "081234567894",
                     "AWAL MENJABAT": "2022-08-01",
                     "AKHIR MENJABAT": "2027-03-20",
-                    "SISA MASA JABATAN": "36",
-                    "KETERANGAN": "Ketua RW 002"
+                    "SISA MASA JABATAN": "36"
                 },
                 {
                     "NO": "6",
@@ -1207,8 +1260,7 @@
                     "NOMOR HP": "081234567895",
                     "AWAL MENJABAT": "2023-04-01",
                     "AKHIR MENJABAT": "2024-09-30",
-                    "SISA MASA JABATAN": "5",
-                    "KETERANGAN": "Ketua RT 002"
+                    "SISA MASA JABATAN": "5"
                 },
                 {
                     "NO": "7",
@@ -1219,8 +1271,7 @@
                     "NOMOR HP": "081234567896",
                     "AWAL MENJABAT": "2022-06-01",
                     "AKHIR MENJABAT": "2026-11-30",
-                    "SISA MASA JABATAN": "29",
-                    "KETERANGAN": "Bendahara LPM"
+                    "SISA MASA JABATAN": "29"
                 },
                 {
                     "NO": "8",
@@ -1231,8 +1282,7 @@
                     "NOMOR HP": "081234567897",
                     "AWAL MENJABAT": "2023-01-01",
                     "AKHIR MENJABAT": "2025-07-15",
-                    "SISA MASA JABATAN": "18",
-                    "KETERANGAN": "Ketua RW 003"
+                    "SISA MASA JABATAN": "18"
                 },
                 {
                     "NO": "9",
@@ -1243,8 +1293,7 @@
                     "NOMOR HP": "081234567898",
                     "AWAL MENJABAT": "2024-02-01",
                     "AKHIR MENJABAT": "2024-05-31",
-                    "SISA MASA JABATAN": "1",
-                    "KETERANGAN": "Ketua RT 003"
+                    "SISA MASA JABATAN": "1"
                 },
                 {
                     "NO": "10",
@@ -1255,8 +1304,29 @@
                     "NOMOR HP": "081234567899",
                     "AWAL MENJABAT": "2022-12-01",
                     "AKHIR MENJABAT": "2028-01-31",
-                    "SISA MASA JABATAN": "48",
-                    "KETERANGAN": "Anggota LPM"
+                    "SISA MASA JABATAN": "48"
+                },
+                {
+                    "NO": "11",
+                    "NAMA": "JOKO WIDODO",
+                    "JENIS LKK": "RT. 004",
+                    "KECAMATAN/KELURAHAN": "SENAPELAN / PADANG TERUBUK",
+                    "STATUS": "DEFENITIF",
+                    "NOMOR HP": "081234567800",
+                    "AWAL MENJABAT": "2023-05-01",
+                    "AKHIR MENJABAT": "2024-03-31",
+                    "SISA MASA JABATAN": "2"
+                },
+                {
+                    "NO": "12",
+                    "NAMA": "SUSI PUDJIASTUTI",
+                    "JENIS LKK": "RW. 004",
+                    "KECAMATAN/KELURAHAN": "SENAPELAN / PADANG TERUBUK",
+                    "STATUS": "DEFENITIF",
+                    "NOMOR HP": "081234567801",
+                    "AWAL MENJABAT": "2022-09-01",
+                    "AKHIR MENJABAT": "2026-09-30",
+                    "SISA MASA JABATAN": "33"
                 }
             ];
         }
@@ -1287,7 +1357,7 @@
             document.getElementById('totalRT').textContent = rtCount.toLocaleString();
         }
         
-        // Render tabel data dengan struktur baru
+        // Render tabel data dengan struktur baru (Kolom C-J)
         function renderTable(data) {
             const tableBody = document.getElementById('tableBody');
             tableBody.innerHTML = '';
@@ -1295,7 +1365,7 @@
             if (data.length === 0) {
                 tableBody.innerHTML = `
                     <tr>
-                        <td colspan="10" style="text-align: center; padding: 40px;">
+                        <td colspan="9" style="text-align: center; padding: 40px;">
                             <i class="fas fa-database" style="font-size: 48px; color: #ccc; margin-bottom: 15px;"></i>
                             <p style="color: #666;">Tidak ada data yang ditemukan</p>
                         </td>
@@ -1305,7 +1375,7 @@
             }
             
             data.forEach((item, index) => {
-                // Ambil data sesuai struktur baru
+                // Ambil data sesuai struktur baru (Kolom C-J)
                 const no = item['NO'] || (index + 1);
                 const nama = item['NAMA'] || '-';
                 const jenis = item['JENIS LKK'] || '-';
@@ -1315,11 +1385,10 @@
                 const awalJabatan = item['AWAL MENJABAT'] || '-';
                 const akhirJabatan = item['AKHIR MENJABAT'] || '-';
                 const sisaMasa = item['SISA MASA JABATAN'] || '';
-                const keterangan = item['KETERANGAN'] || '';
                 
                 // Hitung sisa masa jabatan dari tanggal akhir
                 const remaining = calculateRemainingTime(akhirJabatan);
-                const sisaDisplay = sisaMasa || formatRemainingTime(remaining);
+                const sisaDisplay = formatRemainingTime(remaining);
                 
                 // Tentukan warna dan teks status
                 const statusColor = getStatusColor(status, akhirJabatan);
@@ -1329,6 +1398,10 @@
                 const jenisClean = getJenisLKK(jenis);
                 const jenisBadgeClass = getJenisBadgeClass(jenis);
                 
+                // Format nomor HP
+                const formattedNoHp = noHp === '-' ? '-' : 
+                    noHp.replace(/(\d{4})(\d{4})(\d{4})/, '$1-$2-$3');
+                
                 const row = document.createElement('tr');
                 row.innerHTML = `
                     <td>${no}</td>
@@ -1336,11 +1409,10 @@
                     <td><span class="jenis-badge ${jenisBadgeClass}">${jenisClean}</span></td>
                     <td>${wilayah}</td>
                     <td><span class="status-badge ${statusColor}">${statusText}</span></td>
-                    <td>${noHp}</td>
+                    <td>${formattedNoHp}</td>
                     <td>${formatDate(awalJabatan)}</td>
                     <td>${formatDate(akhirJabatan)}</td>
-                    <td><strong>${sisaDisplay}</strong></td>
-                    <td>${keterangan}</td>
+                    <td><span class="sisa-masa ${sisaDisplay.class}">${sisaDisplay.text}</span></td>
                 `;
                 tableBody.appendChild(row);
             });
@@ -1360,6 +1432,12 @@
                 language: {
                     url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json'
                 },
+                columnDefs: [
+                    { responsivePriority: 1, targets: 1 }, // NAMA
+                    { responsivePriority: 2, targets: 2 }, // JENIS LKK
+                    { responsivePriority: 3, targets: 8 }, // SISA MASA
+                    { responsivePriority: 4, targets: 4 }, // STATUS
+                ],
                 buttons: [
                     {
                         extend: 'excel',
