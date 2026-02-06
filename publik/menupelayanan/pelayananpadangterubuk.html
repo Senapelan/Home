@@ -224,20 +224,6 @@
             font-size: 0.95rem;
         }
 
-        .contact-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 15px;
-            color: var(--dark-gray);
-            font-size: 0.9rem;
-        }
-
-        .contact-info i {
-            color: var(--primary);
-            width: 20px;
-        }
-
         .service-list {
             list-style: none;
             margin: 15px 0;
@@ -563,10 +549,6 @@
                 <div class="card-content">
                     <h3 class="card-name">TRY HOLLY</h3>
                     <p class="card-role">Petugas Pelayanan Administrasi</p>
-                    <div class="contact-info">
-                        <i class="fas fa-phone"></i>
-                        <span>0821-7008-9590</span>
-                    </div>
                     <ul class="service-list">
                         <li>Pengurusan Surat Keterangan</li>
                         <li>Pengurusan KTP & KK</li>
@@ -587,10 +569,6 @@
                 <div class="card-content">
                     <h3 class="card-name">WANDA</h3>
                     <p class="card-role">Petugas Pelayanan Publik</p>
-                    <div class="contact-info">
-                        <i class="fas fa-phone"></i>
-                        <span>0821-7008-9592</span>
-                    </div>
                     <ul class="service-list">
                         <li>Konsultasi Administrasi</li>
                         <li>Informasi Program Kelurahan</li>
@@ -611,10 +589,6 @@
                 <div class="card-content">
                     <h3 class="card-name">RIDA</h3>
                     <p class="card-role">Petugas Pelayanan Dokumen</p>
-                    <div class="contact-info">
-                        <i class="fas fa-phone"></i>
-                        <span>0821-7008-9580</span>
-                    </div>
                     <ul class="service-list">
                         <li>Penerbitan Surat Menyurat</li>
                         <li>Legalisasi Dokumen</li>
@@ -635,10 +609,6 @@
                 <div class="card-content">
                     <h3 class="card-name">RIBI</h3>
                     <p class="card-role">Petugas Layanan Khusus</p>
-                    <div class="contact-info">
-                        <i class="fas fa-phone"></i>
-                        <span>0821-7008-9591</span>
-                    </div>
                     <ul class="service-list">
                         <li>Layanan Darurat</li>
                         <li>Pendampingan Khusus</li>
@@ -759,9 +729,17 @@
         let selectedPhone = '';
         let formData = {};
         
+        // Database nomor WhatsApp petugas
+        const petugasNumbers = {
+            'TRY HOLLY': '6282170089590',
+            'WANDA': '6282170089592', 
+            'RIDA': '6282170089580',
+            'RIBI': '6282170089591'
+        };
+        
         function openConversationModal(petugasName, phoneNumber) {
             selectedPetugas = petugasName;
-            selectedPhone = phoneNumber;
+            selectedPhone = phoneNumber; // Simpan nomor WhatsApp petugas
             document.getElementById('modalPetugasName').textContent = `Percakapan dengan ${petugasName}`;
             document.getElementById('conversationModal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -899,7 +877,7 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
             // Encode message for URL
             const encodedMessage = encodeURIComponent(message);
             
-            // WhatsApp number sesuai petugas
+            // WhatsApp number sesuai petugas yang dipilih
             const whatsappNumber = selectedPhone;
             
             // Create WhatsApp URL
@@ -913,7 +891,7 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
             
             // Show success message
             setTimeout(() => {
-                // Open WhatsApp
+                // Open WhatsApp langsung ke petugas yang dipilih
                 window.open(whatsappURL, '_blank');
             }, 300);
         }
@@ -958,7 +936,7 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
                 submitConversation();
             });
             
-            // Format phone number input
+            // Format phone number input (untuk nomor user)
             document.getElementById('no_hp').addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 0) {
