@@ -224,6 +224,20 @@
             font-size: 0.95rem;
         }
 
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+        }
+
+        .contact-info i {
+            color: var(--primary);
+            width: 20px;
+        }
+
         .service-list {
             list-style: none;
             margin: 15px 0;
@@ -549,13 +563,17 @@
                 <div class="card-content">
                     <h3 class="card-name">TRY HOLLY</h3>
                     <p class="card-role">Petugas Pelayanan Administrasi</p>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <span>0821-7008-9590</span>
+                    </div>
                     <ul class="service-list">
                         <li>Pengurusan Surat Keterangan</li>
                         <li>Pengurusan KTP & KK</li>
                         <li>Pengurusan Akta Kelahiran</li>
                         <li>Pelaporan Administratif</li>
                     </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('TRY HOLLY')">
+                    <button class="btn-conversation" onclick="openConversationModal('TRY HOLLY', '6282170089590')">
                         <i class="fab fa-whatsapp"></i> Mulai Percakapan
                     </button>
                 </div>
@@ -569,13 +587,17 @@
                 <div class="card-content">
                     <h3 class="card-name">WANDA</h3>
                     <p class="card-role">Petugas Pelayanan Publik</p>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <span>0821-7008-9592</span>
+                    </div>
                     <ul class="service-list">
                         <li>Konsultasi Administrasi</li>
                         <li>Informasi Program Kelurahan</li>
                         <li>Pengaduan Masyarakat</li>
                         <li>Koordinasi RT/RW</li>
                     </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('WANDA')">
+                    <button class="btn-conversation" onclick="openConversationModal('WANDA', '6282170089592')">
                         <i class="fab fa-whatsapp"></i> Mulai Percakapan
                     </button>
                 </div>
@@ -589,13 +611,17 @@
                 <div class="card-content">
                     <h3 class="card-name">RIDA</h3>
                     <p class="card-role">Petugas Pelayanan Dokumen</p>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <span>0821-7008-9580</span>
+                    </div>
                     <ul class="service-list">
                         <li>Penerbitan Surat Menyurat</li>
                         <li>Legalisasi Dokumen</li>
                         <li>Arsip Administrasi</li>
                         <li>Verifikasi Data</li>
                     </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('RIDA')">
+                    <button class="btn-conversation" onclick="openConversationModal('RIDA', '6282170089580')">
                         <i class="fab fa-whatsapp"></i> Mulai Percakapan
                     </button>
                 </div>
@@ -609,13 +635,17 @@
                 <div class="card-content">
                     <h3 class="card-name">RIBI</h3>
                     <p class="card-role">Petugas Layanan Khusus</p>
+                    <div class="contact-info">
+                        <i class="fas fa-phone"></i>
+                        <span>0821-7008-9591</span>
+                    </div>
                     <ul class="service-list">
                         <li>Layanan Darurat</li>
                         <li>Pendampingan Khusus</li>
                         <li>Koordinasi Instansi</li>
                         <li>Respon Cepat</li>
                     </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('RIBI')">
+                    <button class="btn-conversation" onclick="openConversationModal('RIBI', '6282170089591')">
                         <i class="fab fa-whatsapp"></i> Mulai Percakapan
                     </button>
                 </div>
@@ -726,10 +756,12 @@
     <script>
         // ================= MODAL FUNCTIONS =================
         let selectedPetugas = '';
+        let selectedPhone = '';
         let formData = {};
         
-        function openConversationModal(petugasName) {
+        function openConversationModal(petugasName, phoneNumber) {
             selectedPetugas = petugasName;
+            selectedPhone = phoneNumber;
             document.getElementById('modalPetugasName').textContent = `Percakapan dengan ${petugasName}`;
             document.getElementById('conversationModal').classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -867,8 +899,8 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
             // Encode message for URL
             const encodedMessage = encodeURIComponent(message);
             
-            // WhatsApp number (same for all petugas)
-            const whatsappNumber = '6282170089590';
+            // WhatsApp number sesuai petugas
+            const whatsappNumber = selectedPhone;
             
             // Create WhatsApp URL
             const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
@@ -924,6 +956,15 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
             document.getElementById('conversationForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 submitConversation();
+            });
+            
+            // Format phone number input
+            document.getElementById('no_hp').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = value.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3');
+                }
+                e.target.value = value;
             });
         });
         
