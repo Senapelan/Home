@@ -349,13 +349,13 @@
             border-radius: 8px;
             font-size: 15px;
             transition: var(--transition);
-            background: var(--light-gray);
+            background: var(--white);
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
-            background: var(--white);
+            box-shadow: 0 0 0 3px rgba(30, 107, 255, 0.1);
         }
 
         .form-row {
@@ -672,22 +672,22 @@
                     
                     <div class="form-group">
                         <label for="kelurahan">Kelurahan *</label>
-                        <input type="text" id="kelurahan" class="form-control" value="Padang Terubuk" required>
+                        <input type="text" id="kelurahan" class="form-control" value="Padang Terubuk" required readonly>
                     </div>
                     
                     <div class="form-group">
                         <label for="kecamatan">Kecamatan *</label>
-                        <input type="text" id="kecamatan" class="form-control" value="Senapelan" required>
+                        <input type="text" id="kecamatan" class="form-control" value="Senapelan" required readonly>
                     </div>
                     
                     <div class="form-group">
                         <label for="kota">Kota *</label>
-                        <input type="text" id="kota" class="form-control" value="Pekanbaru" required>
+                        <input type="text" id="kota" class="form-control" value="Pekanbaru" required readonly>
                     </div>
                     
                     <div class="form-group">
                         <label for="provinsi">Provinsi *</label>
-                        <input type="text" id="provinsi" class="form-control" value="Riau" required>
+                        <input type="text" id="provinsi" class="form-control" value="Riau" required readonly>
                     </div>
                     
                     <div class="form-group">
@@ -726,6 +726,7 @@
     <script>
         // ================= MODAL FUNCTIONS =================
         let selectedPetugas = '';
+        let formData = {};
         
         function openConversationModal(petugasName) {
             selectedPetugas = petugasName;
@@ -733,17 +734,83 @@
             document.getElementById('conversationModal').classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // Reset form
-            document.getElementById('conversationForm').reset();
-            document.getElementById('kelurahan').value = 'Padang Terubuk';
-            document.getElementById('kecamatan').value = 'Senapelan';
-            document.getElementById('kota').value = 'Pekanbaru';
-            document.getElementById('provinsi').value = 'Riau';
+            // Focus pada input pertama
+            setTimeout(() => {
+                document.getElementById('nama').focus();
+            }, 100);
+            
+            // Load saved form data if exists
+            loadFormData();
         }
         
         function closeModal() {
             document.getElementById('conversationModal').classList.remove('active');
             document.body.style.overflow = '';
+        }
+        
+        // ================= FORM DATA MANAGEMENT =================
+        function saveFormData() {
+            formData = {
+                nama: document.getElementById('nama').value,
+                alamat: document.getElementById('alamat').value,
+                rt: document.getElementById('rt').value,
+                rw: document.getElementById('rw').value,
+                no_hp: document.getElementById('no_hp').value,
+                email: document.getElementById('email').value,
+                tujuan: document.getElementById('tujuan').value,
+                tujuan_optional: document.getElementById('tujuan_optional').value
+            };
+            
+            // Simpan ke localStorage
+            localStorage.setItem('pelayananFormData', JSON.stringify(formData));
+        }
+        
+        function loadFormData() {
+            const savedData = localStorage.getItem('pelayananFormData');
+            if (savedData) {
+                try {
+                    formData = JSON.parse(savedData);
+                    
+                    // Isi form dengan data yang disimpan
+                    document.getElementById('nama').value = formData.nama || '';
+                    document.getElementById('alamat').value = formData.alamat || '';
+                    document.getElementById('rt').value = formData.rt || '';
+                    document.getElementById('rw').value = formData.rw || '';
+                    document.getElementById('no_hp').value = formData.no_hp || '';
+                    document.getElementById('email').value = formData.email || '';
+                    document.getElementById('tujuan').value = formData.tujuan || '';
+                    document.getElementById('tujuan_optional').value = formData.tujuan_optional || '';
+                } catch (e) {
+                    console.error('Error loading saved form data:', e);
+                }
+            }
+        }
+        
+        function clearFormData() {
+            localStorage.removeItem('pelayananFormData');
+            formData = {};
+        }
+        
+        // ================= REAL-TIME FORM SAVING =================
+        function setupFormListeners() {
+            const formElements = [
+                'nama', 'alamat', 'rt', 'rw', 'no_hp', 'email', 'tujuan', 'tujuan_optional'
+            ];
+            
+            formElements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        formData[elementId] = this.value;
+                        saveFormData();
+                    });
+                    
+                    element.addEventListener('change', function() {
+                        formData[elementId] = this.value;
+                        saveFormData();
+                    });
+                }
+            });
         }
         
         // ================= SUBMIT CONVERSATION =================
@@ -770,7 +837,8 @@
             
             // Validate phone number
             const phoneRegex = /^[0-9]{10,13}$/;
-            if (!phoneRegex.test(no_hp.replace(/\D/g, ''))) {
+            const cleanPhone = no_hp.replace(/\D/g, '');
+            if (!phoneRegex.test(cleanPhone)) {
                 alert('Nomor HP tidak valid. Harap masukkan 10-13 digit angka.');
                 return;
             }
@@ -805,6 +873,9 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
             // Create WhatsApp URL
             const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
             
+            // Clear form data setelah submit
+            clearFormData();
+            
             // Close modal
             closeModal();
             
@@ -817,6 +888,9 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
         
         // ================= EVENT LISTENERS =================
         document.addEventListener('DOMContentLoaded', function() {
+            // Setup form listeners
+            setupFormListeners();
+            
             // Close modal when clicking outside
             document.getElementById('conversationModal').addEventListener('click', function(e) {
                 if (e.target === this) {
@@ -831,11 +905,25 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
                 }
             });
             
-            // Auto-focus first input when modal opens
-            document.getElementById('conversationModal').addEventListener('transitionend', function() {
-                if (this.classList.contains('active')) {
-                    document.getElementById('nama').focus();
+            // Prevent form submission on Enter key
+            document.getElementById('conversationForm').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    
+                    // Find next input
+                    const inputs = Array.from(this.querySelectorAll('input, textarea, select'));
+                    const currentIndex = inputs.indexOf(document.activeElement);
+                    
+                    if (currentIndex < inputs.length - 1) {
+                        inputs[currentIndex + 1].focus();
+                    }
                 }
+            });
+            
+            // Handle form submission
+            document.getElementById('conversationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitConversation();
             });
         });
         
@@ -854,6 +942,11 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
             
             return true;
         }
+        
+        // ================= AUTO-SAVE ON PAGE UNLOAD =================
+        window.addEventListener('beforeunload', function() {
+            saveFormData();
+        });
     </script>
 </body>
 </html>
