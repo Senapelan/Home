@@ -4,6 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Pelayanan - Kelurahan Padang Terubuk</title>
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://senapelan.github.io/Home/publik/lkk/data-lkk-padangterubuk.html">
+    <meta property="og:title" content="Data Lembaga Kemasyarakatan Kelurahan Padang Terubuk">
+    <meta property="og:description" content="Dashboard real-time data LPM, RT, dan RW Kelurahan Padang Terubuk">
+    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
     
     <!-- GOOGLE FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -13,7 +20,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- FAVICON -->
-    <link rel="icon" type="image/png" sizes="32x32" href="data/foto/favico/favico.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://senapelan.github.io/Home/data/foto/favico/favico.png">
     
     <style>
         :root {
@@ -32,6 +39,12 @@
             --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
             --transition: all 0.3s ease;
             --border-radius: 16px;
+            
+            /* Variabel dari tema utama */
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --dark-bg: #0c1f33;
+            --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.15);
         }
 
         * {
@@ -52,45 +65,98 @@
             overflow-x: hidden;
         }
 
-        /* ================= HEADER ================= */
+        /* ================= HEADER - SAMA DENGAN TEMPAT ASLI ================= */
         .header {
-            background: rgba(12, 31, 51, 0.95);
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
-            position: sticky;
+            position: fixed;
             top: 0;
-            z-index: 1000;
-            padding: 0 40px;
+            left: 0;
+            width: 100%;
             height: 80px;
-        }
-
-        .header-container {
-            max-width: 1400px;
-            margin: 0 auto;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            height: 100%;
+            padding: 0 40px;
+            background: rgba(12, 31, 51, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .header.scrolled {
+            background: rgba(12, 31, 51, 0.98);
+            backdrop-filter: blur(30px);
+            height: 70px;
+            box-shadow: var(--shadow-lg);
         }
 
         .logo {
             display: flex;
             align-items: center;
             gap: 15px;
+            color: white;
             text-decoration: none;
+            position: relative;
         }
 
         .logo-img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            background: transparent !important;
+            padding: 0 !important;
         }
 
         .logo-img img {
             width: 100%;
             height: 100%;
             object-fit: contain;
+            transition: var(--transition);
+            filter: none !important;
+            border-radius: 12px;
+        }
+
+        /* LOGO HOVER EFFECT */
+        .logo-img:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-img:hover img {
+            transform: rotate(10deg);
+            filter: brightness(1.2) saturate(1.5) !important;
+        }
+
+        .logo-img:hover::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                rgba(30, 107, 255, 0.4), 
+                rgba(0, 201, 183, 0.4), 
+                rgba(255, 107, 107, 0.4));
+            border-radius: 18px;
+            z-index: -1;
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { 
+                opacity: 0.5;
+                filter: hue-rotate(0deg);
+            }
+            50% { 
+                opacity: 0.8;
+                filter: hue-rotate(45deg);
+            }
         }
 
         .logo-text {
@@ -100,15 +166,19 @@
 
         .logo-main {
             font-family: 'Poppins', sans-serif;
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a3d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
         }
 
         .logo-sub {
-            font-size: 12px;
-            color: var(--dark-gray);
+            font-size: 13px;
+            opacity: 0.9;
             font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
         }
 
         .btn-back {
@@ -117,28 +187,46 @@
             justify-content: center;
             width: 44px;
             height: 44px;
-            background: var(--white);
-            color: var(--primary);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
             text-decoration: none;
-            border-radius: 10px;
+            border-radius: 12px;
             font-weight: 600;
             font-size: 18px;
-            border: 2px solid var(--primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
             transition: var(--transition);
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-back:hover {
-            background: var(--primary);
-            color: var(--white);
+            background: rgba(30, 107, 255, 0.3);
+            color: white;
             transform: translateY(-2px) rotate(-5deg);
-            box-shadow: 0 5px 15px rgba(30, 107, 255, 0.3);
+            box-shadow: 0 10px 20px rgba(30, 107, 255, 0.2);
+            border-color: rgba(30, 107, 255, 0.5);
+        }
+
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-back:hover::before {
+            left: 100%;
         }
 
         /* ================= MAIN CONTENT ================= */
         .main-content {
             max-width: 1400px;
-            margin: 0 auto;
-            padding: 60px 40px 120px;
+            margin: 120px auto 100px;
+            padding: 0 40px;
         }
 
         .page-title {
@@ -152,13 +240,27 @@
             font-weight: 700;
             color: var(--dark);
             margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .page-title h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
         }
 
         .page-title p {
             color: var(--dark-gray);
             font-size: 1.1rem;
             max-width: 600px;
-            margin: 0 auto;
+            margin: 25px auto 0;
         }
 
         /* ================= CARD GRID ================= */
@@ -179,11 +281,13 @@
             height: 100%;
             display: flex;
             flex-direction: column;
+            border: 2px solid rgba(30, 107, 255, 0.1);
         }
 
         .service-card:hover {
             transform: translateY(-10px);
             box-shadow: var(--shadow-hover);
+            border-color: rgba(30, 107, 255, 0.3);
         }
 
         .card-avatar {
@@ -276,6 +380,21 @@
             box-shadow: 0 10px 25px rgba(30, 107, 255, 0.3);
         }
 
+        .btn-conversation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-conversation:hover::before {
+            left: 100%;
+        }
+
         .btn-conversation i {
             font-size: 18px;
         }
@@ -296,6 +415,7 @@
             visibility: hidden;
             transition: var(--transition);
             padding: 20px;
+            backdrop-filter: blur(5px);
         }
 
         .modal-overlay.active {
@@ -412,11 +532,12 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            background: var(--white);
-            border-top: 1px solid var(--border);
+            background: rgba(12, 31, 51, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             padding: 15px 0;
             overflow: hidden;
             z-index: 100;
+            backdrop-filter: blur(20px);
         }
 
         .running-text-container {
@@ -429,7 +550,7 @@
             white-space: nowrap;
             animation: runningText 60s linear infinite;
             font-size: 14px;
-            color: var(--dark-gray);
+            color: rgba(255, 255, 255, 0.9);
         }
 
         @keyframes runningText {
@@ -462,7 +583,8 @@
             }
             
             .main-content {
-                padding: 40px 20px 100px;
+                margin: 100px auto 80px;
+                padding: 0 20px;
             }
             
             .page-title h1 {
@@ -487,16 +609,24 @@
             .btn-modal {
                 width: 100%;
             }
-        }
-
-        @media (max-width: 480px) {
+            
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+            
             .logo-main {
                 font-size: 18px;
             }
             
-            .logo-img {
-                width: 40px;
-                height: 40px;
+            .logo-sub {
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                margin: 90px auto 70px;
             }
             
             .page-title h1 {
@@ -520,22 +650,20 @@
 
 <body>
     <!-- Header -->
-    <header class="header">
-        <div class="header-container">
-            <a href="index.html" class="logo">
-                <div class="logo-img">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
-                </div>
-                <div class="logo-text">
-                    <div class="logo-main">Padang Terubuk</div>
-                    <div class="logo-sub">Pelayanan Kelurahan</div>
-                </div>
-            </a>
-            
-            <a href="index.html" class="btn-back" title="Kembali ke Beranda">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-        </div>
+    <header class="header" id="header">
+        <a href="index.html" class="logo">
+            <div class="logo-img">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
+            </div>
+            <div class="logo-text">
+                <div class="logo-main">Padang Terubuk</div>
+                <div class="logo-sub">Pelayanan Kelurahan</div>
+            </div>
+        </a>
+        
+        <a href="index.html" class="btn-back" title="Kembali ke Beranda">
+            <i class="fas fa-arrow-left"></i>
+        </a>
     </header>
 
     <!-- Main Content -->
@@ -752,6 +880,16 @@
                 });
             }
         }
+        
+        // ================= HEADER SCROLL EFFECT =================
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+        });
         
         // ================= MODAL FUNCTIONS =================
         let selectedPetugas = '';
