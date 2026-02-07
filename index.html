@@ -604,6 +604,191 @@ header p::after {
 }
 
 /* =========================
+   INSTALL BANNER MODERN 2026
+   ========================= */
+.install-banner {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(135deg, rgba(10, 15, 43, 0.95) 0%, rgba(0, 71, 204, 0.9) 100%);
+    color: white;
+    padding: 15px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    align-items: center;
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.4);
+    border-top: 2px solid var(--secondary);
+    backdrop-filter: blur(20px);
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+}
+
+.install-banner.active {
+    transform: translateY(0);
+}
+
+.install-content {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .install-banner {
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 20px 40px;
+        gap: 0;
+    }
+    
+    .install-content {
+        width: auto;
+        justify-content: flex-start;
+    }
+}
+
+.install-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 102, 255, 0.4);
+    flex-shrink: 0;
+    border: 2px solid var(--secondary);
+    background: white;
+    padding: 5px;
+    object-fit: contain;
+}
+
+@media (min-width: 768px) {
+    .install-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 15px;
+    }
+}
+
+.install-text {
+    text-align: center;
+    flex: 1;
+}
+
+@media (min-width: 768px) {
+    .install-text {
+        text-align: left;
+        flex: none;
+    }
+}
+
+.install-text h4 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+    background: linear-gradient(90deg, #fff, var(--primary-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    font-weight: 700;
+}
+
+@media (min-width: 768px) {
+    .install-text h4 {
+        font-size: 1.3rem;
+        margin-bottom: 8px;
+    }
+}
+
+.install-text p {
+    font-size: 0.85rem;
+    opacity: 0.9;
+    color: #B3E0FF;
+}
+
+@media (min-width: 768px) {
+    .install-text p {
+        font-size: 0.95rem;
+    }
+}
+
+.install-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+    justify-content: center;
+}
+
+@media (min-width: 768px) {
+    .install-buttons {
+        width: auto;
+        justify-content: flex-end;
+    }
+}
+
+.install-btn {
+    padding: 10px 20px;
+    border-radius: 50px;
+    background: var(--gradient);
+    color: white;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: var(--transition);
+    white-space: nowrap;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 102, 255, 0.3);
+}
+
+@media (min-width: 768px) {
+    .install-btn {
+        padding: 12px 30px;
+        font-size: 0.95rem;
+    }
+}
+
+.install-btn:hover {
+    background: linear-gradient(135deg, #0052D4, #009688);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0, 102, 255, 0.4);
+}
+
+.close-banner {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    border-radius: 50%;
+    opacity: 0.7;
+}
+
+@media (min-width: 768px) {
+    .close-banner {
+        font-size: 1.8rem;
+        width: 35px;
+        height: 35px;
+    }
+}
+
+.close-banner:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    transform: rotate(90deg);
+}
+
+/* =========================
    RESPONSIVE DESIGN
    ========================= */
 /* DESKTOP BESAR (Default 3 kolom) */
@@ -972,17 +1157,93 @@ html {
     </div>
 </footer>
 
+<!-- INSTALL BANNER MODERN -->
+<div class="install-banner" id="installBanner">
+    <div class="install-content">
+        <img src="data/foto/icon-andro/iconandro.png" alt="App Icon" class="install-icon">
+        <div class="install-text">
+            <h4>Pasang Aplikasi Senapelan</h4>
+            <p>Akses lebih mudah dengan memasang aplikasi di perangkat Anda</p>
+        </div>
+    </div>
+    <div class="install-buttons">
+        <button class="install-btn" id="installBtn">Pasang Sekarang</button>
+        <button class="close-banner" id="closeBanner">&times;</button>
+    </div>
+</div>
+
 <audio id="bgMusic" loop>
     <source src="data/sound/home.mp3" type="audio/mpeg">
 </audio>
 
 <script>
+// ============================
+// MUSIK BACKGROUND
+// ============================
 document.addEventListener("click", function () {
     const music = document.getElementById("bgMusic");
     music.play();
 }, { once: true });
 
-// Efek interaktif modern
+// ============================
+// INSTALL BANNER LOGIC
+// ============================
+const installBanner = document.getElementById('installBanner');
+const closeBanner = document.getElementById('closeBanner');
+const installBtn = document.getElementById('installBtn');
+
+// Show install banner after 3 seconds
+setTimeout(() => {
+    if (!localStorage.getItem('senapelanBannerDismissed')) {
+        installBanner.classList.add('active');
+    }
+}, 3000);
+
+// Close banner
+closeBanner.addEventListener('click', () => {
+    installBanner.classList.remove('active');
+    localStorage.setItem('senapelanBannerDismissed', 'true');
+});
+
+// Install button logic
+installBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    
+    // Check if PWA is available
+    if ('serviceWorker' in navigator && 'BeforeInstallPromptEvent' in window) {
+        // PWA install prompt
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // Show install prompt
+            deferredPrompt.prompt();
+            
+            deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    console.log('User accepted the install prompt');
+                    installBanner.classList.remove('active');
+                    localStorage.setItem('senapelanBannerDismissed', 'true');
+                    localStorage.setItem('senapelanAppInstalled', 'true');
+                } else {
+                    console.log('User dismissed the install prompt');
+                }
+                deferredPrompt = null;
+            });
+        });
+    } else {
+        // Fallback for non-PWA browsers
+        alert('Aplikasi Senapelan akan dipasang di perangkat Anda. Pastikan Anda terhubung ke internet.');
+        installBanner.classList.remove('active');
+        localStorage.setItem('senapelanBannerDismissed', 'true');
+    }
+});
+
+// ============================
+// EFEK INTERAKTIF MODERN
+// ============================
 document.addEventListener('DOMContentLoaded', function() {
     // Efek hover card dengan delay
     const cards = document.querySelectorAll('.card a');
@@ -1087,6 +1348,44 @@ document.addEventListener('DOMContentLoaded', function() {
             overlay.style.opacity = 1 - (scrolled * 0.001);
         }
     });
+    
+    // Service Worker Registration for PWA
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/Home/service-worker.js')
+                .then(registration => {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                })
+                .catch(error => {
+                    console.log('ServiceWorker registration failed: ', error);
+                });
+        });
+    }
+});
+
+// ============================
+// PWA INSTALL DETECTION
+// ============================
+window.addEventListener('appinstalled', (evt) => {
+    console.log('Aplikasi Senapelan berhasil diinstal.');
+    installBanner.classList.remove('active');
+    localStorage.setItem('senapelanAppInstalled', 'true');
+    localStorage.setItem('senapelanBannerDismissed', 'true');
+});
+
+// Check if app is already installed on page load
+window.addEventListener('load', () => {
+    if (localStorage.getItem('senapelanAppInstalled')) {
+        installBanner.classList.remove('active');
+    }
+    
+    // Detect standalone mode (app already installed)
+    if (window.matchMedia('(display-mode: standalone)').matches || 
+        window.navigator.standalone === true) {
+        console.log('Running in standalone mode');
+        localStorage.setItem('senapelanAppInstalled', 'true');
+        installBanner.classList.remove('active');
+    }
 });
 </script>
     
