@@ -114,14 +114,15 @@
         .btn-back {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            padding: 10px 20px;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
             background: var(--white);
             color: var(--primary);
             text-decoration: none;
             border-radius: 10px;
             font-weight: 600;
-            font-size: 14px;
+            font-size: 18px;
             border: 2px solid var(--primary);
             transition: var(--transition);
         }
@@ -129,7 +130,8 @@
         .btn-back:hover {
             background: var(--primary);
             color: var(--white);
-            transform: translateY(-2px);
+            transform: translateY(-2px) rotate(-5deg);
+            box-shadow: 0 5px 15px rgba(30, 107, 255, 0.3);
         }
 
         /* ================= MAIN CONTENT ================= */
@@ -253,7 +255,7 @@
             justify-content: center;
             gap: 10px;
             padding: 14px 24px;
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: var(--white);
             text-decoration: none;
             border-radius: 10px;
@@ -264,11 +266,14 @@
             transition: var(--transition);
             margin-top: 20px;
             width: 100%;
+            position: relative;
+            overflow: hidden;
         }
 
         .btn-conversation:hover {
-            background: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-dark), #00b3a1);
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 107, 255, 0.3);
         }
 
         .btn-conversation i {
@@ -317,6 +322,7 @@
         .modal-header {
             padding: 25px 30px;
             border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--primary-light), var(--white));
         }
 
         .modal-header h2 {
@@ -392,12 +398,12 @@
         }
 
         .btn-submit {
-            background: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: var(--white);
         }
 
         .btn-submit:hover {
-            background: var(--primary-dark);
+            background: linear-gradient(135deg, var(--primary-dark), #00b3a1);
         }
 
         /* ================= RUNNING TEXT ================= */
@@ -526,8 +532,8 @@
                 </div>
             </a>
             
-            <a href="index.html" class="btn-back">
-                <i class="fas fa-arrow-left"></i> Kembali
+            <a href="index.html" class="btn-back" title="Kembali ke Beranda">
+                <i class="fas fa-arrow-left"></i>
             </a>
         </div>
     </header>
@@ -724,6 +730,29 @@
     </div>
 
     <script>
+        // ================= SOUND EFFECT =================
+        let clickSound;
+        
+        function loadSoundEffect() {
+            clickSound = new Audio('https://senapelan.github.io/Home/data/sound/open-card.mp3');
+            clickSound.volume = 0.5; // Set volume 50%
+        }
+        
+        function playClickSound() {
+            if (clickSound) {
+                // Reset sound untuk bisa diputar berulang
+                clickSound.currentTime = 0;
+                clickSound.play().catch(e => {
+                    console.log('Sound tidak bisa diputar otomatis:', e);
+                    // Fallback: play setelah interaksi user
+                    document.addEventListener('click', function playOnInteraction() {
+                        clickSound.play();
+                        document.removeEventListener('click', playOnInteraction);
+                    });
+                });
+            }
+        }
+        
         // ================= MODAL FUNCTIONS =================
         let selectedPetugas = '';
         let selectedPhone = '';
@@ -738,6 +767,9 @@
         };
         
         function openConversationModal(petugasName, phoneNumber) {
+            // Play sound effect
+            playClickSound();
+            
             selectedPetugas = petugasName;
             selectedPhone = phoneNumber; // Simpan nomor WhatsApp petugas
             document.getElementById('modalPetugasName').textContent = `Percakapan dengan ${petugasName}`;
@@ -898,6 +930,9 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
         
         // ================= EVENT LISTENERS =================
         document.addEventListener('DOMContentLoaded', function() {
+            // Load sound effect
+            loadSoundEffect();
+            
             // Setup form listeners
             setupFormListeners();
             
@@ -943,6 +978,18 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.`;
                     value = value.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3');
                 }
                 e.target.value = value;
+            });
+            
+            // Add hover sound effect to all conversation buttons
+            document.querySelectorAll('.btn-conversation').forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    // Optional: tambahkan efek hover sound jika diperlukan
+                    // playHoverSound();
+                });
+                
+                button.addEventListener('click', function() {
+                    // Play sound sudah ditangani di openConversationModal
+                });
             });
         });
         
