@@ -592,9 +592,16 @@
         }
 
         .table-wrapper {
-            min-width: 1400px;
-            position: relative;
-        }
+    min-width: 1500px; /* Diperkecil sedikit karena hanya 12 kolom */
+    position: relative;
+}
+
+    /* Responsif untuk mobile */
+@media (max-width: 768px) {
+    .table-wrapper {
+        min-width: 1600px;
+    }
+}
 
         .data-table {
             width: 100%;
@@ -1282,26 +1289,26 @@
                 
                 <div class="table-wrapper">
                     <table class="data-table" id="dataTable">
-                        <thead>
-                            <tr>
-                                <th>NO.</th>
-                               <th>Kode Masa Jabatan</th>
-                               <th>NAMA</th>
-                               <th>JENIS LKK</th>
-                               <th>KELURAHAN</th>
-                               <th>STATUS</th>
-                               <th>NIK</th>
-                               <th>NOMOR HP/WA</th>
-                               <th>NOMOR REKENING BANK</th>
-                               <th>AWAL MENJABAT</th>
-                               <th>AKHIR MENJABAT</th>
-                              <th>SISA MASA JABATAN</th>
-                            </tr>
-                          </thead>
-                        <tbody id="tableBody">
-                            <!-- Data akan dimuat via JavaScript -->
-                        </tbody>
-                    </table>
+    <thead>
+        <tr>
+            <th>NO.</th>
+            <th>KODE MASA JABATAN</th>
+            <th>NAMA</th>
+            <th>JENIS LKK</th>
+            <th>KELURAHAN</th>
+            <th>STATUS</th>
+            <th>NIK</th>
+            <th>NOMOR HP/WA</th>
+            <th>NOMOR REKENING BANK</th>
+            <th>AWAL MENJABAT</th>
+            <th>AKHIR MENJABAT</th>
+            <th>SISA MASA JABATAN</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        <!-- Data akan dimuat via JavaScript -->
+    </tbody>
+</table>
                 </div>
                 
                 <div class="no-data" id="noDataMessage" style="display: none;">
@@ -1450,21 +1457,20 @@ function processSheetData(rows) {
             }
         }
         
-        // MAPPING KOLOM SPREADSHEET KE HEADER YANG DIMINTA:
-        // Kolom A (0) = Kode Masa Jabatan
-        // Kolom B (1) = NAMA (di header diminta NAMA)
-        // Kolom C (2) = JENIS LKK
-        // Kolom D (3) = KELURAHAN
-        // Kolom E (4) = STATUS
-        // Kolom F (5) = NIK
-        // Kolom G (6) = NOMOR HP/WA
-        // Kolom H (7) = NOMOR REKENING BANK
-        // Kolom I (8) = AWAL MENJABAT
-        // Kolom J (9) = AKHIR MENJABAT
-        // Kolom K (10) = ??? (tidak disebutkan di header)
+        // MAPPING KOLOM B-L (indeks 1-11):
+        // Kolom B (1) = KODE MASA JABATAN
+        // Kolom C (2) = NAMA
+        // Kolom D (3) = JENIS LKK
+        // Kolom E (4) = KELURAHAN
+        // Kolom F (5) = STATUS
+        // Kolom G (6) = NIK
+        // Kolom H (7) = NOMOR HP/WA
+        // Kolom I (8) = NOMOR REKENING BANK
+        // Kolom J (9) = AWAL MENJABAT
+        // Kolom K (10) = AKHIR MENJABAT
         // Kolom L (11) = SISA MASA JABATAN
         
-        // Parse sisa masa jabatan dari kolom L
+        // Parse sisa masa jabatan dari kolom L (index 11)
         let sisaMasaDisplay = '';
         let sisaMasaClass = '';
         
@@ -1475,7 +1481,7 @@ function processSheetData(rows) {
         }
         
         // Tentukan status warna berdasarkan sisa masa jabatan
-        let statusWarna = row[4] || ''; // Kolom E adalah STATUS
+        let statusWarna = row[5] || ''; // Kolom F (index 5) adalah STATUS
         
         // Jika sisa masa jabatan kurang dari 180 hari, tandai sebagai WARNING
         if (row[11]) {
@@ -1487,18 +1493,17 @@ function processSheetData(rows) {
         
         processedData.push({
             no: index + 1,
-            kodeMasaJabatan: row[0] || '', // Kolom A
-            nama: row[1] || '', // Kolom B (sesuai permintaan header)
-            jenis: row[2] || '', // Kolom C
-            kelurahan: row[3] || '', // Kolom D
-            status: row[4] || '', // Kolom E
-            nik: row[5] || '', // Kolom F
-            hp: row[6] || '', // Kolom G
-            rekening: row[7] || '', // Kolom H
-            awalMenjabat: row[8] || '', // Kolom I
-            akhirMenjabat: row[9] || '', // Kolom J
-            kolomK: row[10] || '', // Kolom K (tidak digunakan di header)
-            sisaRaw: row[11] || '', // Kolom L
+            kodeMasaJabatan: row[1] || '', // Kolom B (index 1)
+            nama: row[2] || '', // Kolom C (index 2)
+            jenis: row[3] || '', // Kolom D (index 3)
+            kelurahan: row[4] || '', // Kolom E (index 4)
+            status: row[5] || '', // Kolom F (index 5)
+            nik: row[6] || '', // Kolom G (index 6)
+            hp: row[7] || '', // Kolom H (index 7)
+            rekening: row[8] || '', // Kolom I (index 8)
+            awalMenjabat: row[9] || '', // Kolom J (index 9)
+            akhirMenjabat: row[10] || '', // Kolom K (index 10)
+            sisaRaw: row[11] || '', // Kolom L (index 11)
             sisa: sisaMasaDisplay,
             sisaClass: sisaMasaClass,
             statusWarna: statusWarna
