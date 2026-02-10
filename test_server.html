@@ -1285,19 +1285,19 @@
                         <thead>
                             <tr>
                                 <th>NO.</th>
-                                <th>KODE</th>
-                                <th>NAMA</th>
-                                <th>JENIS LKK</th>
-                                <th>KELURAHAN</th>
-                                <th>STATUS</th>
-                                <th>NIK</th>
-                                <th>NOMOR HP/WA</th>
-                                <th>BANK</th>
-                                <th>AWAL MENJABAT</th>
-                                <th>AKHIR MENJABAT</th>
-                                <th>SISA MASA JABATAN</th>
+                               <th>Kode Masa Jabatan</th>
+                               <th>NAMA</th>
+                               <th>JENIS LKK</th>
+                               <th>KELURAHAN</th>
+                               <th>STATUS</th>
+                               <th>NIK</th>
+                               <th>NOMOR HP/WA</th>
+                               <th>NOMOR REKENING BANK</th>
+                               <th>AWAL MENJABAT</th>
+                               <th>AKHIR MENJABAT</th>
+                              <th>SISA MASA JABATAN</th>
                             </tr>
-                        </thead>
+                          </thead>
                         <tbody id="tableBody">
                             <!-- Data akan dimuat via JavaScript -->
                         </tbody>
@@ -1437,82 +1437,76 @@
             }
         }
         
-        // Proses data dari spreadsheet - PERBAIKAN DISINI
-        function processSheetData(rows) {
-            const processedData = [];
-            
-            rows.forEach((row, index) => {
-                // Pastikan row memiliki minimal 12 kolom (A-L)
-                if (row.length < 12) {
-                    // Tambahkan nilai default untuk kolom yang kosong
-                    while (row.length < 12) {
-                        row.push('');
-                    }
-                }
-                
-                // AMBIL DATA SESUAI KOLOM SPREADSHEET:
-                // A = Kode (index 0)
-                // B = ? (SKIP karena tidak ditampilkan)
-                // C = Nama (index 2)
-                // D = Jenis LKK (index 3)
-                // E = Kelurahan (index 4)
-                // F = Status (index 5)
-                // G = NIK (index 6) - TETAP DITAMPILKAN
-                // H = ? (SKIP karena tidak ditampilkan)
-                // I = Nomor HP/WA (index 8)
-                // J = ? (SKIP karena tidak ditampilkan)
-                // K = Bank (index 10)
-                // L = Awal Menjabat (index 11) - BERUBAH POSISI
-                
-                // KOLOM TAMBAHAN UNTUK PERHITUNGAN:
-                // M = Akhir Menjabat (akan dihitung)
-                // N = Sisa Masa Jabatan (dari kolom L asli)
-                
-                // Ambil sisa masa jabatan dari kolom L (index 11)
-                const sisaMasaRaw = row[11] || '';
-                
-                // Parse sisa masa jabatan dari format "817 Hari 08 Jam"
-                let sisaMasaDisplay = '';
-                let sisaMasaClass = '';
-                
-                if (sisaMasaRaw) {
-                    const sisaMasaFormatted = parseSisaMasaJabatan(sisaMasaRaw);
-                    sisaMasaDisplay = sisaMasaFormatted.display;
-                    sisaMasaClass = sisaMasaFormatted.class;
-                }
-                
-                // Tentukan status warna berdasarkan sisa masa jabatan
-                let statusWarna = row[5] || '';
-                
-                // Jika sisa masa jabatan kurang dari 180 hari, tandai sebagai WARNING
-                if (sisaMasaRaw) {
-                    const daysMatch = sisaMasaRaw.match(/(\d+)\s*Hari/);
-                    if (daysMatch && parseInt(daysMatch[1]) < 180) {
-                        statusWarna = 'WARNING';
-                    }
-                }
-                
-                processedData.push({
-                    no: index + 1,
-                    kode: row[0] || '', // Kolom A
-                    nama: row[2] || '', // Kolom C
-                    jenis: row[3] || '', // Kolom D
-                    kelurahan: row[4] || '', // Kolom E
-                    status: row[5] || '', // Kolom F
-                    nik: row[6] || '', // Kolom G
-                    hp: row[8] || '', // Kolom I (sebelumnya H)
-                    rekening: row[10] || '', // Kolom K (sebelumnya I)
-                    awal: row[11] || '', // Kolom L (Awal Menjabat)
-                    akhir: '', // Kolom M (tidak ada di sheet, bisa dikosongkan atau dihitung)
-                    sisa: sisaMasaDisplay,
-                    sisaClass: sisaMasaClass,
-                    statusWarna: statusWarna,
-                    sisaRaw: sisaMasaRaw
-                });
-            });
-            
-            return processedData;
+        // Proses data dari spreadsheet - Mapping sesuai header yang diminta
+function processSheetData(rows) {
+    const processedData = [];
+    
+    rows.forEach((row, index) => {
+        // Pastikan row memiliki minimal 12 kolom (A-L)
+        if (row.length < 12) {
+            // Tambahkan nilai default untuk kolom yang kosong
+            while (row.length < 12) {
+                row.push('');
+            }
         }
+        
+        // MAPPING KOLOM SPREADSHEET KE HEADER YANG DIMINTA:
+        // Kolom A (0) = Kode Masa Jabatan
+        // Kolom B (1) = NAMA (di header diminta NAMA)
+        // Kolom C (2) = JENIS LKK
+        // Kolom D (3) = KELURAHAN
+        // Kolom E (4) = STATUS
+        // Kolom F (5) = NIK
+        // Kolom G (6) = NOMOR HP/WA
+        // Kolom H (7) = NOMOR REKENING BANK
+        // Kolom I (8) = AWAL MENJABAT
+        // Kolom J (9) = AKHIR MENJABAT
+        // Kolom K (10) = ??? (tidak disebutkan di header)
+        // Kolom L (11) = SISA MASA JABATAN
+        
+        // Parse sisa masa jabatan dari kolom L
+        let sisaMasaDisplay = '';
+        let sisaMasaClass = '';
+        
+        if (row[11]) {
+            const sisaMasaFormatted = parseSisaMasaJabatan(row[11]);
+            sisaMasaDisplay = sisaMasaFormatted.display;
+            sisaMasaClass = sisaMasaFormatted.class;
+        }
+        
+        // Tentukan status warna berdasarkan sisa masa jabatan
+        let statusWarna = row[4] || ''; // Kolom E adalah STATUS
+        
+        // Jika sisa masa jabatan kurang dari 180 hari, tandai sebagai WARNING
+        if (row[11]) {
+            const daysMatch = row[11].match(/(\d+)\s*Hari/);
+            if (daysMatch && parseInt(daysMatch[1]) < 180) {
+                statusWarna = 'WARNING';
+            }
+        }
+        
+        processedData.push({
+            no: index + 1,
+            kodeMasaJabatan: row[0] || '', // Kolom A
+            nama: row[1] || '', // Kolom B (sesuai permintaan header)
+            jenis: row[2] || '', // Kolom C
+            kelurahan: row[3] || '', // Kolom D
+            status: row[4] || '', // Kolom E
+            nik: row[5] || '', // Kolom F
+            hp: row[6] || '', // Kolom G
+            rekening: row[7] || '', // Kolom H
+            awalMenjabat: row[8] || '', // Kolom I
+            akhirMenjabat: row[9] || '', // Kolom J
+            kolomK: row[10] || '', // Kolom K (tidak digunakan di header)
+            sisaRaw: row[11] || '', // Kolom L
+            sisa: sisaMasaDisplay,
+            sisaClass: sisaMasaClass,
+            statusWarna: statusWarna
+        });
+    });
+    
+    return processedData;
+}
         
         // Parse sisa masa jabatan dari format "817 Hari 08 Jam" ke format "2 Tahun 2 Bulan 27 Hari 08 Jam"
         function parseSisaMasaJabatan(sisaMasaRaw) {
@@ -1674,57 +1668,57 @@
             
             // Render data per halaman
             pageData.forEach(item => {
-                const row = document.createElement('tr');
-                
-                // Tentukan badge untuk jenis LKK
-                let jenisBadge = '';
-                if (item.jenis.includes('LPM')) {
-                    jenisBadge = '<span class="badge-lpm">LPM</span>';
-                } else if (item.jenis.includes('RW')) {
-                    jenisBadge = '<span class="badge-rw">RW</span>';
-                } else if (item.jenis.includes('RT')) {
-                    jenisBadge = '<span class="badge-rt">RT</span>';
-                }
-                
-                // Tentukan badge untuk status
-                let statusBadge = '';
-                if (item.statusWarna === 'DEFENITIF') {
-                    statusBadge = '<span class="status-badge status-definitif">DEFENITIF</span>';
-                } else if (item.statusWarna === 'PLT') {
-                    statusBadge = '<span class="status-badge status-plt">PLT</span>';
-                } else if (item.statusWarna === 'WARNING') {
-                    statusBadge = '<span class="status-badge status-warning">BERAKHIR</span>';
-                }
-                
-                // Format sisa masa jabatan dengan UI yang menarik
-                let sisaMasaHTML = '';
-                if (item.sisa) {
-                    sisaMasaHTML = `
-                        <div class="time-display ${item.sisaClass}">
-                            ${formatTimeDisplay(item.sisaRaw)}
-                        </div>
-                    `;
-                } else {
-                    sisaMasaHTML = '<span style="color: #9ca3af;">-</span>';
-                }
-                
-                row.innerHTML = `
-                    <td>${item.no}</td>
-                    <td><strong>${item.kode}</strong></td>
-                    <td><strong>${item.nama}</strong></td>
-                    <td>${jenisBadge} ${item.jenis}</td>
-                    <td>${item.kelurahan}</td>
-                    <td>${statusBadge}</td>
-                    <td>${formatNIK(item.nik)}</td>
-                    <td>${formatPhone(item.hp)}</td>
-                    <td>${item.rekening}</td>
-                    <td>${item.awal}</td>
-                    <td>${item.akhir || '-'}</td>
-                    <td>${sisaMasaHTML}</td>
-                `;
-                
-                tableBody.appendChild(row);
-            });
+    const row = document.createElement('tr');
+    
+    // Tentukan badge untuk jenis LKK
+    let jenisBadge = '';
+    if (item.jenis.includes('LPM')) {
+        jenisBadge = '<span class="badge-lpm">LPM</span>';
+    } else if (item.jenis.includes('RW')) {
+        jenisBadge = '<span class="badge-rw">RW</span>';
+    } else if (item.jenis.includes('RT')) {
+        jenisBadge = '<span class="badge-rt">RT</span>';
+    }
+    
+    // Tentukan badge untuk status
+    let statusBadge = '';
+    if (item.statusWarna === 'DEFENITIF') {
+        statusBadge = '<span class="status-badge status-definitif">DEFENITIF</span>';
+    } else if (item.statusWarna === 'PLT') {
+        statusBadge = '<span class="status-badge status-plt">PLT</span>';
+    } else if (item.statusWarna === 'WARNING') {
+        statusBadge = '<span class="status-badge status-warning">BERAKHIR</span>';
+    }
+    
+    // Format sisa masa jabatan dengan UI yang menarik
+    let sisaMasaHTML = '';
+    if (item.sisaRaw) {
+        sisaMasaHTML = `
+            <div class="time-display ${item.sisaClass}">
+                ${formatTimeDisplay(item.sisaRaw)}
+            </div>
+        `;
+    } else {
+        sisaMasaHTML = '<span style="color: #9ca3af;">-</span>';
+    }
+    
+    row.innerHTML = `
+        <td>${item.no}</td>
+        <td><strong>${item.kodeMasaJabatan}</strong></td>
+        <td><strong>${item.nama}</strong></td>
+        <td>${jenisBadge} ${item.jenis}</td>
+        <td>${item.kelurahan}</td>
+        <td>${statusBadge}</td>
+        <td>${formatNIK(item.nik)}</td>
+        <td>${formatPhone(item.hp)}</td>
+        <td>${item.rekening}</td>
+        <td>${item.awalMenjabat}</td>
+        <td>${item.akhirMenjabat}</td>
+        <td>${sisaMasaHTML}</td>
+    `;
+    
+    tableBody.appendChild(row);
+});
             
             // Render pagination
             renderPagination(pagination, totalPages);
