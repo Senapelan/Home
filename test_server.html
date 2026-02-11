@@ -1692,8 +1692,8 @@ document.addEventListener('DOMContentLoaded', function() {
 // TANPA NOTIFIKASI, TANPA LOADING, TANPA TOAST
 // ============================
 
-// KONFIGURASI - GANTI DENGAN URL WEB APP ANDA!
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz0gYC31gMllQUXIbIxuB1emBqPNITafTNped4zeih8UgfhpJSemg-ofUXDLXPG6h-nuw/exec';
+// KONFIGURASI - GANTI DENGAN URL BARU ANDA!
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWnNjQxnRIxth6LA_y4b0FCC0LTbj2r8gqeKrHyvJ6t79oOgGnwkPWV0oU_CFz1zh-jg/exec';
 
 // DATA COUNTER
 let visitCounters = {
@@ -1707,67 +1707,112 @@ let visitCounters = {
 };
 
 // ============================================
-// 1. LOAD DATA DARI SPREADSHEET (BACKGROUND)
+// 1. LOAD DATA DARI SPREADSHEET (PAKAI CORS)
 // ============================================
-function loadCounters() {
-    // Coba ambil dari localStorage dulu (langsung tampil)
+async function loadCounters() {
+    // Tampilkan dulu data dari localStorage (cepat)
     loadFromLocalStorage();
     
-    // Ambil dari spreadsheet di background (tanpa loading)
-    fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, {
-        method: 'GET',
-        mode: 'no-cors',
-        cache: 'no-cache'
-    }).catch(e => {});
+    try {
+        // Ambil dari spreadsheet dengan mode cors
+        const response = await fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, {
+            method: 'GET',
+            mode: 'cors', // UBAH KE cors!
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            
+            if (result.success && result.data) {
+                // Update data counter
+                visitCounters = { ...visitCounters, ...result.data };
+                
+                // Simpan ke localStorage
+                saveToLocalStorage();
+                
+                // Update tampilan
+                updateAllCounters();
+                
+                console.log('✅ Data loaded from spreadsheet:', visitCounters);
+            }
+        }
+    } catch (error) {
+        console.log('⚠️ Gagal load dari spreadsheet, pakai localStorage');
+        // Sudah pakai localStorage, abaikan error
+    }
 }
 
 // ============================================
 // 2. UPDATE COUNTER + KIRIM KE SPREADSHEET
 // ============================================
-function updateCounter(id, url) {
+async function updateCounter(id, url) {
     // Update angka di lokal
     visitCounters[id] = (visitCounters[id] || 0) + 1;
     
     // Update tampilan
-    const el = document.getElementById(`count-${id}`);
-    if (el) {
-        el.textContent = visitCounters[id].toLocaleString();
-        el.classList.add('counter-update');
-        setTimeout(() => el.classList.remove('counter-update'), 500);
-    }
+    updateSingleCounter(id);
     
     // Simpan ke localStorage
     saveToLocalStorage();
     
-    // Kirim ke spreadsheet (background, tanpa notif)
-    sendToSpreadsheet(id, url);
-}
-
-// ============================================
-// 3. KIRIM DATA KE APPS SCRIPT
-// ============================================
-function sendToSpreadsheet(id, url) {
-    // Method 1: POST dengan no-cors
-    fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-            id: id,
-            url: url,
-            userAgent: navigator.userAgent
-        })
-    }).catch(e => {});
-    
-    // Method 2: Image beacon (GET fallback)
+    // Kirim ke spreadsheet (background)
     try {
-        const img = new Image();
-        img.src = `${APPS_SCRIPT_URL}?id=${id}&url=${encodeURIComponent(url)}&ua=${encodeURIComponent(navigator.userAgent)}&cb=${Date.now()}`;
-    } catch(e) {}
+        const response = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'cors', // UBAH KE cors!
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                id: id,
+                url: url,
+                userAgent: navigator.userAgent
+            })
+        });
+        
+        if (response.ok) {
+            const result = await response.json();
+            if (result.success) {
+                // Update dengan nilai dari server (lebih akurat)
+                visitCounters[id] = result.data.current;
+                updateSingleCounter(id);
+                saveToLocalStorage();
+            }
+        }
+    } catch (error) {
+        console.log('⚠️ Gagal kirim ke spreadsheet, data tersimpan lokal');
+        // Sudah tersimpan di localStorage, akan sync nanti
+    }
 }
 
 // ============================================
-// 4. LOCALSTORAGE - TANPA NOTIF
+// 3. UPDATE TAMPILAN COUNTER
+// ============================================
+function updateAllCounters() {
+    Object.keys(visitCounters).forEach(key => {
+        const el = document.getElementById(`count-${key}`);
+        if (el) {
+            el.textContent = visitCounters[key]?.toLocaleString() || '0';
+        }
+    });
+}
+
+function updateSingleCounter(id) {
+    const el = document.getElementById(`count-${id}`);
+    if (el) {
+        el.textContent = visitCounters[id]?.toLocaleString() || '0';
+        // Efek update (tanpa notif)
+        el.classList.add('counter-update');
+        setTimeout(() => el.classList.remove('counter-update'), 500);
+    }
+}
+
+// ============================================
+// 4. LOCALSTORAGE
 // ============================================
 function saveToLocalStorage() {
     localStorage.setItem('senapelan_visitors', JSON.stringify(visitCounters));
@@ -1779,14 +1824,7 @@ function loadFromLocalStorage() {
         try {
             const data = JSON.parse(saved);
             visitCounters = { ...visitCounters, ...data };
-            
-            // Update semua tampilan counter
-            Object.keys(visitCounters).forEach(key => {
-                const el = document.getElementById(`count-${key}`);
-                if (el) {
-                    el.textContent = visitCounters[key]?.toLocaleString() || '0';
-                }
-            });
+            updateAllCounters();
         } catch (e) {}
     }
 }
@@ -1817,20 +1855,19 @@ function handleCardClick(e, id, url) {
 // 6. INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
-    // Load counter dari localStorage (langsung tampil)
+    // Load dari localStorage dulu (langsung tampil)
     loadFromLocalStorage();
     
-    // Load dari spreadsheet di background
+    // Load dari spreadsheet (background)
     loadCounters();
     
-    // Attach event listeners ke semua card
+    // Attach event listeners
     document.querySelectorAll('.card').forEach(card => {
         const link = card.querySelector('.card-link');
         const id = card.dataset.id;
         const url = card.dataset.url;
         
         if (link && id && url) {
-            // Hapus event listener lama, ganti dengan yang baru
             link.removeEventListener('click', handleCardClick);
             link.addEventListener('click', function(e) {
                 handleCardClick(e, id, url);
@@ -1838,12 +1875,11 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // Auto refresh setiap 60 detik (background)
-    setInterval(loadCounters, 60000);
+    // Auto refresh setiap 30 detik
+    setInterval(loadCounters, 30000);
 });
 
 // HAPUS FUNGSI SHOWTOAST AGAR TIDAK ADA NOTIFIKASI
-// (Function showToast asli sudah dihapus/dikomentari)
 </script>
     
 </body>
