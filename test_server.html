@@ -1422,64 +1422,35 @@
 // ============================
 document.addEventListener("click", function () {
     const music = document.getElementById("bgMusic");
-    music.play();
+    if (music) music.play();
 }, { once: true });
 
 // ============================
-// PWA INSTALL LOGIC
+// PWA INSTALL LOGIC (SINGKAT)
 // ============================
 let deferredPrompt;
 const installBanner = document.getElementById('installBanner');
 const installBtn = document.getElementById('installBtn');
 const closeBanner = document.getElementById('closeBanner');
 
-// Simpan status di localStorage
 const isBannerDismissed = localStorage.getItem('senapelanBannerDismissed') === 'true';
 const isAppInstalled = localStorage.getItem('senapelanAppInstalled') === 'true';
 
-// Deteksi jika sudah diinstall sebagai PWA
 function isRunningAsPWA() {
-    return window.matchMedia('(display-mode: standalone)').matches || 
-           window.navigator.standalone === true;
+    return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 }
 
-// Deteksi iOS (iPhone/iPad)
-function isIOS() {
-    return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-}
-
-// Deteksi Safari
-function isSafari() {
-    return /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-}
-
-// Event listener untuk beforeinstallprompt (Android)
 window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
-    
     if (!isBannerDismissed && !isAppInstalled && !isRunningAsPWA()) {
-        setTimeout(() => {
-            installBanner.classList.add('active');
-        }, 3000);
+        setTimeout(() => installBanner.classList.add('active'), 3000);
     }
-    
     installBtn.textContent = 'Pasang Aplikasi';
-    installBtn.style.display = 'block';
 });
 
-// Event listener untuk appinstalled
-window.addEventListener('appinstalled', (evt) => {
-    installBanner.classList.remove('active');
-    localStorage.setItem('senapelanAppInstalled', 'true');
-    localStorage.setItem('senapelanBannerDismissed', 'true');
-});
-
-// Install button click handler
 installBtn.addEventListener('click', async (e) => {
     e.preventDefault();
-    installBtn.style.transform = 'scale(0.95)';
-    
     if (deferredPrompt) {
         deferredPrompt.prompt();
         const { outcome } = await deferredPrompt.userChoice;
@@ -1488,218 +1459,27 @@ installBtn.addEventListener('click', async (e) => {
             localStorage.setItem('senapelanBannerDismissed', 'true');
         }
         deferredPrompt = null;
-    } else if (isIOS() && isSafari()) {
-        showIOSInstallInstructions();
     }
-    
-    setTimeout(() => {
-        installBtn.style.transform = 'scale(1)';
-    }, 200);
 });
 
-// Show iOS installation instructions
-function showIOSInstallInstructions() {
-    const instructions = `
-        <div style="
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.95);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            color: white;
-            text-align: center;
-            backdrop-filter: blur(10px);
-        ">
-            <div style="max-width: 400px; background: rgba(10,15,43,0.9); padding: 30px; border-radius: 24px; border: 1px solid #00D4AA;">
-                <h3 style="color: #00D4AA; margin-bottom: 30px; font-size: 1.5rem;">📱 Install di iPhone/iPad</h3>
-                <ol style="text-align: left; color: #E6F2FF; list-style-position: inside; padding: 0; font-size: 1.1rem;">
-                    <li style="margin-bottom: 20px;">Tap ikon <span style="background: rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 8px;">⬆️ Share</span></li>
-                    <li style="margin-bottom: 20px;">Gulir ke bawah, pilih <span style="background: rgba(0,212,170,0.3); padding: 5px 10px; border-radius: 8px;">"Tambahkan ke Layar Utama"</span></li>
-                    <li style="margin-bottom: 20px;">Tap <span style="background: #0066FF; padding: 5px 15px; border-radius: 8px;">"Tambahkan"</span></li>
-                </ol>
-                <button id="closeInstructions" style="
-                    margin-top: 30px;
-                    padding: 15px 40px;
-                    background: linear-gradient(135deg, #0066FF, #00D4AA);
-                    color: white;
-                    border: none;
-                    border-radius: 50px;
-                    font-size: 1.1rem;
-                    font-weight: 600;
-                    cursor: pointer;
-                    box-shadow: 0 10px 25px rgba(0,102,255,0.3);
-                ">
-                    Mengerti
-                </button>
-            </div>
-        </div>
-    `;
-    
-    const div = document.createElement('div');
-    div.innerHTML = instructions;
-    document.body.appendChild(div);
-    
-    div.querySelector('#closeInstructions').addEventListener('click', () => {
-        div.remove();
-    });
-}
-
-// Close banner handler
 closeBanner.addEventListener('click', () => {
     installBanner.classList.remove('active');
     localStorage.setItem('senapelanBannerDismissed', 'true');
-    
-    closeBanner.style.transform = 'scale(0.95)';
-    setTimeout(() => {
-        closeBanner.style.transform = 'scale(1)';
-    }, 200);
 });
 
-// Check on page load
 window.addEventListener('load', () => {
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/Home/service-worker.js').catch(error => {
-            console.log('Service Worker registration failed:', error);
-        });
-    }
-    
-    if (isRunningAsPWA() || isAppInstalled) {
-        installBanner.classList.remove('active');
-    }
-    
-    if ((isIOS() || !deferredPrompt) && !isBannerDismissed && !isRunningAsPWA()) {
-        setTimeout(() => {
-            installBanner.classList.add('active');
-            if (isIOS()) {
-                installBtn.textContent = 'Cara Install';
-            }
-        }, 3000);
-    }
-});
-
-// Auto-hide banner after 30 seconds
-setTimeout(() => {
-    if (installBanner.classList.contains('active') && 
-        !localStorage.getItem('senapelanBannerDismissed')) {
-        installBanner.classList.remove('active');
-    }
-}, 30000);
-
-// ============================
-// EFEK INTERAKTIF MODERN
-// ============================
-document.addEventListener('DOMContentLoaded', function() {
-    // Efek hover card dengan delay
-    const cards = document.querySelectorAll('.card a');
-    
-    cards.forEach(card => {
-        card.addEventListener('mouseenter', function(e) {
-            const card = this;
-            const img = card.querySelector('img');
-            const title = card.querySelector('h3');
-            
-            setTimeout(() => {
-                card.style.transform = 'translateY(-8px)';
-            }, 50);
-            
-            setTimeout(() => {
-                if (img) img.style.transform = 'scale(1.08)';
-            }, 100);
-            
-            setTimeout(() => {
-                if (title) title.style.color = '#00D4AA';
-            }, 150);
-        });
-        
-        card.addEventListener('mouseleave', function(e) {
-            const card = this;
-            const img = card.querySelector('img');
-            const title = card.querySelector('h3');
-            
-            setTimeout(() => {
-                card.style.transform = 'translateY(0)';
-            }, 50);
-            
-            setTimeout(() => {
-                if (img) img.style.transform = 'scale(1)';
-            }, 100);
-            
-            setTimeout(() => {
-                if (title) title.style.color = '#fff';
-            }, 150);
-        });
-    });
-    
-    // Efek scroll muncul untuk mobile
-    if (window.innerWidth <= 767) {
-        const mobileCards = document.querySelectorAll('.card');
-        
-        function checkMobileCards() {
-            const windowHeight = window.innerHeight;
-            const triggerBottom = windowHeight * 0.8;
-            
-            mobileCards.forEach(card => {
-                const cardTop = card.getBoundingClientRect().top;
-                if (cardTop < triggerBottom) {
-                    card.classList.add('visible');
-                }
-            });
-        }
-        
-        setTimeout(checkMobileCards, 300);
-        window.addEventListener('scroll', checkMobileCards);
-    }
-    
-    // Efek scroll halus untuk footer links
-    const footerLinks = document.querySelectorAll('.footer-links a');
-    footerLinks.forEach(link => {
-        link.addEventListener('click', function(e) {
-            e.preventDefault();
-            const href = this.getAttribute('href');
-            
-            this.style.transform = 'scale(0.95)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-                if (href.startsWith('http')) {
-                    window.open(href, '_blank');
-                } else if (href.startsWith('mailto')) {
-                    window.location.href = href;
-                } else if (href.startsWith('tel')) {
-                    window.location.href = href;
-                }
-            }, 200);
-        });
-    });
-    
-    // Efek parallax sederhana pada scroll
-    window.addEventListener('scroll', function() {
-        const scrolled = window.pageYOffset;
-        const video = document.querySelector('.video-bg video');
-        const overlay = document.querySelector('.overlay');
-        
-        if (video && overlay) {
-            video.style.transform = `translateY(${scrolled * 0.05}px)`;
-            overlay.style.opacity = 1 - (scrolled * 0.001);
-        }
-    });
+    if (isRunningAsPWA() || isAppInstalled) installBanner.classList.remove('active');
 });
 
 // ============================================================
-// 🚀 SISTEM COUNTER KUNJUNGAN - GOOGLE APPS SCRIPT
-// ✅ PAKET LENGKAP: GET + POST + CORS + LOCALSTORAGE
-// 🛠️ VERSI: 2.0 (FIX CORS DAN DEPLOYMENT)
+// 🚀🚀🚀 SISTEM COUNTER KUNJUNGAN - VERSI SUPER STABIL 🚀🚀🚀
+// ✅ PAKAI JSONP MURNI - 100% BISA BACA RESPONSE
+// ✅ TANPA CORS - TANPA BLOKIR
+// ✅ LANGSUNG TAMPIL DATA DARI SPREADSHEET
 // ============================================================
 
-// 🔴 KONFIGURASI WAJIB - GANTI DENGAN URL DEPLOYMENT ANDA!
-// Cara deploy: Deploy > New deployment > Web App > Anyone
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzRQNydreXxBoqOtzK2UdzQJgo8UR5oGvC4krK3N9Ho_7HappGZdoWAt1ft7yh6o6xGjw/exec';
+// 🔴 WAJIB: GANTI DENGAN URL DEPLOYMENT APPS SCRIPT ANDA!
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyaMVoBi2Lu2dYoHS96nsGsQQwm65NUaZNJwqwRpJ06AV20j44wmOeLuo_61JU_A5WkXQ/exec';
 
 // DATA COUNTER
 let visitCounters = {
@@ -1712,76 +1492,64 @@ let visitCounters = {
     'sago': 0
 };
 
-// ⏳ Flag untuk mencegah multiple request
-let isFetchingData = false;
-
 // ============================================
-// 📥 1. LOAD DATA DARI SPREADSHEET (JSONP FIX)
+// 📥 1. LOAD DATA DARI SPREADSHEET - PAKAI JSONP
 // ============================================
-function loadCounters() {
-    // Tampilkan dulu data dari localStorage
+function loadCountersFromSheet() {
+    console.log('📡 Mengambil data dari spreadsheet...');
+    
+    // Tampilkan dulu dari localStorage (cepat)
     loadFromLocalStorage();
     
-    // Cegah double fetch
-    if (isFetchingData) return;
-    isFetchingData = true;
-    
-    // 🟢 METODE 1: Menggunakan fetch dengan no-cors
-    fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}&action=get`, {
-        method: 'GET',
-        mode: 'no-cors', // 🔥 PENTING: mode no-cors untuk Apps Script
-        cache: 'no-cache'
-    })
-    .then(response => {
-        // Dengan no-cors, kita tidak bisa membaca response
-        // Tapi request tetap terkirim
-        console.log('✅ Request sent ke spreadsheet (background)');
-        isFetchingData = false;
-    })
-    .catch(error => {
-        console.log('⚠️ Menggunakan localStorage (offline mode)');
-        isFetchingData = false;
-    });
-    
-    // 🟢 METODE 2: JSONP sebagai fallback
-    loadCountersJSONP();
-}
-
-// 📡 JSONP Fallback - Lebih kompatibel
-function loadCountersJSONP() {
-    const script = document.createElement('script');
+    // Buat callback unik
     const callbackName = 'jsonp_callback_' + Date.now();
     
-    window[callbackName] = function(result) {
-        if (result && result.success && result.data) {
-            visitCounters = { ...visitCounters, ...result.data };
+    // Buat fungsi global
+    window[callbackName] = function(response) {
+        console.log('✅ Response dari spreadsheet:', response);
+        
+        if (response && response.success && response.data) {
+            // Update counter dengan data dari spreadsheet
+            visitCounters = { ...visitCounters, ...response.data };
+            
+            // Simpan ke localStorage
             saveToLocalStorage();
+            
+            // Update tampilan
             updateAllCounters();
-            console.log('✅ JSONP: Data loaded from spreadsheet');
+            
+            console.log('📊 Data dari spreadsheet:', visitCounters);
+        } else {
+            console.warn('⚠️ Response error:', response);
         }
+        
+        // Bersihkan
         delete window[callbackName];
         document.body.removeChild(script);
     };
     
-    script.src = `${APPS_SCRIPT_URL}?t=${Date.now()}&action=get&callback=${callbackName}`;
+    // Buat script JSONP
+    const script = document.createElement('script');
+    script.src = `${APPS_SCRIPT_URL}?action=get&callback=${callbackName}&t=${Date.now()}`;
     document.body.appendChild(script);
     
-    // Timeout 5 detik
+    // Timeout 10 detik
     setTimeout(() => {
         if (window[callbackName]) {
+            console.log('⏰ Timeout mengambil data');
             delete window[callbackName];
             if (document.body.contains(script)) {
                 document.body.removeChild(script);
             }
         }
-    }, 5000);
+    }, 10000);
 }
 
 // ============================================
-// 📤 2. UPDATE COUNTER + KIRIM KE SPREADSHEET
+// 📤 2. UPDATE COUNTER - PAKAI JSONP
 // ============================================
-function updateCounter(id, url) {
-    // Update angka di lokal
+function updateCounterToSheet(id, url) {
+    // Update angka lokal
     visitCounters[id] = (visitCounters[id] || 0) + 1;
     
     // Update tampilan
@@ -1790,54 +1558,39 @@ function updateCounter(id, url) {
     // Simpan ke localStorage
     saveToLocalStorage();
     
-    // 🟢 KIRIM KE SPREADSHEET (background)
-    try {
-        // Gunakan metode POST dengan no-cors
-        fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors', // 🔥 no-cors untuk Apps Script
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                id: id,
-                url: url,
-                userAgent: navigator.userAgent,
-                timestamp: new Date().toISOString()
-            })
-        }).catch(err => {
-            // Silent error - sudah tersimpan di localStorage
-        });
-        
-        // Juga kirim via JSONP untuk redundancy
-        updateCounterJSONP(id, url);
-        
-    } catch (error) {
-        // Silent fail
-    }
-}
-
-// 📡 JSONP Update
-function updateCounterJSONP(id, url) {
-    const script = document.createElement('script');
+    console.log(`📤 Mengirim update untuk ${id}: ${visitCounters[id]}`);
+    
+    // Kirim ke spreadsheet via JSONP
     const callbackName = 'update_callback_' + Date.now();
     
-    window[callbackName] = function(result) {
-        if (result && result.success) {
-            // Update dengan nilai dari server
-            visitCounters[id] = result.data.current;
-            updateSingleCounter(id);
-            saveToLocalStorage();
+    window[callbackName] = function(response) {
+        if (response && response.success) {
+            console.log(`✅ Update sukses: ${id} = ${response.data.current}`);
+            
+            // Update dengan nilai dari server (lebih akurat)
+            if (response.data && response.data.current) {
+                visitCounters[id] = response.data.current;
+                updateSingleCounter(id);
+                saveToLocalStorage();
+            }
+        } else {
+            console.warn(`⚠️ Gagal update ${id}:`, response);
         }
+        
         delete window[callbackName];
-        document.body.removeChild(script);
+        if (document.body.contains(script)) {
+            document.body.removeChild(script);
+        }
     };
     
+    // Kirim via JSONP
+    const script = document.createElement('script');
     const params = new URLSearchParams({
         action: 'update',
         id: id,
-        url: url,
-        callback: callbackName
+        url: url || '',
+        callback: callbackName,
+        t: Date.now()
     }).toString();
     
     script.src = `${APPS_SCRIPT_URL}?${params}`;
@@ -1845,7 +1598,28 @@ function updateCounterJSONP(id, url) {
 }
 
 // ============================================
-// 🎨 3. UPDATE TAMPILAN COUNTER
+// 💾 3. LOCAL STORAGE
+// ============================================
+function saveToLocalStorage() {
+    localStorage.setItem('senapelan_visitors', JSON.stringify(visitCounters));
+}
+
+function loadFromLocalStorage() {
+    const saved = localStorage.getItem('senapelan_visitors');
+    if (saved) {
+        try {
+            const data = JSON.parse(saved);
+            visitCounters = { ...visitCounters, ...data };
+            updateAllCounters();
+            console.log('💾 Data dari localStorage:', visitCounters);
+        } catch (e) {
+            console.error('❌ Error parse localStorage:', e);
+        }
+    }
+}
+
+// ============================================
+// 🎨 4. UPDATE TAMPILAN
 // ============================================
 function updateAllCounters() {
     Object.keys(visitCounters).forEach(key => {
@@ -1860,30 +1634,9 @@ function updateSingleCounter(id) {
     const el = document.getElementById(`count-${id}`);
     if (el) {
         el.textContent = visitCounters[id]?.toLocaleString() || '0';
-        // Efek update subtle
+        // Efek update
         el.classList.add('counter-update');
         setTimeout(() => el.classList.remove('counter-update'), 500);
-    }
-}
-
-// ============================================
-// 💾 4. LOCALSTORAGE
-// ============================================
-function saveToLocalStorage() {
-    localStorage.setItem('senapelan_visitors', JSON.stringify(visitCounters));
-}
-
-function loadFromLocalStorage() {
-    const saved = localStorage.getItem('senapelan_visitors');
-    if (saved) {
-        try {
-            const data = JSON.parse(saved);
-            visitCounters = { ...visitCounters, ...data };
-            updateAllCounters();
-            console.log('📀 Data loaded from localStorage');
-        } catch (e) {
-            console.log('⚠️ Error parsing localStorage');
-        }
     }
 }
 
@@ -1900,10 +1653,10 @@ function handleCardClick(e, id, url) {
         setTimeout(() => card.style.transform = '', 200);
     }
     
-    // Update counter
-    updateCounter(id, url);
+    // Update counter ke spreadsheet
+    updateCounterToSheet(id, url);
     
-    // Buka URL setelah delay
+    // Buka URL
     setTimeout(() => {
         window.open(url, '_blank');
     }, 300);
@@ -1913,18 +1666,18 @@ function handleCardClick(e, id, url) {
 // 🚀 6. INITIALIZATION
 // ============================================
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Senapelan Counter System v2.0');
-    console.log('📊 Apps Script URL:', APPS_SCRIPT_URL);
+    console.log('🚀🚀🚀 SENAPELAN COUNTER V3 - JSONP ONLY 🚀🚀🚀');
+    console.log('🔗 Apps Script URL:', APPS_SCRIPT_URL);
     
-    // 1. Load dari localStorage dulu (langsung tampil)
+    // 1. Load dari localStorage dulu (instan)
     loadFromLocalStorage();
     
-    // 2. Load dari spreadsheet (background)
+    // 2. Load dari spreadsheet (JSONP)
     setTimeout(() => {
-        loadCounters();
+        loadCountersFromSheet();
     }, 500);
     
-    // 3. Attach event listeners
+    // 3. Attach event listeners ke semua card
     document.querySelectorAll('.card').forEach(card => {
         const link = card.querySelector('.card-link');
         const id = card.dataset.id;
@@ -1940,21 +1693,21 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
     
-    // 4. Auto refresh setiap 60 detik
+    // 4. Auto refresh setiap 30 detik (hanya jika tab aktif)
     setInterval(() => {
-        if (!document.hidden) { // Hanya refresh jika tab aktif
-            loadCounters();
+        if (!document.hidden) {
+            loadCountersFromSheet();
         }
-    }, 60000);
+    }, 30000);
 });
 
 // ============================================
-// 📋 7. EXPOSE FUNCTION UNTUK DEBUG
+// 🛠️ 7. DEBUG TOOLS
 // ============================================
-window.SenapelanCounter = {
-    getData: () => visitCounters,
-    refresh: loadCounters,
-    reset: () => {
+window.Senapelan = {
+    data: visitCounters,
+    refresh: loadCountersFromSheet,
+    reset: function() {
         visitCounters = {
             'kecamatan-senapelan': 0,
             'kampung-bandar': 0,
@@ -1966,12 +1719,14 @@ window.SenapelanCounter = {
         };
         saveToLocalStorage();
         updateAllCounters();
-        console.log('🔄 Counter reset (local only)');
+        console.log('🔄 Counter reset (local)');
+    },
+    sync: function() {
+        loadCountersFromSheet();
     }
 };
 
-console.log('✨ Senapelan Counter Ready!');
-console.log('ℹ️ Ketik SenapelanCounter di console untuk debug');
+console.log('✨ Siap! Ketik Senapelan.refresh() di console untuk ambil data');
 </script>
     
 </body>
