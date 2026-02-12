@@ -7,8 +7,6 @@
     <!-- Google Fonts & Font Awesome 6 (premium feel) -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Google Sheets API / AppScript – kita pake endpoint JSONP versi cepat -->
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -153,7 +151,7 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
-            min-width: 0; /* untuk text overflow */
+            min-width: 0;
         }
 
         .news-badge {
@@ -262,7 +260,7 @@
         }
 
         .card.expanded .card-detail {
-            max-height: 800px; /* cukup untuk konten panjang */
+            max-height: 800px;
             opacity: 1;
             padding: 22px 24px 28px;
             border-top: 1px solid rgba(168, 192, 207, 0.2);
@@ -356,7 +354,6 @@
             padding-top: 30px;
         }
 
-        /* responsive */
         @media (max-width: 550px) {
             body { padding: 20px 16px; }
             .page-header h1 { font-size: 1.6rem; padding-left: 16px; }
@@ -364,20 +361,36 @@
             .thumbnail { width: 60px; height: 60px; }
             .judul-berita { white-space: normal; font-size: 1rem; }
         }
+
+        /* Last update indicator */
+        .last-update {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 8px;
+            margin-left: 32px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .last-update i {
+            color: #0ea5e9;
+        }
     </style>
 </head>
 <body>
     <div class="premium-container">
-        <!-- HEADER PREMIUM -->
         <div class="page-header">
             <h1>UPDATE INFORMASI <br>KECAMATAN DAN KELURAHAN DI SENAPELAN</h1>
             <div class="subhead">
                 <span><i class="fas fa-map-pin" style="color:#e11d48;"></i> Sumber terpercaya · Kecamatan Senapelan</span>
                 <span class="live-badge"><i class="fas fa-circle"></i> LANGSUNG · SPREADSHEET</span>
             </div>
+            <div class="last-update" id="lastUpdateInfo">
+                <i class="fas fa-sync-alt"></i> Memuat data terbaru...
+            </div>
         </div>
 
-        <!-- NEWS FEED: card container inject via js -->
         <div id="newsFeed" class="news-feed">
             <div class="loading-skeleton">
                 <i class="fas fa-spinner fa-pulse fa-2x" style="color:#1e4a6b;"></i>
@@ -385,7 +398,7 @@
             </div>
         </div>
         <footer>
-            <i class="fas fa-database"></i> terhubung langsung · update realtime · max 1000 card
+            <i class="fas fa-database"></i> terhubung langsung · update realtime setiap 10 detik · max 1000 card
         </footer>
     </div>
 
@@ -393,89 +406,125 @@
         (function() {
             "use strict";
 
-            // ----------------------------------------------------------
-            // CONFIG SHEET & APPSCRIPT ENDPOINT (cepat, no cache)
-            // ----------------------------------------------------------
+            // ================ KONFIGURASI ================
             const SPREADSHEET_ID = '1lvWJ615b3FrjKO-JULTQ2Yq5HC4Mvfzjleej8Td3kmI';
             const SHEET_NAME = 'UPDATE_INFORMASI';
-            // Gunakan APPSCRIPT WEBAPP — DEPLOYMENT URL, respon JSON cepat, tanpa delay.
-            // (anda bisa ganti dengan endpoint sendiri, karena ini publik saya set read)
-            // PASTIKAN endpoint mengembalikan array baris (termasuk header) atau langsung data.
-            // Berikut endpoint cepat dengan caching dimatikan (no-cache)
-            const APPS_SCRIPT_URL = `https://script.google.com/macros/s/AKfycbwMT8j2sH-HI6J8xrBw1t0Z6wW6uxiQy36ugdM85lcdAeSAt7vO2M4k2eR_-YSf9cC6/exec?spreadsheetId=${SPREADSHEET_ID}&sheet=${SHEET_NAME}&t=${Date.now()}`;
             
-            // fallback jika endpoint tidak bisa diakses? kita juga bisa pakai csv export, tapi pilih appscript.
-            // Untuk memastikan, kita juga punya sample data jika terjadi error (premium fallback)
+            // APPS SCRIPT ENDPOINT - PASTIKAN INI URL YANG BENAR
+            // Gunakan endpoint CSV sebagai fallback yang lebih stabil
+            const CSV_ENDPOINT = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&t=${Date.now()}`;
             
-            // Variabel global
-            let allRows = [];
-            const MAX_CARDS = 1000;
-
-            // Utility: format tanggal, cek label baru (24 jam)
-            function isWithin24Hours(timestampStr) {
-                if (!timestampStr) return false;
-                // timestamp format: "2/12/2026 22:34:29" (en-US)
-                const parts = timestampStr.split(' ');
-                if (parts.length < 2) return false;
-                const dateParts = parts[0].split('/');
-                if (dateParts.length !== 3) return false;
-                // bulan/hari/tahun
-                const month = parseInt(dateParts[0], 10) - 1;
-                const day = parseInt(dateParts[1], 10);
-                let year = parseInt(dateParts[2], 10);
-                if (year < 100) year += 2000; 
-                const timeParts = parts[1].split(':');
-                if (timeParts.length < 2) return false;
-                let hour = parseInt(timeParts[0], 10);
-                const minute = parseInt(timeParts[1], 10);
-                const second = timeParts[2] ? parseInt(timeParts[2], 10) : 0;
-                // handle AM/PM mungkin? contoh: "11:00:00 AM" -> ada AM.
-                if (parts[2] && (parts[2].toUpperCase() === 'AM' || parts[2].toUpperCase() === 'PM')) {
-                    const ampm = parts[2].toUpperCase();
-                    if (ampm === 'PM' && hour !== 12) hour += 12;
-                    if (ampm === 'AM' && hour === 12) hour = 0;
+            // ================ UTILITY FUNCTIONS ================
+            
+            // Fungsi untuk toggle card dengan event delegation
+            function setupCardToggles() {
+                // Hapus semua event listener lama dengan cara mengganti parent
+                const feed = document.getElementById('newsFeed');
+                
+                // Gunakan event delegation di parent
+                feed.removeEventListener('click', handleCardClick);
+                feed.addEventListener('click', handleCardClick);
+            }
+            
+            // Handler untuk klik card
+            function handleCardClick(e) {
+                // Cari elemen card-preview yang diklik
+                const preview = e.target.closest('.card-preview');
+                if (!preview) return;
+                
+                const card = preview.closest('.card');
+                if (card) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    card.classList.toggle('expanded');
                 }
-                const dateObj = new Date(year, month, day, hour, minute, second);
-                if (isNaN(dateObj.getTime())) return false;
-                const now = new Date();
-                const diffMs = now - dateObj;
-                return diffMs < 24 * 60 * 60 * 1000; // kurang dari 24 jam
             }
 
-            // Bersihkan judul dari "update dari ..." 
-            function formatJudul(instansi, konten) {
-                // contoh: "update dari kelurahan padang terubuk"
-                if (!instansi) return "Informasi tanpa instansi";
+            // Cek apakah dalam 24 jam
+            function isWithin24Hours(timestampStr) {
+                if (!timestampStr) return false;
+                
+                try {
+                    // Parse timestamp dengan format: "2/12/2026 22:34:29" atau dengan AM/PM
+                    let dateStr = timestampStr.trim();
+                    
+                    // Handle format dengan AM/PM
+                    if (dateStr.includes('AM') || dateStr.includes('PM')) {
+                        // Format: "2/13/2026 11:00:00 AM"
+                        const [datePart, timePart, ampm] = dateStr.split(' ');
+                        const [month, day, year] = datePart.split('/').map(Number);
+                        let [hour, minute, second] = timePart.split(':').map(Number);
+                        
+                        if (ampm.toUpperCase() === 'PM' && hour !== 12) hour += 12;
+                        if (ampm.toUpperCase() === 'AM' && hour === 12) hour = 0;
+                        
+                        const dateObj = new Date(year, month-1, day, hour, minute, second || 0);
+                        const now = new Date();
+                        return (now - dateObj) < 24 * 60 * 60 * 1000;
+                    } else {
+                        // Format tanpa AM/PM
+                        const dateObj = new Date(dateStr);
+                        if (!isNaN(dateObj.getTime())) {
+                            const now = new Date();
+                            return (now - dateObj) < 24 * 60 * 60 * 1000;
+                        }
+                    }
+                } catch (e) {
+                    console.error('Error parsing date:', timestampStr, e);
+                }
+                return false;
+            }
+
+            // Format judul
+            function formatJudul(instansi) {
+                if (!instansi || instansi.trim() === '') return "Update Informasi";
                 let instansiClean = instansi.trim();
-                // jika ada "KELURAHAN" atau "KECAMATAN" biarkan asli
                 return `Update dari ${instansiClean}`;
             }
 
-            // Extract foto URL dari google drive link
+            // Extract URL gambar dari Google Drive
             function extractDirectImageUrl(driveLink) {
                 if (!driveLink || driveLink === '') return null;
-                // jika sudah direct image? coba regex
-                let id = null;
-                if (driveLink.includes('open?id=')) {
-                    id = driveLink.split('open?id=')[1].split('&')[0].split('?')[0];
-                } else if (driveLink.includes('file/d/')) {
-                    const match = driveLink.match(/\/d\/(.*?)(\/|$)/);
-                    if (match) id = match[1];
+                
+                try {
+                    let id = null;
+                    if (driveLink.includes('open?id=')) {
+                        id = driveLink.split('open?id=')[1].split('&')[0].split('?')[0];
+                    } else if (driveLink.includes('file/d/')) {
+                        const match = driveLink.match(/\/d\/(.*?)(\/|$)/);
+                        if (match) id = match[1];
+                    } else if (driveLink.includes('id=')) {
+                        id = driveLink.split('id=')[1].split('&')[0];
+                    }
+                    
+                    if (id) {
+                        return `https://drive.google.com/thumbnail?id=${id}&sz=w200-h200`;
+                    }
+                } catch (e) {
+                    console.error('Error extracting image URL:', e);
                 }
-                if (id) {
-                    return `https://drive.google.com/thumbnail?id=${id}&sz=w200-h200`; // ukuran kecil
-                }
-                // fallback
                 return null;
             }
 
-            // Render card dari data baris (terbaru -> index kecil? tergantung endpoint)
-            // asumsi data dari appscript: baris pertama header, sisanya data terbaru paling atas? 
-            // kita pastikan sorting: semakin baru timestamp (desending). TAPI sesuai logika: 
-            // form terbaru di baris paling bawah? atau atas? biasanya di sheet baris baru di bawah.
-            // Tapi kita urutkan DESC berdasarkan timestamp kolom 0.
+            // Parse CSV string ke array
+            function parseCSV(csvText) {
+                const lines = csvText.split('\n');
+                return lines.map(line => {
+                    // Handle quoted fields
+                    const matches = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+                    return matches.map(match => {
+                        if (match.startsWith('"') && match.endsWith('"')) {
+                            return match.slice(1, -1).replace(/""/g, '"');
+                        }
+                        return match;
+                    });
+                }).filter(row => row.length > 0 && row.some(cell => cell.trim() !== ''));
+            }
+
+            // ================ RENDER CARDS ================
             function renderCards(rows) {
                 const feed = document.getElementById('newsFeed');
+                
                 if (!rows || rows.length === 0) {
                     feed.innerHTML = `<div class="empty-state">
                         <i class="fas fa-newspaper" style="font-size: 42px; opacity: 0.5; margin-bottom: 16px;"></i>
@@ -485,50 +534,59 @@
                     return;
                 }
 
-                // batasi 1000 card
-                const limited = rows.slice(0, MAX_CARDS);
+                // Batasi 1000 card dan sortir dari terbaru ke terlama
+                const limited = rows.slice(0, Math.min(rows.length, 1000));
+                
                 let html = '';
 
                 limited.forEach((row, index) => {
-                    // pastikan row adalah array
                     if (!Array.isArray(row) || row.length < 9) return;
-                    // Mapping header: 
-                    // 0: Timestamp, 1: PILIH INSTANSI, 2: TANGGAL ACARA DIMULAI, 3: WAKTU MULAI, 
-                    // 4: TANGGAL BERAKHIR, 5: WAKTU BERAKHIR, 6: LOKASI, 7: ISI KONTEN, 8: FOTO KONTEN
-                    const timestampRaw = row[0] || '';
+                    
+                    // Mapping kolom
+                    const timestamp = row[0] || '';
                     const instansi = row[1] || 'KELURAHAN/INSTANSI';
                     const tglMulai = row[2] || '';
                     const waktuMulai = row[3] || '';
                     const tglSelesai = row[4] || '';
                     const waktuSelesai = row[5] || '';
-                    const lokasi = row[6] || '';
+                    const lokasi = row[6] || 'Lokasi tidak tersedia';
                     let isiKonten = row[7] || 'Tidak ada keterangan lebih lanjut.';
                     const fotoUrl = row[8] || '';
 
-                    // bersihkan isi konten
-                    if (isiKonten.trim() === '') isiKonten = 'Informasi lebih lanjut dapat menghubungi kelurahan setempat.';
+                    // Validasi dan bersihkan konten
+                    if (isiKonten.trim() === '') {
+                        isiKonten = 'Informasi lebih lanjut dapat menghubungi kelurahan setempat.';
+                    }
 
-                    // judul: update dari instansi
-                    const judul = formatJudul(instansi, isiKonten);
+                    const judul = formatJudul(instansi);
                     
-                    // foto thumbnail
+                    // Thumbnail
                     let thumbnailHtml = `<div class="thumbnail"><i class="fas fa-image"></i></div>`;
                     const directFoto = extractDirectImageUrl(fotoUrl);
                     if (directFoto) {
-                        thumbnailHtml = `<div class="thumbnail"><img src="${directFoto}" alt="foto kegiatan" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\'fas fa-camera\'></i>'"></div>`;
+                        thumbnailHtml = `<div class="thumbnail"><img src="${directFoto}" alt="foto kegiatan" loading="lazy" onerror="this.onerror=null; this.parentElement.innerHTML='<i class=\\'fas fa-camera\\'></i>'"></div>`;
                     }
 
-                    // label baru (dalam 24 jam)
-                    const newLabel = isWithin24Hours(timestampRaw) ? '<span class="badge-new"><i class="fas fa-bolt" style="margin-right: 4px;"></i>BARU</span>' : '';
+                    // Label baru
+                    const newLabel = isWithin24Hours(timestamp) ? 
+                        '<span class="badge-new"><i class="fas fa-bolt"></i>BARU</span>' : '';
 
-                    // format lokasi dan waktu untuk detail
-                    const waktuDetail = `${tglMulai || ''} ${waktuMulai || ''} — ${tglSelesai || ''} ${waktuSelesai || ''}`.trim().replace(/\s+/g,' ');
+                    // Format waktu detail
+                    let waktuDetail = '';
+                    if (tglMulai && waktuMulai) {
+                        waktuDetail = `${tglMulai} ${waktuMulai}`;
+                        if (tglSelesai && waktuSelesai) {
+                            waktuDetail += ` — ${tglSelesai} ${waktuSelesai}`;
+                        }
+                    } else {
+                        waktuDetail = 'Waktu belum ditentukan';
+                    }
 
-                    // arrow toggle dan unique id (gunakan index dengan timestamp)
-                    const cardId = `card-${index}-${Date.now()}`;
+                    // Unique ID untuk card
+                    const cardId = `card-${index}-${timestamp.replace(/[^0-9]/g, '')}`;
 
                     html += `<div class="card" id="${cardId}">
-                        <div class="card-preview" onclick="this.closest('.card').classList.toggle('expanded')">
+                        <div class="card-preview">
                             ${thumbnailHtml}
                             <div class="preview-content">
                                 <div class="news-badge">
@@ -540,7 +598,9 @@
                                 </div>
                                 <div class="meta-sumber">
                                     <span class="sumber-text"><i class="fas fa-tag"></i> Sumber: ${instansi}</span>
-                                    <span style="display:flex; align-items:center; gap:4px;"><i class="far fa-clock"></i> ${new Date().toLocaleDateString('id-ID')}</span>
+                                    <span style="display:flex; align-items:center; gap:4px;">
+                                        <i class="far fa-clock"></i> ${new Date(timestamp).toLocaleDateString('id-ID') || 'Tanggal tidak tersedia'}
+                                    </span>
                                 </div>
                             </div>
                             <div class="arrow-toggle">
@@ -554,97 +614,115 @@
                                     ${isiKonten.replace(/\n/g, '<br>')}
                                 </div>
                                 <div class="acara-meta">
-                                    <span><i class="fas fa-map-marker-alt"></i> ${lokasi || 'Lokasi tidak tersedia'}</span>
-                                    <span><i class="fas fa-calendar-alt"></i> ${waktuDetail || 'Waktu belum diinput'}</span>
+                                    <span><i class="fas fa-map-marker-alt"></i> ${lokasi}</span>
+                                    <span><i class="fas fa-calendar-alt"></i> ${waktuDetail}</span>
                                 </div>`;
                     
-                    // tombol lihat foto jika ada link foto
                     if (fotoUrl && fotoUrl.trim() !== '') {
-                        html += `<a href="${fotoUrl}" target="_blank" class="btn-google"><i class="fas fa-external-link-alt"></i> Lihat Foto Kegiatan</a>`;
-                    } else {
-                        html += `<span style="display:block; margin-top:8px; opacity:0.5;"><i class="fas fa-eye-slash"></i> Tidak ada foto</span>`;
+                        html += `<a href="${fotoUrl}" target="_blank" rel="noopener noreferrer" class="btn-google">
+                                    <i class="fas fa-external-link-alt"></i> Lihat Foto Kegiatan
+                                </a>`;
                     }
                     
                     html += `</div></div></div>`;
                 });
 
                 feed.innerHTML = html;
+                
+                // Setup toggle setelah card dirender
+                setupCardToggles();
+                
+                // Update informasi last update
+                document.getElementById('lastUpdateInfo').innerHTML = `<i class="fas fa-check-circle"></i> Terakhir diperbarui: ${new Date().toLocaleTimeString('id-ID')}`;
             }
 
-            // Fetch data dari Apps Script Web App
+            // ================ FETCH DATA ================
             async function fetchSheetData() {
                 const feed = document.getElementById('newsFeed');
+                
                 try {
-                    // axios dengan cache busting
-                    const response = await axios.get(APPS_SCRIPT_URL, {
-                        headers: { 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' },
-                        params: { _: Date.now() } // bypass cache
+                    // Fetch CSV dengan cache busting
+                    const response = await fetch(`${CSV_ENDPOINT}&_=${Date.now()}`, {
+                        method: 'GET',
+                        cache: 'no-store',
+                        headers: {
+                            'Cache-Control': 'no-cache, no-store, must-revalidate',
+                            'Pragma': 'no-cache',
+                            'Expires': '0'
+                        }
                     });
                     
-                    let data = response.data;
-                    // jika response adalah objek dengan kolom 'data' atau langsung array?
-                    if (data && data.data && Array.isArray(data.data)) {
-                        data = data.data;  // bentuk { data: [...] }
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     
-                    if (Array.isArray(data) && data.length > 1) {
-                        // data[0] = header, kita buang header, ambil mulai index 1
-                        let rows = data.slice(1); 
-                        // Filter row yang kosong? baris mungkin semua kosong.
-                        rows = rows.filter(row => row.length >= 2 && row[0] !== '' && row[1] !== '');
-                        
-                        // Sorting berdasarkan timestamp kolom 0 (descending -> terbaru di atas)
-                        rows.sort((a, b) => {
+                    const csvText = await response.text();
+                    
+                    // Parse CSV
+                    let rows = parseCSV(csvText);
+                    
+                    // Buang header (baris pertama)
+                    if (rows.length > 0) {
+                        rows = rows.slice(1);
+                    }
+                    
+                    // Filter baris kosong
+                    rows = rows.filter(row => 
+                        row.length >= 2 && 
+                        row[0] && row[0].trim() !== '' && 
+                        row[1] && row[1].trim() !== ''
+                    );
+                    
+                    // Sortir berdasarkan timestamp (terbaru di atas)
+                    rows.sort((a, b) => {
+                        try {
                             const dateA = new Date(a[0]);
                             const dateB = new Date(b[0]);
                             if (isNaN(dateA) && isNaN(dateB)) return 0;
                             if (isNaN(dateA)) return 1;
                             if (isNaN(dateB)) return -1;
-                            return dateB - dateA; // besar ke kecil (descending, terbaru diatas)
-                        });
+                            return dateB - dateA;
+                        } catch (e) {
+                            return 0;
+                        }
+                    });
 
-                        allRows = rows;
-                        renderCards(allRows);
-                    } else {
-                        // data kosong
-                        renderCards([]);
-                    }
+                    console.log(`Loaded ${rows.length} rows from spreadsheet`);
+                    renderCards(rows);
+                    
                 } catch (error) {
                     console.error('Error fetching sheet:', error);
-                    feed.innerHTML = `<div class="empty-state" style="padding: 50px;">
+                    
+                    // Fallback ke data demo
+                    feed.innerHTML = `<div class="empty-state">
                         <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #b45309;"></i>
-                        <p style="margin-top: 16px;">Gagal memuat data. Gunakan data contoh.</p>
+                        <h3 style="margin-top: 16px; font-weight: 600;">Gagal memuat data</h3>
+                        <p style="margin-top: 8px; color: #64748b;">Menampilkan data contoh...</p>
                     </div>`;
-                    // fallback: demo data from spreadsheet description (baris pertama)
-                    const demoRow = [
-                        ["2/12/2026 22:34:29","KELURAHAN PADANG TERUBUK","2/13/2026","11:00:00 AM","2/13/2026","2:00:00 PM","JALAN MELUR NO 4","PEMBAGIAN BERAS BULOG","https://drive.google.com/open?id=1z7XHxr_DKUXQhvLhdvNTi4yUGwp94Mbb"]
+                    
+                    // Data demo
+                    const demoRows = [
+                        ["2/13/2026 14:30:00", "KELURAHAN PADANG TERUBUK", "2/13/2026", "11:00:00", "2/13/2026", "14:00:00", "JALAN MELUR NO 4", "PEMBAGIAN BERAS BULOG - Hari ini kita membagikan 100 paket sembako kepada warga kurang mampu. Kegiatan berlangsung lancar dan didampingi oleh Bhabinkamtibmas.", "https://drive.google.com/open?id=1z7XHxr_DKUXQhvLhdvNTi4yUGwp94Mbb"],
+                        ["2/12/2026 09:15:00", "KELURAHAN PADANG BULAN", "2/14/2026", "08:00:00", "2/14/2026", "12:00:00", "BALAI KELURAHAN", "POSYANDU BALITA - Akan diadakan penimbangan dan imunisasi untuk balita. Harap membawa KMS.", ""],
+                        ["2/11/2026 10:45:00", "KECAMATAN SENAPELAN", "2/15/2026", "09:00:00", "2/15/2026", "11:00:00", "KANTOR CAMAT", "SOSIALISASI KB KESEHATAN - Program Keluarga Berencana dan kesehatan reproduksi remaja.", ""]
                     ];
-                    allRows = demoRow;
-                    renderCards(allRows);
+                    
+                    renderCards(demoRows);
                 }
             }
 
-            // initial fetch dan auto refresh setiap 25 detik (near realtime)
+            // ================ INITIALIZATION ================
+            
+            // Initial fetch
             fetchSheetData();
-            // Refresh periodik, agar update dari form cepat muncul tanpa delay
-            setInterval(fetchSheetData, 25000); // tiap 25 detik
+            
+            // Auto refresh setiap 10 detik untuk real-time update
+            setInterval(fetchSheetData, 10000);
+            
+            // Setup toggle untuk card yang sudah ada
+            setupCardToggles();
 
-            // tambahan: parameter supaya saat klik arrow tidak muncul outline aneh
         })();
-    </script>
-
-    <!-- fallback untuk fungsi toggle pada event onclick (global) -->
-    <script>
-        // Memastikan method toggle jalan di semua environment
-        document.addEventListener('click', function(e) {
-            const preview = e.target.closest('.card-preview');
-            if (preview) {
-                const card = preview.closest('.card');
-                if (card) {
-                    card.classList.toggle('expanded');
-                }
-            }
-        });
     </script>
 </body>
 </html>
