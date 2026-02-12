@@ -203,12 +203,53 @@
             color: #1f4e5f;
             font-size: 0.85rem;
         }
-        /* BUTTON GROUP */
+        /* TIME DISPLAY - PREMIUM FORMAT */
+        .time-display {
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .date-badge {
+            background: white;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-weight: 600;
+            color: #0f2b3d;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .time-badge {
+            background: #f1f9ff;
+            padding: 6px 16px;
+            border-radius: 100px;
+            font-weight: 600;
+            color: #0369a1;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .time-separator {
+            color: #94a3b8;
+            font-weight: 400;
+            margin: 0 4px;
+        }
+        .wib-badge {
+            background: #e11d48;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 60px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            margin-left: 4px;
+        }
         .button-group {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
-            margin-top: 12px;
+            margin-top: 16px;
         }
         .btn {
             display: inline-flex;
@@ -269,6 +310,7 @@
             .judul-berita { white-space: normal; }
             .button-group { flex-direction: column; }
             .btn { justify-content: center; }
+            .time-display { flex-direction: column; align-items: flex-start; }
         }
     </style>
 </head>
@@ -308,11 +350,166 @@
         const MAX_RETRY = 3;
         
         // ===========================================
+        // FUNGSI FORMAT WAKTU INDONESIA - YANG INI DIPERBAIKI!
+        // ===========================================
+        
+        /**
+         * Format tanggal ke format Indonesia (contoh: 13 Februari 2026)
+         */
+        function formatTanggalIndonesia(dateString) {
+            if (!dateString) return null;
+            
+            try {
+                // Hapus waktu, ambil tanggal saja
+                const cleanDate = dateString.split(' ')[0];
+                const parts = cleanDate.split('/');
+                
+                if (parts.length === 3) {
+                    // Format: MM/DD/YYYY atau DD/MM/YYYY?
+                    // Dari spreadsheet: 2/13/2026 → Bulan/Hari/Tahun
+                    const bulan = parseInt(parts[0]);
+                    const hari = parseInt(parts[1]);
+                    const tahun = parseInt(parts[2]);
+                    
+                    const namaBulan = [
+                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                    ];
+                    
+                    if (bulan >= 1 && bulan <= 12) {
+                        return `${hari} ${namaBulan[bulan-1]} ${tahun}`;
+                    }
+                }
+                
+                // Fallback ke Date object
+                const date = new Date(dateString);
+                if (!isNaN(date.getTime())) {
+                    return date.toLocaleDateString('id-ID', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    });
+                }
+            } catch (e) {
+                console.log('Format tanggal error:', e);
+            }
+            
+            return null;
+        }
+        
+        /**
+         * Format waktu ke format Indonesia (contoh: 14.00 WIB)
+         * Handle format aneh dari spreadsheet: 1899-12-30T04:00:00.000Z
+         */
+        function formatWaktuIndonesia(waktuString) {
+            if (!waktuString) return null;
+            
+            try {
+                // CASE 1: Format dengan AM/PM (contoh: "11:00:00 AM")
+                if (waktuString.includes('AM') || waktuString.includes('PM')) {
+                    const match = waktuString.match(/(\d{1,2}):(\d{2}):\d{2}\s*(AM|PM)/i);
+                    if (match) {
+                        let jam = parseInt(match[1]);
+                        const menit = match[2];
+                        const ampm = match[3].toUpperCase();
+                        
+                        if (ampm === 'PM' && jam !== 12) jam += 12;
+                        if (ampm === 'AM' && jam === 12) jam = 0;
+                        
+                        return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
+                    }
+                }
+                
+                // CASE 2: Format Excel (1899-12-30T04:00:00.000Z)
+                if (waktuString.includes('1899') || waktuString.includes('T')) {
+                    const match = waktuString.match(/T(\d{2}):(\d{2})/);
+                    if (match) {
+                        const jam = match[1];
+                        const menit = match[2];
+                        return `${jam}.${menit} WIB`;
+                    }
+                }
+                
+                // CASE 3: Format HH:MM:SS biasa
+                const match = waktuString.match(/(\d{1,2}):(\d{2})/);
+                if (match) {
+                    let jam = parseInt(match[1]);
+                    const menit = match[2];
+                    
+                    // Jika jam > 23, kemungkinan format Excel
+                    if (jam > 23) {
+                        jam = jam - 24;
+                    }
+                    
+                    return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
+                }
+                
+            } catch (e) {
+                console.log('Format waktu error:', e);
+            }
+            
+            return null;
+        }
+        
+        /**
+         * Format durasi acara lengkap dengan tanggal dan waktu
+         */
+        function formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai) {
+            // Format tanggal
+            const tanggalMulai = formatTanggalIndonesia(tglMulai);
+            const jamMulai = formatWaktuIndonesia(waktuMulai);
+            
+            // CASE 1: Acara selesai di hari yang sama
+            if (tglMulai === tglSelesai) {
+                const jamSelesai = formatWaktuIndonesia(waktuSelesai);
+                
+                if (tanggalMulai && jamMulai && jamSelesai) {
+                    return `
+                        <div class="time-display">
+                            <span class="date-badge">
+                                <i class="far fa-calendar-alt"></i> ${tanggalMulai}
+                            </span>
+                            <span class="time-badge">
+                                <i class="far fa-clock"></i> ${jamMulai.replace('WIB', '')} — ${jamSelesai}
+                            </span>
+                        </div>
+                    `;
+                }
+            }
+            
+            // CASE 2: Acara berbeda hari
+            const tanggalSelesai = formatTanggalIndonesia(tglSelesai);
+            const jamSelesai = formatWaktuIndonesia(waktuSelesai);
+            
+            if (tanggalMulai && jamMulai && tanggalSelesai && jamSelesai) {
+                return `
+                    <div class="time-display">
+                        <span class="date-badge">
+                            <i class="far fa-calendar-alt"></i> ${tanggalMulai} ${jamMulai}
+                        </span>
+                        <span style="color: #94a3b8;"><i class="fas fa-arrow-right"></i></span>
+                        <span class="date-badge">
+                            <i class="far fa-calendar-alt"></i> ${tanggalSelesai} ${jamSelesai}
+                        </span>
+                    </div>
+                `;
+            }
+            
+            // Fallback
+            return `
+                <div class="time-display">
+                    <span class="date-badge">
+                        <i class="far fa-calendar-alt"></i> ${tglMulai || '?'} ${waktuMulai || ''}
+                    </span>
+                </div>
+            `;
+        }
+        
+        // ===========================================
         // FUNGSI CEK LINK GOOGLE MAPS
         // ===========================================
         function isGoogleMapsLink(text) {
             if (!text) return false;
-            // Deteksi berbagai format link Google Maps
             const mapPatterns = [
                 'google.com/maps',
                 'goo.gl/maps',
@@ -378,7 +575,7 @@
         }
         
         // ===========================================
-        // RENDER CARDS - DENGAN TOMBOL MAP & FOTO
+        // RENDER CARDS - DENGAN FORMAT WAKTU BARU
         // ===========================================
         function renderCards(rows) {
             const feed = document.getElementById('newsFeed');
@@ -396,7 +593,7 @@
                 let isiKonten = row.isiKonten || 'Tidak ada keterangan';
                 const fotoUrl = row.fotoUrl || '';
                 
-                // CEK APAKAH LOKASI ADALAH LINK GOOGLE MAPS
+                // CEK LINK MAPS
                 const isMapLink = isGoogleMapsLink(lokasi);
                 
                 // ID UNIK
@@ -417,29 +614,23 @@
                     }
                 }
                 
-                // LABEL BARU (24 JAM)
+                // LABEL BARU
                 const isNew = isLessThan24Hours(timestamp);
                 const newBadge = isNew ? '<span class="badge-new"><i class="fas fa-bolt"></i>BARU</span>' : '';
                 
-                // FORMAT TANGGAL
-                let tanggalDisplay = '';
+                // FORMAT TANGGAL POSTING
+                let tanggalPosting = '';
                 try {
                     const date = new Date(timestamp);
                     if (!isNaN(date.getTime())) {
-                        tanggalDisplay = date.toLocaleDateString('id-ID', {
+                        tanggalPosting = date.toLocaleDateString('id-ID', {
                             day: 'numeric', month: 'numeric', year: 'numeric'
                         });
                     }
                 } catch {}
                 
-                // FORMAT WAKTU DETAIL
-                let waktuDetail = 'Waktu belum ditentukan';
-                if (tglMulai && waktuMulai) {
-                    waktuDetail = `${tglMulai} ${waktuMulai}`;
-                    if (tglSelesai && waktuSelesai) {
-                        waktuDetail += ` — ${tglSelesai} ${waktuSelesai}`;
-                    }
-                }
+                // ========== FORMAT DURASI ACARA - YANG BARU! ==========
+                const waktuAcaraHTML = formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai);
                 
                 // BUILD CARD
                 html += `<div class="card ${expandedCardId === cardId ? 'expanded' : ''}" data-card-id="${cardId}">
@@ -455,7 +646,7 @@
                             </div>
                             <div class="meta-sumber">
                                 <span class="sumber-text"><i class="fas fa-tag"></i> Sumber: ${instansi}</span>
-                                <span><i class="far fa-clock"></i> ${tanggalDisplay || ''}</span>
+                                <span><i class="far fa-clock"></i> ${tanggalPosting || ''}</span>
                             </div>
                         </div>
                         <div class="arrow-toggle">
@@ -465,22 +656,29 @@
                     <div class="card-detail">
                         <div class="detail-inner">
                             <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>
-                            <div class="acara-meta">
-                                <span><i class="fas fa-map-marker-alt"></i> ${!isMapLink ? lokasi : 'Lokasi (klik tombol peta)'}</span>
-                                <span><i class="fas fa-calendar-alt"></i> ${waktuDetail}</span>
+                            
+                            <!-- LOKASI -->
+                            <div class="acara-meta" style="margin-bottom: 8px;">
+                                <span style="display: flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-map-marker-alt" style="color: #e11d48;"></i> 
+                                    ${!isMapLink ? lokasi : '📍 Lokasi (klik tombol peta)'}
+                                </span>
                             </div>
+                            
+                            <!-- FORMAT WAKTU BARU - LEBIH MANUSIAWI -->
+                            ${waktuAcaraHTML}
                             
                             <!-- BUTTON GROUP -->
                             <div class="button-group">`;
                 
-                // TOMBOL FOTO (jika ada)
+                // TOMBOL FOTO
                 if (fotoUrl) {
                     html += `<a href="${fotoUrl}" target="_blank" class="btn btn-photo">
                                 <i class="fas fa-camera"></i> Lihat Foto Kegiatan
                             </a>`;
                 }
                 
-                // TOMBOL PETA (jika lokasi adalah link Google Maps)
+                // TOMBOL PETA
                 if (isMapLink) {
                     html += `<a href="${lokasi}" target="_blank" class="btn btn-map">
                                 <i class="fas fa-map-marked-alt"></i> Lihat Peta Lokasi
