@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* [PASTE STYLE CSS ANDA DI SINI - sama seperti sebelumnya] */
+        /* [SAME STYLES - copy dari kode sebelumnya] */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(145deg, #f6f9fc 0%, #edf2f7 100%);
@@ -272,16 +272,18 @@
 
     <script>
         // ===========================================
-        // GANTI DENGAN URL APPS SCRIPT BARU ANDA!
+        // URL APPS SCRIPT ANDA (PAKAI YANG BARU!)
         // ===========================================
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNqRSVWQETkwu0j_JUZcg0ha-XhkWLQibIavmWcwAj9qvc2XP6Eh5XrjY4egOKp_X9Tg/exec';
         
         let expandedCardId = null;
+        let retryCount = 0;
+        const MAX_RETRY = 3;
         
         // ===========================================
         // FETCH MENGGUNAKAN JSONP - PASTI BERHASIL!
         // ===========================================
-        function fetchWithJSONP() {
+        function fetchData() {
             // Buat callback unik
             const callbackName = 'handleData_' + Date.now();
             
@@ -291,9 +293,25 @@
                 const script = document.getElementById('jsonp-script');
                 if (script) script.remove();
                 
+                // Reset retry count
+                retryCount = 0;
+                
                 // Proses response
-                if (response && response.success === true && response.data) {
-                    renderCards(response.data);
+                if (response && response.success === true) {
+                    if (response.data && response.data.length > 0) {
+                        renderCards(response.data);
+                    } else {
+                        // Data kosong
+                        document.getElementById('newsFeed').innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-newspaper" style="font-size: 42px; opacity: 0.5;"></i>
+                                <h3 style="margin-top: 16px;">Belum ada informasi</h3>
+                                <p style="margin-top: 8px;">Data akan muncul setelah ada pengisian form</p>
+                            </div>
+                        `;
+                        document.getElementById('lastUpdate').innerHTML = 
+                            `<i class="fas fa-info-circle" style="color:#64748b;"></i> Belum ada data · ${new Date().toLocaleTimeString('id-ID')}`;
+                    }
                 } else {
                     showError(response?.error || 'Format data tidak valid');
                 }
@@ -311,7 +329,13 @@
             
             // Handle error
             script.onerror = function() {
-                showError('Tidak dapat terhubung ke server. Periksa URL Apps Script.');
+                retryCount++;
+                if (retryCount <= MAX_RETRY) {
+                    console.log(`Retry ${retryCount}/${MAX_RETRY}...`);
+                    setTimeout(fetchData, 2000);
+                } else {
+                    showError('Tidak dapat terhubung ke server. Periksa URL Apps Script.');
+                }
                 delete window[callbackName];
                 document.getElementById('jsonp-script')?.remove();
             };
@@ -320,68 +344,21 @@
         }
         
         // ===========================================
-        // FETCH BIASA (CORS)
-        // ===========================================
-        async function fetchWithCORS() {
-            try {
-                const response = await fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, {
-                    method: 'GET',
-                    mode: 'cors',
-                    cache: 'no-store'
-                });
-                
-                const data = await response.json();
-                
-                if (data && data.success === true && data.data) {
-                    renderCards(data.data);
-                    return true;
-                } else {
-                    throw new Error(data?.error || 'Gagal mengambil data');
-                }
-            } catch (error) {
-                console.log('CORS failed, trying JSONP...', error);
-                return false;
-            }
-        }
-        
-        // ===========================================
-        // MAIN FETCH FUNCTION
-        // ===========================================
-        function fetchData() {
-            // Coba CORS dulu
-            fetchWithCORS().then(success => {
-                if (!success) {
-                    // Fallback ke JSONP
-                    fetchWithJSONP();
-                }
-            }).catch(() => {
-                fetchWithJSONP();
-            });
-        }
-        
-        // ===========================================
         // RENDER CARDS
         // ===========================================
         function renderCards(rows) {
             const feed = document.getElementById('newsFeed');
             
-            if (!rows || rows.length === 0) {
-                feed.innerHTML = `<div class="empty-state">
-                    <i class="fas fa-newspaper" style="font-size: 42px; opacity: 0.5;"></i>
-                    <h3 style="margin-top: 16px;">Belum ada informasi</h3>
-                    <p style="margin-top: 8px;">Data akan muncul setelah ada pengisian form</p>
-                </div>`;
-                return;
-            }
-            
             let html = '';
             
             rows.forEach((row, index) => {
-                // AMBIL DATA
+                // AMBIL DATA DENGAN SAFE ACCESS
                 const timestamp = row.timestamp || '';
                 const instansi = row.instansi || 'INSTANSI';
                 const tglMulai = row.tglMulai || '';
                 const waktuMulai = row.waktuMulai || '';
+                const tglSelesai = row.tglSelesai || '';
+                const waktuSelesai = row.waktuSelesai || '';
                 const lokasi = row.lokasi || 'Lokasi tidak tersedia';
                 let isiKonten = row.isiKonten || 'Tidak ada keterangan';
                 const fotoUrl = row.fotoUrl || '';
@@ -395,6 +372,9 @@
                     let fileId = '';
                     if (fotoUrl.includes('open?id=')) {
                         fileId = fotoUrl.split('open?id=')[1].split('&')[0];
+                    } else if (fotoUrl.includes('file/d/')) {
+                        const match = fotoUrl.match(/\/d\/(.*?)(\/|$)/);
+                        if (match) fileId = match[1];
                     }
                     if (fileId) {
                         thumbnailHtml = `<div class="thumbnail"><img src="https://drive.google.com/thumbnail?id=${fileId}&sz=w200-h200" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\'fas fa-camera\'></i>'"></div>`;
@@ -415,6 +395,15 @@
                         });
                     }
                 } catch {}
+                
+                // FORMAT WAKTU DETAIL
+                let waktuDetail = 'Waktu belum ditentukan';
+                if (tglMulai && waktuMulai) {
+                    waktuDetail = `${tglMulai} ${waktuMulai}`;
+                    if (tglSelesai && waktuSelesai) {
+                        waktuDetail += ` — ${tglSelesai} ${waktuSelesai}`;
+                    }
+                }
                 
                 html += `<div class="card ${expandedCardId === cardId ? 'expanded' : ''}" data-card-id="${cardId}">
                     <div class="card-preview" onclick="toggleCard('${cardId}')">
@@ -441,7 +430,7 @@
                             <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>
                             <div class="acara-meta">
                                 <span><i class="fas fa-map-marker-alt"></i> ${lokasi}</span>
-                                <span><i class="fas fa-calendar-alt"></i> ${tglMulai} ${waktuMulai}</span>
+                                <span><i class="fas fa-calendar-alt"></i> ${waktuDetail}</span>
                             </div>`;
                 
                 if (fotoUrl) {
@@ -481,9 +470,11 @@
                     <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #b45309;"></i>
                     <h3 style="margin-top: 16px;">Gagal mengambil data</h3>
                     <p style="margin-top: 8px;">Mencoba menyambung kembali...</p>
-                    <p style="margin-top: 16px; font-size: 0.8rem; color: #64748b;">${message || 'Periksa koneksi dan URL Apps Script'}</p>
+                    <p style="margin-top: 16px; font-size: 0.8rem; color: #64748b;">${message || 'Pastikan URL Apps Script sudah benar'}</p>
                 </div>
             `;
+            document.getElementById('lastUpdate').innerHTML = 
+                `<i class="fas fa-exclamation-circle" style="color:#e11d48;"></i> Gagal sinkron · ${new Date().toLocaleTimeString('id-ID')}`;
         }
         
         // Toggle card
@@ -508,8 +499,8 @@
         // Fetch pertama
         fetchData();
         
-        // Auto refresh setiap 5 detik
-        setInterval(fetchData, 5000);
+        // Auto refresh setiap 10 detik (lebih stabil)
+        setInterval(fetchData, 10000);
         
     </script>
 </body>
