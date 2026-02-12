@@ -504,32 +504,68 @@
     }
     
     function formatWaktuIndonesia(waktuString) {
-        if (!waktuString) return null;
-        try {
-            if (waktuString.includes('AM') || waktuString.includes('PM')) {
-                const match = waktuString.match(/(\d{1,2}):(\d{2}):\d{2}\s*(AM|PM)/i);
-                if (match) {
-                    let jam = parseInt(match[1]);
-                    const menit = match[2];
-                    const ampm = match[3].toUpperCase();
-                    if (ampm === 'PM' && jam !== 12) jam += 12;
-                    if (ampm === 'AM' && jam === 12) jam = 0;
-                    return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
-                }
-            }
-            if (waktuString.includes('1899') || waktuString.includes('T')) {
-                const match = waktuString.match(/T(\d{2}):(\d{2})/);
-                if (match) return `${match[1]}.${match[2]} WIB`;
-            }
-            const match = waktuString.match(/(\d{1,2}):(\d{2})/);
+    if (!waktuString) return null;
+    try {
+        // HAPUS SPACE BERLEBIH
+        waktuString = waktuString.trim();
+        
+        // ========== FORMAT AM/PM (DARI GOOGLE FORM) ==========
+        // Contoh: "9:00:00 AM", "12:00:00 PM", "2:30:00 PM"
+        if (waktuString.includes('AM') || waktuString.includes('PM')) {
+            const match = waktuString.match(/(\d{1,2}):(\d{2}):\d{2}\s*(AM|PM)/i);
             if (match) {
                 let jam = parseInt(match[1]);
-                if (jam > 23) jam -= 24;
-                return `${jam.toString().padStart(2, '0')}.${match[2]} WIB`;
+                const menit = match[2];
+                const ampm = match[3].toUpperCase();
+                
+                // KONVERSI AM/PM KE FORMAT 24 JAM
+                if (ampm === 'PM' && jam !== 12) {
+                    jam += 12;  // 1 PM = 13, 2 PM = 14, ... 11 PM = 23
+                }
+                if (ampm === 'AM' && jam === 12) {
+                    jam = 0;    // 12 AM = 00 (tengah malam)
+                }
+                
+                // FORMAT: 09.00, 14.30, dll
+                return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
             }
-        } catch {}
-        return null;
+        }
+        
+        // ========== FORMAT EXCEL (1899-12-30T04:00:00.000Z) ==========
+        if (waktuString.includes('1899') || waktuString.includes('T')) {
+            const match = waktuString.match(/T(\d{2}):(\d{2})/);
+            if (match) {
+                let jam = parseInt(match[1]);
+                const menit = match[2];
+                
+                // JIKA JAM > 23, KURANGI 24 (FORMAT EXCEL)
+                if (jam > 23) {
+                    jam = jam - 24;
+                }
+                
+                return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
+            }
+        }
+        
+        // ========== FORMAT HH:MM:SS BIASA ==========
+        const match = waktuString.match(/(\d{1,2}):(\d{2})/);
+        if (match) {
+            let jam = parseInt(match[1]);
+            const menit = match[2];
+            
+            // JIKA JAM > 23, KURANGI 24 (FORMAT EXCEL)
+            if (jam > 23) {
+                jam = jam - 24;
+            }
+            
+            return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
+        }
+        
+    } catch (e) {
+        console.log('Format waktu error:', e);
     }
+    return null;
+}
     
     function formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai) {
         const tanggalMulai = formatTanggalIndonesia(tglMulai);
