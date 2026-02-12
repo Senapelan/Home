@@ -385,397 +385,492 @@
     </div>
 
     <script>
-        // ===========================================
-        // URL APPS SCRIPT ANDA (PAKAI URL BARU!)
-        // ===========================================
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYnfxLi8ViBeYRQmRvEYn2fiDYJHbV5zCDGpJ5YPzNB7ez8dE9G-BIS6jzCZ61CmHMGQ/exec';
-        
-        let expandedCardId = null;
-        let retryCount = 0;
-        const MAX_RETRY = 3;
-        
-        // ===========================================
-        // FUNGSI CEK APAKAH ACARA SUDAH SELESAI (BARU!)
-        // ===========================================
-        function isAcaraSelesai(tglSelesai, waktuSelesai) {
-            if (!tglSelesai || !waktuSelesai) return false;
-            
-            try {
-                // Parse tanggal selesai
-                let tanggalSelesaiStr = tglSelesai;
-                if (tglSelesai.includes('/')) {
-                    const parts = tglSelesai.split('/');
-                    if (parts.length === 3) {
-                        // Format: MM/DD/YYYY
-                        const bulan = parseInt(parts[0]) - 1;
-                        const hari = parseInt(parts[1]);
-                        let tahun = parseInt(parts[2]);
-                        if (tahun < 100) tahun += 2000;
-                        tanggalSelesaiStr = `${tahun}-${bulan+1}-${hari}`;
-                    }
-                }
-                
-                // Parse waktu selesai
-                let jam = 0, menit = 0;
-                if (waktuSelesai.includes('AM') || waktuSelesai.includes('PM')) {
-                    const match = waktuSelesai.match(/(\d{1,2}):(\d{2}):\d{2}\s*(AM|PM)/i);
-                    if (match) {
-                        jam = parseInt(match[1]);
-                        menit = parseInt(match[2]);
-                        const ampm = match[3].toUpperCase();
-                        if (ampm === 'PM' && jam !== 12) jam += 12;
-                        if (ampm === 'AM' && jam === 12) jam = 0;
-                    }
-                } else if (waktuSelesai.includes('T')) {
-                    const match = waktuSelesai.match(/T(\d{2}):(\d{2})/);
-                    if (match) {
-                        jam = parseInt(match[1]);
-                        menit = parseInt(match[2]);
-                    }
-                } else {
-                    const match = waktuSelesai.match(/(\d{1,2}):(\d{2})/);
-                    if (match) {
-                        jam = parseInt(match[1]);
-                        menit = parseInt(match[2]);
-                        if (jam > 23) jam -= 24;
-                    }
-                }
-                
-                // Buat date object untuk waktu selesai
-                const dateSelesai = new Date(tanggalSelesaiStr);
-                if (!isNaN(dateSelesai.getTime())) {
-                    dateSelesai.setHours(jam, menit, 0);
-                    
-                    const sekarang = new Date();
-                    return sekarang > dateSelesai;
-                }
-            } catch (e) {
-                console.log('Error cek selesai:', e);
+    // ===========================================
+    // KONFIGURASI APPS SCRIPT
+    // ===========================================
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYnfxLi8ViBeYRQmRvEYn2fiDYJHbV5zCDGpJ5YPzNB7ez8dE9G-BIS6jzCZ61CmHMGQ/exec';
+    
+    let expandedCardId = null;
+    let retryCount = 0;
+    const MAX_RETRY = 3;
+    const STORAGE_KEY = 'senapelan_expanded_card';
+    
+    // ===========================================
+    // STATE MANAGEMENT - CARD TIDAK TUTUP SENDIRI!
+    // ===========================================
+    
+    // Simpan card yang terbuka ke localStorage
+    function saveExpandedCard(cardId) {
+        try {
+            if (cardId) {
+                localStorage.setItem(STORAGE_KEY, cardId);
+                expandedCardId = cardId;
+            } else {
+                localStorage.removeItem(STORAGE_KEY);
+                expandedCardId = null;
             }
-            
-            return false;
+        } catch (e) {
+            console.log('Storage error:', e);
         }
-        
-        // ===========================================
-        // FUNGSI FORMAT WAKTU INDONESIA
-        // ===========================================
-        function formatTanggalIndonesia(dateString) {
-            if (!dateString) return null;
-            try {
-                const cleanDate = dateString.split(' ')[0];
-                const parts = cleanDate.split('/');
-                if (parts.length === 3) {
-                    const bulan = parseInt(parts[0]);
-                    const hari = parseInt(parts[1]);
-                    const tahun = parseInt(parts[2]);
-                    const namaBulan = [
-                        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-                    ];
-                    if (bulan >= 1 && bulan <= 12) {
-                        return `${hari} ${namaBulan[bulan-1]} ${tahun}`;
-                    }
-                }
-            } catch {}
+    }
+    
+    // Ambil card yang terbuka dari localStorage
+    function getSavedExpandedCard() {
+        try {
+            return localStorage.getItem(STORAGE_KEY);
+        } catch (e) {
             return null;
         }
+    }
+    
+    // ===========================================
+    // FUNGSI CEK APAKAH ACARA SUDAH SELESAI
+    // ===========================================
+    function isAcaraSelesai(tglSelesai, waktuSelesai) {
+        if (!tglSelesai || !waktuSelesai) return false;
         
-        function formatWaktuIndonesia(waktuString) {
-            if (!waktuString) return null;
-            try {
-                if (waktuString.includes('AM') || waktuString.includes('PM')) {
-                    const match = waktuString.match(/(\d{1,2}):(\d{2}):\d{2}\s*(AM|PM)/i);
-                    if (match) {
-                        let jam = parseInt(match[1]);
-                        const menit = match[2];
-                        const ampm = match[3].toUpperCase();
-                        if (ampm === 'PM' && jam !== 12) jam += 12;
-                        if (ampm === 'AM' && jam === 12) jam = 0;
-                        return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
-                    }
+        try {
+            let tanggalSelesaiStr = tglSelesai;
+            if (tglSelesai.includes('/')) {
+                const parts = tglSelesai.split('/');
+                if (parts.length === 3) {
+                    const bulan = parseInt(parts[0]) - 1;
+                    const hari = parseInt(parts[1]);
+                    let tahun = parseInt(parts[2]);
+                    if (tahun < 100) tahun += 2000;
+                    tanggalSelesaiStr = `${tahun}-${bulan+1}-${hari}`;
                 }
-                if (waktuString.includes('1899') || waktuString.includes('T')) {
-                    const match = waktuString.match(/T(\d{2}):(\d{2})/);
-                    if (match) return `${match[1]}.${match[2]} WIB`;
+            }
+            
+            let jam = 0, menit = 0;
+            if (waktuSelesai.includes('AM') || waktuSelesai.includes('PM')) {
+                const match = waktuSelesai.match(/(\d{1,2}):(\d{2}):\d{2}\s*(AM|PM)/i);
+                if (match) {
+                    jam = parseInt(match[1]);
+                    menit = parseInt(match[2]);
+                    const ampm = match[3].toUpperCase();
+                    if (ampm === 'PM' && jam !== 12) jam += 12;
+                    if (ampm === 'AM' && jam === 12) jam = 0;
                 }
-                const match = waktuString.match(/(\d{1,2}):(\d{2})/);
+            } else if (waktuSelesai.includes('T')) {
+                const match = waktuSelesai.match(/T(\d{2}):(\d{2})/);
+                if (match) {
+                    jam = parseInt(match[1]);
+                    menit = parseInt(match[2]);
+                }
+            } else {
+                const match = waktuSelesai.match(/(\d{1,2}):(\d{2})/);
+                if (match) {
+                    jam = parseInt(match[1]);
+                    menit = parseInt(match[2]);
+                    if (jam > 23) jam -= 24;
+                }
+            }
+            
+            const dateSelesai = new Date(tanggalSelesaiStr);
+            if (!isNaN(dateSelesai.getTime())) {
+                dateSelesai.setHours(jam, menit, 0);
+                const sekarang = new Date();
+                return sekarang > dateSelesai;
+            }
+        } catch (e) {
+            console.log('Error cek selesai:', e);
+        }
+        return false;
+    }
+    
+    // ===========================================
+    // FUNGSI FORMAT WAKTU INDONESIA
+    // ===========================================
+    function formatTanggalIndonesia(dateString) {
+        if (!dateString) return null;
+        try {
+            const cleanDate = dateString.split(' ')[0];
+            const parts = cleanDate.split('/');
+            if (parts.length === 3) {
+                const bulan = parseInt(parts[0]);
+                const hari = parseInt(parts[1]);
+                const tahun = parseInt(parts[2]);
+                const namaBulan = [
+                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                ];
+                if (bulan >= 1 && bulan <= 12) {
+                    return `${hari} ${namaBulan[bulan-1]} ${tahun}`;
+                }
+            }
+        } catch {}
+        return null;
+    }
+    
+    function formatWaktuIndonesia(waktuString) {
+        if (!waktuString) return null;
+        try {
+            if (waktuString.includes('AM') || waktuString.includes('PM')) {
+                const match = waktuString.match(/(\d{1,2}):(\d{2}):\d{2}\s*(AM|PM)/i);
                 if (match) {
                     let jam = parseInt(match[1]);
-                    if (jam > 23) jam -= 24;
-                    return `${jam.toString().padStart(2, '0')}.${match[2]} WIB`;
+                    const menit = match[2];
+                    const ampm = match[3].toUpperCase();
+                    if (ampm === 'PM' && jam !== 12) jam += 12;
+                    if (ampm === 'AM' && jam === 12) jam = 0;
+                    return `${jam.toString().padStart(2, '0')}.${menit} WIB`;
                 }
-            } catch {}
-            return null;
-        }
-        
-        function formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai) {
-            const tanggalMulai = formatTanggalIndonesia(tglMulai);
-            const jamMulai = formatWaktuIndonesia(waktuMulai);
-            const tanggalSelesai = formatTanggalIndonesia(tglSelesai);
-            const jamSelesai = formatWaktuIndonesia(waktuSelesai);
-            
-            if (tglMulai === tglSelesai && jamMulai && jamSelesai) {
-                return `
-                    <div class="time-display">
-                        <span class="date-badge">
-                            <i class="far fa-calendar-alt"></i> ${tanggalMulai || tglMulai}
-                        </span>
-                        <span class="time-badge">
-                            <i class="far fa-clock"></i> ${jamMulai.replace('WIB', '')} — ${jamSelesai}
-                        </span>
-                    </div>
-                `;
-            } else if (tanggalMulai && jamMulai && tanggalSelesai && jamSelesai) {
-                return `
-                    <div class="time-display">
-                        <span class="date-badge">
-                            <i class="far fa-calendar-alt"></i> ${tanggalMulai} ${jamMulai}
-                        </span>
-                        <span style="color: #94a3b8;"><i class="fas fa-arrow-right"></i></span>
-                        <span class="date-badge">
-                            <i class="far fa-calendar-alt"></i> ${tanggalSelesai} ${jamSelesai}
-                        </span>
-                    </div>
-                `;
             }
+            if (waktuString.includes('1899') || waktuString.includes('T')) {
+                const match = waktuString.match(/T(\d{2}):(\d{2})/);
+                if (match) return `${match[1]}.${match[2]} WIB`;
+            }
+            const match = waktuString.match(/(\d{1,2}):(\d{2})/);
+            if (match) {
+                let jam = parseInt(match[1]);
+                if (jam > 23) jam -= 24;
+                return `${jam.toString().padStart(2, '0')}.${match[2]} WIB`;
+            }
+        } catch {}
+        return null;
+    }
+    
+    function formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai) {
+        const tanggalMulai = formatTanggalIndonesia(tglMulai);
+        const jamMulai = formatWaktuIndonesia(waktuMulai);
+        const tanggalSelesai = formatTanggalIndonesia(tglSelesai);
+        const jamSelesai = formatWaktuIndonesia(waktuSelesai);
+        
+        if (tglMulai === tglSelesai && jamMulai && jamSelesai) {
             return `
                 <div class="time-display">
                     <span class="date-badge">
-                        <i class="far fa-calendar-alt"></i> ${tglMulai || '?'} ${waktuMulai || ''}
+                        <i class="far fa-calendar-alt"></i> ${tanggalMulai || tglMulai}
+                    </span>
+                    <span class="time-badge">
+                        <i class="far fa-clock"></i> ${jamMulai.replace('WIB', '')} — ${jamSelesai}
+                    </span>
+                </div>
+            `;
+        } else if (tanggalMulai && jamMulai && tanggalSelesai && jamSelesai) {
+            return `
+                <div class="time-display">
+                    <span class="date-badge">
+                        <i class="far fa-calendar-alt"></i> ${tanggalMulai} ${jamMulai}
+                    </span>
+                    <span style="color: #94a3b8;"><i class="fas fa-arrow-right"></i></span>
+                    <span class="date-badge">
+                        <i class="far fa-calendar-alt"></i> ${tanggalSelesai} ${jamSelesai}
                     </span>
                 </div>
             `;
         }
-        
-        // ===========================================
-        // FETCH MENGGUNAKAN JSONP
-        // ===========================================
-        function fetchData() {
-            const callbackName = 'handleData_' + Date.now();
-            
-            window[callbackName] = function(response) {
-                const script = document.getElementById('jsonp-script');
-                if (script) script.remove();
-                retryCount = 0;
-                
-                if (response && response.success === true) {
-                    if (response.data && response.data.length > 0) {
-                        renderCards(response.data);
-                    } else {
-                        document.getElementById('newsFeed').innerHTML = `
-                            <div class="empty-state">
-                                <i class="fas fa-newspaper" style="font-size: 42px; opacity: 0.5;"></i>
-                                <h3 style="margin-top: 16px;">Belum ada informasi</h3>
-                                <p style="margin-top: 8px;">Data akan muncul setelah ada pengisian form</p>
-                            </div>
-                        `;
-                        document.getElementById('lastUpdate').innerHTML = 
-                            `<i class="fas fa-info-circle" style="color:#64748b;"></i> Belum ada data · ${new Date().toLocaleTimeString('id-ID')}`;
-                    }
-                } else {
-                    showError(response?.error || 'Format data tidak valid');
-                }
-                
-                setTimeout(() => delete window[callbackName], 100);
-            };
-            
-            const script = document.createElement('script');
-            script.id = 'jsonp-script';
-            script.src = `${APPS_SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
-            
-            script.onerror = function() {
-                retryCount++;
-                if (retryCount <= MAX_RETRY) {
-                    setTimeout(fetchData, 2000);
-                } else {
-                    showError('Tidak dapat terhubung ke server.');
-                }
-                delete window[callbackName];
-                document.getElementById('jsonp-script')?.remove();
-            };
-            
-            document.head.appendChild(script);
+        return `
+            <div class="time-display">
+                <span class="date-badge">
+                    <i class="far fa-calendar-alt"></i> ${tglMulai || '?'} ${waktuMulai || ''}
+                </span>
+            </div>
+        `;
+    }
+    
+    // ===========================================
+    // FUNGSI CEK LINK GOOGLE MAPS
+    // ===========================================
+    function isGoogleMapsLink(text) {
+        if (!text) return false;
+        const mapPatterns = [
+            'google.com/maps',
+            'goo.gl/maps',
+            'maps.app.goo.gl',
+            'google.co.id/maps',
+            'maps.google.com'
+        ];
+        return mapPatterns.some(pattern => text.includes(pattern));
+    }
+    
+    // ===========================================
+    // FUNGSI CEK POSTINGAN BARU (24 JAM)
+    // ===========================================
+    function isLessThan24Hours(timestamp) {
+        if (!timestamp) return false;
+        try {
+            const postDate = new Date(timestamp);
+            if (isNaN(postDate.getTime())) return false;
+            const now = new Date();
+            return (now - postDate) / (1000 * 60 * 60) < 24;
+        } catch {
+            return false;
         }
+    }
+    
+    // ===========================================
+    // TOGGLE CARD - VERSI FIX (TIDAK TUTUP SENDIRI!)
+    // ===========================================
+    window.toggleCard = function(cardId) {
+        const card = document.querySelector(`[data-card-id="${cardId}"]`);
+        if (card) {
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+                saveExpandedCard(null);
+            } else {
+                document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded'));
+                card.classList.add('expanded');
+                saveExpandedCard(cardId);
+            }
+        }
+    };
+    
+    // ===========================================
+    // RENDER CARDS - DENGAN STATE TERSIMPAN
+    // ===========================================
+    function renderCards(rows) {
+        const feed = document.getElementById('newsFeed');
+        let html = '';
         
-        // ===========================================
-        // RENDER CARDS - VERSI BARU (2 KOLOM LOKASI)
-        // ===========================================
-        function renderCards(rows) {
-            const feed = document.getElementById('newsFeed');
-            let html = '';
+        // Ambil card yang sebelumnya terbuka
+        const savedCardId = getSavedExpandedCard();
+        expandedCardId = savedCardId;
+        
+        rows.forEach((row, index) => {
+            // AMBIL DATA DENGAN FORMAT BARU
+            const timestamp = row.timestamp || '';
+            const instansi = row.instansi || 'INSTANSI';
+            const tglMulai = row.tglMulai || '';
+            const waktuMulai = row.waktuMulai || '';
+            const tglSelesai = row.tglSelesai || '';
+            const waktuSelesai = row.waktuSelesai || '';
+            const lokasi = row.lokasi || 'Lokasi tidak tersedia';
+            const linkMap = row.linkMap || '';
+            let isiKonten = row.isiKonten || 'Tidak ada keterangan';
+            const fotoUrl = row.fotoUrl || '';
             
-            rows.forEach((row, index) => {
-                // AMBIL DATA DENGAN FORMAT BARU
-                const timestamp = row.timestamp || '';
-                const instansi = row.instansi || 'INSTANSI';
-                const tglMulai = row.tglMulai || '';
-                const waktuMulai = row.waktuMulai || '';
-                const tglSelesai = row.tglSelesai || '';
-                const waktuSelesai = row.waktuSelesai || '';
-                const lokasi = row.lokasi || 'Lokasi tidak tersedia';     // NAMA JALAN
-                const linkMap = row.linkMap || '';                       // LINK GOOGLE MAP
-                let isiKonten = row.isiKonten || 'Tidak ada keterangan';
-                const fotoUrl = row.fotoUrl || '';
-                
-                // CEK APAKAH ACARA SUDAH SELESAI
-                const selesai = isAcaraSelesai(tglSelesai, waktuSelesai);
-                
-                // CEK APAKAH ADA LINK MAP
-                const punyaLinkMap = linkMap && linkMap.trim() !== '' && 
-                    (linkMap.includes('google.com/maps') || 
-                     linkMap.includes('goo.gl/maps') || 
-                     linkMap.includes('maps.app.goo.gl'));
-                
-                // ID UNIK
-                const cardId = `card-${index}`;
-                
-                // THUMBNAIL FOTO
-                let thumbnailHtml = `<div class="thumbnail"><i class="fas fa-image"></i></div>`;
-                if (fotoUrl) {
-                    let fileId = '';
-                    if (fotoUrl.includes('open?id=')) {
-                        fileId = fotoUrl.split('open?id=')[1].split('&')[0];
-                    } else if (fotoUrl.includes('file/d/')) {
-                        const match = fotoUrl.match(/\/d\/(.*?)(\/|$)/);
-                        if (match) fileId = match[1];
-                    }
-                    if (fileId) {
-                        thumbnailHtml = `<div class="thumbnail"><img src="https://drive.google.com/thumbnail?id=${fileId}&sz=w200-h200" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\'fas fa-camera\'></i>'"></div>`;
-                    }
+            // CEK APAKAH ACARA SUDAH SELESAI
+            const selesai = isAcaraSelesai(tglSelesai, waktuSelesai);
+            
+            // CEK APAKAH ADA LINK MAP
+            const punyaLinkMap = linkMap && linkMap.trim() !== '' && 
+                (linkMap.includes('google.com/maps') || 
+                 linkMap.includes('goo.gl/maps') || 
+                 linkMap.includes('maps.app.goo.gl'));
+            
+            // ID UNIK - PASTIKAN KONSISTEN
+            const cardId = `card-${index}-${timestamp.replace(/[^0-9]/g, '').slice(-6)}`;
+            
+            // CEK APAKAH CARD INI YANG HARUS TERBUKA
+            const isExpanded = (expandedCardId === cardId);
+            
+            // THUMBNAIL FOTO
+            let thumbnailHtml = `<div class="thumbnail"><i class="fas fa-image"></i></div>`;
+            if (fotoUrl) {
+                let fileId = '';
+                if (fotoUrl.includes('open?id=')) {
+                    fileId = fotoUrl.split('open?id=')[1].split('&')[0];
+                } else if (fotoUrl.includes('file/d/')) {
+                    const match = fotoUrl.match(/\/d\/(.*?)(\/|$)/);
+                    if (match) fileId = match[1];
                 }
-                
-                // LABEL BARU
-                const isNew = isLessThan24Hours(timestamp);
-                const newBadge = isNew ? '<span class="badge-new"><i class="fas fa-bolt"></i>BARU</span>' : '';
-                
-                // FORMAT TANGGAL POSTING
-                let tanggalPosting = '';
-                try {
-                    const date = new Date(timestamp);
-                    if (!isNaN(date.getTime())) {
-                        tanggalPosting = date.toLocaleDateString('id-ID', {
-                            day: 'numeric', month: 'numeric', year: 'numeric'
-                        });
-                    }
-                } catch {}
-                
-                // FORMAT DURASI ACARA
-                const waktuAcaraHTML = formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai);
-                
-                // BUILD CARD
-                html += `<div class="card ${selesai ? 'selesai' : ''}" data-card-id="${cardId}">
-                    ${selesai ? '<span class="selesai-label"><i class="fas fa-check-circle"></i> Acara Telah Selesai</span>' : ''}
-                    <div class="card-preview" onclick="toggleCard('${cardId}')">
-                        ${thumbnailHtml}
-                        <div class="preview-content">
-                            <div class="news-badge">
-                                ${newBadge}
-                                <span class="instansi-label"><i class="fas fa-building"></i> ${instansi}</span>
-                            </div>
-                            <div class="judul-berita">
-                                <i class="fas fa-pen-square"></i> Update dari ${instansi}
-                            </div>
-                            <div class="meta-sumber">
-                                <span class="sumber-text"><i class="fas fa-tag"></i> Sumber: ${instansi}</span>
-                                <span><i class="far fa-clock"></i> ${tanggalPosting || ''}</span>
-                            </div>
+                if (fileId) {
+                    thumbnailHtml = `<div class="thumbnail"><img src="https://drive.google.com/thumbnail?id=${fileId}&sz=w200-h200" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\'fas fa-camera\'></i>'"></div>`;
+                }
+            }
+            
+            // LABEL BARU
+            const isNew = isLessThan24Hours(timestamp);
+            const newBadge = isNew ? '<span class="badge-new"><i class="fas fa-bolt"></i>BARU</span>' : '';
+            
+            // FORMAT TANGGAL POSTING
+            let tanggalPosting = '';
+            try {
+                const date = new Date(timestamp);
+                if (!isNaN(date.getTime())) {
+                    tanggalPosting = date.toLocaleDateString('id-ID', {
+                        day: 'numeric', month: 'numeric', year: 'numeric'
+                    });
+                }
+            } catch {}
+            
+            // FORMAT DURASI ACARA
+            const waktuAcaraHTML = formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai);
+            
+            // BUILD CARD
+            html += `<div class="card ${selesai ? 'selesai' : ''} ${isExpanded ? 'expanded' : ''}" data-card-id="${cardId}">
+                ${selesai ? '<span class="selesai-label"><i class="fas fa-check-circle"></i> Acara Telah Selesai</span>' : ''}
+                <div class="card-preview" onclick="toggleCard('${cardId}')">
+                    ${thumbnailHtml}
+                    <div class="preview-content">
+                        <div class="news-badge">
+                            ${newBadge}
+                            <span class="instansi-label"><i class="fas fa-building"></i> ${instansi}</span>
                         </div>
-                        <div class="arrow-toggle">
-                            <i class="fas fa-chevron-down"></i>
+                        <div class="judul-berita">
+                            <i class="fas fa-pen-square"></i> Update dari ${instansi}
+                        </div>
+                        <div class="meta-sumber">
+                            <span class="sumber-text"><i class="fas fa-tag"></i> Sumber: ${instansi}</span>
+                            <span><i class="far fa-clock"></i> ${tanggalPosting || ''}</span>
                         </div>
                     </div>
-                    <div class="card-detail">
-                        <div class="detail-inner">
-                            <!-- ISI KONTEN -->
-                            <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>
-                            
-                            <!-- LOKASI + ALAMAT + LINK MAP -->
-                            <div class="info-section">
-                                <div class="info-row">
-                                    <div class="info-icon">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                    </div>
-                                    <div class="info-content">
-                                        <div class="info-label">ALAMAT LOKASI</div>
-                                        <div class="alamat-text">${lokasi}</div>
-                                    </div>
+                    <div class="arrow-toggle">
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+                <div class="card-detail">
+                    <div class="detail-inner">
+                        <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>
+                        
+                        <div class="info-section">
+                            <div class="info-row">
+                                <div class="info-icon">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div class="info-content">
+                                    <div class="info-label">ALAMAT LOKASI</div>
+                                    <div class="alamat-text">${lokasi}</div>
                                 </div>
                             </div>
-                            
-                            <!-- WAKTU ACARA -->
-                            ${waktuAcaraHTML}
-                            
-                            <!-- BUTTON GROUP -->
-                            <div class="button-group">`;
-                
-                // TOMBOL FOTO
-                if (fotoUrl) {
-                    html += `<a href="${fotoUrl}" target="_blank" class="btn btn-photo">
-                                <i class="fas fa-camera"></i> Lihat Foto Kegiatan
-                            </a>`;
-                }
-                
-                // TOMBOL PETA - SEKARANG PAKAI KOLOM LINK GOOGLE MAP
-                if (punyaLinkMap) {
-                    html += `<a href="${linkMap}" target="_blank" class="btn btn-map">
-                                <i class="fas fa-map-marked-alt"></i> Buka Google Maps
-                            </a>`;
-                }
-                
-                html += `</div></div></div></div>`;
-            });
+                        </div>
+                        
+                        ${waktuAcaraHTML}
+                        
+                        <div class="button-group">`;
             
-            feed.innerHTML = html;
-            document.getElementById('lastUpdate').innerHTML = 
-                `<i class="fas fa-check-circle" style="color:#10b981;"></i> Terakhir update: ${new Date().toLocaleTimeString('id-ID')} · ${rows.length} berita`;
-        }
+            // TOMBOL FOTO
+            if (fotoUrl) {
+                html += `<a href="${fotoUrl}" target="_blank" class="btn btn-photo">
+                            <i class="fas fa-camera"></i> Lihat Foto Kegiatan
+                        </a>`;
+            }
+            
+            // TOMBOL PETA
+            if (punyaLinkMap) {
+                html += `<a href="${linkMap}" target="_blank" class="btn btn-map">
+                            <i class="fas fa-map-marked-alt"></i> Buka Google Maps
+                        </a>`;
+            }
+            
+            html += `</div></div></div></div>`;
+        });
         
-        // ===========================================
-        // HELPER FUNCTIONS
-        // ===========================================
-        function isLessThan24Hours(timestamp) {
-            if (!timestamp) return false;
-            try {
-                const postDate = new Date(timestamp);
-                if (isNaN(postDate.getTime())) return false;
-                const now = new Date();
-                return (now - postDate) / (1000 * 60 * 60) < 24;
-            } catch {
-                return false;
+        feed.innerHTML = html;
+        
+        // PASTIKAN CARD YANG TERSIMPAN TETAP TERBUKA
+        if (expandedCardId) {
+            const expandedCard = document.querySelector(`[data-card-id="${expandedCardId}"]`);
+            if (expandedCard) {
+                expandedCard.classList.add('expanded');
+            } else {
+                expandedCardId = null;
+                saveExpandedCard(null);
             }
         }
         
-        function showError(message) {
-            document.getElementById('newsFeed').innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #b45309;"></i>
-                    <h3 style="margin-top: 16px;">Gagal mengambil data</h3>
-                    <p style="margin-top: 8px;">Mencoba menyambung kembali...</p>
-                    <p style="margin-top: 16px; font-size: 0.8rem; color: #64748b;">${message || 'Pastikan URL Apps Script sudah benar'}</p>
-                </div>
-            `;
-            document.getElementById('lastUpdate').innerHTML = 
-                `<i class="fas fa-exclamation-circle" style="color:#e11d48;"></i> Gagal sinkron · ${new Date().toLocaleTimeString('id-ID')}`;
-        }
+        document.getElementById('lastUpdate').innerHTML = 
+            `<i class="fas fa-check-circle" style="color:#10b981;"></i> Terakhir update: ${new Date().toLocaleTimeString('id-ID')} · ${rows.length} berita`;
+    }
+    
+    // ===========================================
+    // SHOW ERROR
+    // ===========================================
+    function showError(message) {
+        document.getElementById('newsFeed').innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #b45309;"></i>
+                <h3 style="margin-top: 16px;">Gagal mengambil data</h3>
+                <p style="margin-top: 8px;">Mencoba menyambung kembali...</p>
+                <p style="margin-top: 16px; font-size: 0.8rem; color: #64748b;">${message || 'Pastikan URL Apps Script sudah benar'}</p>
+            </div>
+        `;
+        document.getElementById('lastUpdate').innerHTML = 
+            `<i class="fas fa-exclamation-circle" style="color:#e11d48;"></i> Gagal sinkron · ${new Date().toLocaleTimeString('id-ID')}`;
+    }
+    
+    // ===========================================
+    // FETCH MENGGUNAKAN JSONP
+    // ===========================================
+    function fetchData() {
+        const callbackName = 'handleData_' + Date.now();
         
-        // Toggle card
-        window.toggleCard = function(cardId) {
-            const card = document.querySelector(`[data-card-id="${cardId}"]`);
-            if (card) {
-                if (card.classList.contains('expanded')) {
-                    card.classList.remove('expanded');
-                    expandedCardId = null;
+        window[callbackName] = function(response) {
+            const script = document.getElementById('jsonp-script');
+            if (script) script.remove();
+            retryCount = 0;
+            
+            if (response && response.success === true) {
+                if (response.data && response.data.length > 0) {
+                    renderCards(response.data);
                 } else {
-                    document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded'));
-                    card.classList.add('expanded');
-                    expandedCardId = cardId;
+                    document.getElementById('newsFeed').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-newspaper" style="font-size: 42px; opacity: 0.5;"></i>
+                            <h3 style="margin-top: 16px;">Belum ada informasi</h3>
+                            <p style="margin-top: 8px;">Data akan muncul setelah ada pengisian form</p>
+                        </div>
+                    `;
+                    document.getElementById('lastUpdate').innerHTML = 
+                        `<i class="fas fa-info-circle" style="color:#64748b;"></i> Belum ada data · ${new Date().toLocaleTimeString('id-ID')}`;
                 }
+            } else {
+                showError(response?.error || 'Format data tidak valid');
             }
+            
+            setTimeout(() => delete window[callbackName], 100);
         };
         
-        // START
+        const script = document.createElement('script');
+        script.id = 'jsonp-script';
+        script.src = `${APPS_SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
+        
+        script.onerror = function() {
+            retryCount++;
+            if (retryCount <= MAX_RETRY) {
+                console.log(`Retry ${retryCount}/${MAX_RETRY}...`);
+                setTimeout(fetchData, 2000);
+            } else {
+                showError('Tidak dapat terhubung ke server. Periksa URL Apps Script.');
+            }
+            delete window[callbackName];
+            document.getElementById('jsonp-script')?.remove();
+        };
+        
+        document.head.appendChild(script);
+    }
+    
+    // ===========================================
+    // CLEANUP EXPIRED CARDS
+    // ===========================================
+    function cleanupExpandedCard() {
+        const savedCardId = getSavedExpandedCard();
+        if (savedCardId) {
+            const card = document.querySelector(`[data-card-id="${savedCardId}"]`);
+            if (!card) {
+                saveExpandedCard(null);
+            }
+        }
+    }
+    
+    // ===========================================
+    // START APLIKASI
+    // ===========================================
+    
+    // Fetch pertama
+    fetchData();
+    
+    // Auto refresh setiap 10 detik
+    setInterval(() => {
         fetchData();
-        setInterval(fetchData, 10000);
-    </script>
+        setTimeout(cleanupExpandedCard, 500);
+    }, 10000);
+    
+    // Load state dari storage saat pertama kali
+    window.addEventListener('load', function() {
+        const savedCardId = getSavedExpandedCard();
+        if (savedCardId) {
+            setTimeout(() => {
+                const card = document.querySelector(`[data-card-id="${savedCardId}"]`);
+                if (card) {
+                    card.classList.add('expanded');
+                    expandedCardId = savedCardId;
+                }
+            }, 500);
+        }
+    });
+</script>
 </body>
 </html>
