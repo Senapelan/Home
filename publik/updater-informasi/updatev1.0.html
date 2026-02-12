@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* [SAME STYLES - copy dari kode sebelumnya] */
+        /* [SAME STYLES] */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(145deg, #f6f9fc 0%, #edf2f7 100%);
@@ -203,21 +203,46 @@
             color: #1f4e5f;
             font-size: 0.85rem;
         }
-        .btn-google {
+        /* BUTTON GROUP */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .btn {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            background: #0a4b6e;
-            color: white;
-            padding: 14px 26px;
+            gap: 10px;
+            padding: 12px 24px;
             border-radius: 40px;
             font-weight: 600;
+            font-size: 0.9rem;
             text-decoration: none;
-            width: fit-content;
-            margin-top: 8px;
+            transition: all 0.2s;
+            border: none;
+            cursor: pointer;
         }
-        .btn-google:hover {
+        .btn i {
+            font-size: 1rem;
+        }
+        .btn-photo {
+            background: #0a4b6e;
+            color: white;
+            box-shadow: 0 8px 18px rgba(10,75,110,0.2);
+        }
+        .btn-photo:hover {
             background: #0e5f88;
+            transform: scale(0.98);
+        }
+        .btn-map {
+            background: #e11d48;
+            color: white;
+            box-shadow: 0 8px 18px rgba(225,29,72,0.2);
+        }
+        .btn-map:hover {
+            background: #be123c;
+            transform: scale(0.98);
         }
         .empty-state {
             text-align: center;
@@ -242,6 +267,8 @@
             body { padding: 20px 16px; }
             .header h1 { font-size: 1.6rem; }
             .judul-berita { white-space: normal; }
+            .button-group { flex-direction: column; }
+            .btn { justify-content: center; }
         }
     </style>
 </head>
@@ -266,13 +293,13 @@
         </div>
         
         <footer>
-            <i class="fas fa-bolt"></i> Sinkron real-time setiap 5 detik · Update dari Google Form
+            <i class="fas fa-bolt"></i> Sinkron real-time setiap 10 detik · Update dari Google Form
         </footer>
     </div>
 
     <script>
         // ===========================================
-        // URL APPS SCRIPT ANDA (PAKAI YANG BARU!)
+        // URL APPS SCRIPT ANDA
         // ===========================================
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNqRSVWQETkwu0j_JUZcg0ha-XhkWLQibIavmWcwAj9qvc2XP6Eh5XrjY4egOKp_X9Tg/exec';
         
@@ -281,27 +308,37 @@
         const MAX_RETRY = 3;
         
         // ===========================================
-        // FETCH MENGGUNAKAN JSONP - PASTI BERHASIL!
+        // FUNGSI CEK LINK GOOGLE MAPS
+        // ===========================================
+        function isGoogleMapsLink(text) {
+            if (!text) return false;
+            // Deteksi berbagai format link Google Maps
+            const mapPatterns = [
+                'google.com/maps',
+                'goo.gl/maps',
+                'maps.app.goo.gl',
+                'google.co.id/maps',
+                'maps.google.com'
+            ];
+            return mapPatterns.some(pattern => text.includes(pattern));
+        }
+        
+        // ===========================================
+        // FETCH MENGGUNAKAN JSONP
         // ===========================================
         function fetchData() {
-            // Buat callback unik
             const callbackName = 'handleData_' + Date.now();
             
-            // Buat function global
             window[callbackName] = function(response) {
-                // Hapus script tag
                 const script = document.getElementById('jsonp-script');
                 if (script) script.remove();
                 
-                // Reset retry count
                 retryCount = 0;
                 
-                // Proses response
                 if (response && response.success === true) {
                     if (response.data && response.data.length > 0) {
                         renderCards(response.data);
                     } else {
-                        // Data kosong
                         document.getElementById('newsFeed').innerHTML = `
                             <div class="empty-state">
                                 <i class="fas fa-newspaper" style="font-size: 42px; opacity: 0.5;"></i>
@@ -316,18 +353,15 @@
                     showError(response?.error || 'Format data tidak valid');
                 }
                 
-                // Hapus callback
                 setTimeout(() => {
                     delete window[callbackName];
                 }, 100);
             };
             
-            // Buat script tag
             const script = document.createElement('script');
             script.id = 'jsonp-script';
             script.src = `${APPS_SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
             
-            // Handle error
             script.onerror = function() {
                 retryCount++;
                 if (retryCount <= MAX_RETRY) {
@@ -344,15 +378,14 @@
         }
         
         // ===========================================
-        // RENDER CARDS
+        // RENDER CARDS - DENGAN TOMBOL MAP & FOTO
         // ===========================================
         function renderCards(rows) {
             const feed = document.getElementById('newsFeed');
-            
             let html = '';
             
             rows.forEach((row, index) => {
-                // AMBIL DATA DENGAN SAFE ACCESS
+                // AMBIL DATA
                 const timestamp = row.timestamp || '';
                 const instansi = row.instansi || 'INSTANSI';
                 const tglMulai = row.tglMulai || '';
@@ -363,10 +396,13 @@
                 let isiKonten = row.isiKonten || 'Tidak ada keterangan';
                 const fotoUrl = row.fotoUrl || '';
                 
+                // CEK APAKAH LOKASI ADALAH LINK GOOGLE MAPS
+                const isMapLink = isGoogleMapsLink(lokasi);
+                
                 // ID UNIK
                 const cardId = `card-${index}`;
                 
-                // THUMBNAIL
+                // THUMBNAIL FOTO
                 let thumbnailHtml = `<div class="thumbnail"><i class="fas fa-image"></i></div>`;
                 if (fotoUrl) {
                     let fileId = '';
@@ -405,6 +441,7 @@
                     }
                 }
                 
+                // BUILD CARD
                 html += `<div class="card ${expandedCardId === cardId ? 'expanded' : ''}" data-card-id="${cardId}">
                     <div class="card-preview" onclick="toggleCard('${cardId}')">
                         ${thumbnailHtml}
@@ -429,17 +466,28 @@
                         <div class="detail-inner">
                             <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>
                             <div class="acara-meta">
-                                <span><i class="fas fa-map-marker-alt"></i> ${lokasi}</span>
+                                <span><i class="fas fa-map-marker-alt"></i> ${!isMapLink ? lokasi : 'Lokasi (klik tombol peta)'}</span>
                                 <span><i class="fas fa-calendar-alt"></i> ${waktuDetail}</span>
-                            </div>`;
+                            </div>
+                            
+                            <!-- BUTTON GROUP -->
+                            <div class="button-group">`;
                 
+                // TOMBOL FOTO (jika ada)
                 if (fotoUrl) {
-                    html += `<a href="${fotoUrl}" target="_blank" class="btn-google">
-                                <i class="fas fa-external-link-alt"></i> Lihat Foto Kegiatan
+                    html += `<a href="${fotoUrl}" target="_blank" class="btn btn-photo">
+                                <i class="fas fa-camera"></i> Lihat Foto Kegiatan
                             </a>`;
                 }
                 
-                html += `</div></div></div>`;
+                // TOMBOL PETA (jika lokasi adalah link Google Maps)
+                if (isMapLink) {
+                    html += `<a href="${lokasi}" target="_blank" class="btn btn-map">
+                                <i class="fas fa-map-marked-alt"></i> Lihat Peta Lokasi
+                            </a>`;
+                }
+                
+                html += `</div></div></div></div>`;
             });
             
             feed.innerHTML = html;
@@ -496,10 +544,7 @@
         // START
         // ===========================================
         
-        // Fetch pertama
         fetchData();
-        
-        // Auto refresh setiap 10 detik (lebih stabil)
         setInterval(fetchData, 10000);
         
     </script>
