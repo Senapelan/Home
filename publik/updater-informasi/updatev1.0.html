@@ -6,7 +6,513 @@
     <title>Update Informasi Senapelan</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style><!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Info Senapelan · Real-time</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(145deg, #f6f9fc 0%, #edf2f7 100%);
+            font-family: 'Inter', sans-serif;
+            padding: 32px 24px;
+            min-height: 100vh;
+            color: #1e293b;
+        }
+        .container {
+            max-width: 1100px;
+            width: 100%;
+            margin: 0 auto;
+        }
+        .header {
+            margin-bottom: 40px;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #0f2b3d, #1e4a6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            border-left: 8px solid #e11d48;
+            padding-left: 24px;
+            line-height: 1.2;
+        }
+        .subhead {
+            display: flex;
+            justify-content: space-between;
+            margin-left: 32px;
+            margin-top: 8px;
+            color: #4b5e6b;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 16px;
+        }
+        .live-badge {
+            background: #10b981;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .last-update {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-left: 32px;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .news-feed {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 28px;
+            box-shadow: 0 15px 35px -12px rgba(0,20,30,0.12);
+            width: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.6);
+            transition: all 0.25s ease;
+        }
+        .card:hover {
+            box-shadow: 0 24px 44px -14px rgba(0,55,80,0.18);
+        }
+        .card-preview {
+            display: flex;
+            align-items: center;
+            padding: 16px 22px;
+            gap: 18px;
+            cursor: pointer;
+        }
+        .thumbnail {
+            width: 70px;
+            height: 70px;
+            flex-shrink: 0;
+            background: #f1f5f9;
+            border-radius: 18px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .thumbnail i {
+            font-size: 28px;
+            color: #94a3b8;
+        }
+        .preview-content {
+            flex: 1;
+        }
+        .news-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 6px;
+        }
+        .badge-new {
+            background: #e11d48;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 60px;
+            text-transform: uppercase;
+        }
+        .instansi-label {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #547087;
+            background: rgba(84,112,135,0.08);
+            padding: 4px 12px;
+            border-radius: 60px;
+        }
+        .judul-berita {
+            font-size: 1.12rem;
+            font-weight: 650;
+            color: #0a1c2a;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .meta-sumber {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.8rem;
+            color: #4f6f7f;
+        }
+        .sumber-text {
+            background: rgba(20,100,120,0.05);
+            padding: 4px 12px;
+            border-radius: 50px;
+        }
+        .arrow-toggle {
+            width: 42px;
+            height: 42px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 16px rgba(0,0,0,0.03);
+            transition: all 0.2s;
+        }
+        .card.expanded .arrow-toggle {
+            transform: rotate(180deg);
+            background: #f1f9ff;
+            color: #0a4b6e;
+        }
+        .card-detail {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.45s cubic-bezier(0.23, 1, 0.32, 1);
+            background: rgba(249,252,255,0.7);
+        }
+        .card.expanded .card-detail {
+            max-height: 800px;
+            opacity: 1;
+            padding: 22px 24px 28px;
+            border-top: 1px solid rgba(168,192,207,0.2);
+        }
+        .isi-konten {
+            font-size: 1rem;
+            line-height: 1.65;
+            color: #1f3a4b;
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid rgba(84,110,122,0.08);
+            white-space: pre-line;
+        }
+        .acara-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px 32px;
+            background: rgba(203,223,233,0.2);
+            padding: 14px 20px;
+            border-radius: 24px;
+            color: #1f4e5f;
+            font-size: 0.85rem;
+        }
+        .btn-google {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            background: #0a4b6e;
+            color: white;
+            padding: 14px 26px;
+            border-radius: 40px;
+            font-weight: 600;
+            text-decoration: none;
+            width: fit-content;
+            margin-top: 8px;
+        }
+        .btn-google:hover {
+            background: #0e5f88;
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 60px;
+            color: #4e6a79;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #1e4a6b;
+        }
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #7c8f99;
+            padding-top: 30px;
+            border-top: 1px solid rgba(0,0,0,0.04);
+        }
+        @media (max-width: 550px) {
+            body { padding: 20px 16px; }
+            .header h1 { font-size: 1.6rem; }
+            .judul-berita { white-space: normal; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>UPDATE INFORMASI<br>KECAMATAN DAN KELURAHAN DI SENAPELAN</h1>
+            <div class="subhead">
+                <span><i class="fas fa-map-pin" style="color:#e11d48;"></i> Sumber: Kecamatan Senapelan</span>
+                <span class="live-badge"><i class="fas fa-circle"></i> LIVE · APPS SCRIPT</span>
+            </div>
+            <div class="last-update" id="lastUpdate">
+                <i class="fas fa-sync-alt"></i> Menyambung ke server...
+            </div>
+        </div>
+
+        <div id="newsFeed" class="news-feed">
+            <div class="loading">
+                <i class="fas fa-spinner fa-pulse fa-2x"></i>
+                <p style="margin-top: 16px;">Memuat data terbaru...</p>
+            </div>
+        </div>
+        
+        <footer>
+            <i class="fas fa-bolt"></i> Sinkron real-time setiap 5 detik · Hapus di sheet = hilang di web
+        </footer>
+    </div>
+
+    <script>
+        (function() {
+            // ===========================================
+            // APPS SCRIPT URL - SUDAH DEPLOY DAN SIAP PAKAI
+            // ===========================================
+            const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzMEn6gGcCv2N9o0P-jul3x0L2mdsWaj-O-vL2R92o0NtMUEhxSGL01VKn2wMAMWnI/exec';
+            
+            // State untuk menyimpan card yang terbuka
+            let expandedCardId = null;
+            
+            // ===========================================
+            // HELPER FUNCTIONS
+            // ===========================================
+            
+            // Cek apakah postingan baru (kurang dari 24 jam)
+            function isLessThan24Hours(timestamp) {
+                if (!timestamp) return false;
+                try {
+                    const postDate = new Date(timestamp);
+                    if (isNaN(postDate.getTime())) return false;
+                    const now = new Date();
+                    const diffHours = (now - postDate) / (1000 * 60 * 60);
+                    return diffHours < 24;
+                } catch {
+                    return false;
+                }
+            }
+            
+            // Ambil thumbnail dari Google Drive URL
+            function getThumbnailUrl(driveUrl) {
+                if (!driveUrl) return null;
+                try {
+                    let fileId = null;
+                    if (driveUrl.includes('open?id=')) {
+                        fileId = driveUrl.split('open?id=')[1].split('&')[0];
+                    } else if (driveUrl.includes('file/d/')) {
+                        const match = driveUrl.match(/\/d\/(.*?)(\/|$)/);
+                        if (match) fileId = match[1];
+                    }
+                    return fileId ? `https://drive.google.com/thumbnail?id=${fileId}&sz=w200-h200` : null;
+                } catch {
+                    return null;
+                }
+            }
+            
+            // ===========================================
+            // RENDER CARDS
+            // ===========================================
+            function renderCards(rows) {
+                const feed = document.getElementById('newsFeed');
+                
+                if (!rows || rows.length === 0) {
+                    feed.innerHTML = `<div class="empty-state">
+                        <i class="fas fa-newspaper" style="font-size: 42px; opacity: 0.5;"></i>
+                        <h3 style="margin-top: 16px;">Belum ada informasi</h3>
+                        <p style="margin-top: 8px;">Data akan muncul setelah ada pengisian form</p>
+                    </div>`;
+                    return;
+                }
+                
+                let html = '';
+                
+                rows.slice(0, 1000).forEach((row, index) => {
+                    // Data dari Apps Script dalam format object
+                    const timestamp = row.timestamp || row[0] || '';
+                    const instansi = row.instansi || row[1] || 'INSTANSI';
+                    const tglMulai = row.tglMulai || row[2] || '';
+                    const waktuMulai = row.waktuMulai || row[3] || '';
+                    const tglSelesai = row.tglSelesai || row[4] || '';
+                    const waktuSelesai = row.waktuSelesai || row[5] || '';
+                    const lokasi = row.lokasi || row[6] || 'Lokasi tidak tersedia';
+                    let isiKonten = row.isiKonten || row[7] || 'Tidak ada keterangan';
+                    const fotoUrl = row.fotoUrl || row[8] || '';
+                    
+                    // ID unik
+                    const cardId = `card-${index}-${timestamp.toString().replace(/[^0-9]/g, '').slice(-6)}`;
+                    
+                    // Thumbnail
+                    const thumbUrl = getThumbnailUrl(fotoUrl);
+                    const thumbnailHtml = thumbUrl 
+                        ? `<div class="thumbnail"><img src="${thumbUrl}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\'fas fa-camera\'></i>'"></div>`
+                        : `<div class="thumbnail"><i class="fas fa-image"></i></div>`;
+                    
+                    // Label baru
+                    const newBadge = isLessThan24Hours(timestamp) 
+                        ? '<span class="badge-new"><i class="fas fa-bolt"></i>BARU</span>' 
+                        : '';
+                    
+                    // Waktu detail
+                    let waktuDetail = 'Waktu belum ditentukan';
+                    if (tglMulai && waktuMulai) {
+                        waktuDetail = `${tglMulai} ${waktuMulai}`;
+                        if (tglSelesai && waktuSelesai) {
+                            waktuDetail += ` — ${tglSelesai} ${waktuSelesai}`;
+                        }
+                    }
+                    
+                    // Format tanggal
+                    let tanggalDisplay = '';
+                    try {
+                        tanggalDisplay = new Date(timestamp).toLocaleDateString('id-ID', {
+                            day: 'numeric', month: 'numeric', year: 'numeric'
+                        });
+                    } catch {}
+                    
+                    html += `<div class="card ${expandedCardId === cardId ? 'expanded' : ''}" data-card-id="${cardId}">
+                        <div class="card-preview">
+                            ${thumbnailHtml}
+                            <div class="preview-content">
+                                <div class="news-badge">
+                                    ${newBadge}
+                                    <span class="instansi-label"><i class="fas fa-building"></i> ${instansi}</span>
+                                </div>
+                                <div class="judul-berita">
+                                    <i class="fas fa-pen-square"></i> Update dari ${instansi}
+                                </div>
+                                <div class="meta-sumber">
+                                    <span class="sumber-text"><i class="fas fa-tag"></i> Sumber: ${instansi}</span>
+                                    <span><i class="far fa-clock"></i> ${tanggalDisplay || ''}</span>
+                                </div>
+                            </div>
+                            <div class="arrow-toggle">
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                        </div>
+                        <div class="card-detail">
+                            <div class="detail-inner">
+                                <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>
+                                <div class="acara-meta">
+                                    <span><i class="fas fa-map-marker-alt"></i> ${lokasi}</span>
+                                    <span><i class="fas fa-calendar-alt"></i> ${waktuDetail}</span>
+                                </div>`;
+                    
+                    if (fotoUrl) {
+                        html += `<a href="${fotoUrl}" target="_blank" class="btn-google">
+                                    <i class="fas fa-external-link-alt"></i> Lihat Foto Kegiatan
+                                </a>`;
+                    }
+                    
+                    html += `</div></div></div>`;
+                });
+                
+                feed.innerHTML = html;
+                document.getElementById('lastUpdate').innerHTML = 
+                    `<i class="fas fa-check-circle" style="color:#10b981;"></i> Terakhir update: ${new Date().toLocaleTimeString('id-ID')} · ${rows.length} berita`;
+            }
+            
+            // ===========================================
+            // EVENT HANDLER
+            // ===========================================
+            function setupEventListeners() {
+                const feed = document.getElementById('newsFeed');
+                feed.removeEventListener('click', handleCardClick);
+                feed.addEventListener('click', handleCardClick);
+            }
+            
+            function handleCardClick(e) {
+                const preview = e.target.closest('.card-preview');
+                if (!preview) return;
+                
+                const card = preview.closest('.card');
+                if (!card) return;
+                
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const cardId = card.dataset.cardId;
+                
+                if (card.classList.contains('expanded')) {
+                    card.classList.remove('expanded');
+                    expandedCardId = null;
+                } else {
+                    document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded'));
+                    card.classList.add('expanded');
+                    expandedCardId = cardId;
+                }
+            }
+            
+            // ===========================================
+            // FETCH DATA DARI APPS SCRIPT
+            // ===========================================
+            async function fetchData() {
+                try {
+                    const response = await fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, {
+                        method: 'GET',
+                        cache: 'no-store',
+                        headers: {
+                            'Cache-Control': 'no-cache, no-store',
+                            'Pragma': 'no-cache'
+                        }
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success && result.data) {
+                        renderCards(result.data);
+                    } else {
+                        throw new Error(result.error || 'Gagal mengambil data');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    document.getElementById('newsFeed').innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #b45309;"></i>
+                            <h3 style="margin-top: 16px;">Gagal mengambil data</h3>
+                            <p style="margin-top: 8px;">Mencoba menyambung kembali...</p>
+                            <p style="margin-top: 16px; font-size: 0.8rem; color: #64748b;">${error.message}</p>
+                        </div>
+                    `;
+                }
+            }
+            
+            // ===========================================
+            // START
+            // ===========================================
+            
+            // Fetch pertama
+            fetchData();
+            
+            // Auto refresh setiap 5 detik
+            setInterval(fetchData, 5000);
+            
+            // Setup event listeners setelah render
+            setTimeout(setupEventListeners, 1000);
+            
+            // Event listener untuk card baru
+            const originalRender = renderCards;
+            renderCards = function(rows) {
+                originalRender(rows);
+                setupEventListeners();
+            };
+            
+        })();
+    </script>
+</body>
+</html>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
