@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        /* [SAME STYLES - keep your existing styles] */
+        /* [PASTE STYLE CSS ANDA DI SINI - sama seperti sebelumnya] */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             background: linear-gradient(145deg, #f6f9fc 0%, #edf2f7 100%);
@@ -251,7 +251,7 @@
             <h1>UPDATE INFORMASI<br>KECAMATAN DAN KELURAHAN DI SENAPELAN</h1>
             <div class="subhead">
                 <span><i class="fas fa-map-pin" style="color:#e11d48;"></i> Sumber: Kecamatan Senapelan</span>
-                <span class="live-badge"><i class="fas fa-circle"></i> LIVE · APPS SCRIPT</span>
+                <span class="live-badge"><i class="fas fa-circle"></i> LIVE · REAL-TIME</span>
             </div>
             <div class="last-update" id="lastUpdate">
                 <i class="fas fa-sync-alt"></i> Menyambung ke server...
@@ -266,87 +266,81 @@
         </div>
         
         <footer>
-            <i class="fas fa-bolt"></i> Sinkron real-time setiap 5 detik · Hapus di sheet = hilang di web
+            <i class="fas fa-bolt"></i> Sinkron real-time setiap 5 detik · Update dari Google Form
         </footer>
     </div>
 
     <script>
         // ===========================================
-        // APPS SCRIPT URL - PAKAI URL LAMA YANG SUDAH BERHASIL
+        // GANTI DENGAN URL APPS SCRIPT BARU ANDA!
         // ===========================================
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNqRSVWQETkwu0j_JUZcg0ha-XhkWLQibIavmWcwAj9qvc2XP6Eh5XrjY4egOKp_X9Tg/exec';
         
         let expandedCardId = null;
-        let scriptCounter = 0;
         
         // ===========================================
-        // FUNGSI FETCH MENGGUNAKAN JSONP (SOLUSI CORS)
+        // FETCH MENGGUNAKAN JSONP - PASTI BERHASIL!
         // ===========================================
-        function fetchDataJSONP() {
-            // Hapus script tag sebelumnya
-            const existingScript = document.getElementById('jsonp-script');
-            if (existingScript) {
-                existingScript.remove();
-            }
-            
+        function fetchWithJSONP() {
             // Buat callback unik
-            const callbackName = `handleData_${Date.now()}`;
+            const callbackName = 'handleData_' + Date.now();
             
-            // Buat function callback di window
+            // Buat function global
             window[callbackName] = function(response) {
-                if (response && response.success && response.data) {
+                // Hapus script tag
+                const script = document.getElementById('jsonp-script');
+                if (script) script.remove();
+                
+                // Proses response
+                if (response && response.success === true && response.data) {
                     renderCards(response.data);
                 } else {
-                    showError(response?.error || 'Gagal mengambil data');
+                    showError(response?.error || 'Format data tidak valid');
                 }
                 
-                // Bersihkan callback
+                // Hapus callback
                 setTimeout(() => {
                     delete window[callbackName];
-                }, 1000);
+                }, 100);
             };
             
-            // Buat script tag untuk JSONP
+            // Buat script tag
             const script = document.createElement('script');
             script.id = 'jsonp-script';
             script.src = `${APPS_SCRIPT_URL}?callback=${callbackName}&t=${Date.now()}`;
             
             // Handle error
             script.onerror = function() {
-                showError('Tidak dapat terhubung ke server');
+                showError('Tidak dapat terhubung ke server. Periksa URL Apps Script.');
                 delete window[callbackName];
+                document.getElementById('jsonp-script')?.remove();
             };
             
             document.head.appendChild(script);
         }
         
         // ===========================================
-        // FUNGSI FETCH MENGGUNAKAN PROXY (BACKUP)
+        // FETCH BIASA (CORS)
         // ===========================================
-        async function fetchDataProxy() {
+        async function fetchWithCORS() {
             try {
-                // Gunakan CORS proxy
-                const proxyUrl = 'https://api.allorigins.win/raw?url=';
-                const targetUrl = encodeURIComponent(`${APPS_SCRIPT_URL}?t=${Date.now()}`);
+                const response = await fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-store'
+                });
                 
-                const response = await fetch(proxyUrl + targetUrl);
-                const text = await response.text();
+                const data = await response.json();
                 
-                // Parse JSON
-                try {
-                    const result = JSON.parse(text);
-                    if (result && result.success && result.data) {
-                        renderCards(result.data);
-                    } else {
-                        throw new Error('Format data tidak valid');
-                    }
-                } catch (e) {
-                    throw new Error('Gagal parse data');
+                if (data && data.success === true && data.data) {
+                    renderCards(data.data);
+                    return true;
+                } else {
+                    throw new Error(data?.error || 'Gagal mengambil data');
                 }
             } catch (error) {
-                console.error('Proxy error:', error);
-                // Fallback ke JSONP
-                fetchDataJSONP();
+                console.log('CORS failed, trying JSONP...', error);
+                return false;
             }
         }
         
@@ -354,40 +348,19 @@
         // MAIN FETCH FUNCTION
         // ===========================================
         function fetchData() {
-            // Coba fetch biasa dulu
-            fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-store'
-            })
-            .then(response => response.json())
-            .then(result => {
-                if (result.success && result.data) {
-                    renderCards(result.data);
-                } else {
-                    throw new Error(result.error);
+            // Coba CORS dulu
+            fetchWithCORS().then(success => {
+                if (!success) {
+                    // Fallback ke JSONP
+                    fetchWithJSONP();
                 }
-            })
-            .catch(error => {
-                console.log('Fetch biasa gagal, coba JSONP...', error);
-                // Fallback ke JSONP
-                fetchDataJSONP();
+            }).catch(() => {
+                fetchWithJSONP();
             });
         }
         
-        function showError(message) {
-            document.getElementById('newsFeed').innerHTML = `
-                <div class="empty-state">
-                    <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #b45309;"></i>
-                    <h3 style="margin-top: 16px;">Gagal mengambil data</h3>
-                    <p style="margin-top: 8px;">Mencoba menyambung kembali...</p>
-                    <p style="margin-top: 16px; font-size: 0.8rem; color: #64748b;">${message || 'CORS error, menggunakan JSONP'}</p>
-                </div>
-            `;
-        }
-        
         // ===========================================
-        // RENDER CARDS (SESUAIKAN DENGAN FORMAT DATA ANDA)
+        // RENDER CARDS
         // ===========================================
         function renderCards(rows) {
             const feed = document.getElementById('newsFeed');
@@ -404,21 +377,19 @@
             let html = '';
             
             rows.forEach((row, index) => {
-                // PASTIKAN MENGAMBIL DATA DENGAN BENAR
+                // AMBIL DATA
                 const timestamp = row.timestamp || '';
                 const instansi = row.instansi || 'INSTANSI';
                 const tglMulai = row.tglMulai || '';
                 const waktuMulai = row.waktuMulai || '';
-                const tglSelesai = row.tglSelesai || '';
-                const waktuSelesai = row.waktuSelesai || '';
                 const lokasi = row.lokasi || 'Lokasi tidak tersedia';
                 let isiKonten = row.isiKonten || 'Tidak ada keterangan';
                 const fotoUrl = row.fotoUrl || '';
                 
-                // ID unik
+                // ID UNIK
                 const cardId = `card-${index}`;
                 
-                // Thumbnail
+                // THUMBNAIL
                 let thumbnailHtml = `<div class="thumbnail"><i class="fas fa-image"></i></div>`;
                 if (fotoUrl) {
                     let fileId = '';
@@ -430,16 +401,19 @@
                     }
                 }
                 
-                // Label baru (24 jam)
+                // LABEL BARU (24 JAM)
                 const isNew = isLessThan24Hours(timestamp);
                 const newBadge = isNew ? '<span class="badge-new"><i class="fas fa-bolt"></i>BARU</span>' : '';
                 
-                // Format tanggal
+                // FORMAT TANGGAL
                 let tanggalDisplay = '';
                 try {
-                    tanggalDisplay = new Date(timestamp).toLocaleDateString('id-ID', {
-                        day: 'numeric', month: 'numeric', year: 'numeric'
-                    });
+                    const date = new Date(timestamp);
+                    if (!isNaN(date.getTime())) {
+                        tanggalDisplay = date.toLocaleDateString('id-ID', {
+                            day: 'numeric', month: 'numeric', year: 'numeric'
+                        });
+                    }
                 } catch {}
                 
                 html += `<div class="card ${expandedCardId === cardId ? 'expanded' : ''}" data-card-id="${cardId}">
@@ -499,6 +473,17 @@
             } catch {
                 return false;
             }
+        }
+        
+        function showError(message) {
+            document.getElementById('newsFeed').innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 36px; color: #b45309;"></i>
+                    <h3 style="margin-top: 16px;">Gagal mengambil data</h3>
+                    <p style="margin-top: 8px;">Mencoba menyambung kembali...</p>
+                    <p style="margin-top: 16px; font-size: 0.8rem; color: #64748b;">${message || 'Periksa koneksi dan URL Apps Script'}</p>
+                </div>
+            `;
         }
         
         // Toggle card
