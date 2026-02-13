@@ -3,7 +3,7 @@
 <head>
     <!-- Open Graph utama -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://senapelan.github.io/Home/publik/updater-informasi/updatev2.0.html">
+    <meta property="og:url" content="https://senapelan.github.io/Home/publik/updater-informasi/updatev2.1.html">
     <meta property="og:title" content="Senapelan Satu Pintu - berkomitmen memberikan pelayanan cepat, transparan, dan modern berbasis digital.">
     <meta property="og:description" content="UPDATE INFORMASI KEGIATAN">
     <meta property="og:site_name" content="Kecamata-Kelurahan">
@@ -872,7 +872,7 @@
     let expandedCardId = null;
     let retryCount = 0;
     const MAX_RETRY = 3;
-    const STORAGE_KEY = 'senapelan_expanded_card_v2';
+    const STORAGE_KEY = 'senapelan_expanded_card_v2_fix';
     let allData = [];
     let filteredData = [];
     let currentFilter = {
@@ -895,17 +895,18 @@
     };
     
     // ===========================================
-    // STATE MANAGEMENT
+    // STATE MANAGEMENT - FIX TIDAK TUTUP SENDIRI!
     // ===========================================
     function saveExpandedCard(cardId) {
         try {
             if (cardId) {
                 localStorage.setItem(STORAGE_KEY, cardId);
-                expandedCardId = cardId;
+                console.log('Card tersimpan:', cardId);
             } else {
                 localStorage.removeItem(STORAGE_KEY);
-                expandedCardId = null;
+                console.log('Card dihapus dari storage');
             }
+            expandedCardId = cardId;
         } catch (e) {
             console.log('Storage error:', e);
         }
@@ -920,15 +921,49 @@
     }
     
     // ===========================================
+    // RESTORE EXPANDED CARD - PASTIKAN TETAP BUKA!
+    // ===========================================
+    function restoreExpandedCard() {
+        const savedCardId = getSavedExpandedCard();
+        if (!savedCardId) return;
+        
+        console.log('Mencoba restore card:', savedCardId);
+        
+        // Coba di highlight section
+        let card = document.querySelector(`#highlightFeed [data-card-id="${savedCardId}"]`);
+        
+        // Coba di all section
+        if (!card) {
+            card = document.querySelector(`#newsFeed [data-card-id="${savedCardId}"]`);
+        }
+        
+        if (card) {
+            // Hapus expanded dari semua card dulu
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded'));
+            
+            // Tambah expanded ke card yang disimpan
+            card.classList.add('expanded');
+            expandedCardId = savedCardId;
+            console.log('✅ Card berhasil direstore:', savedCardId);
+            
+            // Scroll ke card (opsional, biar user lihat)
+            setTimeout(() => {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+        } else {
+            console.log('❌ Card tidak ditemukan di DOM:', savedCardId);
+            // Jangan hapus dari storage, mungkin akan muncul di fetch berikutnya
+        }
+    }
+    
+    // ===========================================
     // CEK STATUS ACARA (SELESAI, BERLANGSUNG, DATANG)
     // ===========================================
     function getEventStatus(tglMulai, waktuMulai, tglSelesai, waktuSelesai) {
         try {
             const sekarang = new Date();
             
-            // Parse tanggal mulai
             let dateMulai = parseDate(tglMulai, waktuMulai);
-            // Parse tanggal selesai
             let dateSelesai = parseDate(tglSelesai, waktuSelesai);
             
             if (!dateMulai || !dateSelesai) return 'TIDAK_DIKETAHUI';
@@ -1025,9 +1060,9 @@
     // ===========================================
     // AMBIL EXCERPT DARI ISI KONTEN
     // ===========================================
-    function getExcerpt(text, maxLength = 50) {
+    function getExcerpt(text, maxLength = 60) {
         if (!text) return '';
-        text = text.replace(/<[^>]*>/g, ''); // Hapus HTML tags
+        text = text.replace(/<[^>]*>/g, '');
         if (text.length <= maxLength) return text;
         return text.substring(0, maxLength) + '...';
     }
@@ -1040,7 +1075,6 @@
         if (DEFAULT_FOTO[key]) {
             return DEFAULT_FOTO[key];
         }
-        // Fallback
         return 'https://senapelan.github.io/Home/data/foto/imgkegiatan/senapelan.png';
     }
     
@@ -1185,14 +1219,11 @@
         const card = document.querySelector(`[data-card-id="${cardId}"]`);
         if (!card) return;
         
-        // Clone card untuk print
         const printContent = card.cloneNode(true);
         
-        // Hapus tombol print dari clone
         const printBtn = printContent.querySelector('.btn-print');
         if (printBtn) printBtn.remove();
         
-        // Buat style untuk print
         const style = document.createElement('style');
         style.innerHTML = `
             @page { size: A4; margin: 1cm; }
@@ -1238,7 +1269,7 @@
     };
     
     // ===========================================
-    // TOGGLE CARD
+    // TOGGLE CARD - FIX TIDAK TUTUP SENDIRI!
     // ===========================================
     window.toggleCard = function(cardId) {
         const card = document.querySelector(`[data-card-id="${cardId}"]`);
@@ -1246,10 +1277,19 @@
             if (card.classList.contains('expanded')) {
                 card.classList.remove('expanded');
                 saveExpandedCard(null);
+                console.log('Card ditutup:', cardId);
             } else {
-                document.querySelectorAll('.card').forEach(c => c.classList.remove('expanded'));
+                // Tutup semua card lain
+                document.querySelectorAll('.card').forEach(c => {
+                    if (c !== card) {
+                        c.classList.remove('expanded');
+                    }
+                });
+                
+                // Buka card ini
                 card.classList.add('expanded');
                 saveExpandedCard(cardId);
+                console.log('Card dibuka & disimpan:', cardId);
             }
         }
     };
@@ -1263,16 +1303,13 @@
         
         currentFilter = { instansi, status };
         
-        // Filter data
         filteredData = allData.filter(item => {
-            // Filter instansi
             if (instansi !== 'SEMUA') {
                 const itemInstansi = (item.instansi || '').toUpperCase().trim();
                 const filterInstansi = instansi.toUpperCase().trim();
                 if (itemInstansi !== filterInstansi) return false;
             }
             
-            // Filter status
             if (status !== 'SEMUA') {
                 const itemStatus = getEventStatus(item.tglMulai, item.waktuMulai, item.tglSelesai, item.waktuSelesai);
                 if (status === 'BERLANGSUNG' && itemStatus !== 'BERLANGSUNG') return false;
@@ -1283,11 +1320,13 @@
             return true;
         });
         
-        // Update filter badge
         updateFilterBadge();
-        
-        // Render ulang
         renderAll();
+        
+        // RESTORE CARD SETELAH FILTER
+        setTimeout(() => {
+            restoreExpandedCard();
+        }, 300);
     }
     
     function resetFilter() {
@@ -1297,6 +1336,11 @@
         filteredData = [...allData];
         document.getElementById('activeFilterBadge').style.display = 'none';
         renderAll();
+        
+        // RESTORE CARD SETELAH RESET
+        setTimeout(() => {
+            restoreExpandedCard();
+        }, 300);
     }
     
     function updateFilterBadge() {
@@ -1328,25 +1372,18 @@
     // RENDER ALL CARDS
     // ===========================================
     function renderAll() {
-        // Hitung stats
         const stats = calculateStats(filteredData);
         updateStats(stats);
         
-        // Split data berdasarkan status
         const berlangsung = filteredData.filter(item => 
             getEventStatus(item.tglMulai, item.waktuMulai, item.tglSelesai, item.waktuSelesai) === 'BERLANGSUNG'
         );
         const datang = filteredData.filter(item => 
             getEventStatus(item.tglMulai, item.waktuMulai, item.tglSelesai, item.waktuSelesai) === 'DATANG'
         );
-        const selesai = filteredData.filter(item => 
-            getEventStatus(item.tglMulai, item.waktuMulai, item.tglSelesai, item.waktuSelesai) === 'SELESAI'
-        );
         
-        // Highlight section: berlangsung + datang
         const highlightData = [...berlangsung, ...datang];
         
-        // Sort highlight: berlangsung dulu, lalu datang (terdekat)
         highlightData.sort((a, b) => {
             const statusA = getEventStatus(a.tglMulai, a.waktuMulai, a.tglSelesai, a.waktuSelesai);
             const statusB = getEventStatus(b.tglMulai, b.waktuMulai, b.tglSelesai, b.waktuSelesai);
@@ -1354,44 +1391,31 @@
             if (statusA === 'BERLANGSUNG' && statusB !== 'BERLANGSUNG') return -1;
             if (statusA !== 'BERLANGSUNG' && statusB === 'BERLANGSUNG') return 1;
             
-            // Sort by start date
             const dateA = parseDate(a.tglMulai, a.waktuMulai) || new Date();
             const dateB = parseDate(b.tglMulai, b.waktuMulai) || new Date();
             return dateA - dateB;
         });
         
-        // Semua data
         const allEventsData = [...filteredData];
         
-        // Sort all events: terbaru ke lama berdasarkan timestamp
         allEventsData.sort((a, b) => {
             const dateA = new Date(a.timestamp);
             const dateB = new Date(b.timestamp);
             return dateB - dateA;
         });
         
-        // Apply limit
         const limit = currentLimit === 0 ? allEventsData.length : currentLimit;
         const limitedAllEvents = allEventsData.slice(0, limit);
         
-        // Render
+        // RENDER HIGHLIGHT
         document.getElementById('highlightFeed').innerHTML = renderCards(highlightData, 'highlight');
+        
+        // RENDER ALL
         document.getElementById('newsFeed').innerHTML = renderCards(limitedAllEvents, 'all');
         
         document.getElementById('highlightCount').innerHTML = highlightData.length;
         document.getElementById('allEventsCount').innerHTML = limitedAllEvents.length;
         document.getElementById('showingInfo').innerHTML = `<i class="fas fa-info-circle"></i> Menampilkan ${limitedAllEvents.length} dari ${filteredData.length} kegiatan (Filter: ${currentFilter.instansi} · ${currentFilter.status})`;
-        
-        // Restore expanded card
-        if (expandedCardId) {
-            const expandedCard = document.querySelector(`[data-card-id="${expandedCardId}"]`);
-            if (expandedCard) {
-                expandedCard.classList.add('expanded');
-            } else {
-                expandedCardId = null;
-                saveExpandedCard(null);
-            }
-        }
     }
     
     function calculateStats(data) {
@@ -1447,23 +1471,15 @@
             const berlangsung = (status === 'BERLANGSUNG');
             const datang = (status === 'DATANG');
             
-            // ID UNIK
-            const cardId = `card-${section}-${index}-${timestamp.replace(/[^0-9]/g, '').slice(-6)}-${Math.random().toString(36).substr(2, 4)}`;
+            // ID UNIK - PASTIKAN KONSISTEN
+            const cardId = `card-${section}-${index}-${timestamp.replace(/[^0-9]/g, '').slice(-6)}-${instansi.replace(/\s+/g, '').slice(0,5)}`;
             
-            // AMBIL FOTO DEFAULT
             const defaultFoto = getDefaultFoto(instansi);
-            
-            // AMBIL EXCERPT
             const excerpt = getExcerpt(isiKonten, 60);
-            
-            // CEK APAKAH ADA LINK MAP
             const punyaLinkMap = linkMap && linkMap.trim() !== '' && isGoogleMapsLink(linkMap);
-            
-            // LABEL BARU
             const isNew = isLessThan24Hours(timestamp);
             const newBadge = isNew ? '<span class="badge-new"><i class="fas fa-bolt"></i>BARU</span>' : '';
             
-            // FORMAT TANGGAL POSTING
             let tanggalPosting = '';
             try {
                 const date = new Date(timestamp);
@@ -1474,13 +1490,9 @@
                 }
             } catch {}
             
-            // FORMAT DURASI ACARA
             const waktuAcaraHTML = formatDurasiAcara(tglMulai, waktuMulai, tglSelesai, waktuSelesai);
-            
-            // COUNTDOWN
             const countdownHTML = datang ? getCountdownText(tglMulai, waktuMulai) : '';
             
-            // STATUS LABEL
             let statusLabel = '';
             if (selesai) {
                 statusLabel = '<span class="status-label selesai"><i class="fas fa-check-circle"></i> Acara Telah Selesai</span>';
@@ -1490,13 +1502,11 @@
                 statusLabel = `<span class="status-label datang"><i class="fas fa-calendar-alt"></i> Akan Datang</span>`;
             }
             
-            // CSS CLASS
             let cardClass = 'card';
             if (selesai) cardClass += ' selesai';
             else if (berlangsung) cardClass += ' berlangsung';
             else if (datang) cardClass += ' akan-datang';
             
-            // THUMBNAIL - PAKAI FOTO DEFAULT
             const thumbnailHtml = `<div class="thumbnail"><img src="${defaultFoto}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-building\\' style=\\'font-size: 32px; color: #94a3b8;\\'></i>'"></div>`;
             
             html += `<div class="${cardClass}" data-card-id="${cardId}">
@@ -1528,7 +1538,6 @@
                     <div class="detail-inner">
                         <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>`;
             
-            // FOTO DARI SPREADSHEET - DITAMPILKAN DI DETAIL
             if (fotoUrl) {
                 let fileId = '';
                 if (fotoUrl.includes('open?id=')) {
@@ -1598,11 +1607,16 @@
                     allData = response.data;
                     filteredData = [...allData];
                     
-                    // Terapkan filter yang tersimpan
                     applyFilter();
                     
                     document.getElementById('lastUpdate').innerHTML = 
                         `<i class="fas fa-check-circle" style="color:#10b981;"></i> Terakhir update: ${new Date().toLocaleTimeString('id-ID')} · ${allData.length} berita tersedia`;
+                    
+                    // RESTORE CARD SETELAH DATA DITERIMA
+                    setTimeout(() => {
+                        restoreExpandedCard();
+                    }, 500);
+                    
                 } else {
                     allData = [];
                     filteredData = [];
@@ -1660,7 +1674,8 @@
     // INITIALIZATION
     // ===========================================
     window.addEventListener('load', function() {
-        // Setup event listeners
+        console.log('🚀 Aplikasi dimulai');
+        
         document.getElementById('applyFilterBtn').addEventListener('click', applyFilter);
         document.getElementById('resetFilterBtn').addEventListener('click', resetFilter);
         document.getElementById('clearFilterBadge').addEventListener('click', resetFilter);
@@ -1668,27 +1683,60 @@
         document.getElementById('entryLimit').addEventListener('change', function(e) {
             currentLimit = parseInt(e.target.value);
             renderAll();
+            
+            // RESTORE CARD SETELAH GANTI LIMIT
+            setTimeout(() => {
+                restoreExpandedCard();
+            }, 300);
         });
         
-        // Load saved expanded card
+        // Langsung coba restore dari storage saat load
         const savedCardId = getSavedExpandedCard();
         if (savedCardId) {
-            setTimeout(() => {
-                const card = document.querySelector(`[data-card-id="${savedCardId}"]`);
-                if (card) {
-                    card.classList.add('expanded');
-                    expandedCardId = savedCardId;
-                }
-            }, 500);
+            console.log('📦 Ditemukan card tersimpan di localStorage:', savedCardId);
+            expandedCardId = savedCardId;
         }
         
-        // Fetch data
+        // Fetch data pertama
         fetchData();
         
-        // Auto refresh
+        // Auto refresh setiap 10 detik - TAPI JANGAN HAPUS EXPANDED CARD!
         setInterval(() => {
+            console.log('🔄 Auto refresh...');
             fetchData();
-        }, 5000);
+            // JANGAN panggil restoreExpandedCard di sini karena sudah dipanggil di fetchData
+        }, 10000);
+    });
+    
+    // ===========================================
+    // PASTIKAN CARD TETAP TERBUKA SAAT MUTASI DOM
+    // ===========================================
+    // Observer untuk mendeteksi perubahan DOM dan merestore card
+    const observer = new MutationObserver(function(mutations) {
+        // Jika ada card yang hilang atau berubah
+        if (expandedCardId) {
+            // Tunggu sebentar biar DOM selesai berubah
+            setTimeout(() => {
+                const card = document.querySelector(`[data-card-id="${expandedCardId}"]`);
+                if (card && !card.classList.contains('expanded')) {
+                    console.log('🔄 Memulihkan card yang terbuka:', expandedCardId);
+                    card.classList.add('expanded');
+                }
+            }, 200);
+        }
+    });
+    
+    // Observasi perubahan di newsFeed dan highlightFeed
+    window.addEventListener('load', function() {
+        const newsFeed = document.getElementById('newsFeed');
+        const highlightFeed = document.getElementById('highlightFeed');
+        
+        if (newsFeed) {
+            observer.observe(newsFeed, { childList: true, subtree: true });
+        }
+        if (highlightFeed) {
+            observer.observe(highlightFeed, { childList: true, subtree: true });
+        }
     });
     </script>
 </body>
