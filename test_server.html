@@ -193,8 +193,15 @@
             border-color: var(--primary);
         }
 
-        .filter-btn i {
-            font-size: 0.8rem;
+        .filter-btn.active img {
+            border: 2px solid white;
+        }
+
+        .filter-btn img {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .entry-control {
@@ -257,6 +264,7 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            margin-left: 8px;
         }
 
         /* ========== CARDS GRID ========== */
@@ -600,6 +608,11 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
+            flex-wrap: wrap;
+            background: white;
+            padding: 16px 24px;
+            border-radius: 60px;
+            box-shadow: var(--shadow);
         }
 
         .empty-state {
@@ -654,19 +667,19 @@
                 <span class="filter-label"><i class="fas fa-filter"></i> Filter Instansi:</span>
                 <div class="filter-buttons" id="filterButtons">
                     <button class="filter-btn active" data-filter="all"><i class="fas fa-building"></i> Semua</button>
-                    <button class="filter-btn" data-filter="Kecamatan Senapelan"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/senapelan.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;"> Senapelan</button>
-                    <button class="filter-btn" data-filter="Kelurahan Kampung Bandar"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/kampungbandar.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;"> Kampung Bandar</button>
-                    <button class="filter-btn" data-filter="Kelurahan Kampung Baru"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/kampungbaru.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;"> Kampung Baru</button>
-                    <button class="filter-btn" data-filter="Kelurahan Kampung Dalam"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/kampungdalam.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;"> Kampung Dalam</button>
-                    <button class="filter-btn" data-filter="Kelurahan Padang Bulan"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/padangbulan.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;"> Padang Bulan</button>
-                    <button class="filter-btn" data-filter="Kelurahan Padang Terubuk"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/padangterubuk.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;"> Padang Terubuk</button>
-                    <button class="filter-btn" data-filter="Kelurahan Sago"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/sago.png" style="width: 20px; height: 20px; border-radius: 50%; object-fit: cover;"> Sago</button>
+                    <button class="filter-btn" data-filter="Kecamatan Senapelan"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/senapelan.png" alt=""> Senapelan</button>
+                    <button class="filter-btn" data-filter="Kelurahan Kampung Bandar"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/kampungbandar.png" alt=""> Kampung Bandar</button>
+                    <button class="filter-btn" data-filter="Kelurahan Kampung Baru"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/kampungbaru.png" alt=""> Kampung Baru</button>
+                    <button class="filter-btn" data-filter="Kelurahan Kampung Dalam"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/kampungdalam.png" alt=""> Kampung Dalam</button>
+                    <button class="filter-btn" data-filter="Kelurahan Padang Bulan"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/padangbulan.png" alt=""> Padang Bulan</button>
+                    <button class="filter-btn" data-filter="Kelurahan Padang Terubuk"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/padangterubuk.png" alt=""> Padang Terubuk</button>
+                    <button class="filter-btn" data-filter="Kelurahan Sago"><img src="https://senapelan.github.io/Home/data/foto/imgkegiatan/sago.png" alt=""> Sago</button>
                 </div>
             </div>
             <div class="entry-control">
                 <i class="fas fa-list-ul" style="color: var(--gray);"></i>
                 <select id="entrySelect" class="entry-select">
-                    <option value="100">100 Card</option>
+                    <option value="100" selected>100 Card</option>
                     <option value="500">500 Card</option>
                     <option value="1000">1000 Card</option>
                 </select>
@@ -685,7 +698,7 @@
         <div id="paginationInfo" class="pagination-info"></div>
 
         <footer>
-            <i class="fas fa-bolt"></i> Update Real-time · Senapelan Satu Pintu · v2.0
+            <i class="fas fa-bolt"></i> Update setiap 5 detik · Senapelan Satu Pintu · v2.1
         </footer>
     </div>
 
@@ -698,7 +711,7 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYnfxLi8ViBeYRQmRvEYn2fiDYJHbV5zCDGpJ5YPzNB7ez8dE9G-BIS6jzCZ61CmHMGQ/exec';
     
     // ===========================================
-    // DEFAULT THUMBNAILS PER INSTANSI
+    // DEFAULT THUMBNAILS UNTUK CARD TERTUTUP
     // ===========================================
     const DEFAULT_THUMBNAILS = {
         'Kecamatan Senapelan': 'https://senapelan.github.io/Home/data/foto/imgkegiatan/senapelan.png',
@@ -710,6 +723,9 @@
         'Kelurahan Sago': 'https://senapelan.github.io/Home/data/foto/imgkegiatan/sago.png'
     };
     
+    // ===========================================
+    // FOTO DEFAULT UNTUK KONTEN (JIKA TIDAK ADA LINK)
+    // ===========================================
     const FALLBACK_IMAGE = 'https://senapelan.github.io/Home/data/foto/updatelogo.png';
 
     // ===========================================
@@ -752,9 +768,11 @@
             const sekarang = new Date();
             const [tglMulaiObj, tglSelesaiObj] = parseDates(tglMulai, waktuMulai, tglSelesai, waktuSelesai);
             
+            if (!tglMulaiObj) return 'selesai';
+            
             if (tglSelesaiObj && sekarang > tglSelesaiObj) return 'selesai';
-            if (tglMulaiObj && sekarang >= tglMulaiObj && (!tglSelesaiObj || sekarang <= tglSelesaiObj)) return 'berlangsung';
-            if (tglMulaiObj && sekarang < tglMulaiObj) return 'akan-datang';
+            if (sekarang >= tglMulaiObj && (!tglSelesaiObj || sekarang <= tglSelesaiObj)) return 'berlangsung';
+            if (sekarang < tglMulaiObj) return 'akan-datang';
             
             return 'selesai';
         } catch (e) {
@@ -769,6 +787,8 @@
             let jamMulai = parseTimeString(waktuMulai);
             let tanggalSelesai = tglSelesai ? parseDateString(tglSelesai) : null;
             let jamSelesai = waktuSelesai ? parseTimeString(waktuSelesai) : null;
+            
+            if (!tanggalMulai) return [null, null];
             
             const tglMulaiObj = new Date(tanggalMulai);
             tglMulaiObj.setHours(jamMulai.jam, jamMulai.menit, 0);
@@ -794,7 +814,7 @@
                 const hari = parseInt(parts[1]);
                 let tahun = parseInt(parts[2]);
                 if (tahun < 100) tahun += 2000;
-                return `${tahun}-${bulan+1}-${hari}`;
+                return `${tahun}-${(bulan+1).toString().padStart(2, '0')}-${hari.toString().padStart(2, '0')}`;
             }
         }
         return dateStr;
@@ -832,7 +852,7 @@
             const sekarang = new Date();
             const diff = tglMulaiObj - sekarang;
             
-            if (diff <= 0) return '<span class="countdown-timer"><i class="fas fa-hourglass-start"></i> Sedang berlangsung</span>';
+            if (diff <= 0) return '';
             
             const hari = Math.floor(diff / (1000 * 60 * 60 * 24));
             const jam = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -840,7 +860,8 @@
             
             if (hari > 0) return `<span class="countdown-timer"><i class="fas fa-hourglass-half"></i> ${hari} hari ${jam} jam</span>`;
             if (jam > 0) return `<span class="countdown-timer"><i class="fas fa-hourglass-half"></i> ${jam} jam ${menit} menit</span>`;
-            return `<span class="countdown-timer"><i class="fas fa-hourglass-half"></i> ${menit} menit</span>`;
+            if (menit > 0) return `<span class="countdown-timer"><i class="fas fa-hourglass-half"></i> ${menit} menit</span>`;
+            return '';
         } catch {
             return '';
         }
@@ -857,9 +878,12 @@
                 if (parts.length === 3) {
                     const bulan = parseInt(parts[0]);
                     const hari = parseInt(parts[1]);
-                    const tahun = parseInt(parts[2]);
+                    let tahun = parseInt(parts[2]);
+                    if (tahun < 100) tahun += 2000;
+                    
                     const namaBulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
                         'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                    
                     if (bulan >= 1 && bulan <= 12) {
                         return `${hari} ${namaBulan[bulan-1]} ${tahun}`;
                     }
@@ -909,7 +933,7 @@
 
     function getExcerptText(text, maxLength = 50) {
         if (!text) return 'Tidak ada keterangan';
-        text = text.replace(/\n/g, ' ');
+        text = text.replace(/\n/g, ' ').trim();
         if (text.length > maxLength) {
             return text.substring(0, maxLength) + '...';
         }
@@ -917,37 +941,44 @@
     }
 
     // ===========================================
-    // GET THUMBNAIL URL
+    // GET THUMBNAIL URL - UNTUK CARD TERTUTUP
     // ===========================================
     function getThumbnailUrl(instansi) {
-        return DEFAULT_THUMBNAILS[instansi] || FALLBACK_IMAGE;
+        return DEFAULT_THUMBNAILS[instansi] || 'https://senapelan.github.io/Home/data/foto/updatelogo.png';
     }
 
+    // ===========================================
+    // GET FOTO KONTEN - JIKA ADA LINK SPREADSHEET
+    // ===========================================
     function getFotoKontenUrl(fotoUrl) {
         if (!fotoUrl || fotoUrl.trim() === '') return null;
         
         try {
+            // Google Drive link
             if (fotoUrl.includes('open?id=')) {
                 const fileId = fotoUrl.split('open?id=')[1].split('&')[0];
-                return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800-h800`;
+                return `https://drive.google.com/uc?export=view&id=${fileId}`;
             } else if (fotoUrl.includes('file/d/')) {
                 const match = fotoUrl.match(/\/d\/(.*?)(\/|$)/);
                 if (match) {
-                    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w800-h800`;
+                    return `https://drive.google.com/uc?export=view&id=${match[1]}`;
                 }
             }
-        } catch (e) {}
+        } catch (e) {
+            console.log('Error parsing foto URL:', e);
+        }
         return fotoUrl;
     }
 
     // ===========================================
-    // PDF GENERATOR
+    // PDF GENERATOR - FOTO KONTEN TERCETAK
     // ===========================================
     window.printToPDF = async function(cardElement, judul, instansi) {
         try {
             const { jsPDF } = window.jspdf;
             const pdf = new jsPDF('p', 'mm', 'a4');
             
+            // Clone card dengan semua konten termasuk foto
             const cloneCard = cardElement.cloneNode(true);
             cloneCard.style.width = '800px';
             cloneCard.style.position = 'fixed';
@@ -955,18 +986,32 @@
             cloneCard.style.top = '0';
             cloneCard.style.background = 'white';
             cloneCard.style.borderRadius = '16px';
-            cloneCard.style.padding = '20px';
+            cloneCard.style.padding = '30px';
             cloneCard.style.boxShadow = 'none';
+            cloneCard.style.maxHeight = 'none';
+            cloneCard.style.overflow = 'visible';
             
-            // Hapus tombol dan elemen yang tidak perlu
-            cloneCard.querySelectorAll('.btn, .arrow-toggle, .status-ribbon').forEach(el => el.remove());
+            // Hapus tombol cetak agar tidak double
+            cloneCard.querySelectorAll('.btn-pdf').forEach(el => el.remove());
+            
+            // Pastikan semua gambar terload
+            const images = cloneCard.querySelectorAll('img');
+            await Promise.all(Array.from(images).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.onload = resolve;
+                    img.onerror = resolve;
+                });
+            }));
             
             document.body.appendChild(cloneCard);
             
             const canvas = await html2canvas(cloneCard, {
                 scale: 2,
                 backgroundColor: '#ffffff',
-                logging: false
+                logging: false,
+                allowTaint: true,
+                useCORS: true
             });
             
             document.body.removeChild(cloneCard);
@@ -976,7 +1021,12 @@
             const imgHeight = (canvas.height * imgWidth) / canvas.width;
             
             pdf.addImage(imgData, 'PNG', 0, 10, imgWidth, imgHeight);
-            pdf.save(`Kegiatan-${instansi}-${judul.substring(0, 30)}.pdf`);
+            
+            // Format nama file
+            const date = new Date();
+            const dateStr = `${date.getFullYear()}-${(date.getMonth()+1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+            pdf.save(`Kegiatan-${instansi}-${dateStr}.pdf`);
+            
         } catch (error) {
             console.error('PDF Error:', error);
             alert('Gagal mencetak PDF. Silakan coba lagi.');
@@ -984,14 +1034,23 @@
     };
 
     // ===========================================
-    // SORT & FILTER DATA
+    // SORT & FILTER DATA - FIXED!
     // ===========================================
     function sortAndFilterData(data, filter, limit) {
-        // Filter instansi
-        let filtered = filter === 'all' ? data : data.filter(item => item.instansi === filter);
+        if (!data || data.length === 0) return [];
+        
+        // Filter instansi - PERBAIKAN!
+        let filtered = [];
+        if (filter === 'all') {
+            filtered = [...data];
+        } else {
+            filtered = data.filter(item => {
+                // Pastikan instansi tidak undefined/null dan cocok persis
+                return item.instansi && item.instansi.trim() === filter;
+            });
+        }
         
         // Kategorikan status
-        const now = new Date();
         const berlangsung = [];
         const akanDatang = [];
         const selesai = [];
@@ -1030,7 +1089,7 @@
     }
 
     // ===========================================
-    // TOGGLE CARD
+    // TOGGLE CARD - PASTIKAN TIDAK TUTUP SENDIRI
     // ===========================================
     window.toggleCard = function(cardId) {
         const card = document.querySelector(`[data-card-id="${cardId}"]`);
@@ -1057,18 +1116,18 @@
             feed.innerHTML = `
                 <div class="empty-state">
                     <i class="fas fa-calendar-times" style="font-size: 48px; color: var(--gray);"></i>
-                    <h3 style="margin-top: 20px; color: var(--primary);">Belum Ada Kegiatan</h3>
-                    <p style="margin-top: 12px; color: var(--gray);">Data akan muncul setelah ada pengisian form</p>
+                    <h3 style="margin-top: 20px; color: var(--primary);">Tidak Ada Kegiatan</h3>
+                    <p style="margin-top: 12px; color: var(--gray);">Tidak ditemukan kegiatan untuk filter yang dipilih</p>
                 </div>
             `;
-            paginationInfo.innerHTML = '';
+            paginationInfo.innerHTML = '<span><i class="fas fa-info-circle"></i> Tidak ada data ditampilkan</span>';
             return;
         }
 
         // Kategorikan untuk section
-        const berlangsung = rows.filter(r => getStatusAcara(r.tglMulai, r.waktuMulai, r.tglSelesai, r.waktuSelesai) === 'berlangsung');
-        const akanDatang = rows.filter(r => getStatusAcara(r.tglMulai, r.waktuMulai, r.tglSelesai, r.waktuSelesai) === 'akan-datang');
-        const selesai = rows.filter(r => getStatusAcara(r.tglMulai, r.waktuMulai, r.tglSelesai, r.waktuSelesai) === 'selesai');
+        const berlangsung = rows.filter(r => r.status === 'berlangsung');
+        const akanDatang = rows.filter(r => r.status === 'akan-datang');
+        const selesai = rows.filter(r => r.status === 'selesai');
 
         let html = '';
 
@@ -1110,16 +1169,19 @@
 
         feed.innerHTML = html;
         
-        // Restore expanded card
+        // Restore expanded card - PASTIKAN TIDAK TUTUP SENDIRI
         const savedCardId = getSavedExpandedCard();
         if (savedCardId) {
             const expandedCard = document.querySelector(`[data-card-id="${savedCardId}"]`);
             if (expandedCard) {
                 expandedCard.classList.add('expanded');
                 expandedCardId = savedCardId;
+            } else {
+                saveExpandedCard(null);
             }
         }
 
+        // Update pagination info
         paginationInfo.innerHTML = `
             <span><i class="fas fa-calendar-check"></i> Menampilkan ${rows.length} kegiatan</span>
             <span><i class="fas fa-circle" style="color: var(--success);"></i> ${berlangsung.length} Berlangsung</span>
@@ -1129,7 +1191,7 @@
     }
 
     function renderSingleCard(row, index, statusClass) {
-        const timestamp = row.timestamp || '';
+        const timestamp = row.timestamp || Date.now().toString();
         const instansi = row.instansi || 'INSTANSI';
         const tglMulai = row.tglMulai || '';
         const waktuMulai = row.waktuMulai || '';
@@ -1140,24 +1202,26 @@
         let isiKonten = row.isiKonten || 'Tidak ada keterangan';
         const fotoUrl = row.fotoUrl || '';
         
-        const cardId = `card-${index}-${timestamp.replace(/[^0-9]/g, '').slice(-8)}-${Date.now()}`;
+        // ID unik dan konsisten
+        const cardId = `card-${instansi.replace(/\s/g, '')}-${timestamp}-${index}`;
+        
+        // THUMBNAIL - PAKAI FOTO DEFAULT INSTANSI
         const thumbnailUrl = getThumbnailUrl(instansi);
+        
+        // FOTO KONTEN - PAKAI FALLBACK JIKA TIDAK ADA
         const fotoKontenUrl = getFotoKontenUrl(fotoUrl);
+        
         const excerpt = getExcerptText(isiKonten);
         const countdown = getCountdownText(tglMulai, waktuMulai);
         
         // Status Badge
         let statusBadge = '';
-        let statusText = '';
         if (statusClass === 'berlangsung') {
             statusBadge = '<span class="status-badge status-berlangsung"><i class="fas fa-play"></i> Sedang Berlangsung</span>';
-            statusText = 'berlangsung';
         } else if (statusClass === 'akan-datang') {
             statusBadge = `<span class="status-badge status-akan-datang"><i class="fas fa-hourglass-half"></i> Akan Datang ${countdown}</span>`;
-            statusText = 'akan-datang';
         } else {
             statusBadge = '<span class="status-badge status-selesai"><i class="fas fa-check-circle"></i> Acara Selesai</span>';
-            statusText = 'selesai';
         }
 
         // Format Waktu
@@ -1167,7 +1231,7 @@
         const punyaLinkMap = linkMap && linkMap.trim() !== '' && 
             (linkMap.includes('google.com/maps') || linkMap.includes('goo.gl/maps') || linkMap.includes('maps.app.goo.gl'));
 
-        return `<div class="card ${statusText}" data-card-id="${cardId}">
+        return `<div class="card ${statusClass}" data-card-id="${cardId}">
                     <div class="status-ribbon">
                         ${statusBadge}
                     </div>
@@ -1198,6 +1262,7 @@
                         <div class="detail-inner">
                             <div class="isi-konten">${isiKonten.replace(/\n/g, '<br>')}</div>
                             
+                            <!-- FOTO KONTEN - HANYA TAMPIL JIKA ADA LINK, JIKA TIDAK ADA TIDAK TAMPIL -->
                             ${fotoKontenUrl ? `
                             <div class="foto-konten">
                                 <img src="${fotoKontenUrl}" loading="lazy" onerror="this.src='${FALLBACK_IMAGE}'" style="width: 100%;">
@@ -1230,7 +1295,7 @@
                             ${waktuAcaraHTML}
                             
                             <div class="button-group">
-                                <button onclick="printToPDF(this.closest('.card'), '${instansi}', '${instansi}')" class="btn btn-pdf">
+                                <button onclick="printToPDF(this.closest('.card'), '${instansi.replace(/'/g, "\\'")}', '${instansi.replace(/'/g, "\\'")}')" class="btn btn-pdf">
                                     <i class="fas fa-file-pdf"></i> Cetak/Print PDF
                                 </button>
                                 ${punyaLinkMap ? `
@@ -1277,7 +1342,7 @@
         return `
             <div class="time-display">
                 <span class="date-badge">
-                    <i class="far fa-calendar-alt"></i> ${tglMulai || '?'} ${waktuMulai || ''}
+                    <i class="far fa-calendar-alt"></i> ${tanggalMulai || tglMulai || '?'} ${jamMulai || waktuMulai || ''}
                 </span>
             </div>
         `;
@@ -1296,6 +1361,7 @@
             
             if (response && response.success === true) {
                 allData = response.data || [];
+                console.log('Data loaded:', allData.length, 'items');
                 
                 // Filter dan limit
                 const filteredData = sortAndFilterData(allData, currentFilter, currentEntry);
@@ -1345,25 +1411,38 @@
     // EVENT LISTENERS
     // ===========================================
     function initEventListeners() {
-        // Filter buttons
+        // Filter buttons - FIXED!
         document.querySelectorAll('.filter-btn').forEach(btn => {
-            btn.addEventListener('click', function() {
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Update active class
                 document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 
+                // Get filter value
                 const filter = this.dataset.filter;
                 currentFilter = filter;
                 
-                const filteredData = sortAndFilterData(allData, currentFilter, currentEntry);
-                renderCards(filteredData);
+                console.log('Filter clicked:', filter);
+                
+                // Apply filter
+                if (allData && allData.length > 0) {
+                    const filteredData = sortAndFilterData(allData, currentFilter, currentEntry);
+                    renderCards(filteredData);
+                }
             });
         });
         
         // Entry select
         document.getElementById('entrySelect').addEventListener('change', function() {
             currentEntry = parseInt(this.value);
-            const filteredData = sortAndFilterData(allData, currentFilter, currentEntry);
-            renderCards(filteredData);
+            console.log('Entry changed:', currentEntry);
+            
+            if (allData && allData.length > 0) {
+                const filteredData = sortAndFilterData(allData, currentFilter, currentEntry);
+                renderCards(filteredData);
+            }
         });
     }
 
@@ -1374,22 +1453,11 @@
         initEventListeners();
         fetchData();
         
-        // Auto refresh setiap 10 detik
+        // Auto refresh setiap 5 DETIK (sesuai permintaan)
         setInterval(() => {
+            console.log('Auto-refresh...');
             fetchData();
-        }, 10000);
-        
-        // Restore expanded card
-        const savedCardId = getSavedExpandedCard();
-        if (savedCardId) {
-            setTimeout(() => {
-                const card = document.querySelector(`[data-card-id="${savedCardId}"]`);
-                if (card) {
-                    card.classList.add('expanded');
-                    expandedCardId = savedCardId;
-                }
-            }, 1000);
-        }
+        }, 5000); // 5000ms = 5 detik
     });
     </script>
 </body>
