@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MONOGRAFI PENDUDUK · data premium 2026</title>
+    <!-- Google Fonts & Font Awesome 6 (free) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f4fa 0%, #e9eef5 100%);
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            color: #1a2639;
+        }
+
+        /* KARTU PREMIUM – GLASSMORPHISM ELEVATED */
+        .dashboard-card {
+            width: 100%;
+            max-width: 1320px;
+            background: rgba(255,255,255,0.68);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border-radius: 48px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0,0,0,0.15),
+                inset 0 1px 2px rgba(255,255,255,0.8),
+                0 0 0 1px rgba(255,255,255,0.5) inset;
+            padding: 2rem 2rem 2.5rem 2rem;
+            transition: all 0.2s ease;
+        }
+
+        /* header seksi */
+        .header-premium {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.25rem;
+        }
+
+        .title-section h1 {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #1e2c3a, #2b3d4f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .title-section h1 i {
+            background: linear-gradient(145deg, #2d4c6e, #1f344b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 2rem;
+        }
+
+        .sheet-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(23, 45, 69, 0.08);
+            border-radius: 40px;
+            padding: 0.4rem 1.2rem 0.4rem 1rem;
+            border: 1px solid rgba(255,255,255,0.6);
+            backdrop-filter: blur(4px);
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1d3a5c;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
+        }
+
+        .sheet-badge i {
+            color: #2266aa;
+            font-size: 1rem;
+        }
+
+        .timestamp {
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: #4f658d;
+            background: rgba(255,255,255,0.5);
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            border: 1px solid rgba(255,255,255,0.8);
+            backdrop-filter: blur(2px);
+        }
+
+        /* search + filter bar */
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 2rem;
+            background: rgba(255,255,255,0.4);
+            border-radius: 60px;
+            padding: 0.4rem 0.4rem 0.4rem 1.2rem;
+            border: 1px solid rgba(255,255,255,0.8);
+            backdrop-filter: blur(8px);
+        }
+
+        .search-wrapper {
+            flex: 2 1 260px;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            background: white;
+            border-radius: 40px;
+            padding: 0.5rem 1rem;
+            box-shadow: 0 8px 20px -10px rgba(0,30,60,0.1);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+
+        .search-wrapper i {
+            color: #4a6f9c;
+            font-size: 1rem;
+        }
+
+        .search-wrapper input {
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-size: 0.95rem;
+            font-weight: 400;
+            outline: none;
+            color: #1f2d42;
+        }
+
+        .search-wrapper input::placeholder {
+            color: #9aafc9;
+            font-weight: 300;
+        }
+
+        .filter-pill {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            background: white;
+            border-radius: 36px;
+            padding: 0.3rem 0.8rem 0.3rem 1rem;
+            border: 1px solid rgba(0,0,0,0.02);
+            box-shadow: 0 8px 16px -10px rgba(0,30,60,0.08);
+        }
+
+        .filter-pill span {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1f3a5e;
+        }
+
+        .filter-pill i {
+            color: #517ea8;
+            font-size: 0.8rem;
+        }
+
+        .column-indicator {
+            background: #1a2c3f;
+            color: white;
+            border-radius: 30px;
+            padding: 0.3rem 1rem;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.02rem;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        /* table premium */
+        .table-container {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-radius: 32px;
+            border: 1px solid rgba(255,255,255,0.9);
+            box-shadow: 0 20px 40px -20px rgba(0,20,40,0.2);
+            overflow-x: auto;
+            overflow-y: auto;
+            max-height: 65vh;
+            scrollbar-width: thin;
+            scrollbar-color: #b4c8e0 #eef3fc;
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: #eef3fc;
+            border-radius: 20px;
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #b4c8e0;
+            border-radius: 20px;
+            border: 2px solid #eef3fc;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.95rem;
+            min-width: 500px;
+        }
+
+        th {
+            text-align: left;
+            padding: 1.2rem 1rem 0.9rem 1.5rem;
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: #2d4b6e;
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(4px);
+            border-bottom: 1px solid rgba(60, 90, 120, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        td {
+            padding: 1rem 1rem 1rem 1.5rem;
+            border-bottom: 1px solid rgba(160, 180, 200, 0.2);
+            color: #1a2b3e;
+            font-weight: 400;
+            background: rgba(255,255,255,0.25);
+            transition: background 0.15s;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover td {
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(2px);
+        }
+
+        /* kolom index / nomor */
+        .index-cell {
+            font-weight: 500;
+            color: #3e5f82;
+            width: 60px;
+            opacity: 0.8;
+        }
+
+        /* badge untuk nilai kosong */
+        .null-placeholder {
+            color: #a7bbd4;
+            font-style: italic;
+            font-weight: 300;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.2rem;
+        }
+
+        .null-placeholder i {
+            font-size: 0.7rem;
+            opacity: 0.7;
+        }
+
+        /* footer & metadata */
+        .data-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 1.5rem;
+            font-size: 0.85rem;
+            color: #3a5a7a;
+        }
+
+        .row-counter {
+            background: rgba(255,255,255,0.5);
+            border-radius: 30px;
+            padding: 0.4rem 1.2rem;
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.7);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .row-counter i {
+            color: #2d6295;
+        }
+
+        .google-ref-link {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: rgba(255,255,255,0.4);
+            border-radius: 30px;
+            padding: 0.4rem 1rem;
+            backdrop-filter: blur(4px);
+            border: 1px solid rgba(255,255,255,0.6);
+            color: #1b3857;
+            text-decoration: none;
+            transition: all 0.15s;
+        }
+
+        .google-ref-link:hover {
+            background: white;
+            border-color: #98b9db;
+            box-shadow: 0 4px 12px rgba(30,90,150,0.1);
+        }
+
+        .google-ref-link i {
+            color: #1e6fdf;
+        }
+
+        /* loading state */
+        .loading-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 5rem 2rem;
+            color: #2d4b6e;
+            gap: 1rem;
+        }
+
+        .loading-state i {
+            font-size: 2.5rem;
+            opacity: 0.5;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.05); }
+            100% { opacity: 0.3; transform: scale(1); }
+        }
+
+        .error-state {
+            background: rgba(255,220,220,0.5);
+            border-radius: 30px;
+            padding: 2rem;
+            text-align: center;
+            color: #a43c3c;
+        }
+
+        /* kecil-kecil responsive */
+        @media (max-width: 700px) {
+            .dashboard-card { padding: 1.5rem; }
+            .header-premium { flex-direction: column; align-items: start; gap: 1rem; }
+            .toolbar { border-radius: 30px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-card">
+        <!-- header premium -->
+        <div class="header-premium">
+            <div class="title-section">
+                <h1>
+                    <i class="fas fa-chart-pie"></i> monografi penduduk
+                </h1>
+                <div style="display: flex; gap: 0.8rem; align-items: center; margin-top: 0.25rem;">
+                    <span class="sheet-badge"><i class="fas fa-file-excel"></i> MONOGRAFI PENDUDUK · 2026</span>
+                    <span class="timestamp"><i class="far fa-clock" style="margin-right: 0.3rem;"></i> update realtime</span>
+                </div>
+            </div>
+            <div class="column-indicator">
+                <i class="fas fa-columns"></i> Kolom A – C (A:C)
+            </div>
+        </div>
+
+        <!-- toolbar : search + filter simbolis -->
+        <div class="toolbar">
+            <div class="search-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Cari data penduduk (semua kolom) ..." autocomplete="off">
+            </div>
+            <div class="filter-pill">
+                <span><i class="fas fa-filter" style="margin-right: 0.3rem;"></i> Tampilkan A–C</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div style="flex:1; min-width: 20px;"></div>
+            <div style="font-size: 0.85rem; background: rgba(255,255,255,0.4); padding: 0.2rem 0.8rem; border-radius: 30px;">
+                <i class="fas fa-database" style="margin-right: 0.2rem;"></i> <span id="rowCountLabel">0</span> baris
+            </div>
+        </div>
+
+        <!-- tabel data dengan container scroll -->
+        <div class="table-container" id="tableContainer">
+            <table id="dataTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th><i class="fas fa-circle" style="font-size: 0.4rem; color: #4175a0; vertical-align: middle; margin-right: 6px;"></i>Kolom A</th>
+                        <th><i class="fas fa-circle" style="font-size: 0.4rem; color: #5f8ab6; vertical-align: middle; margin-right: 6px;"></i>Kolom B</th>
+                        <th><i class="fas fa-circle" style="font-size: 0.4rem; color: #7ca0c4; vertical-align: middle; margin-right: 6px;"></i>Kolom C</th>
+                    </tr>
+                </thead>
+                <tbody id="tableBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; padding: 4rem;">
+                            <div class="loading-state">
+                                <i class="fas fa-spinner-third"></i>
+                                <span>memuat data kependudukan premium ...</span>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- footer -->
+        <div class="data-footer">
+            <div class="row-counter">
+                <i class="fas fa-users-viewfinder"></i>
+                <span id="footerRowCounter">menampilkan <span id="visibleRows">0</span> data</span>
+            </div>
+            <a href="https://docs.google.com/spreadsheets/d/1PL5GlajOOqB1FhIpvFP-F-rXWOss0lhZL85TekvWuEI/edit?gid=0#gid=0" target="_blank" class="google-ref-link">
+                <i class="fab fa-google"></i> Buka spreadsheet asli
+                <i class="fas fa-external-link-alt" style="font-size: 0.7rem; opacity: 0.7;"></i>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // ---- KONFIGURASI ----
+            const SPREADSHEET_ID = '1PL5GlajOOqB1FhIpvFP-F-rXWOss0lhZL85TekvWuEI';
+            const SHEET_NAME = 'MONOGRAFI PENDUDUK';
+            // range A:C (semua baris)
+            const RANGE = 'A:C'; 
+
+            // endpoint CSV (paling stabil untuk publik)
+            const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&range=${RANGE}`;
+
+            // referensi elemen
+            const tbody = document.getElementById('tableBody');
+            const searchInput = document.getElementById('searchInput');
+            const visibleSpan = document.getElementById('visibleRows');
+            const footerCounter = document.getElementById('rowCountLabel');
+
+            // data storage
+            let allRows = [];           // array of arrays [A, B, C]
+            let filteredRows = [];       // hasil filter
+
+            // inisialisasi
+            fetchAndRender();
+
+            // event search
+            searchInput.addEventListener('input', function(e) {
+                const keyword = e.target.value.trim().toLowerCase();
+                filterTable(keyword);
+            });
+
+            /** fetch data dari google sheets sebagai CSV */
+            async function fetchAndRender() {
+                try {
+                    // tampilkan loading
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 4rem;">
+                                <div class="loading-state">
+                                    <i class="fas fa-spinner-third"></i>
+                                    <span>menyiapkan data monografi terkini ...</span>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+
+                    const response = await fetch(CSV_URL, { cache: "no-store" }); // hindari cache berlebihan
+                    if (!response.ok) throw new Error(`Gagal memuat (${response.status})`);
+
+                    const csvText = await response.text();
+                    const parsed = parseCSV(csvText);
+
+                    // parsed adalah array of arrays, baris pertama = header (mungkin)
+                    // kita asumsikan baris pertama adalah header kolom (A, B, C) atau judul.
+                    // tapi kita ingin menampilkan SEMUA data termasuk header jika itu bagian dari data.
+                    // Namun spreadsheet umumnya baris pertama judul kolom. Kita tetap tampilkan sesuai permintaan: semua data A:C (termasuk baris pertama)
+                    // Jika ingin melewati header bisa, tapi spesifikasi "Kolom semua data A:A sampai Kolom C:C" berarti semua isi termasuk header.
+                    // Untuk UX lebih baik header tetap ditampilkan sebagai data biasa, tapi pengguna bisa melihatnya.
+                    // Kita akan set ALL data. Biarkan utuh.
+
+                    allRows = parsed; 
+                    filterTable(''); // sekaligus render
+
+                } catch (error) {
+                    console.error(error);
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 3rem;">
+                                <div class="error-state">
+                                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.7;"></i>
+                                    <p style="font-weight: 500;">tidak dapat memuat data</p>
+                                    <p style="font-size: 0.8rem; margin-top: 0.3rem; opacity: 0.7;">${error.message || 'Coba periksa sheet atau koneksi'}</p>
+                                    <button onclick="location.reload()" style="margin-top: 1rem; background: white; border: 1px solid #b3cde0; padding: 0.4rem 1.4rem; border-radius: 30px; font-weight: 500; cursor: pointer;"><i class="fas fa-sync-alt"></i> ulangi</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }
+            }
+
+            /** parse CSV sederhana (mengelola kutipan) */
+            function parseCSV(csv) {
+                const lines = [];
+                let currentLine = [];
+                let field = '';
+                let inQuotes = false;
+
+                for (let i = 0; i < csv.length; i++) {
+                    const char = csv[i];
+                    const nextChar = csv[i+1];
+
+                    if (char === '"' && inQuotes && nextChar === '"') {
+                        // escaped quote
+                        field += '"';
+                        i++; // skip next quote
+                    } else if (char === '"') {
+                        inQuotes = !inQuotes;
+                    } else if (char === ',' && !inQuotes) {
+                        currentLine.push(field.trim());
+                        field = '';
+                    } else if ((char === '\n' || char === '\r') && !inQuotes) {
+                        // handle windows \r\n
+                        if (char === '\r' && nextChar === '\n') {
+                            i++; // skip \n
+                        }
+                        currentLine.push(field.trim());
+                        field = '';
+                        if (currentLine.length > 0 && !(currentLine.length === 1 && currentLine[0] === '')) {
+                            lines.push(currentLine);
+                        }
+                        currentLine = [];
+                    } else {
+                        field += char;
+                    }
+                }
+                // terakhir
+                if (field.length > 0 || currentLine.length > 0) {
+                    currentLine.push(field.trim());
+                    if (currentLine.length > 0 && !(currentLine.length === 1 && currentLine[0] === '')) {
+                        lines.push(currentLine);
+                    }
+                }
+                return lines;
+            }
+
+            /** filter berdasarkan keyword (case insensitive) dari semua kolom A, B, C */
+            function filterTable(keyword) {
+                if (!allRows.length) {
+                    filteredRows = [];
+                } else if (keyword === '') {
+                    filteredRows = [...allRows];
+                } else {
+                    filteredRows = allRows.filter(row => {
+                        // row setidaknya punya 3 kolom; jika kurang, anggap string kosong
+                        const colA = (row[0] || '').toLowerCase();
+                        const colB = (row[1] || '').toLowerCase();
+                        const colC = (row[2] || '').toLowerCase();
+                        return colA.includes(keyword) || colB.includes(keyword) || colC.includes(keyword);
+                    });
+                }
+                renderTableBody(filteredRows);
+            }
+
+            /** render array data ke tbody */
+            function renderTableBody(rows) {
+                if (!rows || rows.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="4" style="text-align: center; padding: 3rem; color: #7089a8;">
+                                <i class="fas fa-map-pin" style="font-size: 2rem; opacity: 0.4; margin-bottom: 0.5rem;"></i>
+                                <p style="font-weight: 400;">tidak ada data yang cocok</p>
+                                <p style="font-size: 0.8rem;">coba kata kunci lain</p>
+                            </td>
+                        </tr>
+                    `;
+                    visibleSpan.innerText = '0';
+                    footerCounter.innerText = allRows.length; // total baris di spreadsheet (allRows)
+                    return;
+                }
+
+                let html = '';
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    // pastikan setidaknya ada 3 kolom, jika kurang tambahkan string kosong
+                    const colA = row[0] !== undefined ? row[0] : '';
+                    const colB = row[1] !== undefined ? row[1] : '';
+                    const colC = row[2] !== undefined ? row[2] : '';
+
+                    // fungsi render value (jika kosong tampilkan placeholder)
+                    const renderCell = (val) => {
+                        if (val === undefined || val === null || val === '') {
+                            return `<span class="null-placeholder"><i class="far fa-minus"></i> kosong</span>`;
+                        }
+                        return escapeHtml(val);
+                    };
+
+                    html += `<tr>
+                        <td class="index-cell">${i+1}</td>
+                        <td>${renderCell(colA)}</td>
+                        <td>${renderCell(colB)}</td>
+                        <td>${renderCell(colC)}</td>
+                    </tr>`;
+                }
+                tbody.innerHTML = html;
+                visibleSpan.innerText = rows.length;
+                footerCounter.innerText = allRows.length; // total baris (termasuk header)
+            }
+
+            // escape sederhana untuk keamanan (mencegah XSS dari konten spreadsheet)
+            function escapeHtml(unsafe) {
+                return unsafe
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;");
+            }
+
+            // utility tambahkan global untuk reload
+            window.reload = function() {
+                fetchAndRender();
+            };
+        })();
+    </script>
+</body>
+</html>
