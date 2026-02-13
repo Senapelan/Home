@@ -1,660 +1,494 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MONOGRAFI PENDUDUK · data langsung dari spreadsheet</title>
-    <!-- Google Fonts & Font Awesome 6 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MONOGRAFI PENDUDUK • PADANG TERUBUK 2026</title>
+  <!-- Google Fonts & Font Awesome 6 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            background: linear-gradient(145deg, #f0f4fa 0%, #e9eef5 100%);
-            font-family: 'Inter', sans-serif;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1.5rem;
-            color: #1a2639;
-        }
+    body {
+      background: linear-gradient(155deg, #eef2f6 0%, #dfe7ef 100%);
+      font-family: 'Inter', sans-serif;
+      padding: 2rem 1.5rem;
+      color: #13293D;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
 
-        /* KARTU PREMIUM – GLASSMORPHISM ELEVATED */
-        .dashboard-card {
-            width: 100%;
-            max-width: 1320px;
-            background: rgba(255,255,255,0.68);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
-            border-radius: 48px;
-            box-shadow: 
-                0 25px 50px -12px rgba(0,0,0,0.15),
-                inset 0 1px 2px rgba(255,255,255,0.8),
-                0 0 0 1px rgba(255,255,255,0.5) inset;
-            padding: 2rem 2rem 2.5rem 2rem;
-            transition: all 0.2s ease;
-        }
+    /* premium glass card */
+    .monografi-card {
+      max-width: 1400px;
+      width: 100%;
+      background: rgba(255,255,255,0.65);
+      backdrop-filter: blur(18px) saturate(200%);
+      -webkit-backdrop-filter: blur(18px) saturate(200%);
+      border-radius: 56px;
+      box-shadow: 0 30px 60px -20px rgba(0,30,50,0.25),
+                  inset 0 1px 2px rgba(255,255,255,0.8),
+                  0 0 0 1px rgba(255,255,255,0.6) inset;
+      padding: 2.5rem 2.5rem 2.8rem;
+      transition: all 0.2s ease;
+    }
 
-        /* header seksi */
-        .header-premium {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 2.25rem;
-        }
+    /* header daerah + update */
+    .lokasi-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 2.5rem;
+    }
 
-        .title-section h1 {
-            font-size: 2rem;
-            font-weight: 600;
-            letter-spacing: -0.02em;
-            background: linear-gradient(135deg, #1e2c3a, #2b3d4f);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.2rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
+    .daerah h1 {
+      font-size: 2.8rem;
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      background: linear-gradient(145deg, #163A5F, #1F4A7A);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1.1;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
 
-        .title-section h1 i {
-            background: linear-gradient(145deg, #2d4c6e, #1f344b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-size: 2rem;
-        }
+    .daerah h1 i {
+      font-size: 2.6rem;
+      color: #1F4A7A;
+      opacity: 0.8;
+    }
 
-        .sheet-badge {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: rgba(23, 45, 69, 0.08);
-            border-radius: 40px;
-            padding: 0.4rem 1.2rem 0.4rem 1rem;
-            border: 1px solid rgba(255,255,255,0.6);
-            backdrop-filter: blur(4px);
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1d3a5c;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.02);
-        }
+    .daerah .kec-kota {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.8rem;
+      margin-top: 0.3rem;
+      font-weight: 400;
+      color: #2B4C6C;
+      background: rgba(255,255,255,0.3);
+      backdrop-filter: blur(2px);
+      border-radius: 40px;
+      padding: 0.4rem 1.2rem 0.4rem 1.5rem;
+      border: 1px solid rgba(255,255,255,0.7);
+    }
 
-        .sheet-badge i {
-            color: #2266aa;
-            font-size: 1rem;
-        }
+    .update-badge {
+      background: rgba(23, 55, 83, 0.12);
+      border-radius: 60px;
+      padding: 0.65rem 1.6rem;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.6);
+      font-size: 1rem;
+      font-weight: 500;
+      color: #163A5F;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+      display: flex;
+      align-items: center;
+      gap: 0.7rem;
+    }
 
-        .timestamp {
-            font-size: 0.85rem;
-            font-weight: 400;
-            color: #4f658d;
-            background: rgba(255,255,255,0.5);
-            border-radius: 30px;
-            padding: 0.3rem 1rem;
-            border: 1px solid rgba(255,255,255,0.8);
-            backdrop-filter: blur(2px);
-        }
+    .update-badge i {
+      color: #2670b0;
+    }
 
-        /* search + filter bar */
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1rem;
-            align-items: center;
-            margin-bottom: 2rem;
-            background: rgba(255,255,255,0.4);
-            border-radius: 60px;
-            padding: 0.4rem 0.4rem 0.4rem 1.2rem;
-            border: 1px solid rgba(255,255,255,0.8);
-            backdrop-filter: blur(8px);
-        }
+    /* kpi cards premium */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
 
-        .search-wrapper {
-            flex: 2 1 260px;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            background: white;
-            border-radius: 40px;
-            padding: 0.5rem 1rem;
-            box-shadow: 0 8px 20px -10px rgba(0,30,60,0.1);
-            border: 1px solid rgba(0,0,0,0.02);
-        }
+    .kpi-item {
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(6px);
+      border-radius: 32px;
+      padding: 1.3rem 1rem 1rem 1.5rem;
+      border: 1px solid rgba(255,255,255,0.9);
+      box-shadow: 0 15px 30px -12px rgba(24, 52, 80, 0.1);
+      transition: all 0.15s;
+    }
 
-        .search-wrapper i {
-            color: #4a6f9c;
-            font-size: 1rem;
-        }
+    .kpi-item:hover {
+      background: rgba(255,255,255,0.75);
+      border-color: white;
+    }
 
-        .search-wrapper input {
-            border: none;
-            background: transparent;
-            width: 100%;
-            font-size: 0.95rem;
-            font-weight: 400;
-            outline: none;
-            color: #1f2d42;
-        }
+    .kpi-label {
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      font-weight: 600;
+      color: #305d86;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-        .search-wrapper input::placeholder {
-            color: #9aafc9;
-            font-weight: 300;
-        }
+    .kpi-value {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #0b2a44;
+      line-height: 1.1;
+    }
 
-        .filter-pill {
-            display: flex;
-            gap: 0.4rem;
-            align-items: center;
-            background: white;
-            border-radius: 36px;
-            padding: 0.3rem 0.8rem 0.3rem 1rem;
-            border: 1px solid rgba(0,0,0,0.02);
-            box-shadow: 0 8px 16px -10px rgba(0,30,60,0.08);
-        }
+    .kpi-sub {
+      font-size: 0.85rem;
+      color: #4f6f8f;
+      margin-top: 0.2rem;
+    }
 
-        .filter-pill span {
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1f3a5e;
-        }
+    /* detail panel dua kolom */
+    .stat-detail {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.8rem;
+      margin-top: 1rem;
+      margin-bottom: 2.2rem;
+    }
 
-        .filter-pill i {
-            color: #517ea8;
-            font-size: 0.8rem;
-        }
+    .detail-col {
+      flex: 1 1 300px;
+      background: rgba(255,255,255,0.35);
+      backdrop-filter: blur(4px);
+      border-radius: 40px;
+      padding: 1.8rem 1.8rem 2rem;
+      border: 1px solid rgba(255,255,255,0.8);
+      box-shadow: 0 10px 28px -16px rgba(5, 35, 60, 0.2);
+    }
 
-        .column-indicator {
-            background: #1a2c3f;
-            color: white;
-            border-radius: 30px;
-            padding: 0.3rem 1rem;
-            font-size: 0.8rem;
-            font-weight: 500;
-            letter-spacing: 0.02rem;
-            white-space: nowrap;
-            display: flex;
-            align-items: center;
-            gap: 0.3rem;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
+    .detail-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      border-bottom: 2px solid rgba(60, 100, 140, 0.15);
+      padding-bottom: 0.8rem;
+      margin-bottom: 1.2rem;
+      color: #153e60;
+    }
 
-        /* table premium */
-        .table-container {
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-            border-radius: 32px;
-            border: 1px solid rgba(255,255,255,0.9);
-            box-shadow: 0 20px 40px -20px rgba(0,20,40,0.2);
-            overflow-x: auto;
-            overflow-y: auto;
-            max-height: 65vh;
-            scrollbar-width: thin;
-            scrollbar-color: #b4c8e0 #eef3fc;
-        }
+    .detail-title i {
+      color: #2665a3;
+    }
 
-        .table-container::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
+    .stat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
 
-        .table-container::-webkit-scrollbar-track {
-            background: #eef3fc;
-            border-radius: 20px;
-        }
+    .stat-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px dashed rgba(80, 120, 160, 0.15);
+      padding-bottom: 0.4rem;
+      font-size: 0.98rem;
+    }
 
-        .table-container::-webkit-scrollbar-thumb {
-            background: #b4c8e0;
-            border-radius: 20px;
-            border: 2px solid #eef3fc;
-        }
+    .stat-name {
+      font-weight: 400;
+      color: #1f405f;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.95rem;
-            min-width: 500px;
-        }
+    .stat-name i {
+      font-size: 0.7rem;
+      color: #5882b7;
+      opacity: 0.7;
+    }
 
-        th {
-            text-align: left;
-            padding: 1.2rem 1rem 0.9rem 1.5rem;
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #2d4b6e;
-            background: rgba(255,255,255,0.5);
-            backdrop-filter: blur(4px);
-            border-bottom: 1px solid rgba(60, 90, 120, 0.15);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-        }
+    .stat-number {
+      font-weight: 600;
+      color: #13293D;
+      background: rgba(255,255,255,0.5);
+      padding: 0.2rem 0.8rem;
+      border-radius: 30px;
+      font-size: 0.95rem;
+    }
 
-        td {
-            padding: 1rem 1rem 1rem 1.5rem;
-            border-bottom: 1px solid rgba(160, 180, 200, 0.2);
-            color: #1a2b3e;
-            font-weight: 400;
-            background: rgba(255,255,255,0.25);
-            transition: background 0.15s;
-        }
+    .total-underline {
+      margin-top: 0.8rem;
+      padding-top: 0.5rem;
+      border-top: 2px solid rgba(23, 75, 120, 0.2);
+      font-weight: 700;
+      display: flex;
+      justify-content: space-between;
+      color: #113753;
+    }
 
-        tr:last-child td {
-            border-bottom: none;
-        }
+    /* ringkasan footer */
+    .ringkasan-footer {
+      background: rgba(255,255,255,0.5);
+      backdrop-filter: blur(6px);
+      border-radius: 40px;
+      padding: 1.4rem 2rem;
+      border: 1px solid rgba(255,255,255,0.8);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 1rem;
+    }
 
-        tbody tr:hover td {
-            background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(2px);
-        }
+    .ringkasan-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem 1.8rem;
+      flex-wrap: wrap;
+    }
 
-        /* kolom index / nomor */
-        .index-cell {
-            font-weight: 500;
-            color: #3e5f82;
-            width: 60px;
-            opacity: 0.8;
-        }
+    .ringkasan-item span {
+      font-weight: 500;
+      color: #1d4c77;
+    }
 
-        /* badge untuk nilai kosong */
-        .null-placeholder {
-            color: #a7bbd4;
-            font-style: italic;
-            font-weight: 300;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.2rem;
-        }
+    .ringkasan-item strong {
+      font-weight: 700;
+      background: #1d3f5e;
+      color: white;
+      padding: 0.2rem 1rem;
+      border-radius: 36px;
+      margin-left: 0.3rem;
+    }
 
-        .null-placeholder i {
-            font-size: 0.7rem;
-            opacity: 0.7;
-        }
+    .google-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: white;
+      border-radius: 36px;
+      padding: 0.45rem 1.2rem;
+      text-decoration: none;
+      color: #13293D;
+      font-weight: 500;
+      border: 1px solid rgba(0,0,0,0.05);
+      transition: all 0.1s;
+    }
 
-        /* footer & metadata */
-        .data-footer {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: 1.5rem;
-            font-size: 0.85rem;
-            color: #3a5a7a;
-        }
+    .google-link:hover {
+      background: #ebf3fa;
+      border-color: #a1c0df;
+    }
 
-        .row-counter {
-            background: rgba(255,255,255,0.5);
-            border-radius: 30px;
-            padding: 0.4rem 1.2rem;
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.7);
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .row-counter i {
-            color: #2d6295;
-        }
-
-        .google-ref-link {
-            display: flex;
-            align-items: center;
-            gap: 0.4rem;
-            background: rgba(255,255,255,0.4);
-            border-radius: 30px;
-            padding: 0.4rem 1rem;
-            backdrop-filter: blur(4px);
-            border: 1px solid rgba(255,255,255,0.6);
-            color: #1b3857;
-            text-decoration: none;
-            transition: all 0.15s;
-        }
-
-        .google-ref-link:hover {
-            background: white;
-            border-color: #98b9db;
-            box-shadow: 0 4px 12px rgba(30,90,150,0.1);
-        }
-
-        .google-ref-link i {
-            color: #1e6fdf;
-        }
-
-        /* loading state */
-        .loading-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 5rem 2rem;
-            color: #2d4b6e;
-            gap: 1rem;
-        }
-
-        .loading-state i {
-            font-size: 2.5rem;
-            opacity: 0.5;
-            animation: pulse 1.5s infinite;
-        }
-
-        @keyframes pulse {
-            0% { opacity: 0.3; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
-            100% { opacity: 0.3; transform: scale(1); }
-        }
-
-        .error-state {
-            background: rgba(255,220,220,0.5);
-            border-radius: 30px;
-            padding: 2rem;
-            text-align: center;
-            color: #a43c3c;
-        }
-
-        /* kecil-kecil responsive */
-        @media (max-width: 700px) {
-            .dashboard-card { padding: 1.5rem; }
-            .header-premium { flex-direction: column; align-items: start; gap: 1rem; }
-            .toolbar { border-radius: 30px; }
-        }
-    </style>
+    /* responsif */
+    @media (max-width: 700px) {
+      .monografi-card { padding: 1.8rem; }
+      .daerah h1 { font-size: 2rem; }
+    }
+  </style>
 </head>
 <body>
-    <div class="dashboard-card">
-        <!-- header premium -->
-        <div class="header-premium">
-            <div class="title-section">
-                <h1>
-                    <i class="fas fa-chart-pie"></i> monografi penduduk
-                </h1>
-                <div style="display: flex; gap: 0.8rem; align-items: center; margin-top: 0.25rem;">
-                    <span class="sheet-badge"><i class="fas fa-file-excel"></i> MONOGRAFI PENDUDUK · 2026</span>
-                    <span class="timestamp" id="updateTimestamp"><i class="far fa-clock" style="margin-right: 0.3rem;"></i> memuat waktu...</span>
-                </div>
-            </div>
-            <div class="column-indicator">
-                <i class="fas fa-columns"></i> Kolom A – C (A:C)
-            </div>
-        </div>
+  <div class="monografi-card">
 
-        <!-- toolbar : search + filter simbolis -->
-        <div class="toolbar">
-            <div class="search-wrapper">
-                <i class="fas fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Cari data penduduk (semua kolom) ..." autocomplete="off">
-            </div>
-            <div class="filter-pill">
-                <span><i class="fas fa-filter" style="margin-right: 0.3rem;"></i> Tampilkan A–C</span>
-                <i class="fas fa-chevron-down"></i>
-            </div>
-            <div style="flex:1; min-width: 20px;"></div>
-            <div style="font-size: 0.85rem; background: rgba(255,255,255,0.4); padding: 0.2rem 0.8rem; border-radius: 30px;">
-                <i class="fas fa-database" style="margin-right: 0.2rem;"></i> <span id="rowCountLabel">0</span> baris
-            </div>
+    <!-- header kelurahan + update -->
+    <div class="lokasi-header">
+      <div class="daerah">
+        <h1>
+          <i class="fas fa-map-marked-alt"></i> PADANG TERUBUK
+        </h1>
+        <div class="kec-kota">
+          <span><i class="fas fa-angle-right"></i> Kec. SENAPELAN</span>
+          <span><i class="fas fa-angle-right"></i> Kota PEKANBARU</span>
+          <span><i class="fas fa-angle-right"></i> Prov. RIAU</span>
         </div>
-
-        <!-- tabel data dengan container scroll -->
-        <div class="table-container" id="tableContainer">
-            <table id="dataTable">
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th><i class="fas fa-circle" style="font-size: 0.4rem; color: #4175a0; vertical-align: middle; margin-right: 6px;"></i>Kolom A</th>
-                        <th><i class="fas fa-circle" style="font-size: 0.4rem; color: #5f8ab6; vertical-align: middle; margin-right: 6px;"></i>Kolom B</th>
-                        <th><i class="fas fa-circle" style="font-size: 0.4rem; color: #7ca0c4; vertical-align: middle; margin-right: 6px;"></i>Kolom C</th>
-                    </tr>
-                </thead>
-                <tbody id="tableBody">
-                    <tr>
-                        <td colspan="4" style="text-align: center; padding: 4rem;">
-                            <div class="loading-state">
-                                <i class="fas fa-spinner-third"></i>
-                                <span>memuat data kependudukan premium ...</span>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <!-- footer -->
-        <div class="data-footer">
-            <div class="row-counter">
-                <i class="fas fa-users-viewfinder"></i>
-                <span id="footerRowCounter">menampilkan <span id="visibleRows">0</span> data</span>
-            </div>
-            <a href="https://docs.google.com/spreadsheets/d/1PL5GlajOOqB1FhIpvFP-F-rXWOss0lhZL85TekvWuEI/edit?gid=0#gid=0" target="_blank" class="google-ref-link">
-                <i class="fab fa-google"></i> Buka spreadsheet asli
-                <i class="fas fa-external-link-alt" style="font-size: 0.7rem; opacity: 0.7;"></i>
-            </a>
-        </div>
+      </div>
+      <div class="update-badge">
+        <i class="fas fa-clock"></i> update terakhir: 13 Februari 2026 · 19:14:15
+      </div>
     </div>
 
-    <script>
-        (function() {
-            // ---- KONFIGURASI ----
-            const SPREADSHEET_ID = '1PL5GlajOOqB1FhIpvFP-F-rXWOss0lhZL85TekvWuEI';
-            const SHEET_NAME = 'MONOGRAFI PENDUDUK';
-            // range A:C (semua baris)
-            const RANGE = 'A:C'; 
+    <!-- KPI utama: total jiwa, KK, laki, perempuan -->
+    <div class="kpi-grid">
+      <div class="kpi-item">
+        <div class="kpi-label"><i class="fas fa-people-group"></i> total jiwa</div>
+        <div class="kpi-value">3.757</div>
+        <div class="kpi-sub"><i class="fas-regular fa-user"></i> jiwa</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label"><i class="fas fa-home"></i> kepala keluarga</div>
+        <div class="kpi-value">1.022</div>
+        <div class="kpi-sub">KK</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label"><i class="fas fa-mars"></i> laki-laki</div>
+        <div class="kpi-value">1.865</div>
+        <div class="kpi-sub">49,6%</div>
+      </div>
+      <div class="kpi-item">
+        <div class="kpi-label"><i class="fas fa-venus"></i> perempuan</div>
+        <div class="kpi-value">1.892</div>
+        <div class="kpi-sub">50,4%</div>
+      </div>
+    </div>
 
-            // endpoint CSV (paling stabil untuk publik)
-            const CSV_URL = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${encodeURIComponent(SHEET_NAME)}&range=${RANGE}`;
+    <!-- dua kolom detail: agama, pendidikan, status warga, umur, dll -->
+    <div class="stat-detail">
+      <!-- kolom kiri: agama + pendidikan -->
+      <div class="detail-col">
+        <div class="detail-title"><i class="fas fa-star-and-crescent"></i> menurut agama</div>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-name"><i class="fas fa-circle"></i> Islam</span><span class="stat-number">2.696</span></div>
+          <div class="stat-row"><span class="stat-name"><i class="fas fa-circle"></i> Kristen</span><span class="stat-number">402</span></div>
+          <div class="stat-row"><span class="stat-name"><i class="fas fa-circle"></i> Katholik</span><span class="stat-number">2</span></div>
+          <div class="stat-row"><span class="stat-name"><i class="fas fa-circle"></i> Buddha</span><span class="stat-number">652</span></div>
+          <div class="stat-row"><span class="stat-name"><i class="fas fa-circle"></i> Hindu</span><span class="stat-number">1</span></div>
+          <div class="stat-row"><span class="stat-name"><i class="fas fa-circle"></i> Konghucu</span><span class="stat-number">4</span></div>
+          <div class="stat-row"><span class="stat-name"><i class="fas fa-circle"></i> Lainnya</span><span class="stat-number">0</span></div>
+          <div class="total-underline"><span>Jumlah jiwa</span> <span>3.757</span></div>
+        </div>
 
-            // referensi elemen
-            const tbody = document.getElementById('tableBody');
-            const searchInput = document.getElementById('searchInput');
-            const visibleSpan = document.getElementById('visibleRows');
-            const footerCounter = document.getElementById('rowCountLabel');
-            const updateTimestamp = document.getElementById('updateTimestamp');
+        <div style="margin-top: 2rem;">
+          <div class="detail-title"><i class="fas fa-graduation-cap"></i> menurut pendidikan</div>
+          <div class="stat-list" style="max-height: 260px; overflow-y: auto; padding-right: 4px;">
+            <div class="stat-row"><span class="stat-name">Tidak/belum sekolah</span><span class="stat-number">755</span></div>
+            <div class="stat-row"><span class="stat-name">Tidak tamat SD</span><span class="stat-number">244</span></div>
+            <div class="stat-row"><span class="stat-name">Tamat SD/sederajat</span><span class="stat-number">450</span></div>
+            <div class="stat-row"><span class="stat-name">SLTP/sederajat</span><span class="stat-number">436</span></div>
+            <div class="stat-row"><span class="stat-name">SLTA/sederajat</span><span class="stat-number">1.459</span></div>
+            <div class="stat-row"><span class="stat-name">Diploma I/II</span><span class="stat-number">249</span></div>
+            <div class="stat-row"><span class="stat-name">Diploma III</span><span class="stat-number">0</span></div>
+            <div class="stat-row"><span class="stat-name">Diploma IV</span><span class="stat-number">0</span></div>
+            <div class="stat-row"><span class="stat-name">Strata 1</span><span class="stat-number">142</span></div>
+            <div class="stat-row"><span class="stat-name">Strata 2</span><span class="stat-number">19</span></div>
+            <div class="stat-row"><span class="stat-name">Strata 3</span><span class="stat-number">3</span></div>
+            <div class="total-underline"><span>Jumlah jiwa</span> <span>3.757</span></div>
+          </div>
+        </div>
+      </div>
 
-            // data storage
-            let allRows = [];           // array of arrays [A, B, C]
-            let filteredRows = [];       // hasil filter
+      <!-- kolom kanan: status warga + umur (ringkas) + jaminan kes + status kawin + pekerjaan (sebagian) -->
+      <div class="detail-col">
+        <div class="detail-title"><i class="fas fa-id-card"></i> status warga</div>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-name">Warga tetap</span><span class="stat-number">2.923</span></div>
+          <div class="stat-row"><span class="stat-name">Warga sementara</span><span class="stat-number">692</span></div>
+          <div class="stat-row"><span class="stat-name">Pindah</span><span class="stat-number">115</span></div>
+          <div class="stat-row"><span class="stat-name">Keluar dari KK</span><span class="stat-number">8</span></div>
+          <div class="stat-row"><span class="stat-name">Meninggal</span><span class="stat-number">19</span></div>
+          <div class="total-underline"><span>Jiwa aktif</span> <span>3.607</span></div>
+        </div>
 
-            // set timestamp sekarang sebagai waktu muat
-            const now = new Date();
-            const formattedTime = now.toLocaleString('id-ID', { 
-                day: 'numeric', month: 'long', year: 'numeric', 
-                hour: '2-digit', minute: '2-digit', second: '2-digit',
-                hour12: false 
-            });
-            updateTimestamp.innerHTML = `<i class="far fa-clock" style="margin-right: 0.3rem;"></i> ${formattedTime}`;
+        <div style="margin-top: 1.8rem;">
+          <div class="detail-title"><i class="fas fa-calendar-alt"></i> menurut umur (rentang)</div>
+          <div class="stat-list" style="max-height: 200px; overflow-y: auto;">
+            <div class="stat-row"><span class="stat-name">0-4 th (balita)</span><span class="stat-number">81</span></div>
+            <div class="stat-row"><span class="stat-name">5-9 th</span><span class="stat-number">195</span></div>
+            <div class="stat-row"><span class="stat-name">10-14 th</span><span class="stat-number">291</span></div>
+            <div class="stat-row"><span class="stat-name">15-19 th</span><span class="stat-number">303</span></div>
+            <div class="stat-row"><span class="stat-name">20-24 th</span><span class="stat-number">304</span></div>
+            <div class="stat-row"><span class="stat-name">25-29 th</span><span class="stat-number">302</span></div>
+            <div class="stat-row"><span class="stat-name">30-34 th</span><span class="stat-number">262</span></div>
+            <div class="stat-row"><span class="stat-name">35-39 th</span><span class="stat-number">267</span></div>
+            <div class="stat-row"><span class="stat-name">40-44 th</span><span class="stat-number">309</span></div>
+            <div class="stat-row"><span class="stat-name">45-49 th</span><span class="stat-number">281</span></div>
+            <div class="stat-row"><span class="stat-name">50-54 th</span><span class="stat-number">269</span></div>
+            <div class="stat-row"><span class="stat-name">55-59 th</span><span class="stat-number">210</span></div>
+            <div class="stat-row"><span class="stat-name">60-64 th</span><span class="stat-number">188</span></div>
+            <div class="stat-row"><span class="stat-name">65-69 th</span><span class="stat-number">155</span></div>
+            <div class="stat-row"><span class="stat-name">70-74 th</span><span class="stat-number">92</span></div>
+            <div class="stat-row"><span class="stat-name">75-79 th</span><span class="stat-number">64</span></div>
+            <div class="stat-row"><span class="stat-name">80-84 th</span><span class="stat-number">27</span></div>
+            <div class="stat-row"><span class="stat-name">85-89 th</span><span class="stat-number">23</span></div>
+            <div class="stat-row"><span class="stat-name">90+ th</span><span class="stat-number">10</span></div>
+            <div class="total-underline"><span>Jumlah jiwa</span><span>3.757</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
 
-            // inisialisasi
-            fetchAndRender();
+    <!-- baris tambahan: jaminan kesehatan, status kekayaan, perkawinan, pekerjaan (grid 2 atau 4) -->
+    <div style="display: flex; flex-wrap: wrap; gap: 1.5rem; margin-bottom: 2rem;">
+      <!-- jaminan kesehatan -->
+      <div style="flex: 1 1 240px; background: rgba(255,255,255,0.3); border-radius: 36px; padding: 1.5rem;">
+        <div class="detail-title" style="margin-bottom: 0.8rem;"><i class="fas fa-shield-heart"></i> jaminan kesehatan</div>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-name">BPJS Kesehatan</span><span class="stat-number">2.574</span></div>
+          <div class="stat-row"><span class="stat-name">BPJS Ketenagakerjaan</span><span class="stat-number">38</span></div>
+          <div class="stat-row"><span class="stat-name">BPJS Kesehatan & Ketenagakerjaan</span><span class="stat-number">572</span></div>
+          <div class="stat-row"><span class="stat-name">Tidak memiliki</span><span class="stat-number">573</span></div>
+          <div class="total-underline"><span>Jumlah</span><span>3.757</span></div>
+        </div>
+      </div>
+      <!-- status kekayaan -->
+      <div style="flex: 1 1 200px; background: rgba(255,255,255,0.3); border-radius: 36px; padding: 1.5rem;">
+        <div class="detail-title"><i class="fas fa-coins"></i> status kekayaan</div>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-name">Keluarga mampu</span><span class="stat-number">3.117</span></div>
+          <div class="stat-row"><span class="stat-name">Tidak mampu</span><span class="stat-number">489</span></div>
+          <div class="stat-row"><span class="stat-name">Miskin ekstrem</span><span class="stat-number">0</span></div>
+          <div class="total-underline"><span>Jumlah</span><span>3.757</span></div>
+        </div>
+      </div>
+      <!-- status perkawinan -->
+      <div style="flex: 1 1 240px; background: rgba(255,255,255,0.3); border-radius: 36px; padding: 1.5rem;">
+        <div class="detail-title"><i class="fas fa-heart"></i> status perkawinan</div>
+        <div class="stat-list">
+          <div class="stat-row"><span class="stat-name">Belum kawin</span><span class="stat-number">1.923</span></div>
+          <div class="stat-row"><span class="stat-name">Kawin tercatat</span><span class="stat-number">1.449</span></div>
+          <div class="stat-row"><span class="stat-name">Kawin belum tercatat</span><span class="stat-number">112</span></div>
+          <div class="stat-row"><span class="stat-name">Cerai hidup</span><span class="stat-number">66</span></div>
+          <div class="stat-row"><span class="stat-name">Cerai mati</span><span class="stat-number">207</span></div>
+          <div class="total-underline"><span>Jumlah</span><span>3.757</span></div>
+        </div>
+      </div>
+      <!-- pekerjaan (ringkas) -->
+      <div style="flex: 2 1 300px; background: rgba(255,255,255,0.3); border-radius: 36px; padding: 1.5rem;">
+        <div class="detail-title"><i class="fas fa-briefcase"></i> pekerjaan (terbanyak)</div>
+        <div style="display: grid; grid-template-columns: repeat(2,1fr); gap: 0.4rem 1rem;">
+          <div class="stat-row"><span class="stat-name">PNS</span><span class="stat-number">53</span></div>
+          <div class="stat-row"><span class="stat-name">TNI/POLRI</span><span class="stat-number">8</span></div>
+          <div class="stat-row"><span class="stat-name">Guru/Dosen</span><span class="stat-number">462</span></div>
+          <div class="stat-row"><span class="stat-name">Karyawan swasta</span><span class="stat-number">825</span></div>
+          <div class="stat-row"><span class="stat-name">Wiraswasta</span><span class="stat-number">2</span></div>
+          <div class="stat-row"><span class="stat-name">Petani</span><span class="stat-number">18</span></div>
+          <div class="stat-row"><span class="stat-name">Buruh</span><span class="stat-number">34</span></div>
+          <div class="stat-row"><span class="stat-name">Pedagang</span><span class="stat-number">37</span></div>
+          <div class="stat-row"><span class="stat-name">Sopir</span><span class="stat-number">9</span></div>
+          <div class="stat-row"><span class="stat-name">Lainnya</span><span class="stat-number">675</span></div>
+          <div class="stat-row"><span class="stat-name">Tidak bekerja</span><span class="stat-number">1.634</span></div>
+          <div class="total-underline" style="grid-column: span 2;"><span>Jumlah</span><span>3.757</span></div>
+        </div>
+      </div>
+    </div>
 
-            // event search
-            searchInput.addEventListener('input', function(e) {
-                const keyword = e.target.value.trim().toLowerCase();
-                filterTable(keyword);
-            });
+    <!-- footer ringkasan + link spreadsheet -->
+    <div class="ringkasan-footer">
+      <div class="ringkasan-item">
+        <span><i class="fas-regular fa-file-lines"></i> RINGKASAN DATA</span>
+        <span><i class="fas fa-people-group"></i> Total Jiwa <strong>3.757</strong></span>
+        <span><i class="fas fa-home"></i> KK <strong>1.022</strong></span>
+        <span><i class="fas fa-mars"></i> Lk <strong>1.865</strong></span>
+        <span><i class="fas fa-venus"></i> Pr <strong>1.892</strong></span>
+      </div>
+      <a href="https://docs.google.com/spreadsheets/d/1PL5GlajOOqB1FhIpvFP-F-rXWOss0lhZL85TekvWuEI/edit?gid=0" target="_blank" class="google-link">
+        <i class="fab fa-google"></i> spreadsheet asli
+        <i class="fas fa-external-link-alt"></i>
+      </a>
+    </div>
 
-            /** fetch data dari google sheets sebagai CSV */
-            async function fetchAndRender() {
-                try {
-                    // tampilkan loading
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 4rem;">
-                                <div class="loading-state">
-                                    <i class="fas fa-spinner-third"></i>
-                                    <span>menyiapkan data monografi terkini ...</span>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-
-                    const response = await fetch(CSV_URL, { cache: "no-store" }); // hindari cache berlebihan
-                    if (!response.ok) throw new Error(`Gagal memuat (${response.status})`);
-
-                    const csvText = await response.text();
-                    const parsed = parseCSV(csvText);
-
-                    // parsed adalah array of arrays, baris pertama = header (mungkin)
-                    // kita asumsikan baris pertama adalah header kolom (A, B, C) atau judul.
-                    // tapi kita ingin menampilkan SEMUA data termasuk header jika itu bagian dari data.
-                    // Namun spreadsheet umumnya baris pertama judul kolom. Kita tetap tampilkan sesuai permintaan: semua data A:C (termasuk baris pertama)
-                    // Jika ingin melewati header bisa, tapi spesifikasi "Kolom semua data A:A sampai Kolom C:C" berarti semua isi termasuk header.
-                    // Untuk UX lebih baik header tetap ditampilkan sebagai data biasa, tapi pengguna bisa melihatnya.
-                    // Kita akan set ALL data. Biarkan utuh.
-
-                    allRows = parsed; 
-                    filterTable(''); // sekaligus render
-
-                } catch (error) {
-                    console.error(error);
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 3rem;">
-                                <div class="error-state">
-                                    <i class="fas fa-exclamation-triangle" style="font-size: 2rem; margin-bottom: 0.5rem; opacity: 0.7;"></i>
-                                    <p style="font-weight: 500;">tidak dapat memuat data</p>
-                                    <p style="font-size: 0.8rem; margin-top: 0.3rem; opacity: 0.7;">${error.message || 'Coba periksa sheet atau koneksi'}</p>
-                                    <button onclick="location.reload()" style="margin-top: 1rem; background: white; border: 1px solid #b3cde0; padding: 0.4rem 1.4rem; border-radius: 30px; font-weight: 500; cursor: pointer;"><i class="fas fa-sync-alt"></i> ulangi</button>
-                                </div>
-                            </td>
-                        </tr>
-                    `;
-                }
-            }
-
-            /** parse CSV sederhana (mengelola kutipan) */
-            function parseCSV(csv) {
-                const lines = [];
-                let currentLine = [];
-                let field = '';
-                let inQuotes = false;
-
-                for (let i = 0; i < csv.length; i++) {
-                    const char = csv[i];
-                    const nextChar = csv[i+1];
-
-                    if (char === '"' && inQuotes && nextChar === '"') {
-                        // escaped quote
-                        field += '"';
-                        i++; // skip next quote
-                    } else if (char === '"') {
-                        inQuotes = !inQuotes;
-                    } else if (char === ',' && !inQuotes) {
-                        currentLine.push(field.trim());
-                        field = '';
-                    } else if ((char === '\n' || char === '\r') && !inQuotes) {
-                        // handle windows \r\n
-                        if (char === '\r' && nextChar === '\n') {
-                            i++; // skip \n
-                        }
-                        currentLine.push(field.trim());
-                        field = '';
-                        if (currentLine.length > 0 && !(currentLine.length === 1 && currentLine[0] === '')) {
-                            lines.push(currentLine);
-                        }
-                        currentLine = [];
-                    } else {
-                        field += char;
-                    }
-                }
-                // terakhir
-                if (field.length > 0 || currentLine.length > 0) {
-                    currentLine.push(field.trim());
-                    if (currentLine.length > 0 && !(currentLine.length === 1 && currentLine[0] === '')) {
-                        lines.push(currentLine);
-                    }
-                }
-                return lines;
-            }
-
-            /** filter berdasarkan keyword (case insensitive) dari semua kolom A, B, C */
-            function filterTable(keyword) {
-                if (!allRows.length) {
-                    filteredRows = [];
-                } else if (keyword === '') {
-                    filteredRows = [...allRows];
-                } else {
-                    filteredRows = allRows.filter(row => {
-                        // row setidaknya punya 3 kolom; jika kurang, anggap string kosong
-                        const colA = (row[0] || '').toLowerCase();
-                        const colB = (row[1] || '').toLowerCase();
-                        const colC = (row[2] || '').toLowerCase();
-                        return colA.includes(keyword) || colB.includes(keyword) || colC.includes(keyword);
-                    });
-                }
-                renderTableBody(filteredRows);
-            }
-
-            /** render array data ke tbody */
-            function renderTableBody(rows) {
-                if (!rows || rows.length === 0) {
-                    tbody.innerHTML = `
-                        <tr>
-                            <td colspan="4" style="text-align: center; padding: 3rem; color: #7089a8;">
-                                <i class="fas fa-map-pin" style="font-size: 2rem; opacity: 0.4; margin-bottom: 0.5rem;"></i>
-                                <p style="font-weight: 400;">tidak ada data yang cocok</p>
-                                <p style="font-size: 0.8rem;">coba kata kunci lain</p>
-                            </td>
-                        </tr>
-                    `;
-                    visibleSpan.innerText = '0';
-                    footerCounter.innerText = allRows.length; // total baris di spreadsheet (allRows)
-                    return;
-                }
-
-                let html = '';
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
-                    // pastikan setidaknya ada 3 kolom, jika kurang tambahkan string kosong
-                    const colA = row[0] !== undefined ? row[0] : '';
-                    const colB = row[1] !== undefined ? row[1] : '';
-                    const colC = row[2] !== undefined ? row[2] : '';
-
-                    // fungsi render value (jika kosong tampilkan placeholder)
-                    const renderCell = (val) => {
-                        if (val === undefined || val === null || val === '') {
-                            return `<span class="null-placeholder"><i class="far fa-minus"></i> kosong</span>`;
-                        }
-                        return escapeHtml(val);
-                    };
-
-                    html += `<tr>
-                        <td class="index-cell">${i+1}</td>
-                        <td>${renderCell(colA)}</td>
-                        <td>${renderCell(colB)}</td>
-                        <td>${renderCell(colC)}</td>
-                    </tr>`;
-                }
-                tbody.innerHTML = html;
-                visibleSpan.innerText = rows.length;
-                footerCounter.innerText = allRows.length; // total baris (termasuk header)
-            }
-
-            // escape sederhana untuk keamanan (mencegah XSS dari konten spreadsheet)
-            function escapeHtml(unsafe) {
-                return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
-            }
-
-            // utility tambahkan global untuk reload
-            window.reload = function() {
-                fetchAndRender();
-            };
-        })();
-    </script>
+    <!-- catatan: data sesuai monografi penduduk per 13 Feb 2026 -->
+    <div style="text-align: right; margin-top: 1rem; font-size: 0.8rem; color: #4e6f8b; opacity: 0.7;">
+      <i class="fas fa-database"></i> sumber : MONOGRAFI PENDUDUK · Padang Terubuk · 2026
+    </div>
+  </div>
 </body>
 </html>
