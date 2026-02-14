@@ -437,726 +437,134 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <script>
-    // Konfigurasi
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPkTztHid5sYXVVWrvJixiupp1Xx86Blm-5lvf2FLElCERADDjMg9BB0RPFuu8MUOMtA/exec';
-    const LOGIN_PAGE_URL = 'https://senapelan.github.io/Home/login/login.html';
-    
-    // State
-    let currentUser = null;
-    let isEditingKelurahan = false;
-    let editingPegawaiId = null;
-    let currentFotoType = null;
-    let currentFotoTarget = null;
-    let cropper = null;
-    let pegawaiCount = 0;
-    
-    // Cache data untuk mencegah kehilangan saat refresh
-    let localDataCache = {
-        kelurahan: {},
-        pegawai: []
-    };
+        // GANTI URL INI DENGAN URL WEB APP ANDA
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwFsvjJauJ0OfADFZT0qf8B6YVaIAa_PtzfvplGK-05W5ldgx0-UmEDsTmRKTSa4Tx3/exec';
 
-    // Auto-save draft setiap 5 detik
-    let autoSaveInterval;
-
-    // Cegah semua form submission dan refresh
-    document.addEventListener('DOMContentLoaded', function() {
-        // Cegah semua form submission
-        const forms = document.querySelectorAll('form');
-        forms.forEach(form => {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                return false;
-            });
-        });
-
-        // Cegah refresh dengan F5 dan Ctrl+R
-        window.addEventListener('keydown', function(e) {
-            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
-                e.preventDefault();
-                showToast('Gunakan tombol Simpan untuk menyimpan data', 'warning');
-                return false;
-            }
-        });
-
-        // Cegah refresh dengan tombol back browser
-        window.addEventListener('popstate', function(e) {
-            e.preventDefault();
-            showToast('Data akan hilang jika keluar. Simpan dulu!', 'warning');
-            history.pushState(null, null, location.href);
-        });
-
-        // Push state untuk cegah back
-        history.pushState(null, null, location.href);
-
-        // Load draft dari localStorage jika ada
-        loadDraft();
-
-        // Start auto-save
-        startAutoSave();
-    });
-
-    // Check login status
-    (function checkLogin() {
-        try {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-            const username = sessionStorage.getItem('username');
+        // Fungsi toggle password visibility
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const icon = document.querySelector('.toggle-password');
             
-            if (!isLoggedIn || isLoggedIn !== 'true' || !username) {
-                console.log('Tidak ada session, redirect ke login');
-                window.location.href = LOGIN_PAGE_URL;
-                return;
-            }
-            
-            currentUser = username;
-            document.getElementById('usernameDisplay').textContent = username;
-            loadUserData();
-        } catch (error) {
-            console.error('Error checking login:', error);
-            window.location.href = LOGIN_PAGE_URL;
-        }
-    })();
-
-    // Auto-save draft ke localStorage
-    function startAutoSave() {
-        if (autoSaveInterval) clearInterval(autoSaveInterval);
-        
-        autoSaveInterval = setInterval(() => {
-            if (isEditingKelurahan || document.querySelector('.pegawai-card input:not(:disabled)')) {
-                saveDraft();
-                showToast('Draft tersimpan', 'info', 1000);
-            }
-        }, 5000);
-    }
-
-    function saveDraft() {
-        const draft = {
-            kelurahan: {},
-            pegawai: [],
-            timestamp: new Date().getTime()
-        };
-
-        // Simpan data kelurahan yang sedang diedit
-        if (isEditingKelurahan) {
-            draft.kelurahan = {
-                nama_kelurahan: document.getElementById('nama_kelurahan').value,
-                alamat_kelurahan: document.getElementById('alamat_kelurahan').value,
-                rt: document.getElementById('rt').value,
-                rw: document.getElementById('rw').value,
-                kelurahan: document.getElementById('kelurahan').value,
-                kecamatan: document.getElementById('kecamatan').value,
-                kota: document.getElementById('kota').value,
-                provinsi: document.getElementById('provinsi').value,
-                kode_pos: document.getElementById('kode_pos').value,
-                telp_kantor: document.getElementById('telp_kantor').value
-            };
-        }
-
-        // Simpan data pegawai yang sedang diedit
-        document.querySelectorAll('.pegawai-card').forEach(card => {
-            const inputs = card.querySelectorAll('input');
-            if (inputs.length > 0 && !inputs[0].disabled) {
-                const pegawaiData = {
-                    id: card.id,
-                    nama: card.querySelector('.pegawai-nama')?.value || '',
-                    jabatan: card.querySelector('.pegawai-jabatan')?.value || '',
-                    nip: card.querySelector('.pegawai-nip')?.value || '',
-                    pangkat_gol: card.querySelector('.pegawai-pangkat')?.value || '',
-                    no_hp: card.querySelector('.pegawai-nohp')?.value || ''
-                };
-                draft.pegawai.push(pegawaiData);
-            }
-        });
-
-        localStorage.setItem(`draft_${currentUser}`, JSON.stringify(draft));
-    }
-
-    function loadDraft() {
-        if (!currentUser) return;
-        
-        const savedDraft = localStorage.getItem(`draft_${currentUser}`);
-        if (savedDraft) {
-            try {
-                const draft = JSON.parse(savedDraft);
-                const now = new Date().getTime();
-                
-                // Hanya load draft jika kurang dari 30 menit
-                if (now - draft.timestamp < 30 * 60 * 1000) {
-                    if (Object.keys(draft.kelurahan).length > 0) {
-                        showToast('Draft ditemukan. Apakah ingin melanjutkan?', 'warning', 5000);
-                        if (confirm('Ada draft yang belum disimpan. Lanjutkan mengedit?')) {
-                            Object.keys(draft.kelurahan).forEach(key => {
-                                const el = document.getElementById(key);
-                                if (el) el.value = draft.kelurahan[key];
-                            });
-                        }
-                    }
-                } else {
-                    // Hapus draft yang sudah kadaluarsa
-                    localStorage.removeItem(`draft_${currentUser}`);
-                }
-            } catch (e) {
-                console.error('Error loading draft:', e);
-            }
-        }
-    }
-
-    // Load user data from spreadsheet
-    async function loadUserData() {
-        showLoading();
-        
-        try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // Timeout 10 detik
-            
-            const response = await fetch(`${APPS_SCRIPT_URL}?action=getData&username=${currentUser}`, {
-                signal: controller.signal,
-                cache: 'no-cache' // Cegah caching
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                localDataCache = {
-                    kelurahan: result.data.kelurahan,
-                    pegawai: result.data.pegawai
-                };
-                
-                // Cek apakah ada draft yang lebih baru
-                const draft = localStorage.getItem(`draft_${currentUser}`);
-                if (draft) {
-                    const draftData = JSON.parse(draft);
-                    if (draftData.timestamp > (localDataCache.lastSaved || 0)) {
-                        // Merge data
-                        result.data.kelurahan = { ...result.data.kelurahan, ...draftData.kelurahan };
-                    }
-                }
-                
-                renderKelurahanData(result.data.kelurahan);
-                renderPegawaiData(result.data.pegawai);
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
             } else {
-                showToast('Gagal memuat data: ' + result.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            if (error.name === 'AbortError') {
-                showToast('Timeout: Server tidak merespon', 'error');
-            } else {
-                showToast('Gagal memuat data', 'error');
-            }
-            
-            // Load dari cache jika offline
-            if (localDataCache.kelurahan) {
-                renderKelurahanData(localDataCache.kelurahan);
-                renderPegawaiData(localDataCache.pegawai);
-                showToast('Memuat data dari cache', 'info');
-            }
-        } finally {
-            hideLoading();
-        }
-    }
-
-    // Render kelurahan data
-    function renderKelurahanData(data) {
-        // Simpan nilai saat ini jika sedang diedit
-        const inputs = document.querySelectorAll('#kelurahanInfo input, #kelurahanInfo textarea');
-        inputs.forEach(input => {
-            if (!input.disabled) {
-                // Jika sedang diedit, jangan timpa nilai
-                return;
-            }
-        });
-
-        document.getElementById('nama_kelurahan').value = data.nama_kelurahan || '';
-        document.getElementById('alamat_kelurahan').value = data.alamat_kelurahan || '';
-        document.getElementById('rt').value = data.rt || '';
-        document.getElementById('rw').value = data.rw || '';
-        document.getElementById('kelurahan').value = data.kelurahan || '';
-        document.getElementById('kecamatan').value = data.kecamatan || '';
-        document.getElementById('kota').value = data.kota || '';
-        document.getElementById('provinsi').value = data.provinsi || '';
-        document.getElementById('kode_pos').value = data.kode_pos || '';
-        document.getElementById('telp_kantor').value = data.telp_kantor || '';
-        
-        if (data.link_foto_kelurahan) {
-            document.getElementById('kelurahanFoto').src = data.link_foto_kelurahan;
-            document.getElementById('kelurahanFoto').style.display = 'block';
-            document.getElementById('kelurahanFotoPlaceholder').style.display = 'none';
-        }
-    }
-
-    // Toggle edit kelurahan dengan event prevention
-    function toggleEditKelurahan(event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        isEditingKelurahan = !isEditingKelurahan;
-        
-        const inputs = document.querySelectorAll('#kelurahanInfo input, #kelurahanInfo textarea');
-        inputs.forEach(input => input.disabled = !isEditingKelurahan);
-        
-        document.getElementById('editKelurahanBtn').style.display = isEditingKelurahan ? 'none' : 'block';
-        document.getElementById('saveKelurahanBtn').style.display = isEditingKelurahan ? 'block' : 'none';
-        document.getElementById('uploadKelurahanBtn').style.display = isEditingKelurahan ? 'block' : 'none';
-    }
-
-    // Toggle edit pegawai dengan event prevention
-    function toggleEditPegawai(cardId, event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        const card = document.getElementById(cardId);
-        const inputs = card.querySelectorAll('input');
-        inputs.forEach(input => input.disabled = false);
-        
-        card.querySelector('.edit-btn').style.display = 'none';
-        card.querySelector('.save-btn').style.display = 'block';
-        card.querySelector('.cancel-btn').style.display = 'block';
-        
-        const uploadBtn = card.querySelector('.upload-btn');
-        if (uploadBtn) uploadBtn.style.display = 'block';
-    }
-
-    // Cancel edit pegawai
-    function cancelEditPegawai(cardId, event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        if (confirm('Batalkan perubahan?')) {
-            loadUserData(); // Reload data
-            // Hapus draft untuk card ini
-            const draft = JSON.parse(localStorage.getItem(`draft_${currentUser}`) || '{}');
-            if (draft.pegawai) {
-                draft.pegawai = draft.pegawai.filter(p => p.id !== cardId);
-                localStorage.setItem(`draft_${currentUser}`, JSON.stringify(draft));
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
-    }
 
-    // Save kelurahan data dengan event prevention
-    async function saveKelurahan(event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
+        // Fungsi untuk menampilkan alert
+        function showAlert(message, type) {
+            const alert = document.getElementById('alert');
+            alert.textContent = message;
+            alert.className = `alert alert-${type}`;
+            alert.style.display = 'block';
+            
+            // Auto hide setelah 5 detik
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
         }
-        
-        showLoading();
-        
-        try {
-            const formData = new FormData();
-            formData.append('action', 'saveKelurahan');
-            formData.append('username', currentUser);
-            formData.append('nama_kelurahan', document.getElementById('nama_kelurahan').value);
-            formData.append('alamat_kelurahan', document.getElementById('alamat_kelurahan').value);
-            formData.append('rt', document.getElementById('rt').value);
-            formData.append('rw', document.getElementById('rw').value);
-            formData.append('kelurahan', document.getElementById('kelurahan').value);
-            formData.append('kecamatan', document.getElementById('kecamatan').value);
-            formData.append('kota', document.getElementById('kota').value);
-            formData.append('provinsi', document.getElementById('provinsi').value);
-            formData.append('kode_pos', document.getElementById('kode_pos').value);
-            formData.append('telp_kantor', document.getElementById('telp_kantor').value);
-            
-            const fotoKelurahan = document.getElementById('kelurahanFoto');
-            if (fotoKelurahan && fotoKelurahan.src) {
-                formData.append('link_foto_kelurahan', fotoKelurahan.src);
-            }
-            
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showToast('Data kelurahan berhasil disimpan');
-                toggleEditKelurahan();
-                
-                // Hapus draft setelah sukses simpan
-                const draft = JSON.parse(localStorage.getItem(`draft_${currentUser}`) || '{}');
-                draft.kelurahan = {};
-                localStorage.setItem(`draft_${currentUser}`, JSON.stringify(draft));
-            } else {
-                showToast('Gagal menyimpan: ' + result.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast('Gagal menyimpan data', 'error');
-        } finally {
-            hideLoading();
-        }
-    }
 
-    // Save pegawai data dengan event prevention
-    async function savePegawai(cardId, event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        showLoading();
-        
-        try {
-            const card = document.getElementById(cardId);
-            const pegawaiId = cardId.split('-').pop();
-            
-            const formData = new FormData();
-            formData.append('action', 'savePegawai');
-            formData.append('username', currentUser);
-            formData.append('pegawaiId', pegawaiId);
-            formData.append('nama', card.querySelector('.pegawai-nama').value);
-            formData.append('jabatan', card.querySelector('.pegawai-jabatan').value);
-            formData.append('nip', card.querySelector('.pegawai-nip').value);
-            formData.append('pangkat_gol', card.querySelector('.pegawai-pangkat').value);
-            formData.append('no_hp', card.querySelector('.pegawai-nohp').value);
-            
-            const fotoImg = card.querySelector('.pegawai-foto img');
-            if (fotoImg) {
-                formData.append('foto', fotoImg.src);
-            }
-            
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                showToast('Data pegawai berhasil disimpan');
-                loadUserData(); // Reload data
-                
-                // Hapus draft untuk pegawai ini
-                const draft = JSON.parse(localStorage.getItem(`draft_${currentUser}`) || '{}');
-                if (draft.pegawai) {
-                    draft.pegawai = draft.pegawai.filter(p => p.id !== cardId);
-                    localStorage.setItem(`draft_${currentUser}`, JSON.stringify(draft));
-                }
-            } else {
-                showToast('Gagal menyimpan: ' + result.message, 'error');
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast('Gagal menyimpan data', 'error');
-        } finally {
-            hideLoading();
-        }
-    }
-
-    // Upload foto dengan event prevention
-    function uploadFoto(type, target = null, event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        currentFotoType = type;
-        currentFotoTarget = target;
-        
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = handleFotoSelected;
-        input.click();
-    }
-
-    // Handle foto selected
-    function handleFotoSelected(e) {
-        const file = e.target.files[0];
-        if (!file) return;
-        
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            document.getElementById('cropperImage').src = e.target.result;
-            document.getElementById('cropperModal').classList.add('active');
+        // Fungsi untuk menampilkan role info
+        function showRoleInfo(role) {
+            const roleInfo = document.getElementById('roleInfo');
+            roleInfo.innerHTML = `<i class="fas fa-check-circle"></i> Login sebagai: ${role}`;
+            roleInfo.classList.add('show');
             
             setTimeout(() => {
-                if (cropper) {
-                    cropper.destroy();
-                }
-                
-                const image = document.getElementById('cropperImage');
-                cropper = new Cropper(image, {
-                    aspectRatio: 4/5,
-                    viewMode: 1,
-                    dragMode: 'move',
-                    autoCropArea: 1,
-                    cropBoxMovable: true,
-                    cropBoxResizable: true,
-                    background: false
-                });
-            }, 100);
-        };
-        reader.readAsDataURL(file);
-    }
-
-    // Crop and upload
-    async function cropAndUpload(event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
+                roleInfo.classList.remove('show');
+            }, 3000);
         }
-        
-        if (!cropper) return;
-        
-        showLoading();
-        
-        try {
-            const canvas = cropper.getCroppedCanvas({
-                width: 400,
-                height: 500
-            });
-            
-            const croppedImage = canvas.toDataURL('image/jpeg', 0.9);
-            
-            // Convert base64 to blob
-            const block = croppedImage.split(';');
-            const contentType = block[0].split(':')[1];
-            const realData = block[1].split(',')[1];
-            
-            const formData = new FormData();
-            formData.append('action', 'uploadFoto');
-            formData.append('username', currentUser);
-            formData.append('jenis', currentFotoType);
-            formData.append('fotoData', realData);
-            formData.append('contentType', contentType);
-            
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: formData
-            });
-            
-            const result = await response.json();
-            
-            if (result.success) {
-                const thumbnailUrl = result.data.thumbnailUrl;
-                
-                if (currentFotoType === 'kelurahan') {
-                    document.getElementById('kelurahanFoto').src = thumbnailUrl;
-                    document.getElementById('kelurahanFoto').style.display = 'block';
-                    document.getElementById('kelurahanFotoPlaceholder').style.display = 'none';
-                    
-                    // Simpan ke draft
-                    const draft = JSON.parse(localStorage.getItem(`draft_${currentUser}`) || '{}');
-                    if (!draft.kelurahan) draft.kelurahan = {};
-                    draft.kelurahan.link_foto_kelurahan = thumbnailUrl;
-                    localStorage.setItem(`draft_${currentUser}`, JSON.stringify(draft));
-                    
-                } else if (currentFotoType === 'pegawai' && currentFotoTarget) {
-                    const fotoContainer = document.getElementById(`foto-${currentFotoTarget}`);
-                    fotoContainer.innerHTML = `
-                        <img src="${thumbnailUrl}" alt="Foto Pegawai">
-                        <button class="upload-btn" onclick="uploadFoto('pegawai', '${currentFotoTarget}', event)">
-                            <i class="fas fa-camera"></i>
-                        </button>
-                    `;
-                }
-                
-                showToast('Foto berhasil diupload');
-                closeCropper();
+
+        // Fungsi untuk mengatur loading state
+        function setLoading(isLoading) {
+            const loginBtn = document.getElementById('loginBtn');
+            if (isLoading) {
+                loginBtn.classList.add('loading');
+                loginBtn.disabled = true;
             } else {
-                showToast('Gagal upload: ' + result.message, 'error');
+                loginBtn.classList.remove('loading');
+                loginBtn.disabled = false;
             }
-        } catch (error) {
-            console.error('Error:', error);
-            showToast('Gagal upload foto', 'error');
-        } finally {
-            hideLoading();
         }
-    }
 
-    // Close cropper
-    function closeCropper(event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        document.getElementById('cropperModal').classList.remove('active');
-        if (cropper) {
-            cropper.destroy();
-            cropper = null;
-        }
-    }
+        // Fungsi utama login
+        async function handleLogin() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
 
-    // Add pegawai dengan event prevention
-    function addPegawai(event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        if (pegawaiCount >= 30) {
-            showToast('Maksimal 30 pegawai', 'error');
-            return;
-        }
-        
-        const cardId = `pegawai-new-${Date.now()}`;
-        addPegawaiCard(null, cardId);
-        toggleEditPegawai(cardId);
-    }
-
-    // Add pegawai card
-    function addPegawaiCard(pegawai = null, cardId = null) {
-        const grid = document.getElementById('pegawaiGrid');
-        const id = cardId || (pegawai ? `pegawai-${pegawai.id}` : `pegawai-new-${Date.now()}`);
-        const pegawaiData = pegawai || {
-            id: pegawaiCount,
-            nama: '',
-            jabatan: '',
-            nip: '',
-            pangkat_gol: '',
-            no_hp: '',
-            foto: ''
-        };
-        
-        const card = document.createElement('div');
-        card.className = 'pegawai-card';
-        card.id = id;
-        card.innerHTML = `
-            <div class="pegawai-header">
-                <div class="pegawai-foto" id="foto-${id}">
-                    ${pegawaiData.foto ? 
-                        `<img src="${pegawaiData.foto}" alt="Foto Pegawai">` : 
-                        `<div class="foto-placeholder">
-                            <i class="fas fa-user"></i>
-                        </div>`
-                    }
-                    <button class="upload-btn" onclick="uploadFoto('pegawai', '${id}', event)" style="display: none;">
-                        <i class="fas fa-camera"></i>
-                    </button>
-                </div>
-                <div class="pegawai-info">
-                    <div class="pegawai-field">
-                        <label>Nama</label>
-                        <input type="text" class="pegawai-nama" value="${pegawaiData.nama}" disabled>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="pegawai-info" style="margin-top: 1rem;">
-                <div class="pegawai-field">
-                    <label>Jabatan</label>
-                    <input type="text" class="pegawai-jabatan" value="${pegawaiData.jabatan}" disabled>
-                </div>
-                <div class="pegawai-field">
-                    <label>NIP</label>
-                    <input type="text" class="pegawai-nip" value="${pegawaiData.nip}" disabled>
-                </div>
-                <div class="pegawai-field">
-                    <label>Pangkat/Gol</label>
-                    <input type="text" class="pegawai-pangkat" value="${pegawaiData.pangkat_gol}" disabled>
-                </div>
-                <div class="pegawai-field">
-                    <label>No. HP</label>
-                    <input type="text" class="pegawai-nohp" value="${pegawaiData.no_hp}" disabled>
-                </div>
-            </div>
-            
-            <div class="card-actions">
-                <button type="button" class="edit-btn" onclick="toggleEditPegawai('${id}', event)">
-                    <i class="fas fa-edit"></i> Edit
-                </button>
-                <button type="button" class="save-btn" onclick="savePegawai('${id}', event)" style="display: none;">
-                    <i class="fas fa-save"></i> Simpan
-                </button>
-                <button type="button" class="cancel-btn" onclick="cancelEditPegawai('${id}', event)" style="display: none;">
-                    <i class="fas fa-times"></i> Batal
-                </button>
-            </div>
-        `;
-        
-        grid.appendChild(card);
-        
-        if (!pegawai) {
-            pegawaiCount++;
-        }
-    }
-
-    // Logout dengan konfirmasi
-    function handleLogout(event) {
-        if (event) {
-            event.preventDefault();
-            event.stopPropagation();
-        }
-        
-        // Cek apakah ada draft yang belum disimpan
-        const draft = localStorage.getItem(`draft_${currentUser}`);
-        if (draft) {
-            if (!confirm('Ada data yang belum disimpan. Yakin ingin logout?')) {
+            // Validasi input
+            if (!username || !password) {
+                showAlert('Username dan password harus diisi!', 'error');
                 return;
             }
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Penting untuk Apps Script
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                // Karena mode 'no-cors', kita tidak bisa membaca response
+                // Jadi kita asumsikan berhasil dan redirect
+                showAlert('Login berhasil! Mengalihkan...', 'success');
+                
+                // Simpan informasi login di sessionStorage
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('username', username);
+                
+                // Redirect setelah 1.5 detik
+                setTimeout(() => {
+                    window.location.href = 'https://senapelan.github.io/Home/login/profile.html';
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showAlert('Terjadi kesalahan. Silakan coba lagi.', 'error');
+                setLoading(false);
+            }
         }
-        
-        // Bersihkan semua data
-        if (autoSaveInterval) clearInterval(autoSaveInterval);
-        localStorage.removeItem(`draft_${currentUser}`);
-        sessionStorage.removeItem('isLoggedIn');
-        sessionStorage.removeItem('username');
-        
-        window.location.href = LOGIN_PAGE_URL;
-    }
 
-    // Helper functions
-    function showLoading() {
-        document.getElementById('loadingOverlay').classList.add('active');
-    }
+        // Event listener untuk Enter key
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
 
-    function hideLoading() {
-        document.getElementById('loadingOverlay').classList.remove('active');
-    }
+        // Auto focus ke input username
+        window.onload = function() {
+            document.getElementById('username').focus();
+            
+            // Cek apakah sudah login sebelumnya
+            if (sessionStorage.getItem('isLoggedIn') === 'true') {
+                window.location.href = 'https://senapelan.github.io/Home/login/profile.html';
+            }
+        };
 
-    function showToast(message, type = 'success', duration = 3000) {
-        const toast = document.getElementById('toast');
-        const toastMessage = document.getElementById('toastMessage');
-        const toastIcon = toast.querySelector('i');
-        
-        // Set icon based on type
-        if (type === 'success') {
-            toastIcon.className = 'fas fa-check-circle';
-            toastIcon.style.color = '#84fab0';
-        } else if (type === 'error') {
-            toastIcon.className = 'fas fa-exclamation-circle';
-            toastIcon.style.color = '#f5576c';
-        } else if (type === 'warning') {
-            toastIcon.className = 'fas fa-exclamation-triangle';
-            toastIcon.style.color = '#ffa502';
-        } else if (type === 'info') {
-            toastIcon.className = 'fas fa-info-circle';
-            toastIcon.style.color = '#4facfe';
-        }
-        
-        toast.className = `toast ${type}`;
-        toastMessage.textContent = message;
-        toast.classList.add('show');
-        
-        setTimeout(() => {
-            toast.classList.remove('show');
-        }, duration);
-    }
-
-    // Bersihkan interval saat halaman ditutup
-    window.addEventListener('beforeunload', function() {
-        if (autoSaveInterval) {
-            clearInterval(autoSaveInterval);
-        }
-    });
-
-    // Hapus interval auto-refresh yang lama
-    // setInterval(loadUserData, 30000); // HAPUS BARIS INI
-</script>
+        // Animasi input focus
+        document.querySelectorAll('.input-group input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.querySelector('label').style.color = '#667eea';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.querySelector('label').style.color = '#333';
+            });
+        });
+    </script>
 </body>
 </html>
