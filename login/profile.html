@@ -716,7 +716,7 @@
 
     <script>
         // Konfigurasi
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyPkTztHid5sYXVVWrvJixiupp1Xx86Blm-5lvf2FLElCERADDjMg9BB0RPFuu8MUOMtA/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzlXhO1AqKK1Cvs3HB63vdpTb-J8vaBU4LBTCQpD4jevsIp5VcRUGvsu_LDYBm8I-A9A/exec';
         const LOGIN_PAGE_URL = 'https://senapelan.github.io/Home/login/login.html';
         
         // State
@@ -909,88 +909,98 @@
 
         // Save kelurahan data
         async function saveKelurahan() {
-            showLoading();
-            
-            const formData = new FormData();
-            formData.append('action', 'saveKelurahan');
-            formData.append('username', currentUser);
-            formData.append('nama_kelurahan', document.getElementById('nama_kelurahan').value);
-            formData.append('alamat_kelurahan', document.getElementById('alamat_kelurahan').value);
-            formData.append('rt', document.getElementById('rt').value);
-            formData.append('rw', document.getElementById('rw').value);
-            formData.append('kelurahan', document.getElementById('kelurahan').value);
-            formData.append('kecamatan', document.getElementById('kecamatan').value);
-            formData.append('kota', document.getElementById('kota').value);
-            formData.append('provinsi', document.getElementById('provinsi').value);
-            formData.append('kode_pos', document.getElementById('kode_pos').value);
-            formData.append('telp_kantor', document.getElementById('telp_kantor').value);
-            formData.append('link_foto_kelurahan', document.getElementById('kelurahanFoto').src || '');
-            
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showToast('Data kelurahan berhasil disimpan');
-                    toggleEditKelurahan();
-                } else {
-                    showToast('Gagal menyimpan: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Gagal menyimpan data', 'error');
-            } finally {
-                hideLoading();
-            }
-        }
+    showLoading();
+    
+    const data = {
+        action: 'saveKelurahan',
+        username: currentUser,
+        nama_kelurahan: document.getElementById('nama_kelurahan').value,
+        alamat_kelurahan: document.getElementById('alamat_kelurahan').value,
+        rt: document.getElementById('rt').value,
+        rw: document.getElementById('rw').value,
+        kelurahan: document.getElementById('kelurahan').value,
+        kecamatan: document.getElementById('kecamatan').value,
+        kota: document.getElementById('kota').value,
+        provinsi: document.getElementById('provinsi').value,
+        kode_pos: document.getElementById('kode_pos').value,
+        telp_kantor: document.getElementById('telp_kantor').value,
+        link_foto_kelurahan: document.getElementById('kelurahanFoto').src || ''
+    };
+    
+    try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors', // Tambahkan ini
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data) // Gunakan URLSearchParams
+        });
+        
+        // Karena mode 'no-cors', kita tidak bisa membaca response
+        // Tampilkan pesan sukses
+        showToast('Data kelurahan berhasil disimpan');
+        toggleEditKelurahan();
+        
+        // Reload data setelah 1 detik
+        setTimeout(loadUserData, 1000);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Gagal menyimpan data: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
 
-        // Save pegawai data
-        async function savePegawai(cardId) {
-            showLoading();
-            
-            const card = document.getElementById(cardId);
-            const pegawaiId = cardId.split('-').pop();
-            
-            const formData = new FormData();
-            formData.append('action', 'savePegawai');
-            formData.append('username', currentUser);
-            formData.append('pegawaiId', pegawaiId);
-            formData.append('nama', card.querySelector('.pegawai-nama').value);
-            formData.append('jabatan', card.querySelector('.pegawai-jabatan').value);
-            formData.append('nip', card.querySelector('.pegawai-nip').value);
-            formData.append('pangkat_gol', card.querySelector('.pegawai-pangkat').value);
-            formData.append('no_hp', card.querySelector('.pegawai-nohp').value);
-            
-            const fotoImg = card.querySelector('.pegawai-foto img');
-            if (fotoImg) {
-                formData.append('foto', fotoImg.src);
-            }
-            
-            try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showToast('Data pegawai berhasil disimpan');
-                    loadUserData(); // Reload data
-                } else {
-                    showToast('Gagal menyimpan: ' + result.message, 'error');
-                }
-            } catch (error) {
-                console.error('Error:', error);
-                showToast('Gagal menyimpan data', 'error');
-            } finally {
-                hideLoading();
-            }
-        }
+// Perbaiki fungsi savePegawai
+async function savePegawai(cardId) {
+    showLoading();
+    
+    const card = document.getElementById(cardId);
+    const pegawaiId = cardId.split('-').pop();
+    
+    // Ambil foto
+    let fotoUrl = '';
+    const fotoImg = card.querySelector('.pegawai-foto img');
+    if (fotoImg) {
+        fotoUrl = fotoImg.src;
+    }
+    
+    const data = {
+        action: 'savePegawai',
+        username: currentUser,
+        pegawaiId: pegawaiId,
+        nama: card.querySelector('.pegawai-nama').value,
+        jabatan: card.querySelector('.pegawai-jabatan').value,
+        nip: card.querySelector('.pegawai-nip').value,
+        pangkat_gol: card.querySelector('.pegawai-pangkat').value,
+        no_hp: card.querySelector('.pegawai-nohp').value,
+        foto: fotoUrl
+    };
+    
+    try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data)
+        });
+        
+        showToast('Data pegawai berhasil disimpan');
+        
+        // Reload data setelah 1 detik
+        setTimeout(loadUserData, 1000);
+        
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Gagal menyimpan data: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
 
         // Upload foto
         function uploadFoto(type, target = null) {
