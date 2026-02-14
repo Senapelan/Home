@@ -15,7 +15,7 @@
     <!-- 3D LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
-    <!-- FONT AWESOME FOR BACK ICON -->
+    <!-- FONT AWESOME FOR ICONS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -63,8 +63,8 @@
             opacity: 0.03;
         }
 
-        /* Simple Header with Back Button */
-        .page-header {
+        /* ================= HEADER SAMA SEPERTI CONTOH WEB ================= */
+        .header {
             position: fixed;
             top: 0;
             left: 0;
@@ -72,7 +72,7 @@
             height: 80px;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             padding: 0 40px;
             background: rgba(12, 31, 51, 0.95);
             backdrop-filter: blur(20px);
@@ -81,13 +81,104 @@
             transition: var(--transition);
         }
 
-        .page-header.scrolled {
+        .header.scrolled {
             background: rgba(12, 31, 51, 0.98);
             backdrop-filter: blur(30px);
             height: 70px;
             box-shadow: var(--shadow-lg);
         }
 
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+            filter: none !important;
+            border-radius: 12px;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-img:hover img {
+            transform: rotate(10deg);
+            filter: brightness(1.2) saturate(1.5) !important;
+        }
+
+        .logo-img:hover::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                rgba(30, 107, 255, 0.4), 
+                rgba(0, 201, 183, 0.4), 
+                rgba(255, 107, 107, 0.4));
+            border-radius: 18px;
+            z-index: -1;
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { 
+                opacity: 0.5;
+                filter: hue-rotate(0deg);
+            }
+            50% { 
+                opacity: 0.8;
+                filter: hue-rotate(45deg);
+            }
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a3d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-sub {
+            font-size: 13px;
+            opacity: 0.9;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Back Button di Kanan */
         .back-btn {
             display: flex;
             align-items: center;
@@ -125,11 +216,6 @@
         .back-btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 15px 40px rgba(30, 107, 255, 0.5);
-        }
-
-        .back-btn i {
-            font-size: 18px;
-            transition: transform 0.3s ease;
         }
 
         .back-btn:hover i {
@@ -298,7 +384,6 @@
             border-color: rgba(30, 107, 255, 0.3);
         }
 
-        /* Card Glow Effect */
         .employee-card::before {
             content: '';
             position: absolute;
@@ -325,7 +410,7 @@
         .card-image {
             position: relative;
             width: 100%;
-            padding-top: 120%; /* Aspect ratio 5:6 */
+            padding-top: 120%;
             overflow: hidden;
             background: linear-gradient(135deg, #667eea, #764ba2);
         }
@@ -346,7 +431,6 @@
             filter: brightness(1.1) saturate(1.2);
         }
 
-        /* Image Overlay */
         .image-overlay {
             position: absolute;
             top: 0;
@@ -459,6 +543,7 @@
             font-size: 0.85rem;
         }
 
+        /* GAMBAR PITA DIGANTI DENGAN LINK YANG DIBERIKAN */
         .employee-rank {
             display: flex;
             align-items: center;
@@ -471,20 +556,20 @@
         .rank-icon {
             width: 35px;
             height: 35px;
-            background: linear-gradient(135deg, rgba(30, 107, 255, 0.1), rgba(0, 201, 183, 0.1));
-            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: var(--primary);
-            font-size: 16px;
             transition: var(--transition);
         }
 
+        .rank-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
         .employee-card:hover .rank-icon {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            transform: rotate(10deg);
+            transform: rotate(10deg) scale(1.1);
         }
 
         .rank-detail {
@@ -529,13 +614,9 @@
             border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        .page-footer p {
-            font-size: 0.95rem;
-        }
-
-        /* Responsive Design */
+        /* Responsive */
         @media (max-width: 992px) {
-            .page-header {
+            .header {
                 padding: 0 20px;
             }
             
@@ -550,8 +631,16 @@
         }
 
         @media (max-width: 768px) {
-            .page-header {
+            .header {
                 height: 70px;
+            }
+            
+            .logo-main {
+                font-size: 18px;
+            }
+            
+            .logo-sub {
+                font-size: 11px;
             }
             
             .back-btn {
@@ -567,23 +656,27 @@
                 font-size: 2.2rem;
             }
             
-            .page-title p {
-                font-size: 1rem;
-            }
-            
             .employee-grid {
                 grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-                gap: 20px;
-            }
-            
-            .employee-name {
-                font-size: 1.2rem;
             }
         }
 
         @media (max-width: 480px) {
-            .page-header {
+            .header {
                 padding: 0 15px;
+            }
+            
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .logo-main {
+                font-size: 16px;
+            }
+            
+            .logo-sub {
+                font-size: 10px;
             }
             
             .back-btn {
@@ -600,14 +693,8 @@
                 max-width: 350px;
                 margin: 0 auto;
             }
-            
-            .loading-container,
-            .error-container {
-                padding: 30px 20px;
-            }
         }
 
-        /* Scrollbar */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -620,18 +707,25 @@
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             border-radius: 5px;
         }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--secondary));
-        }
     </style>
 </head>
 <body>
     <!-- 3D Background Canvas -->
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Simple Header with Back Button -->
-    <header class="page-header" id="pageHeader">
+    <!-- Header SAMA SEPERTI CONTOH WEB dengan Back Button di Kanan -->
+    <header class="header" id="header">
+        <a href="https://senapelan.github.io/Home/" class="logo">
+            <div class="logo-img">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
+            </div>
+            <div class="logo-text">
+                <div class="logo-main">Padang Terubuk</div>
+                <div class="logo-sub">Data Pegawai</div>
+            </div>
+        </a>
+        
+        <!-- Back Button di Kanan -->
         <a href="javascript:history.back()" class="back-btn" id="backButton">
             <i class="fas fa-arrow-left"></i>
             <span>Kembali</span>
@@ -662,7 +756,7 @@
     <script>
         // ================= HEADER SCROLL EFFECT =================
         window.addEventListener('scroll', () => {
-            const header = document.getElementById('pageHeader');
+            const header = document.getElementById('header');
             if (window.scrollY > 50) {
                 header.classList.add('scrolled');
             } else {
@@ -686,7 +780,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             
-            // Create floating particles
             const particlesGeometry = new THREE.BufferGeometry();
             const particlesCount = 300;
             const posArray = new Float32Array(particlesCount * 3);
@@ -710,7 +803,6 @@
             
             camera.position.z = 3;
             
-            // Mouse movement effect
             let mouseX = 0;
             let mouseY = 0;
             
@@ -719,14 +811,12 @@
                 mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
             });
             
-            // Animation
             function animate() {
                 requestAnimationFrame(animate);
                 
                 particlesMesh.rotation.x += 0.0005;
                 particlesMesh.rotation.y += 0.0005;
                 
-                // Smooth mouse follow
                 camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
                 camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
                 
@@ -735,7 +825,6 @@
             
             animate();
             
-            // Handle resize
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
@@ -743,23 +832,45 @@
             });
         }
         
-        // Initialize 3D background if Three.js is available
         if (typeof THREE !== 'undefined') {
             window.addEventListener('load', init3DBackground);
         }
         
-        // ================= FETCH DATA FROM GOOGLE SHEETS =================
+        // ================= FUNGSI KONVERSI LINK GOOGLE DRIVE =================
+        function convertGoogleDriveLink(url) {
+            if (!url || url === '') return '';
+            
+            // Format: https://drive.google.com/open?id=FILE_ID
+            let fileId = '';
+            
+            if (url.includes('open?id=')) {
+                fileId = url.split('open?id=')[1].split('&')[0];
+            } 
+            // Format: https://drive.google.com/file/d/FILE_ID/view
+            else if (url.includes('/file/d/')) {
+                const match = url.match(/\/file\/d\/([^\/]+)/);
+                if (match) fileId = match[1];
+            }
+            
+            if (fileId) {
+                // Gunakan thumbnail Google Drive yang bisa diakses
+                return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+            }
+            
+            return url; // return asli jika bukan link Drive
+        }
+        
+        // ================= FETCH DATA DARI GOOGLE SHEETS =================
         const SPREADSHEET_ID = '1J2K8z_XYUptg4YCcnC_MyBCe9UxKlW_QKBiTRerXE4s';
         const SHEET_NAME = 'DATA_PEGAWAI';
         
-        // APPS SCRIPT WEB APP URL (GANTI DENGAN URL APPS SCRIPT KAMU)
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4CZJmFO9zJa3vVhfGibcF-8yWJ50NHN1CLhtk9UXYl6TV_rAF2Qe1obCDyB7pH_nftg/exec'; // GANTI INI!
+        // GANTI DENGAN URL APPS SCRIPT KAMU
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzR72JDP7EZdHnsLg0CDjYHxVqC7hxwmmR4rQ3pZR6sDqW8k9x7nT5zL1yM2vB4cW6p/exec';
         
         async function fetchEmployeeData() {
             const container = document.getElementById('employeeContainer');
             
             try {
-                // Tampilkan loading
                 container.innerHTML = `
                     <div class="loading-container">
                         <div class="loading-spinner"></div>
@@ -767,7 +878,6 @@
                     </div>
                 `;
                 
-                // Fetch data dari Apps Script
                 const response = await fetch(`${APPS_SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheet=${SHEET_NAME}`);
                 
                 if (!response.ok) {
@@ -780,7 +890,6 @@
                     throw new Error(data.error);
                 }
                 
-                // Jika data kosong
                 if (!data.data || data.data.length === 0) {
                     container.innerHTML = `
                         <div class="no-data">
@@ -792,13 +901,10 @@
                     return;
                 }
                 
-                // Render cards
                 renderEmployeeCards(data.data, container);
                 
             } catch (error) {
                 console.error('Error fetching data:', error);
-                
-                // Tampilkan error dengan tombol retry
                 container.innerHTML = `
                     <div class="error-container">
                         <i class="fas fa-exclamation-triangle"></i>
@@ -828,13 +934,14 @@
             let cardsHTML = '<div class="employee-grid">';
             
             employees.forEach((employee, index) => {
-                // Extract data with proper fallback
                 const nama = employee.NAMA || 'Tidak Ada Nama';
                 const jabatan = employee.JABATAN || 'Tidak Ada Jabatan';
                 const pangkatGol = employee.PANGKAT_GOL || '-';
-                const linkFoto = employee['LINK FOTO'] || '';
+                let linkFoto = employee['LINK FOTO'] || '';
                 
-                // Generate default image or use provided link
+                // Konversi link Google Drive ke thumbnail yang bisa ditampilkan
+                linkFoto = convertGoogleDriveLink(linkFoto);
+                
                 const imageUrl = linkFoto && linkFoto.trim() !== '' 
                     ? linkFoto 
                     : `https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&background=1e6bff&color=fff&size=512&bold=true&length=2`;
@@ -860,7 +967,8 @@
                             </div>
                             <div class="employee-rank">
                                 <div class="rank-icon">
-                                    <i class="fas fa-ribbon"></i>
+                                    <!-- GAMBAR PITA DIGANTI DENGAN LINK YANG DIBERIKAN -->
+                                    <img src="https://senapelan.github.io/Home/data/foto/icopangkat.png" alt="Pangkat">
                                 </div>
                                 <div class="rank-detail">
                                     <div class="rank-label">Pangkat / Golongan</div>
@@ -875,52 +983,50 @@
             cardsHTML += '</div>';
             container.innerHTML = cardsHTML;
             
-            // Add animation delay for cards
             document.querySelectorAll('.employee-card').forEach((card, index) => {
                 card.style.animation = `fadeUp 0.6s ease forwards ${index * 0.1}s`;
                 card.style.opacity = '0';
             });
         }
         
-        // ================= FALLBACK DATA (jika Apps Script bermasalah) =================
+        // ========== FALLBACK DATA (jika Apps Script bermasalah) ==========
         function loadFallbackData() {
-            // Data contoh untuk testing
             const fallbackData = [
                 {
                     NAMA: "Juni Hardi, S.STP",
                     JABATAN: "Plt. Lurah",
                     PANGKAT_GOL: "Penata Muda / IIIa",
-                    "LINK FOTO": "data/foto/lurah/padangterubuk.png"
+                    "LINK FOTO": "https://drive.google.com/open?id=1tPo0dy9PWEed5Lrp7c0NwgpJ8GMi9xyG"
                 },
                 {
                     NAMA: "Siti Aminah, S.E",
                     JABATAN: "Sekretaris Lurah",
                     PANGKAT_GOL: "Penata / IIIc",
-                    "LINK FOTO": ""
+                    "LINK FOTO": "https://drive.google.com/open?id=18hHDB5V-q5dv_pyNmfZSrIWoECC6OpeO"
                 },
                 {
                     NAMA: "Ahmad Fauzi, S.Sos",
                     JABATAN: "Kasi Pemerintahan",
                     PANGKAT_GOL: "Penata Muda / IIIa",
-                    "LINK FOTO": ""
+                    "LINK FOTO": "https://drive.google.com/open?id=18hz8yMZVDIDK2-H4mKLSE8pZeqb0psC8"
                 },
                 {
                     NAMA: "Rina Wati, A.Md",
                     JABATAN: "Kasi Kesra",
                     PANGKAT_GOL: "Pengatur / IIc",
-                    "LINK FOTO": ""
+                    "LINK FOTO": "https://drive.google.com/open?id=1Efq8s5CyBAfmD_7xxI4JUlYd2jsaxGMU"
                 },
                 {
                     NAMA: "Budi Santoso, S.Kom",
                     JABATAN: "Staf Administrasi",
                     PANGKAT_GOL: "Pengatur Muda / IIa",
-                    "LINK FOTO": ""
+                    "LINK FOTO": "https://drive.google.com/open?id=1kvBhE5ofajsmclGTJRVOZP93mJPNbe4_"
                 },
                 {
                     NAMA: "Dewi Lestari, S.E",
                     JABATAN: "Staf Keuangan",
                     PANGKAT_GOL: "Pengatur / IIb",
-                    "LINK FOTO": ""
+                    "LINK FOTO": "https://drive.google.com/open?id=1WcGeMrJzWzKeyEF_qDNW9fm8Ue4RVeIX"
                 }
             ];
             
@@ -928,54 +1034,20 @@
             renderEmployeeCards(fallbackData, container);
         }
         
-        // ================= INITIAL LOAD =================
         window.addEventListener('load', () => {
-            // Coba fetch dari Apps Script, jika gagal pakai fallback
             fetchEmployeeData().catch(() => {
                 console.log('Menggunakan data fallback...');
                 loadFallbackData();
             });
         });
         
-        // ================= BACK BUTTON HANDLER =================
         document.getElementById('backButton').addEventListener('click', (e) => {
             e.preventDefault();
             
-            // Cek apakah ada history sebelumnya
             if (document.referrer && document.referrer.indexOf(window.location.host) !== -1) {
                 history.back();
             } else {
-                // Jika tidak ada history, redirect ke halaman utama
                 window.location.href = 'https://senapelan.github.io/Home/kelurahanpadangterubuk.html';
-            }
-        });
-        
-        // ================= SMOOTH SCROLL UNTUK ANCHOR =================
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
-                
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 100,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-        // ================= ADD CARD CLICK EFFECT =================
-        document.addEventListener('click', (e) => {
-            const card = e.target.closest('.employee-card');
-            if (card) {
-                // Bisa tambahkan efek atau navigasi ke detail pegawai
-                card.style.transform = 'scale(0.98)';
-                setTimeout(() => {
-                    card.style.transform = '';
-                }, 200);
             }
         });
     </script>
