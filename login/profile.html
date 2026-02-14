@@ -716,7 +716,7 @@
 
     <script>
         // Konfigurasi
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzlXhO1AqKK1Cvs3HB63vdpTb-J8vaBU4LBTCQpD4jevsIp5VcRUGvsu_LDYBm8I-A9A/exec';
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxS_WDc4dgl1FGeJrVORfZf1u0hi3Ax09LH34GBIcLRH5p59wb2JraKkFstYOgRdjauJQ/exec';
         const LOGIN_PAGE_URL = 'https://senapelan.github.io/Home/login/login.html';
         
         // State
@@ -928,22 +928,24 @@
     };
     
     try {
+        // Gunakan fetch biasa tanpa no-cors untuk bisa membaca response
         const response = await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors', // Tambahkan ini
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            body: new URLSearchParams(data) // Gunakan URLSearchParams
+            body: new URLSearchParams(data)
         });
         
-        // Karena mode 'no-cors', kita tidak bisa membaca response
-        // Tampilkan pesan sukses
-        showToast('Data kelurahan berhasil disimpan');
-        toggleEditKelurahan();
+        const result = await response.json();
         
-        // Reload data setelah 1 detik
-        setTimeout(loadUserData, 1000);
+        if (result.success) {
+            showToast('Data kelurahan berhasil disimpan');
+            toggleEditKelurahan();
+            setTimeout(loadUserData, 1000);
+        } else {
+            showToast('Gagal: ' + result.message, 'error');
+        }
         
     } catch (error) {
         console.error('Error:', error);
@@ -953,14 +955,13 @@
     }
 }
 
-// Perbaiki fungsi savePegawai
+// Update fungsi savePegawai
 async function savePegawai(cardId) {
     showLoading();
     
     const card = document.getElementById(cardId);
     const pegawaiId = cardId.split('-').pop();
     
-    // Ambil foto
     let fotoUrl = '';
     const fotoImg = card.querySelector('.pegawai-foto img');
     if (fotoImg) {
@@ -982,21 +983,90 @@ async function savePegawai(cardId) {
     try {
         const response = await fetch(APPS_SCRIPT_URL, {
             method: 'POST',
-            mode: 'no-cors',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
             body: new URLSearchParams(data)
         });
         
-        showToast('Data pegawai berhasil disimpan');
+        const result = await response.json();
         
-        // Reload data setelah 1 detik
-        setTimeout(loadUserData, 1000);
+        if (result.success) {
+            showToast('Data pegawai berhasil disimpan');
+            setTimeout(loadUserData, 1000);
+        } else {
+            showToast('Gagal: ' + result.message, 'error');
+        }
         
     } catch (error) {
         console.error('Error:', error);
         showToast('Gagal menyimpan data: ' + error.message, 'error');
+    } finally {
+        hideLoading();
+    }
+}
+
+// Update fungsi cropAndUpload
+async function cropAndUpload() {
+    if (!cropper) return;
+    
+    showLoading();
+    
+    const canvas = cropper.getCroppedCanvas({
+        width: 400,
+        height: 500
+    });
+    
+    const croppedImage = canvas.toDataURL('image/jpeg', 0.9);
+    
+    const block = croppedImage.split(';');
+    const contentType = block[0].split(':')[1];
+    const realData = block[1].split(',')[1];
+    
+    const data = {
+        action: 'uploadFoto',
+        username: currentUser,
+        jenis: currentFotoType,
+        fotoData: realData,
+        contentType: contentType
+    };
+    
+    try {
+        const response = await fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            const thumbnailUrl = result.data.thumbnailUrl;
+            
+            if (currentFotoType === 'kelurahan') {
+                document.getElementById('kelurahanFoto').src = thumbnailUrl;
+                document.getElementById('kelurahanFoto').style.display = 'block';
+                document.getElementById('kelurahanFotoPlaceholder').style.display = 'none';
+            } else if (currentFotoType === 'pegawai' && currentFotoTarget) {
+                const fotoContainer = document.getElementById(`foto-${currentFotoTarget}`);
+                fotoContainer.innerHTML = `
+                    <img src="${thumbnailUrl}" alt="Foto Pegawai">
+                    <button class="upload-btn" onclick="uploadFoto('pegawai', '${currentFotoTarget}')">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                `;
+            }
+            
+            showToast('Foto berhasil diupload');
+            closeCropper();
+        } else {
+            showToast('Gagal upload: ' + result.message, 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        showToast('Gagal upload foto: ' + error.message, 'error');
     } finally {
         hideLoading();
     }
