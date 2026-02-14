@@ -21,7 +21,7 @@
     <meta name="twitter:description" content="Pelayanan terbaik lahir dari keikhlasan dan kebersamaan">
     <meta name="twitter:image" content="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
 
-  <!-- FAVICON -->
+    <!-- FAVICON -->
     <link rel="icon" type="image/png" sizes="32x32" href="https://senapelan.github.io/Home/data/foto/favico/favico.png">
     
     <meta charset="UTF-8">
@@ -32,13 +32,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- FAVICON -->
-    <link rel="icon" type="image/png" sizes="32x32" href="data/foto/favico/favico.png">
-    
     <!-- 3D LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
-    <!-- FONT AWESOME FOR BACK ICON -->
+    <!-- FONT AWESOME -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -57,7 +54,8 @@
             --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.12);
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             --card-bg: rgba(255, 255, 255, 0.9);
-            --card-bg-dark: rgba(12, 31, 51, 0.95);
+            --gold: #FFD700;
+            --gold-dark: #FFA500;
         }
 
         * {
@@ -86,7 +84,7 @@
             opacity: 0.03;
         }
 
-        /* Simple Header with Back Button */
+        /* Header dengan Logo (Sama seperti halaman utama) */
         .page-header {
             position: fixed;
             top: 0;
@@ -95,7 +93,7 @@
             height: 80px;
             display: flex;
             align-items: center;
-            justify-content: flex-end;
+            justify-content: space-between;
             padding: 0 40px;
             background: rgba(12, 31, 51, 0.95);
             backdrop-filter: blur(20px);
@@ -111,6 +109,98 @@
             box-shadow: var(--shadow-lg);
         }
 
+        /* Logo (sama dengan halaman utama) */
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            text-decoration: none;
+            position: relative;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            background: transparent !important;
+            padding: 0 !important;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+            filter: none !important;
+            border-radius: 12px;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.1);
+        }
+
+        .logo-img:hover img {
+            transform: rotate(10deg);
+            filter: brightness(1.2) saturate(1.5) !important;
+        }
+
+        .logo-img:hover::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                rgba(30, 107, 255, 0.4), 
+                rgba(0, 201, 183, 0.4), 
+                rgba(255, 107, 107, 0.4));
+            border-radius: 18px;
+            z-index: -1;
+            animation: logoGlow 2s ease-in-out infinite;
+        }
+
+        @keyframes logoGlow {
+            0%, 100% { 
+                opacity: 0.5;
+                filter: hue-rotate(0deg);
+            }
+            50% { 
+                opacity: 0.8;
+                filter: hue-rotate(45deg);
+            }
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a3d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-sub {
+            font-size: 13px;
+            opacity: 0.9;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Back Button */
         .back-btn {
             display: flex;
             align-items: center;
@@ -321,6 +411,93 @@
             border-color: rgba(30, 107, 255, 0.3);
         }
 
+        /* Gold Card untuk Lurah */
+        .employee-card.gold-card {
+            border: 2px solid transparent;
+            background: linear-gradient(white, white) padding-box,
+                        linear-gradient(135deg, var(--gold), var(--gold-dark)) border-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .employee-card.gold-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(
+                45deg,
+                transparent 30%,
+                rgba(255, 215, 0, 0.1) 50%,
+                transparent 70%
+            );
+            animation: goldShine 3s infinite;
+        }
+
+        @keyframes goldShine {
+            0% {
+                transform: translateX(-100%) translateY(-100%) rotate(45deg);
+            }
+            100% {
+                transform: translateX(100%) translateY(100%) rotate(45deg);
+            }
+        }
+
+        .employee-card.gold-card:hover {
+            transform: translateY(-15px) rotateX(2deg) scale(1.02);
+            box-shadow: 0 30px 60px rgba(255, 215, 0, 0.3);
+        }
+
+        .employee-card.gold-card .rank-badge {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--dark);
+            font-weight: 700;
+            border: none;
+        }
+
+        .employee-card.gold-card .employee-name {
+            background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 800;
+            position: relative;
+            display: inline-block;
+        }
+
+        .employee-card.gold-card .employee-name i {
+            color: var(--gold);
+            -webkit-text-fill-color: initial;
+            margin-right: 8px;
+        }
+
+        .employee-card.gold-card .rank-icon {
+            background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+            color: var(--dark);
+            animation: goldPulse 2s infinite;
+        }
+
+        @keyframes goldPulse {
+            0%, 100% {
+                box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            }
+        }
+
+        .employee-card.gold-card .rank-value {
+            color: var(--gold-dark);
+            font-weight: 700;
+        }
+
+        .employee-card.gold-card .employee-position span {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.2), rgba(255, 165, 0, 0.2));
+            color: #b8860b;
+            font-weight: 600;
+        }
+
         /* Card Glow Effect */
         .employee-card::before {
             content: '';
@@ -348,7 +525,7 @@
         .card-image {
             position: relative;
             width: 100%;
-            padding-top: 120%; /* Aspect ratio 5:6 */
+            padding-top: 120%;
             overflow: hidden;
             background: linear-gradient(135deg, #667eea, #764ba2);
         }
@@ -562,6 +739,14 @@
                 padding: 0 20px;
             }
             
+            .logo-main {
+                font-size: 18px;
+            }
+            
+            .logo-sub {
+                font-size: 11px;
+            }
+            
             .main-content {
                 padding: 100px 30px 40px;
             }
@@ -575,6 +760,11 @@
         @media (max-width: 768px) {
             .page-header {
                 height: 70px;
+            }
+            
+            .logo-img {
+                width: 50px;
+                height: 50px;
             }
             
             .back-btn {
@@ -607,6 +797,14 @@
         @media (max-width: 480px) {
             .page-header {
                 padding: 0 15px;
+            }
+            
+            .logo-main {
+                font-size: 16px;
+            }
+            
+            .logo-sub {
+                font-size: 10px;
             }
             
             .back-btn {
@@ -653,8 +851,18 @@
     <!-- 3D Background Canvas -->
     <canvas id="bg-canvas"></canvas>
     
-    <!-- Simple Header with Back Button -->
+    <!-- Header dengan Logo (Sama seperti halaman utama) -->
     <header class="page-header" id="pageHeader">
+        <a href="https://senapelan.github.io/Home/" class="logo">
+            <div class="logo-img">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
+            </div>
+            <div class="logo-text">
+                <div class="logo-main">Padang Terubuk</div>
+                <div class="logo-sub">Data Pegawai</div>
+            </div>
+        </a>
+        
         <a href="javascript:history.back()" class="back-btn" id="backButton">
             <i class="fas fa-arrow-left"></i>
             <span>Kembali</span>
@@ -775,8 +983,8 @@
         const SPREADSHEET_ID = '1J2K8z_XYUptg4YCcnC_MyBCe9UxKlW_QKBiTRerXE4s';
         const SHEET_NAME = 'DATA_PEGAWAI';
         
-        // APPS SCRIPT WEB APP URL (GANTI DENGAN URL APPS SCRIPT KAMU)
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4CZJmFO9zJa3vVhfGibcF-8yWJ50NHN1CLhtk9UXYl6TV_rAF2Qe1obCDyB7pH_nftg/exec'; // GANTI INI!
+        // APPS SCRIPT WEB APP URL
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4CZJmFO9zJa3vVhfGibcF-8yWJ50NHN1CLhtk9UXYl6TV_rAF2Qe1obCDyB7pH_nftg/exec';
         
         async function fetchEmployeeData() {
             const container = document.getElementById('employeeContainer');
@@ -821,18 +1029,8 @@
             } catch (error) {
                 console.error('Error fetching data:', error);
                 
-                // Tampilkan error dengan tombol retry
-                container.innerHTML = `
-                    <div class="error-container">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <h3>Gagal Memuat Data</h3>
-                        <p>${error.message || 'Terjadi kesalahan saat mengambil data. Silakan coba lagi.'}</p>
-                        <button class="retry-btn" onclick="fetchEmployeeData()">
-                            <i class="fas fa-sync-alt" style="margin-right: 8px;"></i>
-                            Coba Lagi
-                        </button>
-                    </div>
-                `;
+                // Gunakan fallback data
+                loadFallbackData();
             }
         }
         
@@ -862,8 +1060,17 @@
                     ? linkFoto 
                     : `https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&background=1e6bff&color=fff&size=512&bold=true&length=2`;
                 
+                // Cek apakah ini Lurah (Juni Hardi) untuk memberikan gold card
+                const isLurah = nama.toLowerCase().includes('juni hardi') || index === 0;
+                
+                // Tentukan icon dan badge
+                const rankIcon = isLurah ? 'fa-crown' : 'fa-ribbon';
+                const badgeText = isLurah ? 'LURAH' : 'Pegawai';
+                const badgeIcon = isLurah ? 'fa-crown' : 'fa-star';
+                const goldClass = isLurah ? 'gold-card' : '';
+                
                 cardsHTML += `
-                    <div class="employee-card" data-index="${index}">
+                    <div class="employee-card ${goldClass}" data-index="${index}">
                         <div class="card-image">
                             <img src="${imageUrl}" 
                                  alt="${nama}"
@@ -871,19 +1078,22 @@
                                  onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&background=1e6bff&color=fff&size=512&bold=true&length=2'">
                             <div class="image-overlay"></div>
                             <div class="rank-badge">
-                                <i class="fas fa-star" style="margin-right: 5px;"></i>
-                                Pegawai
+                                <i class="fas ${badgeIcon}" style="margin-right: 5px;"></i>
+                                ${badgeText}
                             </div>
                         </div>
                         <div class="card-content">
-                            <h3 class="employee-name">${nama}</h3>
+                            <h3 class="employee-name">
+                                ${isLurah ? '<i class="fas fa-crown" style="color: #FFD700;"></i>' : ''}
+                                ${nama}
+                            </h3>
                             <div class="employee-position">
                                 <i class="fas fa-briefcase"></i>
                                 <span>${jabatan}</span>
                             </div>
                             <div class="employee-rank">
                                 <div class="rank-icon">
-                                    <i class="fas fa-ribbon"></i>
+                                    <i class="fas ${rankIcon}"></i>
                                 </div>
                                 <div class="rank-detail">
                                     <div class="rank-label">Pangkat / Golongan</div>
@@ -905,9 +1115,8 @@
             });
         }
         
-        // ================= FALLBACK DATA (jika Apps Script bermasalah) =================
+        // ================= FALLBACK DATA =================
         function loadFallbackData() {
-            // Data contoh untuk testing
             const fallbackData = [
                 {
                     NAMA: "Juni Hardi, S.STP",
@@ -973,7 +1182,7 @@
             }
         });
         
-        // ================= SMOOTH SCROLL UNTUK ANCHOR =================
+        // ================= SMOOTH SCROLL =================
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
@@ -990,11 +1199,10 @@
             });
         });
         
-        // ================= ADD CARD CLICK EFFECT =================
+        // ================= CARD CLICK EFFECT =================
         document.addEventListener('click', (e) => {
             const card = e.target.closest('.employee-card');
             if (card) {
-                // Bisa tambahkan efek atau navigasi ke detail pegawai
                 card.style.transform = 'scale(0.98)';
                 setTimeout(() => {
                     card.style.transform = '';
