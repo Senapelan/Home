@@ -672,7 +672,7 @@
                 try {
                     console.log('Data received:', response);
                     
-                    if (response.success && response.data) {
+                    if (response && response.success && response.data) {
                         kelurahanData = response.data.kelurahan || {};
                         pegawaiData = response.data.pegawai || [];
                         
@@ -692,14 +692,16 @@
                         renderKelurahanData();
                         renderPegawaiData();
                     } else {
-                        showAlert('Gagal memuat data: ' + response.message, 'error');
+                        showAlert('Gagal memuat data: ' + (response ? response.message : 'Unknown error'), 'error');
                     }
                 } catch (e) {
                     console.error('Error processing response:', e);
                 } finally {
                     showLoading(false);
                     delete window[callbackName];
-                    document.body.removeChild(script);
+                    if (script && script.parentNode) {
+                        document.body.removeChild(script);
+                    }
                 }
             };
             
@@ -866,90 +868,116 @@
     }
 
     // Handle photo upload
-    async function handlePhotoUpload(input, type, index = null) {
+    function handlePhotoUpload(input, type, index = null) {
         const file = input.files[0];
         if (!file) return;
         
         // Validasi ukuran (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             showAlert('Ukuran file maksimal 5MB', 'error');
+            input.value = ''; // Reset input
             return;
         }
         
         // Validasi tipe file
         if (!file.type.startsWith('image/')) {
             showAlert('File harus berupa gambar', 'error');
+            input.value = ''; // Reset input
             return;
         }
         
         showLoading(true);
         
-        try {
-            // Konversi ke base64
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
+        // Konversi ke base64
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const base64Data = e.target.result;
             
-            reader.onload = async function() {
-                const base64Data = reader.result;
-                
-                // Preview lokal
-                if (type === 'kelurahan') {
-                    document.getElementById('kelurahanPhotoPreview').src = base64Data;
-                } else if (index !== null) {
-                    const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
-                    if (img) img.src = base64Data;
-                }
-                
-                // Upload menggunakan JSONP
-                const callbackName = 'upload_callback_' + Date.now();
-                window[callbackName] = function(response) {
-                    try {
-                        if (response.success && response.data) {
-                            const link = response.data.link;
-                            
-                            if (type === 'kelurahan') {
-                                kelurahanData.link_foto_kelurahan = link;
-                            } else if (index !== null && pegawaiData[index]) {
-                                pegawaiData[index].link_foto = link;
-                            }
-                            
-                            saveToCache();
-                            showAlert('Foto berhasil diupload', 'success');
-                        } else {
-                            showAlert('Gagal upload foto: ' + response.message, 'error');
+            // Preview lokal dulu
+            if (type === 'kelurahan') {
+                document.getElementById('kelurahanPhotoPreview').src = base64Data;
+            } else if (index !== null) {
+                const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
+                if (img) img.src = base64Data;
+            }
+            
+            // Upload menggunakan JSONP
+            const callbackName = 'upload_callback_' + Date.now();
+            
+            // Definisikan callback function
+            window[callbackName] = function(response) {
+                try {
+                    console.log('Upload response:', response);
+                    
+                    if (response && response.success && response.data) {
+                        const link = response.data.link;
+                        
+                        if (type === 'kelurahan') {
+                            kelurahanData.link_foto_kelurahan = link;
+                        } else if (index !== null && pegawaiData[index]) {
+                            pegawaiData[index].link_foto = link;
                         }
-                    } catch (e) {
-                        console.error('Upload callback error:', e);
-                    } finally {
-                        showLoading(false);
-                        delete window[callbackName];
+                        
+                        saveToCache();
+                        showAlert('Foto berhasil diupload', 'success');
+                    } else {
+                        showAlert('Gagal upload foto: ' + (response ? response.message : 'Unknown error'), 'error');
+                        // Kembalikan preview ke foto lama
+                        if (type === 'kelurahan') {
+                            document.getElementById('kelurahanPhotoPreview').src = kelurahanData.link_foto_kelurahan || 'https://via.placeholder.com/400x500?text=Upload+Foto';
+                        } else if (index !== null) {
+                            const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
+                            if (img) {
+                                img.src = pegawaiData[index]?.link_foto || 'https://via.placeholder.com/80x100?text=Upload';
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.error('Upload callback error:', e);
+                    showAlert('Error processing upload', 'error');
+                } finally {
+                    showLoading(false);
+                    delete window[callbackName];
+                    if (script && script.parentNode) {
                         document.body.removeChild(script);
                     }
-                };
-                
-                const script = document.createElement('script');
-                const url = new URL(APPS_SCRIPT_URL);
-                url.searchParams.set('action', 'uploadPhoto');
-                url.searchParams.set('file', base64Data);
-                url.searchParams.set('filename', file.name);
-                url.searchParams.set('type', type);
-                url.searchParams.set('index', index || '');
-                url.searchParams.set('username', currentUser);
-                url.searchParams.set('callback', callbackName);
-                
-                script.src = url.toString();
-                document.body.appendChild(script);
+                }
             };
             
-        } catch (error) {
-            console.error('Error processing photo:', error);
-            showAlert('Gagal memproses foto', 'error');
+            // Buat script element
+            const script = document.createElement('script');
+            const url = new URL(APPS_SCRIPT_URL);
+            url.searchParams.set('action', 'uploadPhoto');
+            url.searchParams.set('file', base64Data);
+            url.searchParams.set('filename', file.name);
+            url.searchParams.set('type', type);
+            url.searchParams.set('index', index !== null ? index : '');
+            url.searchParams.set('username', currentUser);
+            url.searchParams.set('callback', callbackName);
+            
+            script.src = url.toString();
+            document.body.appendChild(script);
+            
+            // Timeout setelah 30 detik
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    window[callbackName]({ success: false, message: 'Upload timeout' });
+                }
+            }, 30000);
+        };
+        
+        reader.onerror = function() {
+            showAlert('Gagal membaca file', 'error');
             showLoading(false);
-        }
+            input.value = ''; // Reset input
+        };
+        
+        reader.readAsDataURL(file);
     }
 
     // Simpan data kelurahan
-    async function simpanDataKelurahan() {
+    function simpanDataKelurahan() {
         // Ambil data dari form
         kelurahanFields.forEach(field => {
             const input = document.getElementById(field.id);
@@ -962,22 +990,28 @@
         
         // Simpan menggunakan JSONP
         const callbackName = 'save_kelurahan_callback_' + Date.now();
+        
         window[callbackName] = function(response) {
             try {
-                if (response.success) {
+                console.log('Save kelurahan response:', response);
+                
+                if (response && response.success) {
                     saveToCache();
                     showAlert('Data kelurahan berhasil disimpan', 'success');
                     isEditModeKelurahan = false;
                     renderKelurahanData();
                 } else {
-                    showAlert('Gagal menyimpan: ' + response.message, 'error');
+                    showAlert('Gagal menyimpan: ' + (response ? response.message : 'Unknown error'), 'error');
                 }
             } catch (e) {
                 console.error('Save callback error:', e);
+                showAlert('Error saving data', 'error');
             } finally {
                 showLoading(false);
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script && script.parentNode) {
+                    document.body.removeChild(script);
+                }
             }
         };
         
@@ -990,10 +1024,17 @@
         
         script.src = url.toString();
         document.body.appendChild(script);
+        
+        // Timeout setelah 10 detik
+        setTimeout(() => {
+            if (window[callbackName]) {
+                window[callbackName]({ success: false, message: 'Save timeout' });
+            }
+        }, 10000);
     }
 
     // Simpan data pegawai
-    async function simpanDataPegawai(index) {
+    function simpanDataPegawai(index) {
         // Ambil data dari form
         pegawaiFields.forEach(field => {
             const input = document.getElementById(`pegawai_${index}_${field.id}`);
@@ -1006,20 +1047,26 @@
         
         // Simpan menggunakan JSONP
         const callbackName = 'save_pegawai_callback_' + Date.now();
+        
         window[callbackName] = function(response) {
             try {
-                if (response.success) {
+                console.log('Save pegawai response:', response);
+                
+                if (response && response.success) {
                     saveToCache();
                     showAlert('Data pegawai berhasil disimpan', 'success');
                 } else {
-                    showAlert('Gagal menyimpan: ' + response.message, 'error');
+                    showAlert('Gagal menyimpan: ' + (response ? response.message : 'Unknown error'), 'error');
                 }
             } catch (e) {
                 console.error('Save callback error:', e);
+                showAlert('Error saving data', 'error');
             } finally {
                 showLoading(false);
                 delete window[callbackName];
-                document.body.removeChild(script);
+                if (script && script.parentNode) {
+                    document.body.removeChild(script);
+                }
             }
         };
         
@@ -1032,6 +1079,13 @@
         
         script.src = url.toString();
         document.body.appendChild(script);
+        
+        // Timeout setelah 10 detik
+        setTimeout(() => {
+            if (window[callbackName]) {
+                window[callbackName]({ success: false, message: 'Save timeout' });
+            }
+        }, 10000);
     }
 
     // Handle logout
@@ -1047,13 +1101,19 @@
     }
 
     function showAlert(message, type) {
+        // Hapus alert yang sudah ada
+        const existingAlerts = document.querySelectorAll('.alert');
+        existingAlerts.forEach(alert => alert.remove());
+        
         const alert = document.createElement('div');
         alert.className = `alert alert-${type}`;
         alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
         document.body.appendChild(alert);
         
         setTimeout(() => {
-            alert.remove();
+            if (alert.parentNode) {
+                alert.remove();
+            }
         }, 3000);
     }
 </script>
