@@ -571,7 +571,7 @@
 
     <script>
     // Konfigurasi - PASTIKAN URL INI BENAR
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqLxwyMTmlPAAIpgENVO7vTVY-rtfHsZ_LzmZLovdTAesLGPBS_oj8ZgF8RmCKuNm2hQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwx7vMOVyeq4TTKEkgrFEC6ukBRMhYh6Xo6-6CQEpE9ohOgViR_UpTDGutzsunfHHGwvg/exec';
     const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
     
     // State
@@ -666,39 +666,63 @@
         showLoading(true);
         
         try {
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'loadData',
-                    username: currentUser
-                })
-            });
+            // Gunakan JSONP untuk menghindari CORS
+            const callbackName = 'jsonp_callback_' + Date.now();
+            window[callbackName] = function(response) {
+                try {
+                    console.log('Data received:', response);
+                    
+                    if (response.success && response.data) {
+                        kelurahanData = response.data.kelurahan || {};
+                        pegawaiData = response.data.pegawai || [];
+                        
+                        // Inisialisasi data kosong untuk field yang tidak ada
+                        kelurahanFields.forEach(field => {
+                            if (!kelurahanData[field.id]) {
+                                kelurahanData[field.id] = '';
+                            }
+                        });
+                        if (!kelurahanData.link_foto_kelurahan) {
+                            kelurahanData.link_foto_kelurahan = '';
+                        }
+                        
+                        // Save to cache
+                        saveToCache();
+                        
+                        renderKelurahanData();
+                        renderPegawaiData();
+                    } else {
+                        showAlert('Gagal memuat data: ' + response.message, 'error');
+                    }
+                } catch (e) {
+                    console.error('Error processing response:', e);
+                } finally {
+                    showLoading(false);
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                }
+            };
             
-            // Karena no-cors, kita tidak bisa membaca response
-            // Tapi kita tahu request berhasil dikirim
-            console.log('Load data request sent');
+            // Buat script element untuk JSONP
+            const script = document.createElement('script');
+            const url = new URL(APPS_SCRIPT_URL);
+            url.searchParams.set('action', 'loadData');
+            url.searchParams.set('username', currentUser);
+            url.searchParams.set('callback', callbackName);
             
-            // Untuk sementara, kita akan pakai data dari cache atau default
-            if (Object.keys(kelurahanData).length === 0) {
-                // Inisialisasi data default
-                kelurahanFields.forEach(field => {
-                    kelurahanData[field.id] = '';
-                });
-                kelurahanData.link_foto_kelurahan = '';
-                pegawaiData = [];
-            }
+            script.src = url.toString();
+            document.body.appendChild(script);
             
-            renderKelurahanData();
-            renderPegawaiData();
+            // Timeout setelah 10 detik
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    window[callbackName]({ success: false, message: 'Timeout' });
+                }
+            }, 10000);
             
         } catch (error) {
             console.error('Error loading data:', error);
             showAlert('Gagal memuat data', 'error');
-        } finally {
             showLoading(false);
         }
     }
@@ -849,14 +873,12 @@
         // Validasi ukuran (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             showAlert('Ukuran file maksimal 5MB', 'error');
-            input.value = '';
             return;
         }
         
         // Validasi tipe file
         if (!file.type.startsWith('image/')) {
             showAlert('File harus berupa gambar', 'error');
-            input.value = '';
             return;
         }
         
@@ -865,69 +887,64 @@
         try {
             // Konversi ke base64
             const reader = new FileReader();
+            reader.readAsDataURL(file);
             
-            const base64Data = await new Promise((resolve, reject) => {
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-            
-            // Preview lokal dulu
-            if (type === 'kelurahan') {
-                document.getElementById('kelurahanPhotoPreview').src = base64Data;
-            } else if (index !== null) {
-                const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
-                if (img) img.src = base64Data;
-            }
-            
-            // Upload ke server
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'uploadPhoto',
-                    file: base64Data,
-                    filename: file.name,
-                    type: type,
-                    index: index,
-                    username: currentUser
-                })
-            });
-            
-            console.log('Upload request sent');
-            
-            // Karena no-cors, kita asumsikan sukses
-            // Simulasi link (kita tidak bisa dapat response)
-            const dummyLink = `https://drive.google.com/thumbnail?id=dummy_${Date.now()}`;
-            
-            if (type === 'kelurahan') {
-                kelurahanData.link_foto_kelurahan = dummyLink;
-            } else if (index !== null && pegawaiData[index]) {
-                pegawaiData[index].link_foto = dummyLink;
-            }
-            
-            saveToCache();
-            showAlert('Foto berhasil diupload', 'success');
+            reader.onload = async function() {
+                const base64Data = reader.result;
+                
+                // Preview lokal
+                if (type === 'kelurahan') {
+                    document.getElementById('kelurahanPhotoPreview').src = base64Data;
+                } else if (index !== null) {
+                    const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
+                    if (img) img.src = base64Data;
+                }
+                
+                // Upload menggunakan JSONP
+                const callbackName = 'upload_callback_' + Date.now();
+                window[callbackName] = function(response) {
+                    try {
+                        if (response.success && response.data) {
+                            const link = response.data.link;
+                            
+                            if (type === 'kelurahan') {
+                                kelurahanData.link_foto_kelurahan = link;
+                            } else if (index !== null && pegawaiData[index]) {
+                                pegawaiData[index].link_foto = link;
+                            }
+                            
+                            saveToCache();
+                            showAlert('Foto berhasil diupload', 'success');
+                        } else {
+                            showAlert('Gagal upload foto: ' + response.message, 'error');
+                        }
+                    } catch (e) {
+                        console.error('Upload callback error:', e);
+                    } finally {
+                        showLoading(false);
+                        delete window[callbackName];
+                        document.body.removeChild(script);
+                    }
+                };
+                
+                const script = document.createElement('script');
+                const url = new URL(APPS_SCRIPT_URL);
+                url.searchParams.set('action', 'uploadPhoto');
+                url.searchParams.set('file', base64Data);
+                url.searchParams.set('filename', file.name);
+                url.searchParams.set('type', type);
+                url.searchParams.set('index', index || '');
+                url.searchParams.set('username', currentUser);
+                url.searchParams.set('callback', callbackName);
+                
+                script.src = url.toString();
+                document.body.appendChild(script);
+            };
             
         } catch (error) {
-            console.error('Error uploading photo:', error);
-            showAlert('Gagal upload foto', 'error');
-            
-            // Kembalikan preview ke foto lama
-            if (type === 'kelurahan') {
-                document.getElementById('kelurahanPhotoPreview').src = kelurahanData.link_foto_kelurahan || 'https://via.placeholder.com/400x500?text=Upload+Foto';
-            } else if (index !== null) {
-                const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
-                if (img) {
-                    img.src = pegawaiData[index]?.link_foto || 'https://via.placeholder.com/80x100?text=Upload';
-                }
-            }
-        } finally {
+            console.error('Error processing photo:', error);
+            showAlert('Gagal memproses foto', 'error');
             showLoading(false);
-            input.value = '';
         }
     }
 
@@ -943,33 +960,36 @@
         
         showLoading(true);
         
-        try {
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'saveKelurahan',
-                    username: currentUser,
-                    kelurahanData: kelurahanData
-                })
-            });
-            
-            console.log('Save kelurahan request sent');
-            
-            saveToCache();
-            showAlert('Data kelurahan berhasil disimpan', 'success');
-            isEditModeKelurahan = false;
-            renderKelurahanData();
-            
-        } catch (error) {
-            console.error('Error saving kelurahan:', error);
-            showAlert('Gagal menyimpan data', 'error');
-        } finally {
-            showLoading(false);
-        }
+        // Simpan menggunakan JSONP
+        const callbackName = 'save_kelurahan_callback_' + Date.now();
+        window[callbackName] = function(response) {
+            try {
+                if (response.success) {
+                    saveToCache();
+                    showAlert('Data kelurahan berhasil disimpan', 'success');
+                    isEditModeKelurahan = false;
+                    renderKelurahanData();
+                } else {
+                    showAlert('Gagal menyimpan: ' + response.message, 'error');
+                }
+            } catch (e) {
+                console.error('Save callback error:', e);
+            } finally {
+                showLoading(false);
+                delete window[callbackName];
+                document.body.removeChild(script);
+            }
+        };
+        
+        const script = document.createElement('script');
+        const url = new URL(APPS_SCRIPT_URL);
+        url.searchParams.set('action', 'saveKelurahan');
+        url.searchParams.set('username', currentUser);
+        url.searchParams.set('kelurahanData', JSON.stringify(kelurahanData));
+        url.searchParams.set('callback', callbackName);
+        
+        script.src = url.toString();
+        document.body.appendChild(script);
     }
 
     // Simpan data pegawai
@@ -984,31 +1004,34 @@
         
         showLoading(true);
         
-        try {
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    action: 'savePegawai',
-                    username: currentUser,
-                    pegawaiData: pegawaiData
-                })
-            });
-            
-            console.log('Save pegawai request sent');
-            
-            saveToCache();
-            showAlert('Data pegawai berhasil disimpan', 'success');
-            
-        } catch (error) {
-            console.error('Error saving pegawai:', error);
-            showAlert('Gagal menyimpan data', 'error');
-        } finally {
-            showLoading(false);
-        }
+        // Simpan menggunakan JSONP
+        const callbackName = 'save_pegawai_callback_' + Date.now();
+        window[callbackName] = function(response) {
+            try {
+                if (response.success) {
+                    saveToCache();
+                    showAlert('Data pegawai berhasil disimpan', 'success');
+                } else {
+                    showAlert('Gagal menyimpan: ' + response.message, 'error');
+                }
+            } catch (e) {
+                console.error('Save callback error:', e);
+            } finally {
+                showLoading(false);
+                delete window[callbackName];
+                document.body.removeChild(script);
+            }
+        };
+        
+        const script = document.createElement('script');
+        const url = new URL(APPS_SCRIPT_URL);
+        url.searchParams.set('action', 'savePegawai');
+        url.searchParams.set('username', currentUser);
+        url.searchParams.set('pegawaiData', JSON.stringify(pegawaiData));
+        url.searchParams.set('callback', callbackName);
+        
+        script.src = url.toString();
+        document.body.appendChild(script);
     }
 
     // Handle logout
@@ -1024,18 +1047,13 @@
     }
 
     function showAlert(message, type) {
-        const existingAlerts = document.querySelectorAll('.alert');
-        existingAlerts.forEach(alert => alert.remove());
-        
         const alert = document.createElement('div');
         alert.className = `alert alert-${type}`;
         alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
         document.body.appendChild(alert);
         
         setTimeout(() => {
-            if (alert.parentNode) {
-                alert.remove();
-            }
+            alert.remove();
         }, 3000);
     }
 </script>
