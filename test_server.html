@@ -1,440 +1,1709 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Glaspire · Layanan Premium Biru Gelap</title>
-  <!-- Font Awesome 6 (free) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Pelayanan - Kelurahan Padang Terubuk</title>
 
-    body {
-      background: radial-gradient(circle at 10% 30%, #0b1c3a, #030613);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
+    <!-- Open Graph --> 
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://senapelan.github.io/Home/publik/menupelayanan/pelayananpadangterubuk.html">
+    <meta property="og:title" content="Pelayanan Kelurahan Padang Terubuk">
+    <meta property="og:description" content="Pelayanan Live Chat WhatsApp Kelurahan">
+    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
+    
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- FONTAWESOME ICONS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://senapelan.github.io/Home/data/foto/favico/favico.png">
+    
+    <style>
+        :root {
+            --primary: #1e6bff;
+            --primary-dark: #0a4fcc;
+            --primary-light: #e8f1ff;
+            --secondary: #00c9b7;
+            --accent: #ff6b6b;
+            --white: #ffffff;
+            --light-gray: #f8f9fa;
+            --gray: #e9ecef;
+            --dark-gray: #6c757d;
+            --dark: #212529;
+            --border: #dee2e6;
+            --shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            --shadow-hover: 0 15px 40px rgba(0, 0, 0, 0.12);
+            --transition: all 0.3s ease;
+            --border-radius: 16px;
+            
+            /* Variabel dari tema utama */
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --dark-bg: #0c1f33;
+            --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.15);
+        }
 
-    /* GLASS CORE */
-    .glass-premium {
-      background: rgba(8, 20, 48, 0.45);
-      backdrop-filter: blur(14px) saturate(180%);
-      -webkit-backdrop-filter: blur(14px) saturate(180%);
-      border: 1px solid rgba(74, 144, 226, 0.25);
-      border-radius: 40px;
-      box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.8), 
-                  inset 0 1px 2px rgba(255, 255, 255, 0.08);
-    }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .app-container {
-      width: 1440px;
-      max-width: 100%;
-      height: 880px;
-      max-height: 90vh;
-      display: flex;
-      padding: 18px;
-      gap: 18px;
-      background: rgba(3, 10, 28, 0.4);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border-radius: 48px;
-      border: 1px solid rgba(16, 56, 120, 0.5);
-      box-shadow: 0 30px 50px -15px #000000cc;
-    }
+        html {
+            scroll-behavior: smooth;
+        }
 
-    /* SIDEBAR LEFT (KATEGORI) */
-    .sidebar {
-      width: 300px;
-      background: rgba(6, 16, 35, 0.6);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 32px;
-      border: 1px solid rgba(0, 183, 255, 0.2);
-      padding: 32px 20px;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 20px 40px -15px #00000080, inset 0 0 0 1px rgba(255,255,255,0.03);
-    }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-gray);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
 
-    .brand {
-      margin-bottom: 45px;
-      padding-left: 8px;
-    }
+        /* ================= HEADER - SAMA DENGAN TEMPAT ASLI ================= */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(12, 31, 51, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            transition: var(--transition);
+        }
 
-    .brand h2 {
-      font-size: 24px;
-      font-weight: 600;
-      background: linear-gradient(130deg, #fff, #b0d5ff);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      letter-spacing: -0.2px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
+        .header.scrolled {
+            background: rgba(12, 31, 51, 0.98);
+            backdrop-filter: blur(30px);
+            height: 70px;
+            box-shadow: var(--shadow-lg);
+        }
 
-    .brand i {
-      font-size: 32px;
-      color: #3b82f6;
-      filter: drop-shadow(0 0 8px #3b82f6);
-    }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            text-decoration: none;
+            position: relative;
+        }
 
-    .kategori-title {
-      text-transform: uppercase;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      color: #8daeec;
-      margin-bottom: 22px;
-      padding-left: 12px;
-      opacity: 0.8;
-    }
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            background: transparent !important;
+            padding: 0 !important;
+        }
 
-    .menu-kategori {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      flex: 1;
-    }
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            transition: var(--transition);
+            filter: none !important;
+            border-radius: 12px;
+        }
 
-    .kategori-item {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      padding: 18px 22px;
-      background: rgba(18, 30, 55, 0.5);
-      border-radius: 28px;
-      border: 1px solid rgba(52, 112, 255, 0.15);
-      backdrop-filter: blur(5px);
-      color: #e1ecff;
-      font-size: 18px;
-      font-weight: 500;
-      transition: all 0.25s ease;
-      cursor: pointer;
-      box-shadow: 0 6px 14px rgba(0, 8, 29, 0.4);
-      text-decoration: none;
-      /* untuk menghilangkan underline link */
-    }
+        /* LOGO HOVER EFFECT */
+        .logo-img:hover {
+            transform: scale(1.1);
+        }
 
-    .kategori-item i {
-      font-size: 26px;
-      width: 32px;
-      color: #6ea3ff;
-      transition: 0.2s;
-    }
+        .logo-img:hover img {
+            transform: rotate(10deg);
+            filter: brightness(1.2) saturate(1.5) !important;
+        }
 
-    .kategori-item span {
-      flex: 1;
-    }
+        .logo-img:hover::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, 
+                rgba(30, 107, 255, 0.4), 
+                rgba(0, 201, 183, 0.4), 
+                rgba(255, 107, 107, 0.4));
+            border-radius: 18px;
+            z-index: -1;
+            animation: logoGlow 2s ease-in-out infinite;
+        }
 
-    .kategori-item:hover {
-      background: rgba(28, 56, 110, 0.7);
-      border-color: rgba(0, 153, 255, 0.6);
-      box-shadow: 0 10px 22px -8px #0066ff60, inset 0 1px 2px #ffffff30;
-      transform: translateY(-2px);
-    }
+        @keyframes logoGlow {
+            0%, 100% { 
+                opacity: 0.5;
+                filter: hue-rotate(0deg);
+            }
+            50% { 
+                opacity: 0.8;
+                filter: hue-rotate(45deg);
+            }
+        }
 
-    .kategori-item:hover i {
-      color: white;
-      text-shadow: 0 0 12px #90c0ff;
-    }
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
 
-    /* active state (akan di set via js) */
-    .kategori-item.active {
-      background: linear-gradient(145deg, #164280, #0b2d62);
-      border-color: #48a0ff;
-      box-shadow: 0 12px 20px -10px #0044ff, 0 0 0 1px #a0d0ff inset;
-    }
+        .logo-main {
+            font-family: 'Poppins', sans-serif;
+            font-size: 22px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a3d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
 
-    .kategori-item.active i {
-      color: #ffffff;
-    }
+        .logo-sub {
+            font-size: 13px;
+            opacity: 0.9;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+        }
 
-    /* FOOTER SIDEBAR */
-    .sidebar-footer {
-      margin-top: 40px;
-      font-size: 13px;
-      color: #8ca9d9;
-      text-align: center;
-      border-top: 1px dashed #255197;
-      padding-top: 22px;
-      letter-spacing: 0.3px;
-    }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 18px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
 
-    /* MAIN PANEL (KANAN) */
-    .main-panel {
-      flex: 1;
-      background: rgba(4, 12, 29, 0.45);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-      border-radius: 34px;
-      border: 1px solid rgba(26, 110, 220, 0.4);
-      padding: 24px;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: inset 0 2px 6px rgba(0, 30, 80, 0.5);
-    }
+        .btn-back:hover {
+            background: rgba(30, 107, 255, 0.3);
+            color: white;
+            transform: translateY(-2px) rotate(-5deg);
+            box-shadow: 0 10px 20px rgba(30, 107, 255, 0.2);
+            border-color: rgba(30, 107, 255, 0.5);
+        }
 
-    /* header panel */
-    .panel-header {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-bottom: 20px;
-      padding: 0 12px 12px 12px;
-      border-bottom: 1px solid rgba(77, 146, 255, 0.25);
-    }
+        .btn-back::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
 
-    .panel-header h3 {
-      color: white;
-      font-weight: 500;
-      letter-spacing: 0.3px;
-      text-shadow: 0 2px 5px #00000050;
-    }
+        .btn-back:hover::before {
+            left: 100%;
+        }
 
-    .panel-header i {
-      color: #6ea3ff;
-      background: #10223f;
-      padding: 10px;
-      border-radius: 50%;
-      font-size: 18px;
-      box-shadow: 0 0 10px #3f8aff;
-    }
+        /* ================= MAIN CONTENT ================= */
+        .main-content {
+            max-width: 1400px;
+            margin: 120px auto 100px;
+            padding: 0 40px;
+        }
 
-    .address-bar {
-      background: rgba(0, 15, 40, 0.7);
-      border-radius: 60px;
-      padding: 14px 22px;
-      color: #bdd3ff;
-      font-size: 15px;
-      border: 1px solid #2959a0;
-      backdrop-filter: blur(20px);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      box-shadow: inset 0 2px 5px #00000055;
-    }
+        .page-title {
+            text-align: center;
+            margin-bottom: 60px;
+        }
 
-    .address-bar i {
-      margin-right: 12px;
-      color: #57a6ff;
-      font-size: 16px;
-    }
+        .page-title h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 15px;
+            position: relative;
+            display: inline-block;
+        }
 
-    #current-url-display {
-      font-weight: 400;
-      color: #c6deff;
-    }
+        .page-title h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
 
-    /* IFRAME WRAPPER (TEMPLATE HALAMAN WEB) */
-    .iframe-wrapper {
-      flex: 1;
-      border-radius: 28px;
-      overflow: hidden;
-      background: #0d1b30;
-      border: 1px solid rgba(0, 157, 255, 0.35);
-      box-shadow: 0 20px 35px -5px #000000b0, inset 0 1px 3px #6ea3ff30;
-      transition: box-shadow 0.3s;
-    }
+        .page-title p {
+            color: var(--dark-gray);
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 25px auto 0;
+        }
 
-    .iframe-wrapper iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: #f8faff; /* fallback putih, tapi nanti akan loading */
-    }
+        /* ================= CARD GRID ================= */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
 
-    /* animasi loading subtle */
-    .iframe-wrapper.loading {
-      opacity: 0.7;
-      box-shadow: 0 0 0 2px #2f7bff;
-    }
+        .service-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid rgba(30, 107, 255, 0.1);
+        }
 
-    /* custom scroll */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #1e4880;
-      border-radius: 20px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #2f6ac0;
-    }
-  </style>
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+            border-color: rgba(30, 107, 255, 0.3);
+        }
+
+        .card-avatar {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+
+        .service-card:hover .card-avatar img {
+            transform: scale(1.05);
+        }
+
+        .card-content {
+            padding: 25px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-name {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+
+        .card-role {
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .service-list {
+            list-style: none;
+            margin: 15px 0;
+            flex-grow: 1;
+        }
+
+        .service-list li {
+            padding: 8px 0;
+            color: var(--dark-gray);
+            font-size: 0.9rem;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .service-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        /* ================= BUTTON ================= */
+        .btn-conversation {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+            text-decoration: none;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 15px;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 20px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-conversation:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #00b3a1);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 107, 255, 0.3);
+        }
+
+        .btn-conversation::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .btn-conversation:hover::before {
+            left: 100%;
+        }
+
+        .btn-conversation i {
+            font-size: 18px;
+        }
+
+        /* ================= MODAL ================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+            padding: 20px;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            width: 100%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            padding: 25px 30px;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(135deg, var(--primary-light), var(--white));
+        }
+
+        .modal-header h2 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        /* ================= UPLOAD SECTION ================= */
+        .upload-section {
+            background: var(--primary-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0 30px;
+            border: 2px dashed var(--primary);
+        }
+
+        .upload-section h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2rem;
+            color: var(--dark);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .upload-section h3 i {
+            color: var(--primary);
+        }
+
+        .upload-item {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .upload-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .upload-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .upload-controls input[type="file"] {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .btn-upload {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-upload:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-remove {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: var(--transition);
+        }
+
+        .btn-remove:hover {
+            background: #ff5252;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            padding: 8px;
+            background: var(--light-gray);
+            border-radius: 6px;
+            font-size: 13px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .file-name {
+            color: var(--dark);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-size {
+            color: var(--dark-gray);
+        }
+
+        .btn-download {
+            color: var(--primary);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            padding: 4px 8px;
+        }
+
+        .btn-download:hover {
+            color: var(--primary-dark);
+        }
+
+        .btn-add-file {
+            width: 100%;
+            padding: 12px;
+            background: var(--white);
+            border: 2px dashed var(--primary);
+            border-radius: 8px;
+            color: var(--primary);
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: var(--transition);
+        }
+
+        .btn-add-file:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Form Groups */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(30, 107, 255, 0.1);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .modal-footer {
+            padding: 20px 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        .btn-modal {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+        }
+
+        .btn-close {
+            background: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .btn-close:hover {
+            background: var(--gray);
+        }
+
+        .btn-submit {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: var(--white);
+        }
+
+        .btn-submit:hover {
+            background: linear-gradient(135deg, var(--primary-dark), #00b3a1);
+        }
+
+        /* ================= RUNNING TEXT ================= */
+        .running-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(12, 31, 51, 0.95);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 15px 0;
+            overflow: hidden;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+        }
+
+        .running-text-container {
+            position: relative;
+            height: 100%;
+        }
+
+        .running-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: runningText 60s linear infinite;
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        @keyframes runningText {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        .running-text span {
+            margin: 0 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .running-text i {
+            color: var(--primary);
+        }
+
+        /* Loading indicator */
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--primary-light);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ================= RESPONSIVE ================= */
+        @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 0 20px;
+                height: 70px;
+            }
+            
+            .main-content {
+                margin: 100px auto 80px;
+                padding: 0 20px;
+            }
+            
+            .page-title h1 {
+                font-size: 2rem;
+            }
+            
+            .card-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+                gap: 25px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .btn-modal {
+                width: 100%;
+            }
+            
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .logo-main {
+                font-size: 18px;
+            }
+            
+            .logo-sub {
+                font-size: 11px;
+            }
+            
+            .upload-controls {
+                flex-direction: column;
+            }
+            
+            .upload-controls input[type="file"] {
+                width: 100%;
+            }
+            
+            .btn-upload, .btn-remove {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                margin: 90px auto 70px;
+            }
+            
+            .page-title h1 {
+                font-size: 1.8rem;
+            }
+            
+            .modal-body {
+                padding: 20px;
+            }
+            
+            .modal-header {
+                padding: 20px;
+            }
+            
+            .running-text span {
+                margin: 0 25px;
+            }
+        }
+    </style>
 </head>
+
 <body>
-  <div class="app-container">
-    <!-- SIDEBAR KIRI : KATEGORI + direct link web -->
-    <div class="sidebar">
-      <div class="brand">
-        <h2><i class="fas fa-cube"></i> GlasPire</h2>
-      </div>
-      <div class="kategori-title">
-        <i class="fas fa-layer-group" style="margin-right: 8px;"></i> Layanan Digital
-      </div>
-      <nav class="menu-kategori" id="kategoriMenu">
-        <!-- Pelayanan Mandiri -->
-        <a href="#" class="kategori-item" data-url="https://www.example.com/layanan-mandiri" data-title="Pelayanan Mandiri">
-          <i class="fas fa-user-check"></i>
-          <span>Pelayanan Mandiri</span>
-          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
+    <!-- Header -->
+    <header class="header" id="header">
+        <a href="https://senapelan.github.io/Home/kelurahanpadangterubuk.html" class="logo">
+            <div class="logo-img">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
+            </div>
+            <div class="logo-text">
+                <div class="logo-main">Padang Terubuk</div>
+                <div class="logo-sub">Pelayanan Kelurahan</div>
+            </div>
         </a>
-        <!-- Live Chat WhatsApp -->
-        <a href="https://senapelan.github.io/Home/publik/menupelayanan/pelayananpadangterubuk.html" class="kategori-item" data-url="https://senapelan.github.io/Home/publik/menupelayanan/pelayananpadangterubuk.html" data-title="Live Chat WhatsApp">
-          <i class="fab fa-whatsapp"></i>
-          <span>Live Chat WhatsApp</span>
-          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
+        
+        <a href="https://senapelan.github.io/Home/kelurahanpadangterubuk.html" class="btn-back" title="Kembali ke Beranda">
+            <i class="fas fa-arrow-left"></i>
         </a>
-        <!-- Persyaratan berkas -->
-        <a href="#" class="kategori-item" data-url="https://www.example.com/persyaratan-berkas" data-title="Persyaratan Berkas">
-          <i class="fas fa-folder-open"></i>
-          <span>Persyaratan berkas</span>
-          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
-        </a>
-        <!-- Lapor Pengaduan -->
-        <a href="#" class="kategori-item" data-url="https://www.example.com/lapor-pengaduan" data-title="Lapor Pengaduan">
-          <i class="fas fa-bullhorn"></i>
-          <span>Lapor Pengaduan</span>
-          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
-        </a>
-      </nav>
-      <div class="sidebar-footer">
-        <i class="fas fa-lock" style="opacity: 0.6; margin-right: 4px;"></i> koneksi aman • 2025
-      </div>
-    </div>
+    </header>
 
-    <!-- AREA KANAN : TEMPLATE UNTUK MENAMPILKAN HALAMAN WEB -->
-    <div class="main-panel">
-      <div class="panel-header">
-        <i class="fas fa-window-maximize"></i>
-        <h3>Pratinjau halaman</h3>
-        <div style="flex:1; text-align: right; color: #7b9ed6;">
-          <i class="fas fa-rotate-right" id="refreshIframeBtn" style="cursor: pointer; padding: 10px;" title="muat ulang"></i>
+    <!-- Main Content -->
+    <main class="main-content">
+        <div class="page-title">
+            <h1>Pelayanan Kelurahan Padang Terubuk</h1>
+            <p>Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik</p>
         </div>
-      </div>
-      <!-- address bar gaya glass -->
-      <div class="address-bar">
-        <i class="fas fa-globe"></i>
-        <span id="current-url-display">https://www.example.com/beranda</span>
-      </div>
-      <!-- iframe untuk menampilkan web (pratinjau) -->
-      <div class="iframe-wrapper" id="iframeWrapper">
-        <iframe id="mainIframe" src="https://www.example.com" title="Pratinjau Halaman" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"></iframe>
-      </div>
+ 
+        <!-- Card Grid -->
+        <div class="card-grid">
+            <!-- Card 1: TRY HOLLY -->
+            <div class="service-card">
+                <div class="card-avatar">
+                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-pt1.png" alt="TRY HOLLY">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-name">TRY HOLLY</h3>
+                    <p class="card-role">Petugas Pelayanan Administrasi</p>
+                    <ul class="service-list">
+                        <li>Pelayanan Administrasi Surat-Menyurat</li>
+                        <li>Pelayanan Informasi dan Data Kelurahan</li>
+                        <li>Pelayanan Pencatatan dan Arsip Dokumen</li>
+                        <li>Pelaporan Administratif</li>
+                    </ul>
+                    <button class="btn-conversation" onclick="openConversationModal('TRY HOLLY', '6282170089590')">
+                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 2: SITI SALMAH,SE -->
+            <div class="service-card">
+                <div class="card-avatar">
+                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-pt2.png" alt="SITI SALMAH,SE">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-name">SITI SALMAH,SE</h3>
+                    <p class="card-role">Petugas Pembangunan dan Pemberdayaan Masyarakat</p>
+                    <ul class="service-list">
+                        <li>Pelayanan Usulan Pembangunan</li>
+                        <li>Pelayanan Pengawasan Pembangunan</li>
+                        <li>Pelayanan Pemberdayaan Masyarakat</li>
+                        <li>Pelayanan Sarana Prasarana Lingkungan</li>
+                    </ul>
+                    <button class="btn-conversation" onclick="openConversationModal('SITI SALMAH,SE', '6281371919501')">
+                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 3: IMELDA RAHMI, S.Pd.I -->
+            <div class="service-card">
+                <div class="card-avatar">
+                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-pt3.png" alt="IMELDA RAHMI, S.Pd.I">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-name">IMELDA RAHMI, S.Pd.I</h3>
+                    <p class="card-role">Petugas Pemerintahan, Ketentraman, dan Ketertiban</p>
+                    <ul class="service-list">
+                        <li>Pelayanan Administrasi Pemerintahan</li>
+                        <li>Pelayanan Ketentraman dan Ketertiban Umum</li>
+                        <li>Pelayanan Koordinasi Keamanan Lingkungan</li>
+                        <li>Pelayanan Data dan Kewilayahan</li>
+                    </ul>
+                    <button class="btn-conversation" onclick="openConversationModal('IMELDA RAHMI, S.Pd.I', '6281365256807')">
+                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
+                    </button>
+                </div>
+            </div>
+
+            <!-- Card 4: SUKARDIANTO, S.A.P -->
+            <div class="service-card">
+                <div class="card-avatar">
+                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-pt4.png" alt="SUKARDIANTO, S.A.P">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-name">SUKARDIANTO, S.A.P</h3>
+                    <p class="card-role">Petugas Kesejahteraan Sosial</p>
+                    <ul class="service-list">
+                        <li>Pelayanan Bantuan Sosial</li>
+                        <li>Pelayanan Kesejahteraan Masyarakat</li>
+                        <li>Pelayanan Perlindungan Sosial</li>
+                        <li>Pelayanan Pembinaan Lembaga Sosial</li>
+                    </ul>
+                    <button class="btn-conversation" onclick="openConversationModal('SUKARDIANTO, S.A.P', '6281371906937')">
+                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Running Text Footer -->
+    <div class="running-footer">
+        <div class="running-text-container">
+            <div class="running-text">
+                <span><i class="fas fa-check-circle"></i> Pelayanan terbaik lahir dari keikhlasan dan kebersamaan</span>
+                <span><i class="fas fa-users"></i> Masyarakat Sejahtera, Kelurahan Maju</span>
+                <span><i class="fas fa-handshake"></i> Gotong Royong Membangun Negeri</span>
+                <span><i class="fas fa-bolt"></i> Pelayanan Cepat, Transparan, dan Akuntabel</span>
+                <span><i class="fas fa-lightbulb"></i> Inovasi untuk Pelayanan yang Lebih Baik</span>
+                <span><i class="fas fa-star"></i> Komitmen pada Kualitas dan Kepuasan Masyarakat</span>
+                <span><i class="fas fa-check-circle"></i> Pelayanan terbaik lahir dari keikhlasan dan kebersamaan</span>
+                <span><i class="fas fa-users"></i> Masyarakat Sejahtera, Kelurahan Maju</span>
+                <span><i class="fas fa-handshake"></i> Gotong Royong Membangun Negeri</span>
+                <span><i class="fas fa-bolt"></i> Pelayanan Cepat, Transparan, dan Akuntabel</span>
+            </div>
+        </div>
     </div>
-  </div>
 
-  <script>
-    (function() {
-      // Dapatkan elemen
-      const kategoriItems = document.querySelectorAll('.kategori-item');
-      const mainIframe = document.getElementById('mainIframe');
-      const currentUrlSpan = document.getElementById('current-url-display');
-      const iframeWrapper = document.getElementById('iframeWrapper');
-      const refreshBtn = document.getElementById('refreshIframeBtn');
+    <!-- Conversation Modal -->
+    <div class="modal-overlay" id="conversationModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalPetugasName">Mulai Percakapan</h2>
+            </div>
+            <div class="modal-body">
+                <form id="conversationForm">
+                    <div class="form-group">
+                        <label for="nama">Nama Lengkap *</label>
+                        <input type="text" id="nama" class="form-control" required placeholder="Masukkan nama lengkap">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="alamat">Alamat Lengkap *</label>
+                        <textarea id="alamat" class="form-control" rows="2" required placeholder="Masukkan alamat lengkap"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rt">RT *</label>
+                            <input type="text" id="rt" class="form-control" required placeholder="Contoh: 004">
+                        </div>
+                        <div class="form-group">
+                            <label for="rw">RW *</label>
+                            <input type="text" id="rw" class="form-control" required placeholder="Contoh: 005">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kelurahan">Kelurahan *</label>
+                        <input type="text" id="kelurahan" class="form-control" required placeholder="Padang Terubuk">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kecamatan">Kecamatan *</label>
+                        <input type="text" id="kecamatan" class="form-control" required placeholder="Senapelan">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="kota">Kota *</label>
+                        <input type="text" id="kota" class="form-control" required placeholder="Pekanbaru">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="provinsi">Provinsi *</label>
+                        <input type="text" id="provinsi" class="form-control" required placeholder="Riau">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="no_hp">No. HP / WhatsApp *</label>
+                        <input type="tel" id="no_hp" class="form-control" required placeholder="Contoh: 081234567890">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" class="form-control" placeholder="nama@email.com">
+                    </div>
+                    
+                    <!-- UPLOAD SECTION -->
+                    <div class="upload-section">
+                        <h3><i class="fas fa-cloud-upload-alt"></i> Upload Berkas Pendukung</h3>
+                        
+                        <!-- Fixed upload items -->
+                        <div class="upload-item" id="upload-surat-pengantar">
+                            <label>Surat Pengantar RT/RW <span class="required">*</span></label>
+                            <div class="upload-controls">
+                                <input type="file" id="file-surat" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect('surat', this)">
+                                <button type="button" class="btn-upload" onclick="triggerFileUpload('file-surat')">
+                                    <i class="fas fa-upload"></i> Pilih File
+                                </button>
+                            </div>
+                            <div class="file-info" id="file-info-surat" style="display: none;">
+                                <span class="file-name" id="file-name-surat"></span>
+                                <span class="file-size" id="file-size-surat"></span>
+                                <button type="button" class="btn-download" onclick="downloadFile('surat')" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button type="button" class="btn-remove" onclick="removeFile('surat')" title="Hapus">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="upload-item" id="upload-kk">
+                            <label>Fotokopi Kartu Keluarga (KK) <span class="required">*</span></label>
+                            <div class="upload-controls">
+                                <input type="file" id="file-kk" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect('kk', this)">
+                                <button type="button" class="btn-upload" onclick="triggerFileUpload('file-kk')">
+                                    <i class="fas fa-upload"></i> Pilih File
+                                </button>
+                            </div>
+                            <div class="file-info" id="file-info-kk" style="display: none;">
+                                <span class="file-name" id="file-name-kk"></span>
+                                <span class="file-size" id="file-size-kk"></span>
+                                <button type="button" class="btn-download" onclick="downloadFile('kk')" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button type="button" class="btn-remove" onclick="removeFile('kk')" title="Hapus">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="upload-item" id="upload-ktp">
+                            <label>Fotokopi KTP <span class="required">*</span></label>
+                            <div class="upload-controls">
+                                <input type="file" id="file-ktp" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect('ktp', this)">
+                                <button type="button" class="btn-upload" onclick="triggerFileUpload('file-ktp')">
+                                    <i class="fas fa-upload"></i> Pilih File
+                                </button>
+                            </div>
+                            <div class="file-info" id="file-info-ktp" style="display: none;">
+                                <span class="file-name" id="file-name-ktp"></span>
+                                <span class="file-size" id="file-size-ktp"></span>
+                                <button type="button" class="btn-download" onclick="downloadFile('ktp')" title="Download">
+                                    <i class="fas fa-download"></i>
+                                </button>
+                                <button type="button" class="btn-remove" onclick="removeFile('ktp')" title="Hapus">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <!-- Additional files container -->
+                        <div id="additional-files"></div>
+                        
+                        <!-- Button to add more files -->
+                        <button type="button" class="btn-add-file" onclick="addNewFileUpload()">
+                            <i class="fas fa-plus-circle"></i> Tambah Berkas Lainnya
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tujuan">Tujuan Percakapan *</label>
+                        <select id="tujuan" class="form-control" required>
+                            <option value="">Pilih tujuan percakapan</option>
+                            <option value="Pelaporan">Pelaporan</option>
+                            <option value="Pelayanan Surat">Pelayanan Surat</option>
+                            <option value="Kunjungan">Kunjungan</option>
+                            <option value="Konsultasi">Konsultasi</option>
+                            <option value="Lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="tujuan_optional">Tujuan Percakapan (Opsional)</label>
+                        <textarea id="tujuan_optional" class="form-control" rows="2" placeholder="Jelaskan secara detail jika diperlukan"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal btn-close" onclick="closeModal()">Batal</button>
+                <button type="button" class="btn-modal btn-submit" onclick="submitConversation()">
+                    <i class="fab fa-whatsapp"></i> Kirim ke WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
 
-      // Simpan link terakhir yang aktif (default bisa diset ke item pertama)
-      let activeItem = null;
-
-      // Fungsi untuk memuat URL ke iframe dan update UI
-      function loadUrlIntoIframe(url, title, clickedItem) {
-        if (!url) return;
-
-        // Set iframe src (menampilkan halaman web)
-        mainIframe.src = url;
-
-        // Update address bar
-        currentUrlSpan.textContent = url;
-
-        // class loading sebentar (efek visual)
-        iframeWrapper.classList.add('loading');
-        setTimeout(() => {
-          iframeWrapper.classList.remove('loading');
-        }, 500);
-
-        // update active class di sidebar
-        if (activeItem) {
-          activeItem.classList.remove('active');
+    <script>
+        // ================= SOUND EFFECT =================
+        let clickSound;
+        
+        function loadSoundEffect() {
+            clickSound = new Audio('https://senapelan.github.io/Home/data/sound/open-card.mp3');
+            clickSound.volume = 0.5;
         }
-        if (clickedItem) {
-          clickedItem.classList.add('active');
-          activeItem = clickedItem;
+        
+        function playClickSound() {
+            if (clickSound) {
+                clickSound.currentTime = 0;
+                clickSound.play().catch(e => console.log('Sound tidak bisa diputar otomatis:', e));
+            }
         }
-      }
-
-      // Tambahkan event listener ke setiap kategori
-      kategoriItems.forEach(item => {
-        item.addEventListener('click', function(event) {
-          event.preventDefault();  // mencegah link href langsung
-
-          const url = this.dataset.url;       // URL tujuan dari data-url
-          const title = this.dataset.title || 'Layanan';
-
-          // Panggil fungsi pemuatan iframe
-          loadUrlIntoIframe(url, title, this);
+        
+        // ================= HEADER SCROLL EFFECT =================
+        window.addEventListener('scroll', () => {
+            const header = document.getElementById('header');
+            if (window.scrollY > 50) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
         });
-      });
-
-      // Set default aktif ke kategori pertama (Pelayanan Mandiri) dan muat url
-      if (kategoriItems.length > 0) {
-        const defaultItem = kategoriItems[0];
-        const defaultUrl = defaultItem.dataset.url;
-        const defaultTitle = defaultItem.dataset.title;
-        loadUrlIntoIframe(defaultUrl, defaultTitle, defaultItem);
-      }
-
-      // Tombol refresh untuk memuat ulang iframe
-      refreshBtn.addEventListener('click', function() {
-        if (mainIframe.src) {
-          mainIframe.src = mainIframe.src;  // refresh
-          // efek loading kilat
-          iframeWrapper.classList.add('loading');
-          setTimeout(() => {
-            iframeWrapper.classList.remove('loading');
-          }, 400);
+        
+        // ================= FILE UPLOAD SYSTEM =================
+        // Store files in memory and localStorage
+        let uploadedFiles = {
+            surat: null,
+            kk: null,
+            ktp: null
+        };
+        
+        let additionalFileCount = 0;
+        let additionalFiles = {};
+        
+        // Maximum file size (10MB)
+        const MAX_FILE_SIZE = 10 * 1024 * 1024;
+        
+        // Allowed file types
+        const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+        
+        function triggerFileUpload(inputId) {
+            document.getElementById(inputId).click();
         }
-      });
-
-      const improvedUrls = {
-        0: 'https://www.example.com/layanan/mandiri',
-        1: 'https://senapelan.github.io/Home/publik/menupelayanan/pelayananpadangterubuk.html',
-        2: 'https://www.example.com/syarat-berkas',
-        3: 'https://www.example.com/pengaduan'
-      };
-      kategoriItems.forEach((item, idx) => {
-        if (improvedUrls[idx]) {
-          item.dataset.url = improvedUrls[idx];   // timpa dengan url yang lebih variatif
+        
+        async function handleFileSelect(fileKey, input) {
+            const file = input.files[0];
+            if (!file) return;
+            
+            // Validate file type
+            if (!ALLOWED_TYPES.includes(file.type)) {
+                alert('Hanya file gambar (JPG, PNG) dan PDF yang diperbolehkan!');
+                input.value = '';
+                return;
+            }
+            
+            // Validate file size
+            if (file.size > MAX_FILE_SIZE) {
+                alert('Ukuran file maksimal 10MB!');
+                input.value = '';
+                return;
+            }
+            
+            try {
+                // Convert to Base64
+                const base64 = await fileToBase64(file);
+                
+                // Store file data
+                const fileData = {
+                    name: file.name,
+                    type: file.type,
+                    size: file.size,
+                    base64: base64
+                };
+                
+                if (fileKey.startsWith('additional_')) {
+                    additionalFiles[fileKey] = fileData;
+                } else {
+                    uploadedFiles[fileKey] = fileData;
+                }
+                
+                // Update UI
+                updateFileInfo(fileKey, file);
+                
+                // Save to localStorage
+                saveFilesToStorage();
+                
+            } catch (error) {
+                console.error('Error processing file:', error);
+                alert('Gagal memproses file. Silakan coba lagi.');
+            }
         }
-      });
-      // perbarui iframe default jika item pertama berubah
-      if (kategoriItems.length > 0) {
-        const firstItem = kategoriItems[0];
-        // update active display (karena loadUrl dipanggil lagi, pastikan tidak dobel)
-        // panggil ulang agar sesuai dataset baru
-        if (activeItem) activeItem.classList.remove('active');
-        loadUrlIntoIframe(firstItem.dataset.url, firstItem.dataset.title, firstItem);
-      }
-    })();
-  </script>
+        
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+            });
+        }
+        
+        function updateFileInfo(fileKey, file) {
+            const infoDiv = document.getElementById(`file-info-${fileKey}`);
+            const nameSpan = document.getElementById(`file-name-${fileKey}`);
+            const sizeSpan = document.getElementById(`file-size-${fileKey}`);
+            
+            if (infoDiv && nameSpan && sizeSpan) {
+                nameSpan.textContent = file.name;
+                sizeSpan.textContent = formatFileSize(file.size);
+                infoDiv.style.display = 'flex';
+                
+                // Hide the file input
+                const input = document.getElementById(`file-${fileKey}`);
+                if (input) {
+                    input.style.display = 'none';
+                }
+            } else if (fileKey.startsWith('additional_')) {
+                // Update additional file info
+                const container = document.getElementById(`additional-file-${fileKey}`);
+                if (container) {
+                    const nameSpan = container.querySelector('.file-name');
+                    const sizeSpan = container.querySelector('.file-size');
+                    if (nameSpan && sizeSpan) {
+                        nameSpan.textContent = file.name;
+                        sizeSpan.textContent = formatFileSize(file.size);
+                    }
+                }
+            }
+        }
+        
+        function removeFile(fileKey) {
+            if (fileKey.startsWith('additional_')) {
+                // Remove additional file
+                delete additionalFiles[fileKey];
+                
+                // Remove from DOM
+                const container = document.getElementById(`additional-file-${fileKey}`);
+                if (container) {
+                    container.remove();
+                }
+            } else {
+                // Reset file input
+                const input = document.getElementById(`file-${fileKey}`);
+                if (input) {
+                    input.value = '';
+                    input.style.display = 'block';
+                }
+                
+                // Hide file info
+                const infoDiv = document.getElementById(`file-info-${fileKey}`);
+                if (infoDiv) {
+                    infoDiv.style.display = 'none';
+                }
+                
+                // Clear from memory
+                uploadedFiles[fileKey] = null;
+            }
+            
+            // Save to localStorage
+            saveFilesToStorage();
+        }
+        
+        function downloadFile(fileKey) {
+            let fileData;
+            
+            if (fileKey.startsWith('additional_')) {
+                fileData = additionalFiles[fileKey];
+            } else {
+                fileData = uploadedFiles[fileKey];
+            }
+            
+            if (!fileData || !fileData.base64) {
+                alert('File tidak ditemukan!');
+                return;
+            }
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.href = fileData.base64;
+            link.download = fileData.name;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+        
+        function addNewFileUpload() {
+            additionalFileCount++;
+            const fileKey = `additional_${additionalFileCount}`;
+            
+            const container = document.getElementById('additional-files');
+            const newUpload = document.createElement('div');
+            newUpload.className = 'upload-item';
+            newUpload.id = `additional-file-${fileKey}`;
+            newUpload.innerHTML = `
+                <label>Berkas Tambahan ${additionalFileCount}</label>
+                <div class="upload-controls">
+                    <input type="file" id="file-${fileKey}" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect('${fileKey}', this)">
+                    <button type="button" class="btn-upload" onclick="triggerFileUpload('file-${fileKey}')">
+                        <i class="fas fa-upload"></i> Pilih File
+                    </button>
+                </div>
+                <div class="file-info" id="file-info-${fileKey}" style="display: none;">
+                    <span class="file-name" id="file-name-${fileKey}"></span>
+                    <span class="file-size" id="file-size-${fileKey}"></span>
+                    <button type="button" class="btn-download" onclick="downloadFile('${fileKey}')" title="Download">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button type="button" class="btn-remove" onclick="removeFile('${fileKey}')" title="Hapus">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `;
+            
+            container.appendChild(newUpload);
+        }
+        
+        // ================= LOCAL STORAGE FOR FILES =================
+        function saveFilesToStorage() {
+            try {
+                // Filter out null values
+                const filesToSave = {};
+                Object.keys(uploadedFiles).forEach(key => {
+                    if (uploadedFiles[key]) {
+                        filesToSave[key] = uploadedFiles[key];
+                    }
+                });
+                
+                // Save additional files
+                if (Object.keys(additionalFiles).length > 0) {
+                    filesToSave.additional = additionalFiles;
+                }
+                
+                localStorage.setItem('pelayananUploadedFiles', JSON.stringify(filesToSave));
+            } catch (error) {
+                console.error('Error saving files to storage:', error);
+                // Jika localStorage penuh, beri pesan
+                if (error.name === 'QuotaExceededError') {
+                    alert('Penyimpanan lokal penuh. Hapus beberapa file yang tidak diperlukan.');
+                }
+            }
+        }
+        
+        function loadFilesFromStorage() {
+            try {
+                const savedFiles = localStorage.getItem('pelayananUploadedFiles');
+                if (savedFiles) {
+                    const files = JSON.parse(savedFiles);
+                    
+                    // Load regular files
+                    Object.keys(files).forEach(key => {
+                        if (key !== 'additional') {
+                            uploadedFiles[key] = files[key];
+                            // Update UI jika file ada
+                            if (files[key]) {
+                                const fileData = files[key];
+                                const fileObj = {
+                                    name: fileData.name,
+                                    size: fileData.size,
+                                    type: fileData.type
+                                };
+                                updateFileInfo(key, fileObj);
+                            }
+                        }
+                    });
+                    
+                    // Load additional files
+                    if (files.additional) {
+                        additionalFiles = files.additional;
+                        Object.keys(files.additional).forEach(key => {
+                            const fileData = files.additional[key];
+                            const fileObj = {
+                                name: fileData.name,
+                                size: fileData.size,
+                                type: fileData.type
+                            };
+                            
+                            // Create UI for each additional file
+                            const container = document.getElementById('additional-files');
+                            const newUpload = document.createElement('div');
+                            newUpload.className = 'upload-item';
+                            newUpload.id = `additional-file-${key}`;
+                            newUpload.innerHTML = `
+                                <label>Berkas Tambahan</label>
+                                <div class="upload-controls">
+                                    <input type="file" id="file-${key}" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileSelect('${key}', this)" style="display: none;">
+                                    <button type="button" class="btn-upload" onclick="triggerFileUpload('file-${key}')" style="display: none;">
+                                        <i class="fas fa-upload"></i> Pilih File
+                                    </button>
+                                </div>
+                                <div class="file-info" style="display: flex;">
+                                    <span class="file-name">${fileObj.name}</span>
+                                    <span class="file-size">${formatFileSize(fileObj.size)}</span>
+                                    <button type="button" class="btn-download" onclick="downloadFile('${key}')" title="Download">
+                                        <i class="fas fa-download"></i>
+                                    </button>
+                                    <button type="button" class="btn-remove" onclick="removeFile('${key}')" title="Hapus">
+                                        <i class="fas fa-times"></i>
+                                    </button>
+                                </div>
+                            `;
+                            container.appendChild(newUpload);
+                            additionalFileCount++;
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading files from storage:', error);
+            }
+        }
+        
+        // ================= MODAL FUNCTIONS =================
+        let selectedPetugas = '';
+        let selectedPhone = '';
+        
+        function openConversationModal(petugasName, phoneNumber) {
+            playClickSound();
+            
+            selectedPetugas = petugasName;
+            selectedPhone = phoneNumber;
+            document.getElementById('modalPetugasName').textContent = `Percakapan dengan ${petugasName}`;
+            document.getElementById('conversationModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            setTimeout(() => {
+                document.getElementById('nama').focus();
+            }, 100);
+            
+            loadFormData();
+            loadFilesFromStorage();
+        }
+        
+        function closeModal() {
+            document.getElementById('conversationModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        // ================= FORM DATA MANAGEMENT =================
+        let formData = {};
+        
+        function saveFormData() {
+            formData = {
+                nama: document.getElementById('nama').value,
+                alamat: document.getElementById('alamat').value,
+                rt: document.getElementById('rt').value,
+                rw: document.getElementById('rw').value,
+                kelurahan: document.getElementById('kelurahan').value,
+                kecamatan: document.getElementById('kecamatan').value,
+                kota: document.getElementById('kota').value,
+                provinsi: document.getElementById('provinsi').value,
+                no_hp: document.getElementById('no_hp').value,
+                email: document.getElementById('email').value,
+                tujuan: document.getElementById('tujuan').value,
+                tujuan_optional: document.getElementById('tujuan_optional').value
+            };
+            
+            localStorage.setItem('pelayananFormData', JSON.stringify(formData));
+        }
+        
+        function loadFormData() {
+            const savedData = localStorage.getItem('pelayananFormData');
+            if (savedData) {
+                try {
+                    formData = JSON.parse(savedData);
+                    
+                    document.getElementById('nama').value = formData.nama || '';
+                    document.getElementById('alamat').value = formData.alamat || '';
+                    document.getElementById('rt').value = formData.rt || '';
+                    document.getElementById('rw').value = formData.rw || '';
+                    document.getElementById('kelurahan').value = formData.kelurahan || 'Padang Terubuk';
+                    document.getElementById('kecamatan').value = formData.kecamatan || 'Senapelan';
+                    document.getElementById('kota').value = formData.kota || 'Pekanbaru';
+                    document.getElementById('provinsi').value = formData.provinsi || 'Riau';
+                    document.getElementById('no_hp').value = formData.no_hp || '';
+                    document.getElementById('email').value = formData.email || '';
+                    document.getElementById('tujuan').value = formData.tujuan || '';
+                    document.getElementById('tujuan_optional').value = formData.tujuan_optional || '';
+                } catch (e) {
+                    console.error('Error loading saved form data:', e);
+                }
+            }
+        }
+        
+        function clearFormData() {
+            localStorage.removeItem('pelayananFormData');
+            localStorage.removeItem('pelayananUploadedFiles');
+            formData = {};
+            uploadedFiles = { surat: null, kk: null, ktp: null };
+            additionalFiles = {};
+        }
+        
+        // ================= SETUP FORM LISTENERS =================
+        function setupFormListeners() {
+            const formElements = [
+                'nama', 'alamat', 'rt', 'rw', 'kelurahan', 'kecamatan', 
+                'kota', 'provinsi', 'no_hp', 'email', 'tujuan', 'tujuan_optional'
+            ];
+            
+            formElements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (element) {
+                    element.addEventListener('input', function() {
+                        formData[elementId] = this.value;
+                        saveFormData();
+                    });
+                    
+                    element.addEventListener('change', function() {
+                        formData[elementId] = this.value;
+                        saveFormData();
+                    });
+                }
+            });
+        }
+        
+        // ================= SUBMIT CONVERSATION =================
+        function submitConversation() {
+            // Validate required fields
+            const nama = document.getElementById('nama').value.trim();
+            const alamat = document.getElementById('alamat').value.trim();
+            const rt = document.getElementById('rt').value.trim();
+            const rw = document.getElementById('rw').value.trim();
+            const kelurahan = document.getElementById('kelurahan').value.trim();
+            const kecamatan = document.getElementById('kecamatan').value.trim();
+            const kota = document.getElementById('kota').value.trim();
+            const provinsi = document.getElementById('provinsi').value.trim();
+            const no_hp = document.getElementById('no_hp').value.trim();
+            const tujuan = document.getElementById('tujuan').value;
+            
+            // Validate required files
+            if (!uploadedFiles.surat && !uploadedFiles.kk && !uploadedFiles.ktp) {
+                if (!confirm('Anda belum mengupload Surat Pengantar RT/RW, KK, dan KTP. Apakah Anda yakin ingin melanjutkan?')) {
+                    return;
+                }
+            } else {
+                if (!uploadedFiles.surat) {
+                    alert('Harap upload Surat Pengantar RT/RW');
+                    return;
+                }
+                if (!uploadedFiles.kk) {
+                    alert('Harap upload Fotokopi Kartu Keluarga (KK)');
+                    return;
+                }
+                if (!uploadedFiles.ktp) {
+                    alert('Harap upload Fotokopi KTP');
+                    return;
+                }
+            }
+            
+            if (!nama || !alamat || !rt || !rw || !no_hp || !tujuan) {
+                alert('Harap isi semua field yang wajib diisi (*)');
+                return;
+            }
+            
+            // Validate phone number
+            const phoneRegex = /^[0-9]{10,13}$/;
+            const cleanPhone = no_hp.replace(/\D/g, '');
+            if (!phoneRegex.test(cleanPhone)) {
+                alert('Nomor HP tidak valid. Harap masukkan 10-13 digit angka.');
+                return;
+            }
+            
+            // Create file list message
+            let fileList = '';
+            const allFiles = { ...uploadedFiles, ...additionalFiles };
+            
+            Object.keys(allFiles).forEach(key => {
+                if (allFiles[key]) {
+                    let fileName = '';
+                    if (key === 'surat') fileName = '📄 Surat Pengantar RT/RW';
+                    else if (key === 'kk') fileName = '📄 Kartu Keluarga (KK)';
+                    else if (key === 'ktp') fileName = '📄 KTP';
+                    else fileName = `📄 Berkas Tambahan`;
+                    
+                    fileList += `\n${fileName}: ${allFiles[key].name}`;
+                }
+            });
+            
+            // Create file download instructions
+            const fileInstructions = fileList ? 
+                `\n\n📎 *BERKAS YANG DIUPLOAD:*\n${fileList}\n\n` +
+                `*CARA MENGIRIM BERKAS:*\n` +
+                `1. Buka aplikasi WhatsApp\n` +
+                `2. Ketuk ikon lampiran (📎)\n` +
+                `3. Pilih "Dokumen" atau "Gallery"\n` +
+                `4. Kirim file-file berikut:\n` +
+                `   - Surat Pengantar RT/RW\n` +
+                `   - Fotokopi KK\n` +
+                `   - Fotokopi KTP\n` +
+                `   - Berkas tambahan (jika ada)\n\n` +
+                `Atau Anda bisa mendownload berkas dari halaman ini dengan klik ikon download (⬇️) pada setiap file yang sudah diupload.`
+                : '';
+            
+            const finalTujuan = document.getElementById('tujuan_optional').value.trim() ? 
+                `${tujuan}: ${document.getElementById('tujuan_optional').value.trim()}` : 
+                tujuan;
+            
+            const message = `Assalamualaikum Bapak/Ibu ${selectedPetugas}, selamat beraktifitas.
 
-  <!-- catatan: karena menggunakan domain example.com yang memang allow iframe, tampil halaman minimal.
-       Untuk tampilan lebih menarik bisa ganti dengan web lain yang memperbolehkan iframe, 
-       tapi ui/ux tetap terlihat premium gelap biru efek glass.
-  -->
+*DATA PEMOHON:*
+Perkenalkan, saya:
+Nama : ${nama}
+Alamat : ${alamat}
+RT/RW : ${rt}/${rw}
+Kelurahan : ${kelurahan}
+Kecamatan : ${kecamatan}
+Kota : ${kota}
+Provinsi : ${provinsi}
+No. HP : ${no_hp}
+Email : ${email || '(tidak diisi)'}
+
+*TUJUAN PERCAKAPAN:*
+${finalTujuan}${fileInstructions}
+
+Atas kesediaan waktu Bapak/Ibu, saya ucapkan terima kasih.
+
+*Informasi Tambahan:*
+Percakapan ini bersumber dari Pelayanan Online Kelurahan Padang Terubuk
+(https://senapelan.github.io/Home/publik/menupelayanan/pelayananpadangterubuk.html)
+"Senapelan Satu Pintu - Kelurahan Padang Terubuk"`;
+            
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappURL = `https://wa.me/${selectedPhone}?text=${encodedMessage}`;
+            
+            // Clear form data
+            clearFormData();
+            
+            // Close modal
+            closeModal();
+            
+            // Show success message with file instructions
+            setTimeout(() => {
+                if (fileList) {
+                    if (confirm('File-file pendukung sudah disimpan di browser. Setelah chat terbuka, silakan kirim file-file tersebut melalui lampiran WhatsApp.\n\nTekan OK untuk membuka WhatsApp.')) {
+                        window.open(whatsappURL, '_blank');
+                    }
+                } else {
+                    window.open(whatsappURL, '_blank');
+                }
+            }, 300);
+        }
+        
+        // ================= EVENT LISTENERS =================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSoundEffect();
+            setupFormListeners();
+            
+            // Close modal when clicking outside
+            document.getElementById('conversationModal').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    closeModal();
+                }
+            });
+            
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && document.getElementById('conversationModal').classList.contains('active')) {
+                    closeModal();
+                }
+            });
+            
+            // Prevent form submission on Enter key
+            document.getElementById('conversationForm').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const inputs = Array.from(this.querySelectorAll('input, textarea, select'));
+                    const currentIndex = inputs.indexOf(document.activeElement);
+                    if (currentIndex < inputs.length - 1) {
+                        inputs[currentIndex + 1].focus();
+                    }
+                }
+            });
+            
+            // Handle form submission
+            document.getElementById('conversationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitConversation();
+            });
+            
+            // Format phone number
+            document.getElementById('no_hp').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    value = value.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3');
+                }
+                e.target.value = value;
+            });
+        });
+        
+        // Auto-save on page unload
+        window.addEventListener('beforeunload', function() {
+            saveFormData();
+            saveFilesToStorage();
+        });
+    </script>
 </body>
 </html>
