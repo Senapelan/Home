@@ -25,9 +25,10 @@
     <!-- GOOGLE FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- FAVICON -->
-    <link rel="icon" type="image/png" sizes="32x32" href="data/foto/favico/favico.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://senapelan.github.io/Home/data/foto/favico/favico.png">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -45,11 +46,19 @@
             --light: #f6f7f9;
             --glass: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
-            --text: #222;
-            --text-light: #666;
+            --text: #2c3e50;
+            --text-light: #5d6d7e;
             --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.15);
             --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.12);
             --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Old Paper Colors */
+            --parchment: #f5e9d8;
+            --parchment-dark: #e8d5b5;
+            --parchment-light: #faf0e0;
+            --ink-old: #3e2c1a;
+            --sepia: #8b5a2b;
+            --gold-old: #b48643;
         }
 
         * {
@@ -65,9 +74,22 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: #fff;
+            background: linear-gradient(135deg, #66757f, #4a5a63);
             color: var(--text);
             position: relative;
+        }
+
+        /* Wood Texture Background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="wood"><feTurbulence type="fractalNoise" baseFrequency="0.4" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0.3 0 1 0 0 0.2 0 0 1 0 0.1 0 0 0 1 0"/></filter><rect width="100" height="100" filter="url(%23wood)" opacity="0.1"/></svg>');
+            pointer-events: none;
+            z-index: -1;
         }
 
         /* 3D Background */
@@ -78,7 +100,7 @@
             width: 100%;
             height: 100%;
             z-index: -1;
-            opacity: 0.03;
+            opacity: 0.1;
         }
 
         /* Glass Header */
@@ -223,29 +245,30 @@
             font-family: 'Poppins', sans-serif;
             font-size: 32px;
             font-weight: 800;
-            color: var(--dark);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             margin-bottom: 5px;
         }
 
         .title-text p {
-            color: var(--text-light);
+            color: rgba(255,255,255,0.9);
             font-size: 16px;
         }
 
         /* Page Indicator */
         .page-indicator {
-            background: white;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
             padding: 12px 30px;
             border-radius: 50px;
-            box-shadow: var(--shadow-sm);
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            color: var(--primary);
-            border: 2px solid rgba(30, 107, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
         }
 
         .page-indicator span {
-            color: var(--dark);
+            color: var(--secondary);
             font-size: 18px;
             margin: 0 5px;
         }
@@ -256,39 +279,109 @@
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 30px;
-            min-height: 0; /* Important for flex child */
+            min-height: 0;
             padding: 0 20px;
         }
 
-        /* Card Style */
+        /* Old Paper Card Style */
         .history-card {
-            background: white;
-            border-radius: 30px;
+            background: var(--parchment);
+            background-image: 
+                linear-gradient(145deg, rgba(255,255,240,0.8) 0%, rgba(230,210,170,0.9) 100%),
+                repeating-linear-gradient(45deg, rgba(180,130,70,0.02) 0px, rgba(180,130,70,0.02) 2px, transparent 2px, transparent 6px);
+            border-radius: 24px;
             padding: 40px;
-            box-shadow: var(--shadow-sm);
-            transition: var(--transition);
-            border: 2px solid rgba(30, 107, 255, 0.1);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.3),
+                inset 0 0 0 1px rgba(255,255,200,0.7),
+                inset 0 0 20px rgba(140,90,40,0.2);
             display: flex;
             flex-direction: column;
             height: 100%;
             overflow: hidden;
             position: relative;
+            border: 1px solid var(--gold-old);
+            transition: var(--transition);
         }
 
+        /* Torn Paper Edges */
         .history-card::before {
-            content: '';
+            content: "";
+            position: absolute;
+            top: -5px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: inherit;
+            filter: blur(2px);
+            opacity: 0.3;
+        }
+
+        .history-card::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            right: 0;
+            height: 10px;
+            background: inherit;
+            filter: blur(2px);
+            opacity: 0.3;
+        }
+
+        /* Old Paper Texture */
+        .history-card .paper-texture {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
-            height: 6px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.15 0"/></filter><rect width="200" height="200" filter="url(%23noise)" opacity="0.4"/></svg>');
+            opacity: 0.15;
+            pointer-events: none;
+            border-radius: inherit;
+        }
+
+        /* Ink Stains */
+        .history-card .ink-stain {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(100,60,20,0.1) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .history-card .stain-1 {
+            top: 20px;
+            right: 20px;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(140,90,40,0.08) 0%, transparent 70%);
+        }
+
+        .history-card .stain-2 {
+            bottom: 30px;
+            left: 30px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(100,70,30,0.06) 0%, transparent 70%);
+        }
+
+        .history-card .stain-3 {
+            top: 50%;
+            left: 20%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, rgba(80,50,20,0.05) 0%, transparent 70%);
         }
 
         .history-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--shadow-lg);
-            border-color: rgba(30, 107, 255, 0.3);
+            box-shadow: 
+                0 25px 50px rgba(0,0,0,0.4),
+                inset 0 0 0 1px rgba(255,215,140,0.8),
+                inset 0 0 30px rgba(180,130,70,0.3);
         }
 
         .card-header {
@@ -297,39 +390,58 @@
             gap: 15px;
             margin-bottom: 25px;
             padding-bottom: 20px;
-            border-bottom: 2px dashed rgba(30, 107, 255, 0.2);
+            border-bottom: 2px solid rgba(139, 69, 19, 0.2);
+            position: relative;
+            z-index: 2;
         }
 
         .page-badge {
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #8b5a2b, #5d3a1a);
             border-radius: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: white;
+            color: #f5e9d8;
             font-family: 'Poppins', sans-serif;
             font-weight: 700;
             font-size: 20px;
-            box-shadow: 0 8px 15px rgba(30, 107, 255, 0.2);
+            box-shadow: 0 5px 15px rgba(100,50,10,0.3);
+            border: 2px solid #b48643;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .page-badge::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, transparent, rgba(255,255,200,0.2));
         }
 
         .card-header h2 {
-            font-family: 'Poppins', sans-serif;
-            font-size: 24px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
             font-weight: 700;
-            color: var(--dark);
+            color: #3e2c1a;
             flex: 1;
+            letter-spacing: 1px;
         }
 
         .card-content {
             flex: 1;
             overflow-y: auto;
             padding-right: 10px;
-            font-size: 16px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 18px;
             line-height: 1.8;
-            color: var(--text);
+            color: #2c1e0f;
+            position: relative;
+            z-index: 2;
         }
 
         .card-content p {
@@ -337,23 +449,32 @@
             text-align: justify;
         }
 
-        .card-content p:last-child {
-            margin-bottom: 0;
+        .card-content p:first-of-type::first-letter {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 60px;
+            font-weight: 700;
+            float: left;
+            line-height: 0.8;
+            margin-right: 15px;
+            color: #8b5a2b;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Custom Scrollbar */
+        /* Custom Scrollbar - Vintage Style */
         .card-content::-webkit-scrollbar {
-            width: 8px;
+            width: 10px;
         }
 
         .card-content::-webkit-scrollbar-track {
-            background: #f0f0f0;
+            background: #d9c2a7;
             border-radius: 10px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
         }
 
         .card-content::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, #8b5a2b, #5d3a1a);
             border-radius: 10px;
+            border: 2px solid #b48643;
         }
 
         /* Empty State */
@@ -363,20 +484,21 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            color: var(--text-light);
+            color: #8b5a2b;
             text-align: center;
             padding: 40px;
+            font-family: 'Cormorant Garamond', serif;
         }
 
         .empty-state i {
             font-size: 80px;
-            color: rgba(30, 107, 255, 0.2);
+            color: rgba(139, 69, 19, 0.2);
             margin-bottom: 20px;
         }
 
         .empty-state p {
-            font-size: 18px;
-            font-weight: 500;
+            font-size: 20px;
+            font-style: italic;
         }
 
         /* Navigation Controls */
@@ -421,12 +543,17 @@
         .page-info {
             font-family: 'Poppins', sans-serif;
             font-weight: 600;
-            color: var(--dark);
-            background: white;
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(10px);
             padding: 12px 40px;
             border-radius: 40px;
-            box-shadow: var(--shadow-sm);
-            border: 2px solid rgba(30, 107, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .page-info i {
+            margin-right: 10px;
+            color: var(--secondary);
         }
 
         /* Loading Overlay */
@@ -436,7 +563,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(44, 30, 15, 0.95);
             backdrop-filter: blur(10px);
             display: flex;
             flex-direction: column;
@@ -447,23 +574,23 @@
         }
 
         .loading-spinner {
-            width: 80px;
-            height: 80px;
-            border: 5px solid #f0f0f0;
-            border-top: 5px solid var(--primary);
-            border-right: 5px solid var(--secondary);
+            width: 100px;
+            height: 100px;
+            border: 6px solid #8b5a2b;
+            border-top: 6px solid #b48643;
+            border-right: 6px solid #f5e9d8;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: spin 1.5s linear infinite;
             margin-bottom: 30px;
+            box-shadow: 0 0 30px rgba(180, 134, 67, 0.3);
         }
 
         .loading-text {
-            font-family: 'Poppins', sans-serif;
-            font-size: 20px;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 28px;
             font-weight: 600;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #f5e9d8;
+            letter-spacing: 2px;
         }
 
         @keyframes spin {
@@ -471,7 +598,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Progress Bar */
+        /* Reading Progress - Vintage Style */
         .reading-progress {
             position: fixed;
             bottom: 30px;
@@ -479,6 +606,7 @@
             width: 120px;
             height: 120px;
             z-index: 100;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
         }
 
         .progress-circle {
@@ -491,13 +619,14 @@
         }
 
         .progress-bg {
-            stroke: rgba(30, 107, 255, 0.1);
+            stroke: rgba(180, 134, 67, 0.2);
         }
 
         .progress-bar {
             stroke: url(#gradient);
             stroke-linecap: round;
             transition: stroke-dashoffset 0.3s ease;
+            filter: drop-shadow(0 0 5px #b48643);
         }
 
         /* Responsive */
@@ -521,7 +650,7 @@
             }
             
             .card-header h2 {
-                font-size: 20px;
+                font-size: 24px;
             }
         }
 
@@ -594,21 +723,17 @@
                 height: 50px;
                 font-size: 20px;
             }
+            
+            .card-content {
+                font-size: 16px;
+            }
+            
+            .card-header h2 {
+                font-size: 22px;
+            }
         }
 
-        /* Floating Particles */
-        .floating-particle {
-            position: fixed;
-            width: 4px;
-            height: 4px;
-            background: var(--primary);
-            border-radius: 50%;
-            opacity: 0.2;
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* Gradient Definition for Progress */
+        /* Gradient Definition */
         .progress-svg {
             position: absolute;
             width: 0;
@@ -620,11 +745,11 @@
     <!-- 3D Background -->
     <canvas id="bg-canvas"></canvas>
 
-    <!-- SVG Gradient for Progress -->
+    <!-- SVG Gradient -->
     <svg class="progress-svg">
         <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stop-color="#1e6bff" />
-            <stop offset="100%" stop-color="#00c9b7" />
+            <stop offset="0%" stop-color="#8b5a2b" />
+            <stop offset="100%" stop-color="#b48643" />
         </linearGradient>
     </svg>
 
@@ -646,7 +771,7 @@
         </a>
     </header>
 
-    <!-- Main Content - Full Screen -->
+    <!-- Main Content -->
     <div class="main-container">
         <!-- Title Bar -->
         <div class="title-bar">
@@ -656,47 +781,59 @@
                 </div>
                 <div class="title-text">
                     <h1 id="bookTitle">SEJARAH KELURAHAN</h1>
-                    <p id="bookSubtitle">Padang Terubuk · Arsip Digital</p>
+                    <p id="bookSubtitle">Padang Terubuk · Manuskrip Digital</p>
                 </div>
             </div>
             <div class="page-indicator" id="pageIndicator">
-                Halaman <span id="currentPageDisplay">1</span> dari <span id="totalPagesDisplay">7</span>
+                Folio <span id="currentPageDisplay">1</span> dari <span id="totalPagesDisplay">7</span>
             </div>
         </div>
 
-        <!-- Content Grid - 2 Columns -->
+        <!-- Content Grid -->
         <div class="content-grid" id="contentGrid">
             <!-- Left Card -->
             <div class="history-card" id="leftCard">
+                <!-- Paper Textures -->
+                <div class="paper-texture"></div>
+                <div class="ink-stain stain-1"></div>
+                <div class="ink-stain stain-2"></div>
+                <div class="ink-stain stain-3"></div>
+                
                 <div class="card-header">
                     <div class="page-badge" id="leftBadge">1</div>
                     <h2 id="leftTitle">Bab 1</h2>
                 </div>
                 <div class="card-content" id="leftContent">
-                    <p>Memuat konten...</p>
+                    <p>Memuat manuskrip...</p>
                 </div>
             </div>
 
             <!-- Right Card -->
             <div class="history-card" id="rightCard">
+                <!-- Paper Textures -->
+                <div class="paper-texture"></div>
+                <div class="ink-stain stain-1"></div>
+                <div class="ink-stain stain-2"></div>
+                <div class="ink-stain stain-3"></div>
+                
                 <div class="card-header">
                     <div class="page-badge" id="rightBadge">2</div>
                     <h2 id="rightTitle">Bab 2</h2>
                 </div>
                 <div class="card-content" id="rightContent">
-                    <p>Memuat konten...</p>
+                    <p>Memuat manuskrip...</p>
                 </div>
             </div>
         </div>
 
-        <!-- Navigation Controls -->
+        <!-- Navigation -->
         <div class="nav-controls">
             <button class="nav-btn" id="prevBtn" disabled>
                 <i class="fas fa-chevron-left"></i>
             </button>
             
             <div class="page-info">
-                <i class="fas fa-book-open" style="margin-right: 10px; color: var(--primary);"></i>
+                <i class="fas fa-feather-alt"></i>
                 <span id="pageRange">1-2</span>
             </div>
             
@@ -717,14 +854,14 @@
         </svg>
     </div>
 
-    <!-- Loading Overlay -->
+    <!-- Loading -->
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Memuat Arsip Sejarah</div>
+        <div class="loading-text">Membuka manuskrip kuno...</div>
     </div>
 
     <script>
-        // Google Sheets Configuration
+        // Google Sheets
         const SPREADSHEET_ID = '1NfodZgDQ8kyGGlWkJbcv57aJO2cY5a1KzPk23Gm4bFg';
         const SHEET_NAME = 'SEJARAH';
         
@@ -734,7 +871,7 @@
             pages: []
         };
         
-        let currentPage = 0; // Index of left page (0-based)
+        let currentPage = 0;
         let totalPages = 0;
         
         // DOM Elements
@@ -754,7 +891,7 @@
         const pageRange = document.getElementById('pageRange');
         const progressCircle = document.getElementById('progressCircle');
 
-        // Initialize 3D Background
+        // Initialize 3D
         function init3DBackground() {
             const canvas = document.getElementById('bg-canvas');
             if (!canvas || typeof THREE === 'undefined') return;
@@ -766,36 +903,43 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-            // Floating particles
+            // Floating particles - warm colors
             const particlesGeometry = new THREE.BufferGeometry();
-            const particlesCount = 200;
+            const particlesCount = 150;
             const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
             
             for(let i = 0; i < particlesCount * 3; i += 3) {
-                posArray[i] = (Math.random() - 0.5) * 10;
-                posArray[i+1] = (Math.random() - 0.5) * 10;
-                posArray[i+2] = (Math.random() - 0.5) * 10;
+                posArray[i] = (Math.random() - 0.5) * 15;
+                posArray[i+1] = (Math.random() - 0.5) * 15;
+                posArray[i+2] = (Math.random() - 0.5) * 15;
+                
+                // Warm colors
+                colorArray[i] = 0.8; // R
+                colorArray[i+1] = 0.6; // G
+                colorArray[i+2] = 0.3; // B
             }
             
             particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
             
             const particlesMaterial = new THREE.PointsMaterial({
-                size: 0.02,
-                color: 0x1e6bff,
+                size: 0.03,
+                vertexColors: true,
                 transparent: true,
-                opacity: 0.3,
+                opacity: 0.2,
                 blending: THREE.AdditiveBlending
             });
             
             const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
             scene.add(particlesMesh);
             
-            camera.position.z = 5;
+            camera.position.z = 8;
             
             function animate() {
                 requestAnimationFrame(animate);
-                particlesMesh.rotation.y += 0.0005;
-                particlesMesh.rotation.x += 0.0002;
+                particlesMesh.rotation.y += 0.0003;
+                particlesMesh.rotation.x += 0.0001;
                 renderer.render(scene, camera);
             }
             
@@ -808,7 +952,7 @@
             });
         }
 
-        // Fetch Data from Google Sheets
+        // Fetch Data
         async function fetchSejarahData() {
             try {
                 loadingOverlay.style.opacity = '1';
@@ -826,10 +970,8 @@
                 });
 
                 if (rows.length >= 2) {
-                    // Title from A2
                     bookData.title = rows[1][0] || 'SEJARAH KELURAHAN PADANG TERUBUK';
                     
-                    // Get pages from B2 to Z2
                     const pages = rows[1].slice(1).filter(cell => cell && cell.trim() !== '');
                     
                     if (pages.length > 0) {
@@ -843,14 +985,13 @@
                 
                 // Update UI
                 bookTitle.textContent = bookData.title;
-                bookSubtitle.textContent = `${bookData.pages.length} Halaman · Arsip Digital`;
+                bookSubtitle.textContent = `${bookData.pages.length} Halaman · Manuskrip Digital`;
                 
                 totalPages = bookData.pages.length;
                 totalPagesDisplay.textContent = totalPages;
                 
                 renderPages();
                 
-                // Hide loading
                 setTimeout(() => {
                     loadingOverlay.style.opacity = '0';
                     setTimeout(() => {
@@ -898,26 +1039,26 @@
             const leftIndex = currentPage;
             const rightIndex = currentPage + 1;
             
-            // Render Left Page
+            // Left Page
             if (leftIndex < bookData.pages.length) {
                 const leftText = bookData.pages[leftIndex];
                 leftContent.innerHTML = formatContent(leftText);
                 leftBadge.textContent = leftIndex + 1;
                 leftTitle.textContent = `Bab ${leftIndex + 1}`;
             } else {
-                leftContent.innerHTML = '<div class="empty-state"><i class="fas fa-book-open"></i><p>Halaman kosong</p></div>';
+                leftContent.innerHTML = '<div class="empty-state"><i class="fas fa-feather-alt"></i><p>Halaman kosong</p></div>';
                 leftBadge.textContent = '';
                 leftTitle.textContent = 'Selesai';
             }
             
-            // Render Right Page
+            // Right Page
             if (rightIndex < bookData.pages.length) {
                 const rightText = bookData.pages[rightIndex];
                 rightContent.innerHTML = formatContent(rightText);
                 rightBadge.textContent = rightIndex + 1;
                 rightTitle.textContent = `Bab ${rightIndex + 1}`;
             } else {
-                rightContent.innerHTML = '<div class="empty-state"><i class="fas fa-flag-checkered"></i><p>Tamat · Akhir dari sejarah</p></div>';
+                rightContent.innerHTML = '<div class="empty-state"><i class="fas fa-scroll"></i><p>Tamat · Akhir dari manuskrip</p></div>';
                 rightBadge.textContent = '';
                 rightTitle.textContent = 'Tamat';
             }
@@ -946,7 +1087,7 @@
 
         function updateProgress() {
             const progress = ((currentPage + 1) / totalPages) * 100;
-            const circumference = 2 * Math.PI * 54; // 339.292
+            const circumference = 2 * Math.PI * 54;
             const offset = circumference - (progress / 100) * circumference;
             progressCircle.style.strokeDashoffset = offset;
         }
@@ -956,8 +1097,6 @@
             if (currentPage > 0) {
                 currentPage -= 2;
                 renderPages();
-                
-                // Smooth scroll to top of cards
                 leftContent.scrollTop = 0;
                 rightContent.scrollTop = 0;
             }
@@ -967,8 +1106,6 @@
             if (currentPage + 2 < totalPages) {
                 currentPage += 2;
                 renderPages();
-                
-                // Smooth scroll to top of cards
                 leftContent.scrollTop = 0;
                 rightContent.scrollTop = 0;
             }
@@ -983,24 +1120,20 @@
             }
         });
 
-        // Touch Swipe for Mobile
+        // Touch Swipe
         let touchStartX = 0;
-        let touchEndX = 0;
         
         document.addEventListener('touchstart', (e) => {
             touchStartX = e.changedTouches[0].screenX;
         }, { passive: true });
         
         document.addEventListener('touchend', (e) => {
-            touchEndX = e.changedTouches[0].screenX;
+            const touchEndX = e.changedTouches[0].screenX;
             const diff = touchEndX - touchStartX;
             
             if (Math.abs(diff) > 50) {
-                if (diff > 0) {
-                    prevBtn.click();
-                } else {
-                    nextBtn.click();
-                }
+                if (diff > 0) prevBtn.click();
+                else nextBtn.click();
             }
         }, { passive: true });
 
@@ -1011,20 +1144,27 @@
         
         fetchSejarahData();
 
-        // Add floating particles
-        function createFloatingParticles() {
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'floating-particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.top = Math.random() * 100 + '%';
-                particle.style.animation = `float ${5 + Math.random() * 10}s linear infinite`;
-                particle.style.background = `linear-gradient(135deg, ${Math.random() > 0.5 ? '#1e6bff' : '#00c9b7'})`;
-                document.body.appendChild(particle);
-            }
+        // Add random ink spots (dynamic)
+        function addRandomInkSpots() {
+            const cards = document.querySelectorAll('.history-card');
+            cards.forEach(card => {
+                for (let i = 0; i < 3; i++) {
+                    const spot = document.createElement('div');
+                    spot.className = 'ink-stain';
+                    spot.style.position = 'absolute';
+                    spot.style.width = Math.random() * 100 + 50 + 'px';
+                    spot.style.height = spot.style.width;
+                    spot.style.left = Math.random() * 100 + '%';
+                    spot.style.top = Math.random() * 100 + '%';
+                    spot.style.background = `radial-gradient(circle, rgba(100,60,20,${0.03 + Math.random() * 0.05}) 0%, transparent 70%)`;
+                    spot.style.pointerEvents = 'none';
+                    spot.style.zIndex = '1';
+                    card.appendChild(spot);
+                }
+            });
         }
         
-        createFloatingParticles();
+        setTimeout(addRandomInkSpots, 1000);
     </script>
 </body>
 </html>
