@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://senapelan.github.io/Home/kelurahanpadangterubuk.html">
+    <meta property="og:title" content="Sejarah Kelurahan Padang Terubuk - Manuskrip Kuno">
+    <meta property="og:description" content="Jelajahi sejarah Kelurahan Padang Terubuk dalam manuskrip digital bergaya abad pertengahan">
+    <meta property="og:site_name" content="Padang Terubuk">
+    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
+    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/data/foto/thumbnail.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="1200">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sejarah Kelurahan Padang Terubuk - Manuskrip Kuno">
+    <meta name="twitter:description" content="Jelajahi sejarah Kelurahan Padang Terubuk dalam manuskrip digital bergaya abad pertengahan">
+    <meta name="twitter:image" content="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Sejarah Kelurahan Padang Terubuk - Manuskrip Kuno</title>
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800;900&family=MedievalSharp&family=Cormorant+Garamond:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="data/foto/favico/favico.png">
+    
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Three.js for 3D effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --parchment: #e8d6b5;
+            --parchment-dark: #c7b187;
+            --ink: #2c1e0f;
+            --ink-fade: #5d4a2e;
+            --gold: #b8860b;
+            --gold-light: #daa520;
+            --old-paper: #f3e9d2;
+            --leather: #8b4513;
+            --leather-dark: #5a2e0c;
+            --wood: #6b4423;
+            --blood: #8b0000;
+            --candle: #f4a460;
+        }
+
+        body {
+            font-family: 'Cormorant Garamond', serif;
+            background: #2c1810;
+            min-height: 100vh;
+            color: var(--ink);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 3D Background Particles - Old Paper Dust Effect */
+        #canvas-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+
+        /* Old Paper Texture Overlay */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><filter id="noise"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="1" stitchTiles="stitch"/><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.2 0"/></filter><rect width="100" height="100" filter="url(%23noise)" opacity="0.1"/></svg>');
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Vintage Header */
+        .header {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            height: 80px;
+            background: rgba(44, 24, 16, 0.85);
+            backdrop-filter: blur(12px);
+            border: 2px solid #8b6b4d;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 1000;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5), inset 0 2px 5px rgba(255,215,140,0.3);
+            background: linear-gradient(145deg, #3f2b1c, #2c1c10);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 20px rgba(184, 134, 11, 0.5);
+            background: transparent;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: sepia(0.5) brightness(1.1);
+        }
+
+        .logo-text {
+            font-family: 'Cinzel', serif;
+            color: var(--parchment);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .logo-main {
+            font-size: 24px;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffd700, #b8860b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 12px;
+            color: #d4b48c;
+            letter-spacing: 1px;
+        }
+
+        /* Back Button - Medieval Style */
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 28px;
+            background: linear-gradient(145deg, #5a3e28, #3f2b1a);
+            border: 2px solid #b8860b;
+            border-radius: 40px;
+            color: #f3e9d2;
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            font-size: 18px;
+            letter-spacing: 1px;
+            box-shadow: 0 8px 0 #2c1c10, 0 10px 20px rgba(0,0,0,0.4);
+            transition: all 0.2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .back-button::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,215,0,0.3), transparent);
+            transition: left 0.6s;
+        }
+
+        .back-button:hover {
+            transform: translateY(4px);
+            box-shadow: 0 4px 0 #2c1c10, 0 8px 15px rgba(0,0,0,0.4);
+            color: #ffd700;
+        }
+
+        .back-button:hover::before {
+            left: 100%;
+        }
+
+        .back-button i {
+            font-size: 24px;
+            color: #b8860b;
+        }
+
+        /* Main Container */
+        .main-container {
+            position: relative;
+            min-height: 100vh;
+            padding: 140px 20px 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        /* Candle Decoration */
+        .candle-left, .candle-right {
+            position: fixed;
+            width: 40px;
+            height: 200px;
+            bottom: 50px;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .candle-left {
+            left: 20px;
+        }
+
+        .candle-right {
+            right: 20px;
+        }
+
+        .candle-stick {
+            position: absolute;
+            bottom: 0;
+            width: 20px;
+            height: 150px;
+            background: linear-gradient(90deg, #f5e6d3, #e6d7b0, #f5e6d3);
+            border-radius: 10px 10px 0 0;
+            box-shadow: inset -2px -2px 5px rgba(0,0,0,0.2), inset 2px 2px 5px rgba(255,255,255,0.5);
+        }
+
+        .candle-left .candle-stick {
+            left: 10px;
+        }
+
+        .candle-right .candle-stick {
+            right: 10px;
+        }
+
+        .candle-flame {
+            position: absolute;
+            bottom: 140px;
+            width: 20px;
+            height: 40px;
+            background: radial-gradient(circle at 50% 0%, #ffd700, #ff8c00, #ff4500);
+            border-radius: 50% 50% 20% 20%;
+            filter: blur(2px);
+            animation: flicker 1.5s ease-in-out infinite;
+            transform-origin: bottom;
+        }
+
+        .candle-left .candle-flame {
+            left: 10px;
+        }
+
+        .candle-right .candle-flame {
+            right: 10px;
+        }
+
+        .candle-smoke {
+            position: absolute;
+            bottom: 170px;
+            width: 10px;
+            height: 20px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 50%;
+            filter: blur(5px);
+            animation: smoke 3s ease-out infinite;
+        }
+
+        .candle-left .candle-smoke {
+            left: 15px;
+        }
+
+        .candle-right .candle-smoke {
+            right: 15px;
+        }
+
+        @keyframes flicker {
+            0%, 100% { transform: scaleY(1) scaleX(1); opacity: 0.9; }
+            25% { transform: scaleY(1.1) scaleX(0.9); opacity: 1; }
+            50% { transform: scaleY(0.9) scaleX(1.1); opacity: 0.8; }
+            75% { transform: scaleY(1.05) scaleX(0.95); opacity: 0.9; }
+        }
+
+        @keyframes smoke {
+            0% { transform: translateY(0) scale(1); opacity: 0.4; }
+            100% { transform: translateY(-30px) scale(2); opacity: 0; }
+        }
+
+        /* The Ancient Book */
+        .book-container {
+            position: relative;
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            perspective: 2500px;
+            z-index: 20;
+        }
+
+        .book-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 900;
+            text-align: center;
+            color: #f3e9d2;
+            text-shadow: 
+                3px 3px 0 #5a3e2a,
+                5px 5px 0 #2c1c10,
+                8px 8px 15px rgba(0,0,0,0.7);
+            letter-spacing: 6px;
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+            padding: 20px 60px;
+            background: linear-gradient(145deg, #4a3624, #2e241a);
+            border: 3px solid #b8860b;
+            border-radius: 60px;
+            box-shadow: inset 0 2px 10px rgba(255,215,0,0.3);
+            transform: rotate(-1deg);
+        }
+
+        .book-title::before, .book-title::after {
+            content: "⚜️";
+            font-size: 40px;
+            margin: 0 20px;
+            opacity: 0.8;
+            filter: drop-shadow(0 0 5px gold);
+        }
+
+        /* The Book */
+        .book {
+            position: relative;
+            width: 100%;
+            height: 700px;
+            transform-style: preserve-3d;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .book.closed {
+            transform: rotateY(0deg);
+        }
+
+        .book.open {
+            transform: rotateY(-15deg);
+        }
+
+        /* Book Cover */
+        .book-cover {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            left: 25%;
+            background: linear-gradient(145deg, #6b4f32, #4a3724);
+            border-radius: 20px 10px 10px 20px;
+            transform-origin: left center;
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            backface-visibility: hidden;
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.6),
+                inset 0 0 30px rgba(0,0,0,0.5),
+                inset 5px 5px 15px rgba(255,215,140,0.2);
+            border: 2px solid #b8860b;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .book.closed .book-cover {
+            transform: rotateY(0deg);
+        }
+
+        .book.open .book-cover {
+            transform: rotateY(-150deg);
+            box-shadow: 
+                -20px 20px 40px rgba(0,0,0,0.5),
+                inset 0 0 30px rgba(0,0,0,0.5);
+        }
+
+        /* Cover Embellishments */
+        .cover-emboss {
+            width: 80%;
+            height: 80%;
+            border: 3px solid #b8860b;
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0,0,0,0.2);
+            box-shadow: inset 0 0 50px rgba(0,0,0,0.5);
+        }
+
+        .cover-symbol {
+            font-size: 120px;
+            color: #b8860b;
+            text-shadow: 0 0 20px #ffd700;
+            margin-bottom: 20px;
+            filter: drop-shadow(5px 5px 5px rgba(0,0,0,0.7));
+        }
+
+        .cover-title {
+            font-family: 'Cinzel', serif;
+            font-size: 48px;
+            font-weight: 900;
+            color: #f3e9d2;
+            text-align: center;
+            text-shadow: 
+                3px 3px 0 #2c1c10,
+                5px 5px 10px rgba(0,0,0,0.7);
+            letter-spacing: 4px;
+            margin: 20px 0;
+        }
+
+        .cover-sub {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 24px;
+            color: #b8860b;
+            border-top: 2px solid #b8860b;
+            border-bottom: 2px solid #b8860b;
+            padding: 10px 30px;
+        }
+
+        .cover-ribbon {
+            position: absolute;
+            bottom: 60px;
+            width: 150px;
+            height: 40px;
+            background: linear-gradient(145deg, #8b0000, #5a0000);
+            border: 2px solid #b8860b;
+            transform: rotate(-5deg);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f3e9d2;
+            font-family: 'Cinzel', serif;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        /* Book Pages */
+        .book-pages {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            left: 25%;
+            background: var(--parchment);
+            border-radius: 0 10px 10px 0;
+            box-shadow: inset -10px 0 20px rgba(0,0,0,0.2);
+            overflow: hidden;
+            z-index: 5;
+        }
+
+        .page-content {
+            height: 100%;
+            padding: 50px 60px;
+            overflow-y: auto;
+            background: #f3e9d2;
+            background-image: 
+                linear-gradient(rgba(200,180,140,0.3) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(200,180,140,0.3) 1px, transparent 1px);
+            background-size: 100% 30px, 30px 100%;
+            box-shadow: inset 0 0 30px rgba(139,69,19,0.2);
+            font-family: 'Cormorant Garamond', serif;
+            color: #2c1e0f;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        .page-content::-webkit-scrollbar {
+            width: 12px;
+            background: #d4b48c;
+        }
+
+        .page-content::-webkit-scrollbar-track {
+            background: #c7b187;
+            border-radius: 10px;
+        }
+
+        .page-content::-webkit-scrollbar-thumb {
+            background: #8b4513;
+            border-radius: 10px;
+            border: 2px solid #b8860b;
+        }
+
+        /* Chapter Styling */
+        .chapter {
+            margin-bottom: 50px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+            border-left: 3px solid #b8860b;
+            padding-left: 30px;
+        }
+
+        .chapter.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .chapter:last-child {
+            margin-bottom: 0;
+        }
+
+        .chapter-title {
+            font-family: 'Cinzel', serif;
+            font-size: 32px;
+            font-weight: 700;
+            color: #8b4513;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 2px rgba(184,134,11,0.2);
+            letter-spacing: 1px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .chapter-title::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, #b8860b, transparent);
+        }
+
+        .chapter-content {
+            font-size: 20px;
+            line-height: 1.8;
+            text-align: justify;
+            columns: 2;
+            column-gap: 40px;
+            column-rule: 2px dashed #b8860b;
+        }
+
+        .chapter-content p {
+            margin-bottom: 20px;
+            text-indent: 40px;
+        }
+
+        .chapter-content p:first-of-type::first-letter {
+            font-family: 'MedievalSharp', cursive;
+            font-size: 72px;
+            float: left;
+            line-height: 0.8;
+            margin-right: 15px;
+            color: #8b0000;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Book Binding String */
+        .book-string {
+            position: absolute;
+            left: 50%;
+            top: 30px;
+            bottom: 30px;
+            width: 4px;
+            background: linear-gradient(180deg, #8b5a2b, #c19a6b, #8b5a2b);
+            transform: translateX(-50%);
+            border-radius: 2px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            z-index: 15;
+        }
+
+        .book-string::before, .book-string::after {
+            content: "";
+            position: absolute;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: #b8860b;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px gold;
+        }
+
+        .book-string::before {
+            top: -10px;
+        }
+
+        .book-string::after {
+            bottom: -10px;
+        }
+
+        /* Open Book Button */
+        .open-book-btn {
+            position: absolute;
+            bottom: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(145deg, #8b4513, #5a2e0c);
+            border: 3px solid #b8860b;
+            border-radius: 40px;
+            padding: 15px 50px;
+            color: #f3e9d2;
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #2c1c10, 0 15px 25px rgba(0,0,0,0.5);
+            transition: all 0.2s ease;
+            z-index: 30;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            white-space: nowrap;
+        }
+
+        .open-book-btn i {
+            font-size: 32px;
+            color: gold;
+        }
+
+        .open-book-btn:hover {
+            transform: translateX(-50%) translateY(5px);
+            box-shadow: 0 5px 0 #2c1c10, 0 10px 20px rgba(0,0,0,0.5);
+        }
+
+        /* Loading Spinner - Medieval Style */
+        .loading-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(28, 16, 8, 0.95);
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .loading-spinner {
+            width: 150px;
+            height: 150px;
+            border: 6px solid #5a3e2a;
+            border-top: 6px solid gold;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            box-shadow: 0 0 30px rgba(255,215,0,0.3);
+        }
+
+        .loading-text {
+            font-family: 'Cinzel', serif;
+            font-size: 28px;
+            color: #d4b48c;
+            margin-top: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            letter-spacing: 4px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error Message */
+        .error-message {
+            background: rgba(139,0,0,0.9);
+            border: 3px solid #b8860b;
+            border-radius: 20px;
+            padding: 30px 60px;
+            color: #f3e9d2;
+            font-family: 'Cinzel', serif;
+            font-size: 24px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .book {
+                height: 600px;
+            }
+
+            .chapter-content {
+                columns: 1;
+            }
+
+            .page-content {
+                padding: 40px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .book {
+                height: 500px;
+            }
+
+            .back-button span {
+                display: none;
+            }
+
+            .back-button {
+                padding: 12px 20px;
+            }
+
+            .back-button i {
+                margin: 0;
+            }
+
+            .cover-title {
+                font-size: 36px;
+            }
+
+            .cover-symbol {
+                font-size: 80px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                padding: 0 20px;
+            }
+
+            .logo-main {
+                font-size: 18px;
+            }
+
+            .logo-sub {
+                font-size: 10px;
+            }
+
+            .book {
+                height: 450px;
+            }
+
+            .page-content {
+                padding: 30px 20px;
+            }
+
+            .chapter-title {
+                font-size: 24px;
+            }
+
+            .chapter-content {
+                font-size: 16px;
+            }
+
+            .open-book-btn {
+                padding: 12px 30px;
+                font-size: 18px;
+            }
+
+            .candle-left, .candle-right {
+                display: none;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .book {
+                height: 400px;
+            }
+
+            .cover-title {
+                font-size: 24px;
+            }
+
+            .cover-sub {
+                font-size: 16px;
+                padding: 5px 15px;
+            }
+
+            .cover-symbol {
+                font-size: 60px;
+            }
+
+            .chapter-title {
+                font-size: 20px;
+                padding-left: 15px;
+            }
+
+            .chapter-content {
+                font-size: 14px;
+                line-height: 1.6;
+            }
+
+            .book-title {
+                font-size: 24px;
+                padding: 15px 30px;
+            }
+        }
+
+        /* Decorative Elements */
+        .flourish {
+            position: absolute;
+            font-size: 40px;
+            color: #b8860b;
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .flourish-1 {
+            top: 50px;
+            left: 50px;
+            transform: rotate(-15deg);
+        }
+
+        .flourish-2 {
+            bottom: 50px;
+            right: 50px;
+            transform: rotate(15deg);
+        }
+
+        /* Page Number */
+        .page-number {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            font-family: 'Cinzel', serif;
+            color: #8b4513;
+            font-size: 16px;
+            font-style: italic;
+        }
+
+        /* Bookmark */
+        .bookmark {
+            position: absolute;
+            top: 20px;
+            right: -5px;
+            width: 30px;
+            height: 100px;
+            background: linear-gradient(145deg, #8b0000, #5a0000);
+            border: 2px solid gold;
+            border-radius: 0 10px 10px 0;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+            z-index: 25;
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Background Canvas -->
+    <canvas id="canvas-bg"></canvas>
+
+    <!-- Vintage Header -->
+    <header class="header">
+        <a href="https://senapelan.github.io/Home/kelurahanpadangterubuk.html" class="logo">
+            <div class="logo-img">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
+            </div>
+            <div class="logo-text">
+                <div class="logo-main">Padang Terubuk</div>
+                <div class="logo-sub">Manuskrip Sejarah</div>
+            </div>
+        </a>
+        
+        <a href="https://senapelan.github.io/Home/kelurahanpadangterubuk.html" class="back-button">
+            <i class="fas fa-scroll"></i>
+            <span>KEMBALI KE KELURAHAN</span>
+            <i class="fas fa-crown"></i>
+        </a>
+    </header>
+
+    <!-- Candle Decorations -->
+    <div class="candle-left">
+        <div class="candle-stick"></div>
+        <div class="candle-flame"></div>
+        <div class="candle-smoke"></div>
+    </div>
+    <div class="candle-right">
+        <div class="candle-stick"></div>
+        <div class="candle-flame"></div>
+        <div class="candle-smoke"></div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <h1 class="book-title" id="bookTitle">MEMBACA MANUSKRIP...</h1>
+
+        <div class="book-container">
+            <div class="book closed" id="theBook">
+                <!-- Book Cover -->
+                <div class="book-cover">
+                    <div class="cover-emboss">
+                        <div class="cover-symbol">⚜️</div>
+                        <div class="cover-title" id="coverTitle">BABAD PADANG TERUBUK</div>
+                        <div class="cover-sub">MANUSKRIP KUNO</div>
+                    </div>
+                    <div class="cover-ribbon">
+                        <i class="fas fa-feather-alt"></i> SEJARAH <i class="fas fa-feather-alt"></i>
+                    </div>
+                </div>
+
+                <!-- Book Pages -->
+                <div class="book-pages">
+                    <div class="page-content" id="pageContent">
+                        <!-- Content will be loaded here -->
+                    </div>
+                    <div class="page-number">Folio <span id="pageNum">I</span></div>
+                </div>
+
+                <!-- Book String -->
+                <div class="book-string"></div>
+                <div class="bookmark"></div>
+            </div>
+
+            <!-- Open/Close Button -->
+            <button class="open-book-btn" id="toggleBook">
+                <i class="fas fa-book-open"></i>
+                <span id="toggleText">BUKA BUKU</span>
+                <i class="fas fa-feather"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-container" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">MEMUAT MANUSKRIP...</div>
+    </div>
+
+    <!-- Decorative Flourishes -->
+    <div class="flourish flourish-1">⚜️</div>
+    <div class="flourish flourish-2">⚜️</div>
+
+    <script>
+        // ================= 3D BACKGROUND EFFECT =================
+        function init3DBackground() {
+            const canvas = document.getElementById('canvas-bg');
+            if (!canvas || typeof THREE === 'undefined') return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+
+            // Create floating particles (dust/old paper effect)
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 500;
+            const posArray = new Float32Array(particlesCount * 3);
+            const colorArray = new Float32Array(particlesCount * 3);
+
+            for(let i = 0; i < particlesCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+                posArray[i+1] = (Math.random() - 0.5) * 10;
+                posArray[i+2] = (Math.random() - 0.5) * 10;
+
+                // Warm colors
+                colorArray[i] = 0.9; // R
+                colorArray[i+1] = 0.8; // G
+                colorArray[i+2] = 0.5; // B
+            }
+
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colorArray, 3));
+
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.4,
+                blending: THREE.AdditiveBlending
+            });
+
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+
+            camera.position.z = 5;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                
+                particlesMesh.rotation.y += 0.0002;
+                particlesMesh.rotation.x += 0.0001;
+                
+                renderer.render(scene, camera);
+            }
+
+            animate();
+
+            window.addEventListener('resize', () => {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+            });
+        }
+
+        // Initialize 3D
+        if (typeof THREE !== 'undefined') {
+            init3DBackground();
+        }
+
+        // ================= LOAD DATA FROM GOOGLE SHEETS =================
+        const SPREADSHEET_ID = '1NfodZgDQ8kyGGlWkJbcv57aJO2cY5a1KzPk23Gm4bFg';
+        const SHEET_NAME = 'SEJARAH';
+        const API_KEY = 'AIzaSyD2TubwvM-Ea4gIqJRQbVh6hZzNcf30hZM'; // You need to replace this with your actual API key
+        // Note: For production, use environment variables or backend proxy
+
+        let bookData = {
+            title: 'BABAD PADANG TERUBUK',
+            pages: []
+        };
+
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const pageContent = document.getElementById('pageContent');
+        const bookTitle = document.getElementById('bookTitle');
+        const coverTitle = document.getElementById('coverTitle');
+        const toggleBook = document.getElementById('toggleBook');
+        const theBook = document.getElementById('theBook');
+        const toggleText = document.getElementById('toggleText');
+        const pageNumSpan = document.getElementById('pageNum');
+
+        let isBookOpen = false;
+
+        // Toggle Book
+        toggleBook.addEventListener('click', () => {
+            if (isBookOpen) {
+                theBook.classList.remove('open');
+                theBook.classList.add('closed');
+                toggleText.innerText = 'BUKA BUKU';
+                toggleBook.innerHTML = '<i class="fas fa-book-open"></i><span id="toggleText">BUKA BUKU</span><i class="fas fa-feather"></i>';
+            } else {
+                theBook.classList.remove('closed');
+                theBook.classList.add('open');
+                toggleText.innerText = 'TUTUP BUKU';
+                toggleBook.innerHTML = '<i class="fas fa-book-closed"></i><span id="toggleText">TUTUP BUKU</span><i class="fas fa-feather"></i>';
+            }
+            isBookOpen = !isBookOpen;
+        });
+
+        // Fetch data from Google Sheets
+        async function fetchSejarahData() {
+            try {
+                // Show loading
+                loadingOverlay.style.display = 'flex';
+
+                // Using JSONP approach for Google Sheets public access
+                // Alternatively, use the public CSV export which doesn't require API key
+                const csvUrl = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:csv&sheet=${SHEET_NAME}`;
+                
+                const response = await fetch(csvUrl);
+                const csvText = await response.text();
+                
+                // Parse CSV
+                const rows = csvText.split('\n').map(row => {
+                    // Simple CSV parsing (handles quotes)
+                    const matches = row.match(/(".*?"|[^,]+)(?=\s*,|\s*$)/g);
+                    return matches ? matches.map(cell => cell.replace(/^"|"$/g, '').trim()) : [];
+                });
+
+                if (rows.length < 2) {
+                    throw new Error('Data tidak ditemukan');
+                }
+
+                // Get title from A2
+                bookData.title = rows[1][0] || 'BABAD PADANG TERUBUK';
+                
+                // Get pages from row 2, columns B to Z
+                const pages = rows[1].slice(1).filter(cell => cell && cell.trim() !== '');
+                
+                bookData.pages = pages;
+
+                // Update UI
+                bookTitle.innerHTML = `“${bookData.title}”`;
+                coverTitle.innerText = bookData.title.toUpperCase();
+
+                // Render pages
+                renderPages();
+
+                // Hide loading with fade out
+                setTimeout(() => {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                    }, 500);
+                }, 800);
+
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                
+                // Load fallback data
+                bookData.title = 'BABAD PADANG TERUBUK';
+                bookData.pages = [
+                    "Pada masa pemerintahan Kolonial Belanda, wilayah yang kini dikenal sebagai Kelurahan Padang Terubuk merupakan area perkebunan dan permukiman kecil. Nama 'Padang Terubuk' berasal dari bahasa setempat yang berarti 'padang rumput yang luas' merujuk pada hamparan lahan yang ditumbuhi rerumputan tinggi.",
+                    
+                    "Tahun 1920-an, para perantau dari berbagai daerah mulai berdatangan dan membuka lahan. Mereka berasal dari Minangkabau, Mandailing, dan Jawa. Interaksi antar etnis ini membentuk masyarakat yang heterogen namun harmonis, dengan tradisi musyawarah yang kuat.",
+                    
+                    "Setelah kemerdekaan Indonesia, Padang Terubuk resmi menjadi salah satu kelurahan di Kecamatan Senapelan, Kota Pekanbaru. Perkembangan pesat terjadi pada tahun 1970-an seiring dengan dibukanya akses jalan dan fasilitas umum.",
+                    
+                    "Pada era reformasi, Kelurahan Padang Terubuk mengalami modernisasi di segala bidang. Infrastruktur diperbaiki, pelayanan publik ditingkatkan, dan partisipasi masyarakat dalam pembangunan semakin aktif melalui berbagai lembaga kemasyarakatan.",
+                    
+                    "Memasuki era digital, Padang Terubuk bertransformasi menjadi kelurahan modern dengan sistem pelayanan berbasis teknologi. Namun demikian, nilai-nilai kearifan lokal dan semangat gotong-royong tetap terjaga hingga kini.",
+                    
+                    "Visi Kelurahan Padang Terubuk adalah menjadi pusat pelayanan publik yang unggul dan berdaya saing, dengan misi meningkatkan kualitas sumber daya manusia, memperkuat ekonomi masyarakat, serta melestarikan budaya dan lingkungan."
+                ];
+                
+                renderPages();
+                
+                setTimeout(() => {
+                    loadingOverlay.style.opacity = '0';
+                    setTimeout(() => {
+                        loadingOverlay.style.display = 'none';
+                    }, 500);
+                }, 800);
+            }
+        }
+
+        // Render pages into book format
+        function renderPages() {
+            if (!pageContent) return;
+
+            let html = '';
+            
+            bookData.pages.forEach((pageText, index) => {
+                // Split text into paragraphs
+                const paragraphs = pageText.split('\n').filter(p => p.trim() !== '');
+                
+                html += `
+                    <div class="chapter" id="chapter-${index + 1}">
+                        <h2 class="chapter-title">BAB ${index + 1}</h2>
+                        <div class="chapter-content">
+                            ${paragraphs.map(p => `<p>${p}</p>`).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            pageContent.innerHTML = html;
+
+            // Animate chapters on scroll
+            const chapters = document.querySelectorAll('.chapter');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.3 });
+
+            chapters.forEach(chapter => observer.observe(chapter));
+
+            // Update page number
+            if (pageNumSpan) {
+                pageNumSpan.innerText = `${bookData.pages.length} Lembar`;
+            }
+        }
+
+        // Start fetching data
+        fetchSejarahData();
+
+        // ================= ADDITIONAL MEDIEVAL EFFECTS =================
+        // Add random "aged paper" spots
+        function addAgedSpots() {
+            const spots = document.createElement('style');
+            spots.textContent = `
+                .page-content::after {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: radial-gradient(circle at 20% 30%, rgba(139,69,19,0.1) 0%, transparent 50%),
+                                radial-gradient(circle at 80% 70%, rgba(139,69,19,0.1) 0%, transparent 50%),
+                                radial-gradient(circle at 40% 80%, rgba(139,69,19,0.08) 0%, transparent 40%),
+                                radial-gradient(circle at 90% 20%, rgba(139,69,19,0.08) 0%, transparent 40%);
+                    pointer-events: none;
+                }
+            `;
+            document.head.appendChild(spots);
+        }
+
+        addAgedSpots();
+
+        // Smooth scroll for chapters when clicking on page numbers (optional)
+        // Not implemented to keep focus on the medieval aesthetic
+    </script>
+</body>
+</html>
