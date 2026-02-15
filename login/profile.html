@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Kelurahan & Pegawai · Terintegrasi Spreadsheet</title>
+    <title>Profil Kelurahan & Pegawai</title>
     <!-- Font Awesome 6 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Google Fonts Inter -->
@@ -29,11 +29,9 @@
             margin: 0 auto;
         }
 
-        /* Header Premium */
         .header {
             background: rgba(255, 255, 255, 0.8);
             backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
             border-radius: 60px;
             padding: 16px 28px;
             margin-bottom: 32px;
@@ -69,11 +67,6 @@
             font-size: 1.1rem;
         }
 
-        .user-detail p {
-            color: #4a677e;
-            font-size: 0.85rem;
-        }
-
         .logout-btn {
             background: white;
             border: 1px solid #d0ddee;
@@ -86,21 +79,16 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
 
         .logout-btn:hover {
             background: #f8fafd;
             border-color: #8aabca;
-            transform: translateY(-1px);
-            box-shadow: 0 8px 16px rgba(30, 58, 95, 0.12);
         }
 
-        /* Card */
         .card {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
             border-radius: 48px;
             padding: 32px;
             margin-bottom: 32px;
@@ -121,7 +109,6 @@
             font-size: 1.8rem;
             font-weight: 600;
             color: #172c3c;
-            letter-spacing: -0.02em;
         }
 
         .btn-edit {
@@ -136,12 +123,10 @@
             display: flex;
             align-items: center;
             gap: 8px;
-            font-size: 0.95rem;
         }
 
         .btn-edit:hover {
             background: #e2ecf9;
-            transform: scale(1.02);
         }
 
         .btn-edit.active {
@@ -150,7 +135,6 @@
             border-color: #1e3a5f;
         }
 
-        /* Layout Kelurahan */
         .kelurahan-layout {
             display: flex;
             gap: 32px;
@@ -166,7 +150,7 @@
 
         .foto-preview {
             width: 200px;
-            height: 250px; /* 4:5 */
+            height: 250px;
             border-radius: 32px;
             object-fit: cover;
             background: #eef2f6;
@@ -190,16 +174,9 @@
             width: 100%;
         }
 
-        .btn-upload:not(.disabled):hover {
-            background: #e2ecf9;
-            border-color: #2b4f7a;
-        }
-
         .btn-upload.disabled {
             opacity: 0.4;
             cursor: not-allowed;
-            border-color: #b0c4db;
-            background: #eef2f6;
         }
 
         .info-grid {
@@ -250,7 +227,6 @@
             pointer-events: none;
         }
 
-        /* Pegawai Cards */
         .pegawai-container {
             display: flex;
             flex-direction: column;
@@ -297,7 +273,7 @@
 
         .foto-pegawai-preview {
             width: 140px;
-            height: 175px; /* 4:5 */
+            height: 175px;
             border-radius: 24px;
             object-fit: cover;
             background: #eef2f6;
@@ -326,11 +302,6 @@
             cursor: pointer;
             transition: 0.2s;
             margin-top: 16px;
-        }
-
-        .add-pegawai:not(.disabled):hover {
-            background: rgba(255,255,255,0.9);
-            border-color: #2b4f7a;
         }
 
         .add-pegawai.disabled {
@@ -363,7 +334,6 @@
         .btn-simpan:hover:not(:disabled) {
             background: #143049;
             transform: translateY(-2px);
-            box-shadow: 0 14px 24px rgba(30,58,95,0.3);
         }
 
         .btn-simpan:disabled {
@@ -371,7 +341,6 @@
             cursor: not-allowed;
         }
 
-        /* Modal Crop */
         .modal {
             display: none;
             position: fixed;
@@ -423,7 +392,6 @@
             margin-top: 24px;
         }
 
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 24px;
@@ -438,11 +406,10 @@
             z-index: 1001;
         }
 
-        /* Loading */
         .loading {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.7);
+            background: rgba(255,255,255,0.9);
             backdrop-filter: blur(3px);
             display: none;
             align-items: center;
@@ -460,19 +427,17 @@
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
             <div class="user-info">
-                <div class="user-avatar" id="userInitials">U</div>
+                <div class="user-avatar" id="userInitials"></div>
                 <div class="user-detail">
-                    <h4 id="userFullName">Memuat...</h4>
+                    <h4 id="userFullName"></h4>
                     <p><i class="fas fa-circle" style="color: #2ecc71; font-size: 8px;"></i> Online</p>
                 </div>
             </div>
             <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Keluar</button>
         </div>
 
-        <!-- Card Kelurahan -->
         <div class="card">
             <div class="card-header">
                 <h2><i class="fas fa-building" style="margin-right: 12px; color: #1e3a5f;"></i> Profil Kelurahan</h2>
@@ -480,14 +445,12 @@
             </div>
 
             <div class="kelurahan-layout">
-                <!-- Foto Kelurahan -->
                 <div class="foto-section">
-                    <img src="https://via.placeholder.com/200x250?text=Kelurahan" alt="foto kelurahan" class="foto-preview" id="fotoKelurahanPreview">
+                    <img src="https://via.placeholder.com/200x250?text=Kantor" alt="foto kelurahan" class="foto-preview" id="fotoKelurahanPreview">
                     <button class="btn-upload disabled" id="uploadKelurahanBtn" disabled><i class="fas fa-cloud-upload-alt"></i> Upload Foto (4:5)</button>
                     <input type="file" id="fileKelurahan" accept="image/*" style="display: none;">
                 </div>
 
-                <!-- Fields Kelurahan -->
                 <div class="info-grid" id="kelurahanFields"></div>
             </div>
 
@@ -496,7 +459,6 @@
             </div>
         </div>
 
-        <!-- Card Pegawai -->
         <div class="card">
             <div class="card-header">
                 <h2><i class="fas fa-users" style="margin-right: 12px; color: #1e3a5f;"></i> Data Pegawai</h2>
@@ -505,7 +467,6 @@
 
             <div class="pegawai-container" id="pegawaiContainer"></div>
 
-            <!-- Tombol Tambah Pegawai -->
             <div class="add-pegawai disabled" id="addPegawaiBtn">
                 <i class="fas fa-plus-circle"></i> Tambah Pegawai (0/10)
             </div>
@@ -516,7 +477,6 @@
         </div>
     </div>
 
-    <!-- Modal Crop -->
     <div class="modal" id="cropModal">
         <div class="modal-content">
             <div class="modal-header">
@@ -533,26 +493,20 @@
         </div>
     </div>
 
-    <!-- Toast & Loading -->
     <div class="toast" id="toast">Berhasil disimpan</div>
     <div class="loading" id="loading"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>
 
-    <!-- Cropper JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <script>
-        // ==================== KONFIGURASI APPS SCRIPT ====================
-        // GANTI URL INI DENGAN URL APPS SCRIPT YANG SUDAH ANDA DEPLOY!
+        // ==================== KONFIGURASI ====================
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgWFDPDi1NPDGtDJeazrOEo4C26ldv-2QfEPtBrwnsDMm40I17PCgUnTR9KSZNr0dplw/exec';
-        
         const SPREADSHEET_ID = '1cgHQZoB_vm7R7EgnS4C_00h5buJooFX7fkz0FMjODgU';
         const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
 
         // ==================== CEK LOGIN ====================
-        // Perbaikan: cek login dengan benar tanpa redirect loop
-        let currentUser = localStorage.getItem('loggedInUser');
+        const currentUser = localStorage.getItem('loggedInUser');
         
-        // Jika tidak ada user login, redirect ke halaman login
         if (!currentUser) {
             window.location.replace('https://senapelan.github.io/Home/login/login.html');
         }
@@ -560,10 +514,8 @@
         // ==================== STATE ====================
         let isEditModeKelurahan = false;
         let isEditModePegawai = false;
-
         let kelurahanData = {};
-        let pegawaiList = []; // max 10
-
+        let pegawaiList = [];
         let cropper = null;
         let currentCropResolve = null;
 
@@ -592,87 +544,30 @@
             document.getElementById('loading').style.display = show ? 'flex' : 'none';
         }
 
-        // Inisialisasi user di header
-        document.getElementById('userInitials').innerText = currentUser ? currentUser.charAt(0).toUpperCase() : 'U';
-        document.getElementById('userFullName').innerText = currentUser || 'User';
+        // Tampilkan user di header
+        document.getElementById('userInitials').innerText = currentUser.charAt(0).toUpperCase();
+        document.getElementById('userFullName').innerText = currentUser;
 
-        // ==================== LOAD DATA DARI SPREADSHEET ====================
-        async function loadDataFromSheet() {
+        // ==================== LOAD DATA ====================
+        async function loadData() {
             showLoading(true);
             try {
-                // Untuk demo, kita gunakan data dummy dulu jika Apps Script belum di-deploy
-                // Hapus bagian ini jika Apps Script sudah siap
-                if (APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_ID')) {
-                    console.log('Menggunakan data dummy (Apps Script belum dikonfigurasi)');
-                    setTimeout(() => {
-                        kelurahanData = {
-                            nama_kelurahan: 'Kelurahan Contoh',
-                            alamat_kelurahan: 'Jl. Contoh No. 123',
-                            rt: '001',
-                            rw: '002',
-                            kelurahan: 'Contoh',
-                            kecamatan: 'Contoh',
-                            kota: 'Jakarta',
-                            provinsi: 'DKI Jakarta',
-                            kode_pos: '12345',
-                            telp_kantor: '021-1234567'
-                        };
-                        pegawaiList = [
-                            {
-                                nama_pegawai1: 'Budi Santoso',
-                                jabatan1: 'Lurah',
-                                nip1: '198001012010011001',
-                                pangkat_gol1: 'Pembina IV/a',
-                                no_hp1: '08123456789'
-                            }
-                        ];
-                        renderSemua();
-                        setModeKelurahan(false);
-                        setModePegawai(false);
-                        showLoading(false);
-                    }, 1000);
-                    return;
-                }
-
-                // Panggil Apps Script dengan method GET
-                const url = `${APPS_SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(currentUser)}&action=get`;
-                const response = await fetch(url);
+                const response = await fetch(`${APPS_SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(currentUser)}&action=get`);
                 const result = await response.json();
                 
                 if (result.status === 'success') {
                     kelurahanData = result.data.kelurahan || {};
                     pegawaiList = result.data.pegawai || [];
                 } else {
-                    // Sheet baru atau error, buat data kosong
+                    // Sheet baru, data kosong
                     kelurahanData = {};
                     pegawaiList = [];
-                    showToast('Sheet baru dibuat untuk user ini', false);
                 }
             } catch (error) {
-                console.error('Error loading data:', error);
-                showToast('Gagal memuat data dari server, menggunakan data demo', false);
-                // Data dummy untuk demo
-                kelurahanData = {
-                    nama_kelurahan: 'Kelurahan ' + currentUser,
-                    alamat_kelurahan: 'Jl. Contoh No. 123',
-                    rt: '001',
-                    rw: '002',
-                    kelurahan: 'Contoh',
-                    kecamatan: 'Contoh',
-                    kota: 'Jakarta',
-                    provinsi: 'DKI Jakarta',
-                    kode_pos: '12345',
-                    telp_kantor: '021-1234567'
-                };
-                pegawaiList = [
-                    {
-                        nama_pegawai1: 'Budi Santoso',
-                        jabatan1: 'Lurah',
-                        nip1: '198001012010011001',
-                        pangkat_gol1: 'Pembina IV/a',
-                        no_hp1: '08123456789'
-                    }
-                ];
+                console.error('Error:', error);
+                showToast('Gagal memuat data', false);
+                kelurahanData = {};
+                pegawaiList = [];
             } finally {
                 renderSemua();
                 setModeKelurahan(false);
@@ -681,61 +576,36 @@
             }
         }
 
-        // ==================== SIMPAN KE SPREADSHEET ====================
-        async function saveToSheet() {
+        // ==================== SIMPAN DATA ====================
+        async function saveData() {
             showLoading(true);
             try {
-                // Untuk demo, jika Apps Script belum di-deploy
-                if (APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_ID')) {
-                    setTimeout(() => {
-                        showToast('Data berhasil disimpan (mode demo)');
-                        showLoading(false);
-                    }, 500);
-                    return;
-                }
-
-                const payload = {
-                    spreadsheetId: SPREADSHEET_ID,
-                    sheetName: currentUser,
-                    action: 'save',
-                    kelurahan: kelurahanData,
-                    pegawai: pegawaiList
-                };
-
-                const response = await fetch(APPS_SCRIPT_URL, {
+                await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
                     mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        spreadsheetId: SPREADSHEET_ID,
+                        sheetName: currentUser,
+                        action: 'save',
+                        kelurahan: kelurahanData,
+                        pegawai: pegawaiList
+                    })
                 });
-
-                showToast('Data berhasil disimpan ke spreadsheet');
+                showToast('Data berhasil disimpan');
             } catch (error) {
                 console.error('Error saving:', error);
-                showToast('Gagal menyimpan ke spreadsheet', false);
+                showToast('Gagal menyimpan data', false);
             } finally {
                 showLoading(false);
             }
         }
 
-        // ==================== UPLOAD FOTO KE DRIVE ====================
-        async function uploadFotoToDrive(blob, fileName) {
+        // ==================== UPLOAD FOTO ====================
+        async function uploadFoto(blob, fileName) {
             showLoading(true);
-            
-            // Untuk demo, jika Apps Script belum di-deploy
-            if (APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_ID')) {
-                return new Promise((resolve) => {
-                    setTimeout(() => {
-                        const dummyUrl = URL.createObjectURL(blob);
-                        showLoading(false);
-                        showToast('Foto berhasil diupload (mode demo)');
-                        resolve(dummyUrl);
-                    }, 1000);
-                });
-            }
-
             const formData = new FormData();
             formData.append('folderId', DRIVE_FOLDER_ID);
             formData.append('fileName', fileName);
@@ -750,7 +620,7 @@
                 if (result.status === 'success') {
                     return result.thumbnailLink;
                 } else {
-                    throw new Error(result.message || 'Upload gagal');
+                    throw new Error('Upload gagal');
                 }
             } catch (error) {
                 console.error('Upload error:', error);
@@ -761,7 +631,7 @@
             }
         }
 
-        // ==================== RENDER FUNCTIONS ====================
+        // ==================== RENDER ====================
         function renderSemua() {
             renderKelurahanFields();
             renderPegawaiCards();
@@ -789,12 +659,10 @@
             });
             document.getElementById('kelurahanFields').innerHTML = html;
 
-            // Foto preview
             if (kelurahanData.link_foto_kelurahan) {
                 document.getElementById('fotoKelurahanPreview').src = kelurahanData.link_foto_kelurahan;
             }
 
-            // Update status tombol
             document.getElementById('uploadKelurahanBtn').disabled = !isEditModeKelurahan;
             document.getElementById('uploadKelurahanBtn').classList.toggle('disabled', !isEditModeKelurahan);
             document.getElementById('simpanKelurahanBtn').disabled = !isEditModeKelurahan;
@@ -802,11 +670,11 @@
 
         function renderPegawaiCards() {
             const container = document.getElementById('pegawaiContainer');
-            let html = '';
-
+            
             if (pegawaiList.length === 0) {
-                html = '<div style="text-align: center; padding: 40px; color: #4a677e;">Belum ada data pegawai. Klik "Edit Semua" untuk menambah.</div>';
+                container.innerHTML = '<div style="text-align: center; padding: 40px; color: #4a677e;">Belum ada data pegawai</div>';
             } else {
+                let html = '';
                 pegawaiList.forEach((pegawai, index) => {
                     const fotoLink = pegawai.link_foto || 'https://via.placeholder.com/140x175?text=Pegawai';
                     html += `
@@ -850,11 +718,10 @@
                         </div>
                     `;
                 });
+                container.innerHTML = html;
             }
 
-            container.innerHTML = html;
-
-            // Attach event listeners untuk tombol upload
+            // Attach event listeners
             pegawaiList.forEach((_, index) => {
                 const uploadBtn = document.getElementById(`uploadPegBtn_${index}`);
                 const fileInput = document.getElementById(`filePeg_${index}`);
@@ -867,7 +734,6 @@
                 }
             });
 
-            // Update tombol tambah pegawai
             const addBtn = document.getElementById('addPegawaiBtn');
             addBtn.innerHTML = `<i class="fas fa-plus-circle"></i> Tambah Pegawai (${pegawaiList.length}/10)`;
             
@@ -936,7 +802,6 @@
         document.getElementById('cancelCropBtn').addEventListener('click', closeCropModal);
 
         // ==================== HANDLE UPLOAD ====================
-        // Upload foto kelurahan
         document.getElementById('uploadKelurahanBtn').addEventListener('click', () => {
             if (isEditModeKelurahan) {
                 document.getElementById('fileKelurahan').click();
@@ -948,10 +813,10 @@
                 openCropModal(URL.createObjectURL(e.target.files[0]), async (croppedBlob) => {
                     try {
                         const fileName = `kelurahan_${currentUser}_${Date.now()}.jpg`;
-                        const thumbnailLink = await uploadFotoToDrive(croppedBlob, fileName);
-                        kelurahanData.link_foto_kelurahan = thumbnailLink;
-                        document.getElementById('fotoKelurahanPreview').src = thumbnailLink;
-                        showToast('Foto kelurahan berhasil diupload');
+                        const link = await uploadFoto(croppedBlob, fileName);
+                        kelurahanData.link_foto_kelurahan = link;
+                        document.getElementById('fotoKelurahanPreview').src = link;
+                        showToast('Foto berhasil diupload');
                     } catch (error) {
                         console.error(error);
                     }
@@ -959,21 +824,18 @@
             }
         });
 
-        // Upload foto pegawai
         async function handlePegawaiFileSelect(e, index) {
             if (e.target.files.length) {
                 openCropModal(URL.createObjectURL(e.target.files[0]), async (croppedBlob) => {
                     try {
                         const fileName = `pegawai_${currentUser}_${index}_${Date.now()}.jpg`;
-                        const thumbnailLink = await uploadFotoToDrive(croppedBlob, fileName);
+                        const link = await uploadFoto(croppedBlob, fileName);
                         
-                        // Update data pegawai
                         if (!pegawaiList[index]) pegawaiList[index] = {};
-                        pegawaiList[index].link_foto = thumbnailLink;
+                        pegawaiList[index].link_foto = link;
                         
-                        // Update preview
-                        document.getElementById(`previewPeg_${index}`).src = thumbnailLink;
-                        showToast('Foto pegawai berhasil diupload');
+                        document.getElementById(`previewPeg_${index}`).src = link;
+                        showToast('Foto berhasil diupload');
                     } catch (error) {
                         console.error(error);
                     }
@@ -981,9 +843,8 @@
             }
         }
 
-        // ==================== SIMPAN DATA ====================
+        // ==================== SIMPAN ====================
         document.getElementById('simpanKelurahanBtn').addEventListener('click', async () => {
-            // Ambil data dari input
             const fields = [
                 'nama_kelurahan', 'alamat_kelurahan', 'rt', 'rw', 'kelurahan',
                 'kecamatan', 'kota', 'provinsi', 'kode_pos', 'telp_kantor'
@@ -994,12 +855,11 @@
                 if (el) kelurahanData[field] = el.value;
             });
 
-            await saveToSheet();
+            await saveData();
             setModeKelurahan(false);
         });
 
         document.getElementById('simpanSemuaPegawaiBtn').addEventListener('click', async () => {
-            // Ambil data dari semua input pegawai
             for (let i = 0; i < pegawaiList.length; i++) {
                 pegawaiList[i] = {
                     nama_pegawai1: document.getElementById(`peg_${i}_nama`)?.value || '',
@@ -1011,7 +871,7 @@
                 };
             }
 
-            await saveToSheet();
+            await saveData();
             setModePegawai(false);
         });
 
@@ -1029,7 +889,7 @@
             window.location.href = 'https://senapelan.github.io/Home/login/login.html';
         });
 
-        // ==================== EDIT MODE TOGGLES ====================
+        // ==================== EDIT MODE ====================
         document.getElementById('editKelurahanBtn').addEventListener('click', () => {
             setModeKelurahan(!isEditModeKelurahan);
         });
@@ -1038,10 +898,9 @@
             setModePegawai(!isEditModePegawai);
         });
 
-        // ==================== INITIAL LOAD ====================
-        // Pastikan currentUser ada sebelum load data
+        // ==================== START ====================
         if (currentUser) {
-            loadDataFromSheet();
+            loadData();
         }
     </script>
 </body>
