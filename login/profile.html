@@ -250,7 +250,7 @@
             box-shadow: none;
         }
 
-        /* Photo Upload dengan Crop 4:5 */
+        /* Photo Upload */
         .photo-container {
             position: relative;
         }
@@ -264,7 +264,6 @@
             position: relative;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: #f5f5f5;
         }
 
         .photo-preview:hover {
@@ -297,103 +296,6 @@
 
         .photo-upload {
             display: none;
-        }
-
-        /* Photo Upload Progress */
-        .photo-upload-progress {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            height: 4px;
-            background: rgba(255,255,255,0.3);
-            display: none;
-        }
-
-        .photo-upload-progress-bar {
-            height: 100%;
-            background: #28a745;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .photo-upload-status {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 20px;
-            font-size: 12px;
-            display: none;
-            z-index: 10;
-        }
-
-        /* Crop Modal */
-        .crop-modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            z-index: 10001;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .crop-modal.active {
-            display: flex;
-        }
-
-        .crop-container {
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            max-width: 90%;
-            max-height: 80vh;
-            overflow: hidden;
-        }
-
-        .crop-image {
-            max-width: 100%;
-            max-height: 60vh;
-        }
-
-        .crop-controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-
-        .crop-btn {
-            padding: 12px 25px;
-            border: none;
-            border-radius: 10px;
-            font-size: 1em;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .crop-btn.save {
-            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
-            color: white;
-        }
-
-        .crop-btn.cancel {
-            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-            color: white;
-        }
-
-        .crop-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
         }
 
         /* Pegawai Cards */
@@ -432,8 +334,6 @@
             border: 2px solid #f0f0f0;
             cursor: pointer;
             position: relative;
-            background: #f5f5f5;
-            aspect-ratio: 4/5;
         }
 
         .pegawai-photo img {
@@ -443,7 +343,7 @@
         }
 
         .pegawai-photo:hover::after {
-            content: '✂️ Crop';
+            content: '📷';
             position: absolute;
             top: 0;
             left: 0;
@@ -454,8 +354,7 @@
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 24px;
         }
 
         .pegawai-info {
@@ -592,8 +491,6 @@
             }
         }
     </style>
-    <!-- Tambahkan Cropper.js -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css">
 </head>
 <body>
     <!-- Animated background -->
@@ -604,17 +501,6 @@
     <!-- Loading Overlay -->
     <div id="loadingOverlay" class="loading-overlay" style="display: none;">
         <div class="loading-spinner"></div>
-    </div>
-
-    <!-- Crop Modal -->
-    <div id="cropModal" class="crop-modal">
-        <div class="crop-container">
-            <img id="cropImage" class="crop-image" src="">
-        </div>
-        <div class="crop-controls">
-            <button class="crop-btn cancel" onclick="cancelCrop()">Batal</button>
-            <button class="crop-btn save" onclick="saveCrop()">Simpan & Upload</button>
-        </div>
     </div>
 
     <!-- Main Container -->
@@ -648,17 +534,13 @@
                         <!-- Fields akan diisi oleh JavaScript -->
                     </div>
                     <div class="photo-container">
-                        <div class="photo-preview" onclick="openCrop('kelurahan')">
+                        <div class="photo-preview" onclick="document.getElementById('kelurahanPhoto').click()">
                             <img id="kelurahanPhotoPreview" src="https://via.placeholder.com/400x500?text=Upload+Foto" alt="Preview">
                             <div class="photo-overlay">
-                                <i class="fas fa-crop-alt"></i> Klik untuk crop & upload
+                                <i class="fas fa-camera"></i> Klik untuk upload
                             </div>
-                            <div class="photo-upload-progress" id="kelurahanPhotoProgress">
-                                <div class="photo-upload-progress-bar" id="kelurahanPhotoProgressBar"></div>
-                            </div>
-                            <div class="photo-upload-status" id="kelurahanPhotoStatus">Mengupload...</div>
                         </div>
-                        <input type="file" id="kelurahanPhoto" class="photo-upload" accept="image/*" onchange="handleFileSelect(this, 'kelurahan')">
+                        <input type="file" id="kelurahanPhoto" class="photo-upload" accept="image/*" onchange="handlePhotoUpload(this, 'kelurahan')">
                     </div>
                 </div>
                 <button class="btn-simpan" onclick="simpanDataKelurahan()" id="simpanKelurahanBtn" style="display: none;">
@@ -686,12 +568,10 @@
 
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Cropper.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
 
     <script>
-    // Konfigurasi
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF2KWHY5gERDKNZMqLDG99yB7uUvv42Y2rNcb2xt3y2QNnX1zlibJ1LmZRGUW4qWkJYg/exec';
+    // Konfigurasi - PASTIKAN URL INI BENAR
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz1C-l32_j6Rbd49HBT8s0nfrnAvMMAIuw64Cg_Mns8v1Oqfd9lhVcBO1wxXGf40YwxRg/exec';
     const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
     
     // State
@@ -700,13 +580,6 @@
     let isEditModePegawai = false;
     let kelurahanData = {};
     let pegawaiData = [];
-    let activeUploads = 0;
-    
-    // Crop state
-    let currentCropper = null;
-    let currentCropType = null;
-    let currentCropIndex = null;
-    let currentCropFile = null;
 
     // Field definitions
     const kelurahanFields = [
@@ -750,7 +623,10 @@
         document.getElementById('userName').textContent = username;
         document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
         
+        // Coba load dari cache dulu
         loadFromCache();
+        
+        // Then load from server
         loadUserData();
     }
 
@@ -764,6 +640,7 @@
                 pegawaiData = data.pegawai || [];
                 renderKelurahanData();
                 renderPegawaiData();
+                console.log('Loaded from cache');
             }
         } catch (e) {
             console.error('Cache error:', e);
@@ -784,60 +661,42 @@
         }
     }
 
-    // Load data dari server
+    // Load data user dari spreadsheet
     async function loadUserData() {
         showLoading(true);
         
         try {
-            const callbackName = 'jsonp_callback_' + Date.now();
-            window[callbackName] = function(response) {
-                try {
-                    if (response.success && response.data) {
-                        kelurahanData = response.data.kelurahan || {};
-                        pegawaiData = response.data.pegawai || [];
-                        
-                        kelurahanFields.forEach(field => {
-                            if (!kelurahanData[field.id]) {
-                                kelurahanData[field.id] = '';
-                            }
-                        });
-                        if (!kelurahanData.link_foto_kelurahan) {
-                            kelurahanData.link_foto_kelurahan = '';
-                        }
-                        
-                        saveToCache();
-                        renderKelurahanData();
-                        renderPegawaiData();
-                    } else {
-                        showAlert('Gagal memuat data: ' + response.message, 'error');
+            const response = await fetch(`${APPS_SCRIPT_URL}?action=loadData&username=${encodeURIComponent(currentUser)}`);
+            const data = await response.json();
+            
+            console.log('Data received:', data);
+            
+            if (data.success && data.data) {
+                kelurahanData = data.data.kelurahan || {};
+                pegawaiData = data.data.pegawai || [];
+                
+                // Inisialisasi data kosong untuk field yang tidak ada
+                kelurahanFields.forEach(field => {
+                    if (!kelurahanData[field.id]) {
+                        kelurahanData[field.id] = '';
                     }
-                } catch (e) {
-                    console.error('Error processing response:', e);
-                } finally {
-                    showLoading(false);
-                    delete window[callbackName];
-                    if (script) script.remove();
+                });
+                if (!kelurahanData.link_foto_kelurahan) {
+                    kelurahanData.link_foto_kelurahan = '';
                 }
-            };
-            
-            const script = document.createElement('script');
-            const url = new URL(APPS_SCRIPT_URL);
-            url.searchParams.set('action', 'loadData');
-            url.searchParams.set('username', currentUser);
-            url.searchParams.set('callback', callbackName);
-            
-            script.src = url.toString();
-            document.body.appendChild(script);
-            
-            setTimeout(() => {
-                if (window[callbackName]) {
-                    window[callbackName]({ success: false, message: 'Timeout' });
-                }
-            }, 10000);
-            
+                
+                // Save to cache
+                saveToCache();
+                
+                renderKelurahanData();
+                renderPegawaiData();
+            } else {
+                showAlert('Gagal memuat data: ' + data.message, 'error');
+            }
         } catch (error) {
             console.error('Error loading data:', error);
             showAlert('Gagal memuat data', 'error');
+        } finally {
             showLoading(false);
         }
     }
@@ -889,10 +748,14 @@
             }
         });
         
+        // Update foto preview
         if (kelurahanData.link_foto_kelurahan) {
             document.getElementById('kelurahanPhotoPreview').src = kelurahanData.link_foto_kelurahan;
+        } else {
+            document.getElementById('kelurahanPhotoPreview').src = 'https://via.placeholder.com/400x500?text=Upload+Foto';
         }
         
+        // Update tombol edit
         document.getElementById('editKelurahanText').textContent = isEditModeKelurahan ? 'Batal' : 'Edit Data';
         document.getElementById('simpanKelurahanBtn').style.display = isEditModeKelurahan ? 'block' : 'none';
     }
@@ -923,12 +786,9 @@
                 
                 card.innerHTML = `
                     <div class="pegawai-header">
-                        <div class="pegawai-photo" onclick="${isEditModePegawai ? `openCrop('pegawai', ${index})` : ''}">
+                        <div class="pegawai-photo" onclick="${isEditModePegawai ? `document.getElementById('pegawaiPhoto${index}').click()` : ''}">
                             <img src="${pegawai.link_foto || 'https://via.placeholder.com/80x100?text=Upload'}" alt="Foto" id="pegawaiPhotoImg${index}">
-                            <div class="photo-upload-progress" id="pegawaiPhotoProgress${index}" style="display: none;">
-                                <div class="photo-upload-progress-bar" id="pegawaiPhotoProgressBar${index}"></div>
-                            </div>
-                            <div class="photo-upload-status" id="pegawaiPhotoStatus${index}" style="display: none;">Mengupload...</div>
+                            <input type="file" id="pegawaiPhoto${index}" class="photo-upload" accept="image/*" onchange="handlePhotoUpload(this, 'pegawai', ${index})" ${isEditModePegawai ? '' : 'disabled'}>
                         </div>
                         <div class="pegawai-info">
                             ${fields}
@@ -942,16 +802,18 @@
             });
         }
         
+        // Update tombol edit dan tambah
         document.getElementById('editPegawaiText').textContent = isEditModePegawai ? 'Batal' : 'Edit Data';
         document.getElementById('tambahPegawaiBtn').style.display = (pegawaiData.length < 10 && isEditModePegawai) ? 'block' : 'none';
     }
 
-    // Toggle edit mode
+    // Toggle edit mode kelurahan
     function toggleEditKelurahan() {
         isEditModeKelurahan = !isEditModeKelurahan;
         renderKelurahanData();
     }
 
+    // Toggle edit mode pegawai
     function toggleEditPegawai() {
         isEditModePegawai = !isEditModePegawai;
         renderPegawaiData();
@@ -977,316 +839,143 @@
         renderPegawaiData();
     }
 
-    // Fungsi crop
-    function openCrop(type, index = null) {
-        if ((type === 'kelurahan' && !isEditModeKelurahan) || 
-            (type === 'pegawai' && !isEditModePegawai)) {
-            showAlert('Aktifkan mode edit terlebih dahulu', 'error');
+    // Fungsi untuk crop gambar dengan rasio 4:5
+    function cropImageToRatio(file, targetRatio = 4/5) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    // Hitung dimensi crop
+                    let sourceWidth = img.width;
+                    let sourceHeight = img.height;
+                    let sourceX = 0;
+                    let sourceY = 0;
+                    
+                    const currentRatio = sourceWidth / sourceHeight;
+                    
+                    if (currentRatio > targetRatio) {
+                        // Gambar terlalu lebar
+                        sourceWidth = sourceHeight * targetRatio;
+                        sourceX = (img.width - sourceWidth) / 2;
+                    } else {
+                        // Gambar terlalu tinggi
+                        sourceHeight = sourceWidth / targetRatio;
+                        sourceY = (img.height - sourceHeight) / 2;
+                    }
+                    
+                    // Buat canvas untuk crop
+                    const canvas = document.createElement('canvas');
+                    canvas.width = 400; // Lebar output
+                    canvas.height = 500; // Tinggi output (rasio 4:5)
+                    
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(
+                        img, 
+                        sourceX, sourceY, sourceWidth, sourceHeight,
+                        0, 0, canvas.width, canvas.height
+                    );
+                    
+                    // Konversi ke blob
+                    canvas.toBlob((blob) => {
+                        resolve(blob);
+                    }, 'image/jpeg', 0.8); // Kompresi 80%
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Handle photo upload
+    async function handlePhotoUpload(input, type, index = null) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        // Validasi ukuran (max 2MB)
+        if (file.size > 2 * 1024 * 1024) {
+            showAlert('Ukuran file maksimal 2MB', 'error');
             return;
         }
         
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.onchange = function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                if (file.size > 10 * 1024 * 1024) {
-                    showAlert('Ukuran file maksimal 10MB', 'error');
-                    return;
-                }
-                
-                currentCropType = type;
-                currentCropIndex = index;
-                currentCropFile = file;
-                
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const image = document.getElementById('cropImage');
-                    image.src = e.target.result;
-                    
-                    document.getElementById('cropModal').classList.add('active');
-                    
-                    setTimeout(() => {
-                        if (currentCropper) {
-                            currentCropper.destroy();
-                        }
-                        
-                        currentCropper = new Cropper(image, {
-                            aspectRatio: 4 / 5,
-                            viewMode: 1,
-                            dragMode: 'move',
-                            autoCropArea: 1,
-                            restore: false,
-                            guides: true,
-                            center: true,
-                            highlight: false,
-                            cropBoxMovable: true,
-                            cropBoxResizable: true,
-                            toggleDragModeOnDblclick: false,
-                        });
-                    }, 100);
-                };
-                reader.readAsDataURL(file);
-            }
-        };
-        input.click();
-    }
-
-    function cancelCrop() {
-        document.getElementById('cropModal').classList.remove('active');
-        if (currentCropper) {
-            currentCropper.destroy();
-            currentCropper = null;
+        // Validasi tipe file
+        if (!file.type.startsWith('image/')) {
+            showAlert('File harus berupa gambar', 'error');
+            return;
         }
-    }
-
-    async function saveCrop() {
-        if (!currentCropper) return;
+        
+        showLoading(true);
         
         try {
-            showLoading(true);
+            // Crop gambar ke rasio 4:5
+            const croppedBlob = await cropImageToRatio(file);
             
-            const canvas = currentCropper.getCroppedCanvas({
-                width: 800,
-                height: 1000,
-                imageSmoothingEnabled: true,
-                imageSmoothingQuality: 'high',
-            });
-            
-            const blob = await new Promise(resolve => {
-                canvas.toBlob(resolve, 'image/jpeg', 0.7);
-            });
-            
-            cancelCrop();
-            
-            const previewUrl = canvas.toDataURL('image/jpeg');
-            if (currentCropType === 'kelurahan') {
+            // Preview lokal
+            const previewUrl = URL.createObjectURL(croppedBlob);
+            if (type === 'kelurahan') {
                 document.getElementById('kelurahanPhotoPreview').src = previewUrl;
-            } else if (currentCropIndex !== null) {
-                const img = document.getElementById(`pegawaiPhotoImg${currentCropIndex}`);
-                if (img) img.src = previewUrl;
+            } else if (index !== null) {
+                document.getElementById(`pegawaiPhotoImg${index}`).src = previewUrl;
             }
             
-            // Upload dengan chunking
-            await uploadPhotoChunked(blob, currentCropType, currentCropIndex);
+            // Konversi ke base64
+            const reader = new FileReader();
+            reader.readAsDataURL(croppedBlob);
             
-            showLoading(false);
-            
-        } catch (error) {
-            console.error('Crop error:', error);
-            showAlert('Gagal memproses foto', 'error');
-            showLoading(false);
-        }
-    }
-
-    // Progress functions
-    function showUploadProgress(type, index = null, show = true) {
-        let progressId, statusId;
-        
-        if (type === 'kelurahan') {
-            progressId = 'kelurahanPhotoProgress';
-            statusId = 'kelurahanPhotoStatus';
-        } else {
-            progressId = `pegawaiPhotoProgress${index}`;
-            statusId = `pegawaiPhotoStatus${index}`;
-        }
-        
-        const progressEl = document.getElementById(progressId);
-        const statusEl = document.getElementById(statusId);
-        
-        if (progressEl && statusEl) {
-            if (show) {
-                progressEl.style.display = 'block';
-                statusEl.style.display = 'block';
-            } else {
-                progressEl.style.display = 'none';
-                statusEl.style.display = 'none';
-            }
-        }
-    }
-
-    function updateUploadProgress(type, index = null, percent) {
-        let progressBarId;
-        
-        if (type === 'kelurahan') {
-            progressBarId = 'kelurahanPhotoProgressBar';
-        } else {
-            progressBarId = `pegawaiPhotoProgressBar${index}`;
-        }
-        
-        const progressBar = document.getElementById(progressBarId);
-        if (progressBar) {
-            progressBar.style.width = percent + '%';
-        }
-    }
-
-    // UPLOAD DENGAN CHUNKING - SOLUSI UNTUK NETWORK ERROR
-    async function uploadPhotoChunked(blob, type, index = null) {
-        showUploadProgress(type, index, true);
-        updateUploadProgress(type, index, 5);
-        
-        activeUploads++;
-        
-        try {
-            // Konversi blob ke array buffer
-            const arrayBuffer = await blob.arrayBuffer();
-            const uint8Array = new Uint8Array(arrayBuffer);
-            
-            // Tentukan ukuran chunk (500KB per chunk)
-            const CHUNK_SIZE = 500 * 1024; // 500KB
-            const totalChunks = Math.ceil(uint8Array.length / CHUNK_SIZE);
-            
-            console.log(`Total chunks: ${totalChunks}, Total size: ${uint8Array.length} bytes`);
-            
-            // Buat ID unik untuk upload ini
-            const uploadId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            // Upload setiap chunk
-            for (let i = 0; i < totalChunks; i++) {
-                const start = i * CHUNK_SIZE;
-                const end = Math.min(start + CHUNK_SIZE, uint8Array.length);
-                const chunk = uint8Array.slice(start, end);
+            reader.onload = async function() {
+                const base64Data = reader.result;
                 
-                // Konversi chunk ke base64
-                const chunkBase64 = btoa(String.fromCharCode.apply(null, chunk));
-                
-                updateUploadProgress(type, index, 5 + (i / totalChunks) * 80);
-                
-                // Upload chunk
-                await uploadChunk(uploadId, chunkBase64, i, totalChunks, type, index);
-                
-                console.log(`Chunk ${i+1}/${totalChunks} uploaded`);
-            }
-            
-            updateUploadProgress(type, index, 85);
-            
-            // Finalisasi upload
-            const result = await finalizeUpload(uploadId, type, index);
-            
-            updateUploadProgress(type, index, 95);
-            
-            if (result.success) {
+                // Tentukan nama file
+                let filename;
                 if (type === 'kelurahan') {
-                    kelurahanData.link_foto_kelurahan = result.data.link;
-                } else if (index !== null && pegawaiData[index]) {
-                    pegawaiData[index].link_foto = result.data.link;
+                    filename = `foto_kelurahan_${currentUser}_${Date.now()}.jpg`;
+                } else {
+                    filename = `foto_pegawai${index + 1}_${currentUser}_${Date.now()}.jpg`;
                 }
                 
-                saveToCache();
-                showAlert('Foto berhasil diupload', 'success');
-                updateUploadProgress(type, index, 100);
+                // Upload menggunakan fetch
+                const formData = new FormData();
+                formData.append('action', 'uploadPhoto');
+                formData.append('file', base64Data);
+                formData.append('filename', filename);
+                formData.append('type', type);
+                formData.append('index', index || '');
+                formData.append('username', currentUser);
                 
-                setTimeout(() => {
-                    showUploadProgress(type, index, false);
-                }, 1000);
-            } else {
-                throw new Error(result.message || 'Upload failed');
-            }
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    const link = result.data.link;
+                    
+                    if (type === 'kelurahan') {
+                        kelurahanData.link_foto_kelurahan = link;
+                    } else if (index !== null && pegawaiData[index]) {
+                        pegawaiData[index].link_foto = link;
+                    }
+                    
+                    saveToCache();
+                    showAlert('Foto berhasil diupload', 'success');
+                } else {
+                    showAlert('Gagal upload foto: ' + result.message, 'error');
+                }
+            };
             
         } catch (error) {
-            console.error('Chunked upload error:', error);
-            showAlert('Gagal upload foto: ' + error.message, 'error');
-            showUploadProgress(type, index, false);
+            console.error('Error processing photo:', error);
+            showAlert('Gagal memproses foto', 'error');
         } finally {
-            activeUploads--;
+            showLoading(false);
         }
-    }
-
-    // Upload satu chunk
-    function uploadChunk(uploadId, chunkBase64, chunkIndex, totalChunks, type, index) {
-        return new Promise((resolve, reject) => {
-            const callbackName = 'chunk_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            window[callbackName] = function(response) {
-                delete window[callbackName];
-                if (script) script.remove();
-                clearTimeout(timeoutId);
-                
-                if (response.success) {
-                    resolve(response);
-                } else {
-                    reject(new Error(response.message || 'Chunk upload failed'));
-                }
-            };
-            
-            const script = document.createElement('script');
-            const url = new URL(APPS_SCRIPT_URL);
-            url.searchParams.set('action', 'uploadChunk');
-            url.searchParams.set('uploadId', uploadId);
-            url.searchParams.set('chunk', chunkBase64);
-            url.searchParams.set('chunkIndex', chunkIndex.toString());
-            url.searchParams.set('totalChunks', totalChunks.toString());
-            url.searchParams.set('type', type);
-            url.searchParams.set('index', index !== null ? index.toString() : '');
-            url.searchParams.set('username', currentUser);
-            url.searchParams.set('callback', callbackName);
-            
-            script.src = url.toString();
-            script.onerror = () => {
-                delete window[callbackName];
-                script.remove();
-                clearTimeout(timeoutId);
-                reject(new Error('Network error on chunk ' + chunkIndex));
-            };
-            
-            document.body.appendChild(script);
-            
-            const timeoutId = setTimeout(() => {
-                if (window[callbackName]) {
-                    delete window[callbackName];
-                    script.remove();
-                    reject(new Error('Chunk upload timeout'));
-                }
-            }, 30000);
-        });
-    }
-
-    // Finalisasi upload
-    function finalizeUpload(uploadId, type, index) {
-        return new Promise((resolve, reject) => {
-            const callbackName = 'finalize_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            
-            window[callbackName] = function(response) {
-                delete window[callbackName];
-                if (script) script.remove();
-                clearTimeout(timeoutId);
-                
-                resolve(response);
-            };
-            
-            const script = document.createElement('script');
-            const url = new URL(APPS_SCRIPT_URL);
-            url.searchParams.set('action', 'finalizeUpload');
-            url.searchParams.set('uploadId', uploadId);
-            url.searchParams.set('type', type);
-            url.searchParams.set('index', index !== null ? index.toString() : '');
-            url.searchParams.set('username', currentUser);
-            url.searchParams.set('filename', 'photo.jpg');
-            url.searchParams.set('callback', callbackName);
-            
-            script.src = url.toString();
-            script.onerror = () => {
-                delete window[callbackName];
-                script.remove();
-                clearTimeout(timeoutId);
-                reject(new Error('Network error on finalize'));
-            };
-            
-            document.body.appendChild(script);
-            
-            const timeoutId = setTimeout(() => {
-                if (window[callbackName]) {
-                    delete window[callbackName];
-                    script.remove();
-                    reject(new Error('Finalize timeout'));
-                }
-            }, 30000);
-        });
     }
 
     // Simpan data kelurahan
     async function simpanDataKelurahan() {
+        // Ambil data dari form
         kelurahanFields.forEach(field => {
             const input = document.getElementById(field.id);
             if (input) {
@@ -1296,39 +985,38 @@
         
         showLoading(true);
         
-        const callbackName = 'save_kelurahan_callback_' + Date.now();
-        window[callbackName] = function(response) {
-            try {
-                if (response.success) {
-                    saveToCache();
-                    showAlert('Data kelurahan berhasil disimpan', 'success');
-                    isEditModeKelurahan = false;
-                    renderKelurahanData();
-                } else {
-                    showAlert('Gagal menyimpan: ' + response.message, 'error');
-                }
-            } catch (e) {
-                console.error('Save callback error:', e);
-            } finally {
-                showLoading(false);
-                delete window[callbackName];
-                if (script) script.remove();
+        try {
+            const formData = new FormData();
+            formData.append('action', 'saveKelurahan');
+            formData.append('username', currentUser);
+            formData.append('kelurahanData', JSON.stringify(kelurahanData));
+            
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                saveToCache();
+                showAlert('Data kelurahan berhasil disimpan', 'success');
+                isEditModeKelurahan = false;
+                renderKelurahanData();
+            } else {
+                showAlert('Gagal menyimpan: ' + result.message, 'error');
             }
-        };
-        
-        const script = document.createElement('script');
-        const url = new URL(APPS_SCRIPT_URL);
-        url.searchParams.set('action', 'saveKelurahan');
-        url.searchParams.set('username', currentUser);
-        url.searchParams.set('kelurahanData', JSON.stringify(kelurahanData));
-        url.searchParams.set('callback', callbackName);
-        
-        script.src = url.toString();
-        document.body.appendChild(script);
+        } catch (error) {
+            console.error('Error saving:', error);
+            showAlert('Gagal menyimpan data', 'error');
+        } finally {
+            showLoading(false);
+        }
     }
 
     // Simpan data pegawai
     async function simpanDataPegawai(index) {
+        // Ambil data dari form
         pegawaiFields.forEach(field => {
             const input = document.getElementById(`pegawai_${index}_${field.id}`);
             if (input && pegawaiData[index]) {
@@ -1338,33 +1026,31 @@
         
         showLoading(true);
         
-        const callbackName = 'save_pegawai_callback_' + Date.now();
-        window[callbackName] = function(response) {
-            try {
-                if (response.success) {
-                    saveToCache();
-                    showAlert('Data pegawai berhasil disimpan', 'success');
-                } else {
-                    showAlert('Gagal menyimpan: ' + response.message, 'error');
-                }
-            } catch (e) {
-                console.error('Save callback error:', e);
-            } finally {
-                showLoading(false);
-                delete window[callbackName];
-                if (script) script.remove();
+        try {
+            const formData = new FormData();
+            formData.append('action', 'savePegawai');
+            formData.append('username', currentUser);
+            formData.append('pegawaiData', JSON.stringify(pegawaiData));
+            
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+                saveToCache();
+                showAlert('Data pegawai berhasil disimpan', 'success');
+            } else {
+                showAlert('Gagal menyimpan: ' + result.message, 'error');
             }
-        };
-        
-        const script = document.createElement('script');
-        const url = new URL(APPS_SCRIPT_URL);
-        url.searchParams.set('action', 'savePegawai');
-        url.searchParams.set('username', currentUser);
-        url.searchParams.set('pegawaiData', JSON.stringify(pegawaiData));
-        url.searchParams.set('callback', callbackName);
-        
-        script.src = url.toString();
-        document.body.appendChild(script);
+        } catch (error) {
+            console.error('Error saving:', error);
+            showAlert('Gagal menyimpan data', 'error');
+        } finally {
+            showLoading(false);
+        }
     }
 
     // Handle logout
@@ -1376,9 +1062,7 @@
 
     // Utility functions
     function showLoading(show) {
-        if (activeUploads === 0 || !show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-        }
+        document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
     }
 
     function showAlert(message, type) {
