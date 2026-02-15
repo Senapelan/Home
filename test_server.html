@@ -1,750 +1,91 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Layanan - Mirip Explorer</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            height: 100vh;
-            display: flex;
-            background-color: #f0f0f0;
-        }
-
-        /* Sidebar / Menu Kiri */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #2c3e50 0%, #1a2632 100%);
-            color: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-        }
-
-        .sidebar-header {
-            padding: 25px 20px;
-            border-bottom: 1px solid #3a4a5a;
-        }
-
-        .sidebar-header h2 {
-            font-size: 20px;
-            font-weight: 400;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-header h2 span {
-            font-size: 24px;
-        }
-
-        .sidebar-menu {
-            flex: 1;
-            padding: 15px 0;
-            overflow-y: auto;
-        }
-
-        .menu-item {
-            padding: 15px 25px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            transition: all 0.3s ease;
-            border-left: 4px solid transparent;
-            margin: 2px 0;
-        }
-
-        .menu-item:hover {
-            background: #34495e;
-            border-left-color: #3498db;
-        }
-
-        .menu-item.active {
-            background: #2980b9;
-            border-left-color: #f1c40f;
-        }
-
-        .menu-icon {
-            font-size: 22px;
-            width: 30px;
-            text-align: center;
-        }
-
-        .menu-text {
-            font-size: 15px;
-            font-weight: 500;
-        }
-
-        .sidebar-footer {
-            padding: 20px;
-            border-top: 1px solid #3a4a5a;
-            font-size: 12px;
-            color: #95a5a6;
-            text-align: center;
-        }
-
-        /* Area Konten Kanan */
-        .main-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #f5f7fa;
-        }
-
-        /* Toolbar ala Explorer */
-        .toolbar {
-            background: white;
-            padding: 12px 25px;
-            border-bottom: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            gap: 25px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .nav-buttons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px 10px;
-            border-radius: 4px;
-            color: #555;
-        }
-
-        .nav-btn:hover {
-            background: #e7e7e7;
-        }
-
-        .address-bar {
-            flex: 1;
-            background: #f0f2f5;
-            padding: 8px 15px;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            color: #1e2a3a;
-            font-size: 14px;
-            border: 1px solid #ddd;
-        }
-
-        .address-bar span {
-            color: #3498db;
-            font-weight: 500;
-        }
-
-        .search-box {
-            background: #f0f2f5;
-            padding: 8px 15px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            min-width: 250px;
-        }
-
-        .search-box input {
-            border: none;
-            background: transparent;
-            outline: none;
-            width: 100%;
-            font-size: 14px;
-        }
-
-        /* Container konten */
-        .content-container {
-            flex: 1;
-            padding: 25px;
-            overflow-y: auto;
-            background: white;
-            margin: 20px;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        /* Styles untuk setiap halaman */
-        .page {
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0.7; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .page h1 {
-            font-size: 28px;
-            color: #2c3e50;
-            margin-bottom: 25px;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .page h1 span {
-            font-size: 32px;
-        }
-
-        /* Card style */
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 20px;
-            margin-top: 20px;
-        }
-
-        .card {
-            background: #f8faff;
-            border-radius: 10px;
-            padding: 25px 20px;
-            border: 1px solid #e1e8ed;
-            transition: transform 0.2s, box-shadow 0.2s;
-            cursor: pointer;
-        }
-
-        .card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-            border-color: #3498db;
-        }
-
-        .card-icon {
-            font-size: 36px;
-            margin-bottom: 15px;
-        }
-
-        .card h3 {
-            color: #2c3e50;
-            margin-bottom: 8px;
-        }
-
-        .card p {
-            color: #7f8c8d;
-            font-size: 14px;
-        }
-
-        /* Tabel style */
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .table th {
-            background: #3498db;
-            color: white;
-            padding: 12px;
-            text-align: left;
-            font-weight: 500;
-        }
-
-        .table td {
-            padding: 12px;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .table tr:hover {
-            background: #f5f5f5;
-        }
-
-        /* Chat style */
-        .chat-container {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            height: 500px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px;
-        }
-
-        .message {
-            margin-bottom: 15px;
-            display: flex;
-        }
-
-        .message.received {
-            justify-content: flex-start;
-        }
-
-        .message.sent {
-            justify-content: flex-end;
-        }
-
-        .message-bubble {
-            max-width: 70%;
-            padding: 10px 15px;
-            border-radius: 15px;
-            background: white;
-            border: 1px solid #ddd;
-        }
-
-        .message.sent .message-bubble {
-            background: #3498db;
-            color: white;
-        }
-
-        .chat-input {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .chat-input input {
-            flex: 1;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 25px;
-            outline: none;
-        }
-
-        .chat-input button {
-            padding: 12px 25px;
-            background: #3498db;
-            color: white;
-            border: none;
-            border-radius: 25px;
-            cursor: pointer;
-        }
-
-        /* Status bar */
-        .status-bar {
-            background: #e9ecef;
-            padding: 8px 25px;
-            font-size: 12px;
-            color: #666;
-            border-top: 1px solid #ddd;
-            display: flex;
-            justify-content: space-between;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; height: 100vh; font-family: Arial; }
+        .sidebar { width: 250px; background: #333; color: white; padding: 20px; }
+        .menu-item { padding: 10px; cursor: pointer; margin: 5px 0; }
+        .menu-item:hover { background: #444; }
+        .content { flex: 1; padding: 20px; overflow-y: auto; }
+        .loading { text-align: center; padding: 50px; color: #666; }
     </style>
 </head>
 <body>
-    <!-- Sidebar Menu -->
     <div class="sidebar">
-        <div class="sidebar-header">
-            <h2>
-                <span>📁</span>
-                Layanan Explorer
-            </h2>
-        </div>
-        
-        <div class="sidebar-menu">
-            <div class="menu-item active" onclick="loadPage('mandiri')">
-                <span class="menu-icon">👤</span>
-                <span class="menu-text">Pelayanan Mandiri</span>
-            </div>
-            <div class="menu-item" onclick="loadPage('chat')">
-                <span class="menu-icon">💬</span>
-                <span class="menu-text">Live chat WhatsApp</span>
-            </div>
-            <div class="menu-item" onclick="loadPage('syarat')">
-                <span class="menu-icon">📋</span>
-                <span class="menu-text">Persyaratan</span>
-            </div>
-            <div class="menu-item" onclick="loadPage('unduh')">
-                <span class="menu-icon">⬇️</span>
-                <span class="menu-text">Unduh Berkas</span>
-            </div>
-            <div class="menu-item" onclick="loadPage('pengaduan')">
-                <span class="menu-icon">⚠️</span>
-                <span class="menu-text">Lapor Pengaduan</span>
-            </div>
-        </div>
-        
-        <div class="sidebar-footer">
-            <div>🔌 Terhubung sebagai User</div>
-            <div style="margin-top: 5px;">© 2024 Layanan Explorer</div>
-        </div>
+        <h3>Menu Layanan</h3>
+        <div class="menu-item" onclick="loadHTML('https://senapelan.github.io/Home/kelurahankampungbandar.html')">📋 Pelayanan Mandiri</div>
+        <div class="menu-item" onclick="loadHTML('https://senapelan.github.io/Home/kelurahankampungbaru.html')">💬 Live Chat</div>
+        <div class="menu-item" onclick="loadHTML('syarat.html')">📑 Persyaratan</div>
+        <div class="menu-item" onclick="loadHTML('unduh.html')">⬇️ Unduh Berkas</div>
+        <div class="menu-item" onclick="loadHTML('pengaduan.html')">⚠️ Lapor Pengaduan</div>
     </div>
-
-    <!-- Main Content Area -->
-    <div class="main-content">
-        <!-- Toolbar -->
-        <div class="toolbar">
-            <div class="nav-buttons">
-                <button class="nav-btn" onclick="goBack()">←</button>
-                <button class="nav-btn" onclick="goForward()">→</button>
-                <button class="nav-btn" onclick="refresh()">↻</button>
-            </div>
-            
-            <div class="address-bar">
-                <span>📌</span>
-                <span>Layanan Explorer / </span>
-                <span id="currentLocation">Pelayanan Mandiri</span>
-            </div>
-            
-            <div class="search-box">
-                <span>🔍</span>
-                <input type="text" placeholder="Cari layanan..." id="searchInput" onkeyup="searchContent()">
-            </div>
-        </div>
-
-        <!-- Content Container -->
-        <div class="content-container" id="contentArea">
-            <!-- Konten akan dimuat di sini -->
-        </div>
-
-        <!-- Status Bar -->
-        <div class="status-bar">
-            <span id="itemCount">12 item</span>
-            <span>🖥️ Mode Explorer</span>
-        </div>
+    
+    <div class="content" id="contentArea">
+        <div class="loading">Pilih menu untuk memulai</div>
     </div>
 
     <script>
-        // History navigation
-        let historyPages = ['mandiri'];
-        let historyIndex = 0;
-        
-        // Load page function
-        function loadPage(page) {
-            // Update active menu
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.target.closest('.menu-item').classList.add('active');
-            
-            // Update location
-            const locationMap = {
-                'mandiri': 'Pelayanan Mandiri',
-                'chat': 'Live Chat WhatsApp',
-                'syarat': 'Persyaratan',
-                'unduh': 'Unduh Berkas',
-                'pengaduan': 'Lapor Pengaduan'
-            };
-            document.getElementById('currentLocation').textContent = locationMap[page];
-            
-            // Get content area
+        async function loadHTML(fileName) {
             const content = document.getElementById('contentArea');
             
-            // Load content based on page
-            if(page === 'mandiri') {
-                content.innerHTML = `
-                    <div class="page">
-                        <h1>
-                            <span>👤</span>
-                            Pelayanan Mandiri
-                        </h1>
-                        
-                        <div class="card-grid">
-                            <div class="card" onclick="alert('Fitur Cek Status')">
-                                <div class="card-icon">🔍</div>
-                                <h3>Cek Status Layanan</h3>
-                                <p>Lihat status permohonan layanan Anda</p>
-                            </div>
-                            
-                            <div class="card" onclick="alert('Fitur Ajukan Permohonan')">
-                                <div class="card-icon">📝</div>
-                                <h3>Ajukan Permohonan</h3>
-                                <p>Buat permohonan layanan baru</p>
-                            </div>
-                            
-                            <div class="card" onclick="alert('Fitur Jadwal')">
-                                <div class="card-icon">📅</div>
-                                <h3>Jadwal Layanan</h3>
-                                <p>Lihat jadwal layanan yang tersedia</p>
-                            </div>
-                            
-                            <div class="card" onclick="alert('Fitur Riwayat')">
-                                <div class="card-icon">📊</div>
-                                <h3>Riwayat Layanan</h3>
-                                <p>Lihat riwayat permohonan Anda</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                updateItemCount(4);
-                
-            } else if(page === 'chat') {
-                content.innerHTML = `
-                    <div class="page">
-                        <h1>
-                            <span>💬</span>
-                            Live Chat WhatsApp
-                        </h1>
-                        
-                        <div class="chat-container">
-                            <div class="chat-messages" id="chatMessages">
-                                <div class="message received">
-                                    <div class="message-bubble">
-                                        Selamat datang di layanan chat. Ada yang bisa kami bantu?
-                                    </div>
-                                </div>
-                                <div class="message received">
-                                    <div class="message-bubble">
-                                        Silakan ketik pertanyaan Anda
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <div class="chat-input">
-                                <input type="text" id="chatInput" placeholder="Ketik pesan...">
-                                <button onclick="sendMessage()">Kirim</button>
-                                <button onclick="openWhatsApp()" style="background: #25D366;">📱 WA</button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                updateItemCount(1);
-                
-            } else if(page === 'syarat') {
-                content.innerHTML = `
-                    <div class="page">
-                        <h1>
-                            <span>📋</span>
-                            Persyaratan Layanan
-                        </h1>
-                        
-                        <table class="table">
-                            <tr>
-                                <th>No</th>
-                                <th>Jenis Layanan</th>
-                                <th>Persyaratan</th>
-                                <th>Biaya</th>
-                            </tr>
-                            <tr>
-                                <td>1</td>
-                                <td>Pembuatan KTP</td>
-                                <td>FC KK, Surat Pengantar RT/RW</td>
-                                <td>Gratis</td>
-                            </tr>
-                            <tr>
-                                <td>2</td>
-                                <td>Pembuatan KK</td>
-                                <td>FC KTP, Surat Nikah, Surat Pengantar</td>
-                                <td>Gratis</td>
-                            </tr>
-                            <tr>
-                                <td>3</td>
-                                <td>SKCK</td>
-                                <td>FC KTP, FC KK, Pas Foto 4x6</td>
-                                <td>Rp 30.000</td>
-                            </tr>
-                            <tr>
-                                <td>4</td>
-                                <td>IMB</td>
-                                <td>FC Sertifikat Tanah, Gambar Bangunan</td>
-                                <td>Rp 250.000</td>
-                            </tr>
-                        </table>
-                    </div>
-                `;
-                updateItemCount(4);
-                
-            } else if(page === 'unduh') {
-                content.innerHTML = `
-                    <div class="page">
-                        <h1>
-                            <span>⬇️</span>
-                            Unduh Berkas
-                        </h1>
-                        
-                        <div class="card-grid">
-                            <div class="card" onclick="downloadFile('form_ktp.pdf')">
-                                <div class="card-icon">📄</div>
-                                <h3>Formulir KTP</h3>
-                                <p>PDF • 250 KB</p>
-                            </div>
-                            
-                            <div class="card" onclick="downloadFile('form_kk.pdf')">
-                                <div class="card-icon">📄</div>
-                                <h3>Formulir KK</h3>
-                                <p>PDF • 245 KB</p>
-                            </div>
-                            
-                            <div class="card" onclick="downloadFile('syarat_skck.pdf')">
-                                <div class="card-icon">📄</div>
-                                <h3>Panduan SKCK</h3>
-                                <p>PDF • 320 KB</p>
-                            </div>
-                            
-                            <div class="card" onclick="downloadFile('panduan_imb.pdf')">
-                                <div class="card-icon">📄</div>
-                                <h3>Panduan IMB</h3>
-                                <p>PDF • 410 KB</p>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                updateItemCount(4);
-                
-            } else if(page === 'pengaduan') {
-                content.innerHTML = `
-                    <div class="page">
-                        <h1>
-                            <span>⚠️</span>
-                            Lapor Pengaduan
-                        </h1>
-                        
-                        <div style="max-width: 600px; margin: 0 auto;">
-                            <div style="background: #f9f9f9; padding: 30px; border-radius: 10px;">
-                                <h3 style="margin-bottom: 20px; color: #e74c3c;">Form Pengaduan</h3>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 5px;">Jenis Pengaduan</label>
-                                    <select style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                                        <option>Layanan Lambat</option>
-                                        <option>Petugas Tidak Ramah</option>
-                                        <option>Persyaratan Berbelit</option>
-                                        <option>Pungli</option>
-                                        <option>Lainnya</option>
-                                    </select>
-                                </div>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 5px;">Nama Pelapor</label>
-                                    <input type="text" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;" placeholder="Masukkan nama">
-                                </div>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 5px;">Isi Pengaduan</label>
-                                    <textarea rows="5" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;" placeholder="Tuliskan pengaduan Anda..."></textarea>
-                                </div>
-                                
-                                <div style="margin-bottom: 15px;">
-                                    <label style="display: block; margin-bottom: 5px;">Upload Bukti (opsional)</label>
-                                    <input type="file" style="width: 100%; padding: 10px; border-radius: 5px; border: 1px solid #ddd;">
-                                </div>
-                                
-                                <button onclick="alert('Pengaduan berhasil dikirim!')" style="background: #e74c3c; color: white; border: none; padding: 15px 30px; border-radius: 5px; cursor: pointer; font-size: 16px; width: 100%;">
-                                    Kirim Pengaduan
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                updateItemCount(1);
-            }
+            // Tampilkan loading
+            content.innerHTML = '<div class="loading">⏳ Memuat...</div>';
             
-            // Add to history
-            if(historyPages[historyIndex] !== page) {
-                historyPages = historyPages.slice(0, historyIndex + 1);
-                historyPages.push(page);
-                historyIndex++;
-            }
-        }
-        
-        // Update item count in status bar
-        function updateItemCount(count) {
-            document.getElementById('itemCount').textContent = count + ' item';
-        }
-        
-        // Navigation functions
-        function goBack() {
-            if(historyIndex > 0) {
-                historyIndex--;
-                loadPageSilent(historyPages[historyIndex]);
-            }
-        }
-        
-        function goForward() {
-            if(historyIndex < historyPages.length - 1) {
-                historyIndex++;
-                loadPageSilent(historyPages[historyIndex]);
-            }
-        }
-        
-        function refresh() {
-            loadPageSilent(historyPages[historyIndex]);
-        }
-        
-        function loadPageSilent(page) {
-            // Update active menu without triggering event
-            const menuItems = document.querySelectorAll('.menu-item');
-            menuItems.forEach(item => {
-                item.classList.remove('active');
-                if(item.querySelector('.menu-text').textContent.toLowerCase().includes(page)) {
-                    item.classList.add('active');
+            try {
+                // Fetch file HTML
+                const response = await fetch(fileName);
+                
+                if (!response.ok) {
+                    throw new Error('File tidak ditemukan');
                 }
-            });
-            
-            // Trigger page load
-            const fakeEvent = { target: document.querySelector('.menu-item.active') };
-            const originalEvent = window.event;
-            window.event = fakeEvent;
-            loadPage(page);
-            window.event = originalEvent;
-        }
-        
-        // Chat function
-        function sendMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            
-            if(message) {
-                const chatMessages = document.getElementById('chatMessages');
-                chatMessages.innerHTML += `
-                    <div class="message sent">
-                        <div class="message-bubble">${message}</div>
+                
+                const html = await response.text();
+                content.innerHTML = html;
+                
+                // Update URL tanpa reload
+                history.pushState({page: fileName}, '', '#' + fileName);
+                
+            } catch(error) {
+                content.innerHTML = `
+                    <div style="color: red; text-align: center; padding: 50px;">
+                        ❌ Gagal memuat halaman: ${error.message}
+                        <br><br>
+                        <button onclick="buatContohHTML()" style="padding: 10px 20px;">
+                            Buat Contoh HTML
+                        </button>
                     </div>
                 `;
-                
-                // Auto reply
-                setTimeout(() => {
-                    chatMessages.innerHTML += `
-                        <div class="message received">
-                            <div class="message-bubble">Terima kasih. Pesan Anda akan segera kami respon.</div>
-                        </div>
-                    `;
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
-                }, 1000);
-                
-                input.value = '';
-                chatMessages.scrollTop = chatMessages.scrollHeight;
             }
         }
         
-        function openWhatsApp() {
-            window.open('https://wa.me/6281234567890?text=Halo%20saya%20butuh%20bantuan', '_blank');
+        // Fungsi untuk membuat contoh file HTML
+        function buatContohHTML() {
+            alert(`
+                Buat file-file berikut di folder yang sama:
+                
+                1. pelayanan.html
+                2. chat.html  
+                3. syarat.html
+                4. unduh.html
+                5. pengaduan.html
+                
+                Isi dengan HTML masing-masing
+            `);
         }
         
-        // Download function
-        function downloadFile(filename) {
-            alert('Mengunduh ' + filename + '... (simulasi download)');
-        }
-        
-        // Search function
-        function searchContent() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.card');
-            
-            cards.forEach(card => {
-                const text = card.textContent.toLowerCase();
-                if(text.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
-                }
-            });
-        }
-        
-        // Load default page
-        window.onload = () => {
-            loadPage('mandiri');
+        // Handle browser back/forward
+        window.onpopstate = function(event) {
+            if(event.state && event.state.page) {
+                loadHTML(event.state.page);
+            }
         };
+        
+        // Load dari URL hash jika ada
+        if(window.location.hash) {
+            const file = window.location.hash.substring(1);
+            loadHTML(file);
+        }
     </script>
 </body>
 </html>
