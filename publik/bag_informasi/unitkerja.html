@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://senapelan.github.io/Home/kelurahanpadangterubuk.html">
+    <meta property="og:title" content="Unit Kerja - Kecamatan Senapelan">
+    <meta property="og:description" content="Informasi lengkap unit kerja kelurahan di Kecamatan Senapelan">
+    <meta property="og:site_name" content="Padang Terubuk">
+    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
+    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/data/foto/thumbnail.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="1200">
+    
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Unit Kerja - Kecamatan Senapelan">
+    <meta name="twitter:description" content="Informasi lengkap unit kerja kelurahan di Kecamatan Senapelan">
+    <meta name="twitter:image" content="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Unit Kerja - Kecamatan Senapelan</title>
+    
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- 3D LIBRARY -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <style>
+        :root {
+            --primary: #1e6bff;
+            --primary-dark: #0a4fcc;
+            --secondary: #00c9b7;
+            --accent: #ff6b6b;
+            --dark: #0c1f33;
+            --light: #f6f7f9;
+            --glass: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text: #222;
+            --text-light: #666;
+            --shadow-lg: 0 25px 50px rgba(0, 0, 0, 0.15);
+            --shadow-sm: 0 8px 30px rgba(0, 0, 0, 0.12);
+            --transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f2f5;
+            color: var(--text);
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 3D Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.02;
+        }
+
+        /* Glass Header */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            background: rgba(12, 31, 51, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 1000;
+            transition: var(--transition);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: white;
+            text-decoration: none;
+        }
+
+        .logo-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: transparent;
+        }
+
+        .logo-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff, #a3d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo-sub {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Back Button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 28px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 50px;
+            color: white;
+            text-decoration: none;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 16px;
+            transition: var(--transition);
+            box-shadow: 0 10px 20px rgba(30, 107, 255, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 30px rgba(30, 107, 255, 0.4);
+        }
+
+        /* Main Container */
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 100px 30px 50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Header Section */
+        .page-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .page-header h1 {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            color: #1a2b4a;
+            margin-bottom: 15px;
+            letter-spacing: -0.5px;
+        }
+
+        .page-header p {
+            color: var(--text-light);
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .header-decoration {
+            width: 150px;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent);
+            margin: 20px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Cards Grid */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        /* Card Style */
+        .unit-card {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid rgba(30, 107, 255, 0.1);
+            cursor: pointer;
+            height: fit-content;
+        }
+
+        .unit-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(30, 107, 255, 0.3);
+        }
+
+        .unit-card.active {
+            transform: scale(1.02);
+            box-shadow: 0 30px 60px rgba(30, 107, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        /* Card Cover (Closed State) */
+        .card-cover {
+            position: relative;
+            height: 220px;
+            overflow: hidden;
+        }
+
+        .card-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .unit-card:hover .card-cover img {
+            transform: scale(1.1);
+        }
+
+        .card-cover::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, transparent 50%, rgba(12, 31, 51, 0.8));
+        }
+
+        .cover-title {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            color: white;
+            z-index: 2;
+        }
+
+        .cover-title h3 {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .cover-title p {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Card Content (Open State) */
+        .card-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s ease-out;
+            background: white;
+        }
+
+        .unit-card.active .card-content {
+            max-height: 800px;
+            transition: max-height 0.8s ease-in;
+        }
+
+        .content-inner {
+            padding: 30px;
+        }
+
+        /* Detail Grid */
+        .detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 25px;
+        }
+
+        .detail-item {
+            display: flex;
+            gap: 15px;
+        }
+
+        .detail-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, rgba(30, 107, 255, 0.1), rgba(0, 201, 183, 0.1));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .detail-text {
+            flex: 1;
+        }
+
+        .detail-text .label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 5px;
+        }
+
+        .detail-text .value {
+            font-weight: 600;
+            color: var(--dark);
+            line-height: 1.5;
+        }
+
+        .detail-text .value a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .detail-text .value a:hover {
+            color: var(--secondary);
+            text-decoration: underline;
+        }
+
+        /* Description */
+        .description {
+            margin: 25px 0;
+            padding: 20px;
+            background: #f8faff;
+            border-radius: 20px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .description p {
+            color: var(--text);
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* Map Container */
+        .map-container {
+            border-radius: 20px;
+            overflow: hidden;
+            margin-top: 20px;
+            height: 200px;
+            border: 2px solid rgba(30, 107, 255, 0.1);
+            transition: var(--transition);
+        }
+
+        .map-container:hover {
+            border-color: var(--primary);
+        }
+
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Action Buttons */
+        .card-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            text-align: center;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: 0 5px 15px rgba(30, 107, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(30, 107, 255, 0.4);
+        }
+
+        .btn-outline {
+            border: 2px solid rgba(30, 107, 255, 0.2);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(30, 107, 255, 0.05);
+            border-color: var(--primary);
+        }
+
+        /* Expand Indicator */
+        .expand-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            background: #f8faff;
+            border-top: 1px solid rgba(30, 107, 255, 0.1);
+            color: var(--primary);
+            font-weight: 500;
+            gap: 8px;
+            transition: var(--transition);
+        }
+
+        .expand-indicator i {
+            transition: transform 0.3s ease;
+        }
+
+        .unit-card.active .expand-indicator i {
+            transform: rotate(180deg);
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 5px solid #f0f0f0;
+            border-top: 5px solid var(--primary);
+            border-right: 5px solid var(--secondary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 992px) {
+            .header {
+                padding: 0 20px;
+            }
+            
+            .back-button span {
+                display: none;
+            }
+            
+            .back-button {
+                padding: 12px 18px;
+            }
+            
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                gap: 20px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 90px 20px 30px;
+            }
+            
+            .logo-main {
+                font-size: 16px;
+            }
+            
+            .logo-sub {
+                display: none;
+            }
+            
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .card-cover {
+                height: 180px;
+            }
+            
+            .content-inner {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .page-header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .card-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Floating Elements */
+        .floating-particle {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 50%;
+            opacity: 0.1;
+            pointer-events: none;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 3D Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Header -->
+    <header class="header">
+        <a href="https://senapelan.github.io/Home/kelurahanpadangterubuk.html" class="logo">
+            <div class="logo-img">
+                <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Pekanbaru">
+            </div>
+            <div class="logo-text">
+                <div class="logo-main">Padang Terubuk</div>
+                <div class="logo-sub">Unit Kerja</div>
+            </div>
+        </a>
+        
+        <a href="https://senapelan.github.io/Home/kelurahanpadangterubuk.html" class="back-button">
+            <i class="fas fa-arrow-left"></i>
+            <span>Kembali</span>
+        </a>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1>UNIT KERJA</h1>
+            <p>Unit Kerja adalah satuan kerja atasan langsung sebagai tempat PNS melaksanakan tugas dan fungsi pelayanan masyarakat</p>
+            <div class="header-decoration"></div>
+        </div>
+
+        <!-- Cards Grid -->
+        <div class="cards-grid" id="cardsGrid">
+            <!-- Card akan di-generate oleh JavaScript -->
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Memuat Unit Kerja...</div>
+    </div>
+
+    <script>
+        // ================= 3D BACKGROUND =================
+        function init3DBackground() {
+            const canvas = document.getElementById('bg-canvas');
+            if (!canvas || typeof THREE === 'undefined') return;
+
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+            
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+            const particlesGeometry = new THREE.BufferGeometry();
+            const particlesCount = 150;
+            const posArray = new Float32Array(particlesCount * 3);
+            
+            for(let i = 0; i < particlesCount * 3; i += 3) {
+                posArray[i] = (Math.random() - 0.5) * 10;
+                posArray[i+1] = (Math.random() - 0.5) * 10;
+                posArray[i+2] = (Math.random() - 0.5) * 10;
+            }
+            
+            particlesGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+            
+            const particlesMaterial = new THREE.PointsMaterial({
+                size: 0.02,
+                color: 0x1e6bff,
+                transparent: true,
+                opacity: 0.1,
+                blending: THREE.AdditiveBlending
+            });
+            
+            const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+            scene.add(particlesMesh);
+            
+            camera.position.z = 5;
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                particlesMesh.rotation.y += 0.0002;
+                renderer.render(scene, camera);
+            }
+            
+            animate();
+        }
+
+        // ================= DATA KELURAHAN =================
+        const kelurahanData = [
+            {
+                id: 1,
+                nama: "Kecamatan Senapelan",
+                kelurahan: "Kantor Camat Senapelan",
+                alamat: "Jalan Jenderal Sudirman No. 123, Pekanbaru",
+                deskripsi: "Kecamatan Senapelan adalah salah satu kecamatan tertua di Kota Pekanbaru yang menjadi pusat sejarah dan perkembangan kota. Memiliki 6 kelurahan dengan berbagai potensi ekonomi, budaya, dan pariwisata.",
+                gambar: "https://senapelan.github.io/Home/data/foto/kecamatansenapelan.png",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.58084095162!2d101.42387745676942!3d0.5337327482442705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac0aac8ee4c5%3A0xc14034fc37ad8419!2sKantor%20Lurah%20Padang%20Terubuk!5e0!3m2!1sen!2sid!4v1769890786275!5m2!1sen!2sid",
+                website: "https://senapelan.go.id",
+                telp: "(0761) 12345"
+            },
+            {
+                id: 2,
+                nama: "Kelurahan Kampung Bandar",
+                kelurahan: "Kantor Lurah Kampung Bandar",
+                alamat: "Jalan Kampung Bandar No. 45, Pekanbaru",
+                deskripsi: "Kelurahan Kampung Bandar merupakan kawasan bersejarah dengan peninggalan budaya Melayu yang kuat. Dikenal sebagai sentra kuliner tradisional dan kerajinan tangan khas Pekanbaru.",
+                gambar: "https://senapelan.github.io/Home/data/foto/kampungbandar.png",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.58084095162!2d101.42387745676942!3d0.5337327482442705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac0aac8ee4c5%3A0xc14034fc37ad8419!2sKantor%20Lurah%20Padang%20Terubuk!5e0!3m2!1sen!2sid!4v1769890786275!5m2!1sen!2sid",
+                website: "#",
+                telp: "(0761) 23456"
+            },
+            {
+                id: 3,
+                nama: "Kelurahan Kampung Baru",
+                kelurahan: "Kantor Lurah Kampung Baru",
+                alamat: "Jalan Kampung Baru No. 78, Pekanbaru",
+                deskripsi: "Kelurahan Kampung Baru berkembang pesat sebagai kawasan permukiman dan perdagangan. Masyarakatnya heterogen dengan tingkat partisipasi pembangunan yang tinggi.",
+                gambar: "https://senapelan.github.io/Home/data/foto/kampungbaru.png",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.58084095162!2d101.42387745676942!3d0.5337327482442705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac0aac8ee4c5%3A0xc14034fc37ad8419!2sKantor%20Lurah%20Padang%20Terubuk!5e0!3m2!1sen!2sid!4v1769890786275!5m2!1sen!2sid",
+                website: "#",
+                telp: "(0761) 34567"
+            },
+            {
+                id: 4,
+                nama: "Kelurahan Kampung Dalam",
+                kelurahan: "Kantor Lurah Kampung Dalam",
+                alamat: "Jalan Kampung Dalam No. 12, Pekanbaru",
+                deskripsi: "Kelurahan Kampung Dalam memiliki karakteristik sebagai kawasan padat penduduk dengan nilai-nilai kebersamaan dan gotong royong yang masih kuat. Aktif dalam berbagai kegiatan sosial kemasyarakatan.",
+                gambar: "https://senapelan.github.io/Home/data/foto/kampungdalam.png",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.58084095162!2d101.42387745676942!3d0.5337327482442705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac0aac8ee4c5%3A0xc14034fc37ad8419!2sKantor%20Lurah%20Padang%20Terubuk!5e0!3m2!1sen!2sid!4v1769890786275!5m2!1sen!2sid",
+                website: "#",
+                telp: "(0761) 45678"
+            },
+            {
+                id: 5,
+                nama: "Kelurahan Padang Bulan",
+                kelurahan: "Kantor Lurah Padang Bulan",
+                alamat: "Jalan Padang Bulan No. 34, Pekanbaru",
+                deskripsi: "Kelurahan Padang Bulan dikenal sebagai kawasan pendidikan dengan banyaknya institusi pendidikan dari tingkat dasar hingga perguruan tinggi. Masyarakatnya dinamis dan berorientasi pada kemajuan.",
+                gambar: "https://senapelan.github.io/Home/data/foto/padangbulan.png",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.58084095162!2d101.42387745676942!3d0.5337327482442705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac0aac8ee4c5%3A0xc14034fc37ad8419!2sKantor%20Lurah%20Padang%20Terubuk!5e0!3m2!1sen!2sid!4v1769890786275!5m2!1sen!2sid",
+                website: "#",
+                telp: "(0761) 56789"
+            },
+            {
+                id: 6,
+                nama: "Kelurahan Padang Terubuk",
+                kelurahan: "Kantor Lurah Padang Terubuk",
+                alamat: "Jalan Melur No. 04 RT 004 RW 005, Pekanbaru",
+                deskripsi: "Kelurahan Padang Terubuk berkomitmen memberikan pelayanan cepat, transparan, dan modern berbasis digital. 'Pelayanan terbaik lahir dari keikhlasan dan kebersamaan'.",
+                gambar: "https://senapelan.github.io/Home/data/foto/padangterubuk.png",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.58084095162!2d101.42387745676942!3d0.5337327482442705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac0aac8ee4c5%3A0xc14034fc37ad8419!2sKantor%20Lurah%20Padang%20Terubuk!5e0!3m2!1sen!2sid!4v1769890786275!5m2!1sen!2sid",
+                website: "https://senapelan.github.io/Home/kelurahanpadangterubuk.html",
+                telp: "(0761) 08562"
+            },
+            {
+                id: 7,
+                nama: "Kelurahan Sago",
+                kelurahan: "Kantor Lurah Sago",
+                alamat: "Jalan Sago No. 56, Pekanbaru",
+                deskripsi: "Kelurahan Sago merupakan kawasan strategis yang menjadi penghubung antar kecamatan. Berkembang sebagai pusat perdagangan dan jasa dengan masyarakat yang majemuk.",
+                gambar: "https://senapelan.github.io/Home/data/foto/sago.png",
+                maps: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15958.58084095162!2d101.42387745676942!3d0.5337327482442705!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac0aac8ee4c5%3A0xc14034fc37ad8419!2sKantor%20Lurah%20Padang%20Terubuk!5e0!3m2!1sen!2sid!4v1769890786275!5m2!1sen!2sid",
+                website: "#",
+                telp: "(0761) 67890"
+            }
+        ];
+
+        // ================= RENDER CARDS =================
+        function renderCards() {
+            const grid = document.getElementById('cardsGrid');
+            
+            kelurahanData.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'unit-card';
+                card.setAttribute('data-id', item.id);
+                
+                card.innerHTML = `
+                    <div class="card-cover">
+                        <img src="${item.gambar}" alt="${item.nama}">
+                        <div class="cover-title">
+                            <h3>${item.nama}</h3>
+                            <p><i class="fas fa-map-marker-alt"></i> ${item.kelurahan}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="card-content">
+                        <div class="content-inner">
+                            <div class="detail-grid">
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <div class="detail-text">
+                                        <div class="label">Instansi</div>
+                                        <div class="value">${item.kelurahan}</div>
+                                    </div>
+                                </div>
+                                
+                                <div class="detail-item">
+                                    <div class="detail-icon">
+                                        <i class="fas fa-phone-alt"></i>
+                                    </div>
+                                    <div class="detail-text">
+                                        <div class="label">Telepon</div>
+                                        <div class="value">${item.telp}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="description">
+                                <p>${item.deskripsi}</p>
+                            </div>
+                            
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <div class="detail-icon">
+                                    <i class="fas fa-map-pin"></i>
+                                </div>
+                                <div class="detail-text">
+                                    <div class="label">Alamat Lengkap</div>
+                                    <div class="value">${item.alamat}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="map-container">
+                                <iframe 
+                                    src="${item.maps}"
+                                    loading="lazy"
+                                    title="Peta ${item.nama}">
+                                </iframe>
+                            </div>
+                            
+                            <div class="card-actions">
+                                <a href="${item.website}" class="action-btn btn-primary" target="_blank">
+                                    <i class="fas fa-globe"></i> Website
+                                </a>
+                                <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.alamat)}" class="action-btn btn-outline" target="_blank">
+                                    <i class="fas fa-directions"></i> Rute
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="expand-indicator">
+                        <span>${index === 0 ? 'Lihat Detail' : 'Buka Detail'}</span>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                `;
+                
+                // Add click event
+                card.addEventListener('click', function(e) {
+                    // Prevent closing when clicking on links or map
+                    if (e.target.tagName === 'A' || e.target.closest('a') || e.target.closest('.map-container')) {
+                        return;
+                    }
+                    
+                    this.classList.toggle('active');
+                    
+                    // Update indicator text
+                    const indicator = this.querySelector('.expand-indicator span');
+                    if (this.classList.contains('active')) {
+                        indicator.textContent = 'Tutup Detail';
+                    } else {
+                        indicator.textContent = 'Buka Detail';
+                    }
+                });
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // ================= INIT =================
+        window.addEventListener('load', () => {
+            // Show loading
+            const loading = document.getElementById('loadingOverlay');
+            
+            // Initialize 3D
+            if (typeof THREE !== 'undefined') {
+                init3DBackground();
+            }
+            
+            // Render cards
+            renderCards();
+            
+            // Hide loading after cards are rendered
+            setTimeout(() => {
+                loading.style.opacity = '0';
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // ================= FLOATING PARTICLES =================
+        function createParticles() {
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'floating-particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+                particle.style.animation = `float ${5 + Math.random() * 10}s linear infinite`;
+                document.body.appendChild(particle);
+            }
+        }
+        
+        createParticles();
+    </script>
+</body>
+</html>
