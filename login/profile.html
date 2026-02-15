@@ -570,8 +570,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <script>
-    // Konfigurasi
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2bFmVAQu1V4_Y4zyGrIuZeYbTwG22nDFT3SVCNu-OCdV3keKRpZHeqeBwYMAVhndvqg/exec';
+    // Konfigurasi - PASTIKAN URL INI BENAR
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyfNYTrcRRdcTTD5NqulzXX7cggBk1Nzc2m7iHWlT3rIWRz_0-32Zgy_-YxN8v6dL9u/exec';
     const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
     
     // State
@@ -623,56 +623,108 @@
         document.getElementById('userName').textContent = username;
         document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
         
+        // Coba load dari cache dulu
+        loadFromCache();
+        
+        // Then load from server
         loadUserData();
     }
 
-    // Load data user dari spreadsheet menggunakan iframe proxy
+    // Load dari cache
+    function loadFromCache() {
+        try {
+            const cached = localStorage.getItem(`profile_${currentUser}`);
+            if (cached) {
+                const data = JSON.parse(cached);
+                kelurahanData = data.kelurahan || {};
+                pegawaiData = data.pegawai || [];
+                renderKelurahanData();
+                renderPegawaiData();
+                console.log('Loaded from cache');
+            }
+        } catch (e) {
+            console.error('Cache error:', e);
+        }
+    }
+
+    // Save ke cache
+    function saveToCache() {
+        try {
+            const data = {
+                kelurahan: kelurahanData,
+                pegawai: pegawaiData,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(`profile_${currentUser}`, JSON.stringify(data));
+        } catch (e) {
+            console.error('Cache save error:', e);
+        }
+    }
+
+    // Load data user dari spreadsheet
     async function loadUserData() {
         showLoading(true);
         
-        // Buat iframe tersembunyi untuk komunikasi dengan Apps Script
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        
-        // Data yang akan dikirim
-        const requestData = {
-            action: 'loadData',
-            username: currentUser
-        };
-        
-        // Callback untuk menerima data dari iframe
-        window.receiveData = function(data) {
-            try {
-                console.log('Data received:', data);
-                
-                if (data && data.kelurahan) {
-                    kelurahanData = data.kelurahan;
-                    pegawaiData = data.pegawai || [];
-                } else {
-                    // Inisialisasi data kosong
-                    kelurahanFields.forEach(field => {
-                        kelurahanData[field.id] = '';
-                    });
-                    kelurahanData.link_foto_kelurahan = '';
-                    pegawaiData = [];
+        try {
+            // Gunakan JSONP untuk menghindari CORS
+            const callbackName = 'jsonp_callback_' + Date.now();
+            window[callbackName] = function(response) {
+                try {
+                    console.log('Data received:', response);
+                    
+                    if (response.success && response.data) {
+                        kelurahanData = response.data.kelurahan || {};
+                        pegawaiData = response.data.pegawai || [];
+                        
+                        // Inisialisasi data kosong untuk field yang tidak ada
+                        kelurahanFields.forEach(field => {
+                            if (!kelurahanData[field.id]) {
+                                kelurahanData[field.id] = '';
+                            }
+                        });
+                        if (!kelurahanData.link_foto_kelurahan) {
+                            kelurahanData.link_foto_kelurahan = '';
+                        }
+                        
+                        // Save to cache
+                        saveToCache();
+                        
+                        renderKelurahanData();
+                        renderPegawaiData();
+                    } else {
+                        showAlert('Gagal memuat data: ' + response.message, 'error');
+                    }
+                } catch (e) {
+                    console.error('Error processing response:', e);
+                } finally {
+                    showLoading(false);
+                    delete window[callbackName];
+                    document.body.removeChild(script);
                 }
-                
-                renderKelurahanData();
-                renderPegawaiData();
-                
-            } catch (error) {
-                console.error('Error processing data:', error);
-                showAlert('Gagal memproses data', 'error');
-            } finally {
-                showLoading(false);
-                document.body.removeChild(iframe);
-                delete window.receiveData;
-            }
-        };
-        
-        // Kirim request ke Apps Script melalui iframe
-        iframe.src = APPS_SCRIPT_URL + '?data=' + encodeURIComponent(JSON.stringify(requestData)) + '&callback=receiveData';
+            };
+            
+            // Buat script element untuk JSONP
+            const script = document.createElement('script');
+            const url = new URL(APPS_SCRIPT_URL);
+            url.searchParams.set('action', 'loadData');
+            url.searchParams.set('username', currentUser);
+            url.searchParams.set('callback', callbackName);
+            
+            script.src = url.toString();
+            document.body.appendChild(script);
+            
+            // Timeout setelah 10 detik
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    window[callbackName]({ success: false, message: 'Timeout' });
+                }
+            }, 10000);
+            
+        } catch (error) {
+            console.error('Error loading data:', error);
+            showAlert('Gagal memuat data', 'error');
+            showLoading(false);
+        }
     }
 
     // Render fields kelurahan
@@ -848,28 +900,45 @@
                     if (img) img.src = base64Data;
                 }
                 
-                // Buat iframe untuk upload
-                const iframe = document.createElement('iframe');
-                iframe.style.display = 'none';
-                document.body.appendChild(iframe);
-                
-                window.uploadCallback = function(link) {
-                    if (type === 'kelurahan') {
-                        kelurahanData.link_foto_kelurahan = link;
-                    } else if (index !== null && pegawaiData[index]) {
-                        pegawaiData[index].link_foto = link;
+                // Upload menggunakan JSONP
+                const callbackName = 'upload_callback_' + Date.now();
+                window[callbackName] = function(response) {
+                    try {
+                        if (response.success && response.data) {
+                            const link = response.data.link;
+                            
+                            if (type === 'kelurahan') {
+                                kelurahanData.link_foto_kelurahan = link;
+                            } else if (index !== null && pegawaiData[index]) {
+                                pegawaiData[index].link_foto = link;
+                            }
+                            
+                            saveToCache();
+                            showAlert('Foto berhasil diupload', 'success');
+                        } else {
+                            showAlert('Gagal upload foto: ' + response.message, 'error');
+                        }
+                    } catch (e) {
+                        console.error('Upload callback error:', e);
+                    } finally {
+                        showLoading(false);
+                        delete window[callbackName];
+                        document.body.removeChild(script);
                     }
-                    
-                    showAlert('Foto berhasil diupload', 'success');
-                    showLoading(false);
-                    document.body.removeChild(iframe);
-                    delete window.uploadCallback;
                 };
                 
-                // Kirim ke server
-                iframe.src = APPS_SCRIPT_URL + '?action=uploadPhoto&file=' + encodeURIComponent(base64Data) + 
-                           '&filename=' + encodeURIComponent(file.name) + '&type=' + type + 
-                           '&index=' + index + '&username=' + currentUser + '&callback=uploadCallback';
+                const script = document.createElement('script');
+                const url = new URL(APPS_SCRIPT_URL);
+                url.searchParams.set('action', 'uploadPhoto');
+                url.searchParams.set('file', base64Data);
+                url.searchParams.set('filename', file.name);
+                url.searchParams.set('type', type);
+                url.searchParams.set('index', index || '');
+                url.searchParams.set('username', currentUser);
+                url.searchParams.set('callback', callbackName);
+                
+                script.src = url.toString();
+                document.body.appendChild(script);
             };
             
         } catch (error) {
@@ -891,24 +960,36 @@
         
         showLoading(true);
         
-        // Buat iframe untuk menyimpan
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        
-        window.saveKelurahanCallback = function(success) {
-            showAlert('Data kelurahan berhasil disimpan', 'success');
-            isEditModeKelurahan = false;
-            renderKelurahanData();
-            showLoading(false);
-            document.body.removeChild(iframe);
-            delete window.saveKelurahanCallback;
+        // Simpan menggunakan JSONP
+        const callbackName = 'save_kelurahan_callback_' + Date.now();
+        window[callbackName] = function(response) {
+            try {
+                if (response.success) {
+                    saveToCache();
+                    showAlert('Data kelurahan berhasil disimpan', 'success');
+                    isEditModeKelurahan = false;
+                    renderKelurahanData();
+                } else {
+                    showAlert('Gagal menyimpan: ' + response.message, 'error');
+                }
+            } catch (e) {
+                console.error('Save callback error:', e);
+            } finally {
+                showLoading(false);
+                delete window[callbackName];
+                document.body.removeChild(script);
+            }
         };
         
-        // Kirim ke server
-        iframe.src = APPS_SCRIPT_URL + '?action=saveKelurahan&username=' + currentUser + 
-                   '&kelurahanData=' + encodeURIComponent(JSON.stringify(kelurahanData)) + 
-                   '&callback=saveKelurahanCallback';
+        const script = document.createElement('script');
+        const url = new URL(APPS_SCRIPT_URL);
+        url.searchParams.set('action', 'saveKelurahan');
+        url.searchParams.set('username', currentUser);
+        url.searchParams.set('kelurahanData', JSON.stringify(kelurahanData));
+        url.searchParams.set('callback', callbackName);
+        
+        script.src = url.toString();
+        document.body.appendChild(script);
     }
 
     // Simpan data pegawai
@@ -923,22 +1004,34 @@
         
         showLoading(true);
         
-        // Buat iframe untuk menyimpan
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
-        
-        window.savePegawaiCallback = function(success) {
-            showAlert('Data pegawai berhasil disimpan', 'success');
-            showLoading(false);
-            document.body.removeChild(iframe);
-            delete window.savePegawaiCallback;
+        // Simpan menggunakan JSONP
+        const callbackName = 'save_pegawai_callback_' + Date.now();
+        window[callbackName] = function(response) {
+            try {
+                if (response.success) {
+                    saveToCache();
+                    showAlert('Data pegawai berhasil disimpan', 'success');
+                } else {
+                    showAlert('Gagal menyimpan: ' + response.message, 'error');
+                }
+            } catch (e) {
+                console.error('Save callback error:', e);
+            } finally {
+                showLoading(false);
+                delete window[callbackName];
+                document.body.removeChild(script);
+            }
         };
         
-        // Kirim ke server
-        iframe.src = APPS_SCRIPT_URL + '?action=savePegawai&username=' + currentUser + 
-                   '&pegawaiData=' + encodeURIComponent(JSON.stringify(pegawaiData)) + 
-                   '&callback=savePegawaiCallback';
+        const script = document.createElement('script');
+        const url = new URL(APPS_SCRIPT_URL);
+        url.searchParams.set('action', 'savePegawai');
+        url.searchParams.set('username', currentUser);
+        url.searchParams.set('pegawaiData', JSON.stringify(pegawaiData));
+        url.searchParams.set('callback', callbackName);
+        
+        script.src = url.toString();
+        document.body.appendChild(script);
     }
 
     // Handle logout
