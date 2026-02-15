@@ -2,90 +2,236 @@
 <html>
 <head>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { display: flex; height: 100vh; font-family: Arial; }
-        .sidebar { width: 250px; background: #333; color: white; padding: 20px; }
-        .menu-item { padding: 10px; cursor: pointer; margin: 5px 0; }
-        .menu-item:hover { background: #444; }
-        .content { flex: 1; padding: 20px; overflow-y: auto; }
-        .loading { text-align: center; padding: 50px; color: #666; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            height: 100vh;
+            display: flex; /* Gunakan flexbox untuk layout */
+            overflow: hidden; /* Cegah scroll di body */
+        }
+
+        /* Sidebar fixed width */
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            height: 100vh;
+            position: relative;
+            flex-shrink: 0; /* Cegah sidebar mengecil */
+            overflow-y: auto; /* Scroll jika menu terlalu panjang */
+        }
+
+        /* Main content - akan mengisi sisa space */
+        .main-content {
+            flex: 1; /* Ambil sisa space */
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Toolbar fixed */
+        .toolbar {
+            background: white;
+            padding: 12px 25px;
+            border-bottom: 1px solid #ddd;
+            flex-shrink: 0; /* Cegah toolbar mengecil */
+        }
+
+        /* Container untuk konten yang di-load */
+        .content-container {
+            flex: 1; /* Ambil sisa space */
+            padding: 25px;
+            overflow-y: auto; /* Scroll hanya di sini */
+            background: #f5f7fa;
+        }
+
+        /* Status bar fixed di bawah */
+        .status-bar {
+            background: #e9ecef;
+            padding: 8px 25px;
+            border-top: 1px solid #ddd;
+            flex-shrink: 0;
+        }
+
+        /* Styling untuk konten yang di-load */
+        .loaded-content {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            min-height: 100%;
+        }
+
+        /* Menu items */
+        .menu-item {
+            padding: 15px 25px;
+            cursor: pointer;
+            border-left: 4px solid transparent;
+        }
+
+        .menu-item:hover {
+            background: #34495e;
+            border-left-color: #3498db;
+        }
+
+        .menu-item.active {
+            background: #2980b9;
+            border-left-color: #f1c40f;
+        }
     </style>
 </head>
 <body>
+    <!-- Sidebar kiri - fixed width -->
     <div class="sidebar">
-        <h3>Menu Layanan</h3>
-        <div class="menu-item" onclick="loadHTML('https://senapelan.github.io/Home/kelurahankampungbandar.html')">📋 Pelayanan Mandiri</div>
-        <div class="menu-item" onclick="loadHTML('https://senapelan.github.io/Home/kelurahankampungbaru.html')">💬 Live Chat</div>
-        <div class="menu-item" onclick="loadHTML('syarat.html')">📑 Persyaratan</div>
-        <div class="menu-item" onclick="loadHTML('unduh.html')">⬇️ Unduh Berkas</div>
-        <div class="menu-item" onclick="loadHTML('pengaduan.html')">⚠️ Lapor Pengaduan</div>
+        <div style="padding: 20px; border-bottom: 1px solid #3a4a5a;">
+            <h2>📁 Layanan Explorer</h2>
+        </div>
+        
+        <div style="padding: 15px 0;">
+            <div class="menu-item active" onclick="loadPage('https://senapelan.github.io/Home/kelurahankampungbandar.html')">👤 Pelayanan Mandiri</div>
+            <div class="menu-item" onclick="loadPage('https://senapelan.github.io/Home/kelurahankampungbaru.html')">💬 Live Chat WhatsApp</div>
+            <div class="menu-item" onclick="loadPage('syarat.html')">📋 Persyaratan</div>
+            <div class="menu-item" onclick="loadPage('unduh.html')">⬇️ Unduh Berkas</div>
+            <div class="menu-item" onclick="loadPage('pengaduan.html')">⚠️ Lapor Pengaduan</div>
+        </div>
     </div>
-    
-    <div class="content" id="contentArea">
-        <div class="loading">Pilih menu untuk memulai</div>
+
+    <!-- Main content kanan - akan mengisi sisa space -->
+    <div class="main-content">
+        <!-- Toolbar atas -->
+        <div class="toolbar">
+            <span id="currentLocation">📍 Pelayanan Mandiri</span>
+        </div>
+
+        <!-- Container konten - ini yang akan scroll -->
+        <div class="content-container" id="contentArea">
+            <div class="loaded-content" id="loadedContent">
+                <!-- Konten dari HTML lain akan dimuat di sini -->
+                <div style="text-align: center; padding: 50px; color: #666;">
+                    Pilih menu di samping untuk memulai
+                </div>
+            </div>
+        </div>
+
+        <!-- Status bar bawah -->
+        <div class="status-bar">
+            <span>📊 Siap</span>
+        </div>
     </div>
 
     <script>
-        async function loadHTML(fileName) {
-            const content = document.getElementById('contentArea');
+        async function loadPage(htmlFile) {
+            // Update active menu
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.currentTarget.classList.add('active');
+            
+            // Update location text
+            const menuText = event.currentTarget.textContent.trim();
+            document.getElementById('currentLocation').innerHTML = `📍 ${menuText}`;
+            
+            const contentDiv = document.getElementById('loadedContent');
             
             // Tampilkan loading
-            content.innerHTML = '<div class="loading">⏳ Memuat...</div>';
+            contentDiv.innerHTML = `
+                <div style="text-align: center; padding: 50px; color: #666;">
+                    ⏳ Memuat...
+                </div>
+            `;
             
             try {
                 // Fetch file HTML
-                const response = await fetch(fileName);
+                const response = await fetch(htmlFile);
                 
                 if (!response.ok) {
                     throw new Error('File tidak ditemukan');
                 }
                 
-                const html = await response.text();
-                content.innerHTML = html;
+                let html = await response.text();
                 
-                // Update URL tanpa reload
-                history.pushState({page: fileName}, '', '#' + fileName);
+                // Hapus tag body, html, head jika ada
+                html = html.replace(/<html>|<\/html>|<body>|<\/body>|<head>.*?<\/head>/gi, '');
+                
+                // Tampilkan di content
+                contentDiv.innerHTML = html;
                 
             } catch(error) {
-                content.innerHTML = `
-                    <div style="color: red; text-align: center; padding: 50px;">
-                        ❌ Gagal memuat halaman: ${error.message}
+                contentDiv.innerHTML = `
+                    <div style="color: red; text-align: center; padding: 20px;">
+                        ❌ Error: ${error.message}
                         <br><br>
-                        <button onclick="buatContohHTML()" style="padding: 10px 20px;">
-                            Buat Contoh HTML
+                        <button onclick="buatContohFile('${htmlFile}')" 
+                                style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                            Buat File ${htmlFile}
                         </button>
                     </div>
                 `;
             }
         }
-        
-        // Fungsi untuk membuat contoh file HTML
-        function buatContohHTML() {
-            alert(`
-                Buat file-file berikut di folder yang sama:
-                
-                1. pelayanan.html
-                2. chat.html  
-                3. syarat.html
-                4. unduh.html
-                5. pengaduan.html
-                
-                Isi dengan HTML masing-masing
-            `);
+
+        // Fungsi bantuan untuk membuat contoh file
+        function buatContohFile(fileName) {
+            const contohContent = {
+                'pelayanan.html': `
+                    <h2>Pelayanan Mandiri</h2>
+                    <div style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                            <h3>🔍 Cek Status</h3>
+                            <p>Lihat status permohonan Anda</p>
+                        </div>
+                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                            <h3>📝 Ajukan Permohonan</h3>
+                            <p>Buat permohonan baru</p>
+                        </div>
+                    </div>
+                `,
+                'chat.html': `
+                    <h2>Live Chat WhatsApp</h2>
+                    <div style="background: #e8f5e8; padding: 30px; border-radius: 8px;">
+                        <p style="margin-bottom: 20px;">Hubungi kami via WhatsApp untuk bantuan cepat</p>
+                        <a href="https://wa.me/6281234567890" target="_blank" 
+                           style="background: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
+                            📱 Mulai Chat
+                        </a>
+                    </div>
+                `,
+                'syarat.html': `
+                    <h2>Persyaratan Layanan</h2>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <tr style="background: #3498db; color: white;">
+                            <th style="padding: 10px;">Layanan</th>
+                            <th style="padding: 10px;">Syarat</th>
+                        </tr>
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 10px;">KTP</td>
+                            <td style="padding: 10px;">FC KK, Surat Pengantar</td>
+                        </tr>
+                    </table>
+                `
+            };
+            
+            alert(`Buat file ${fileName} dengan isi:\n\n${contohContent[fileName] || '<h2>Halaman Baru</h2>'}`);
         }
-        
-        // Handle browser back/forward
-        window.onpopstate = function(event) {
-            if(event.state && event.state.page) {
-                loadHTML(event.state.page);
-            }
+
+        // Load default page
+        window.onload = () => {
+            // Load pelayanan.html secara otomatis jika ada
+            fetch('pelayanan.html')
+                .then(res => res.text())
+                .then(html => {
+                    document.getElementById('loadedContent').innerHTML = html;
+                })
+                .catch(() => {
+                    // Abaikan jika tidak ada
+                });
         };
-        
-        // Load dari URL hash jika ada
-        if(window.location.hash) {
-            const file = window.location.hash.substring(1);
-            loadHTML(file);
-        }
     </script>
 </body>
 </html>
