@@ -691,7 +691,7 @@
 
     <script>
     // Konfigurasi
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx-pkoBBRBviE8I3x-iGNSOrjQXcJeQRyDKuZ35lFjP-cyN6OYH1TedrdHP5XlGEiwwVw/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxF2KWHY5gERDKNZMqLDG99yB7uUvv42Y2rNcb2xt3y2QNnX1zlibJ1LmZRGUW4qWkJYg/exec';
     const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
     
     // State
@@ -985,14 +985,12 @@
             return;
         }
         
-        // Buat input file sementara
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
         input.onchange = function(e) {
             const file = e.target.files[0];
             if (file) {
-                // Validasi ukuran (max 10MB)
                 if (file.size > 10 * 1024 * 1024) {
                     showAlert('Ukuran file maksimal 10MB', 'error');
                     return;
@@ -1047,23 +1045,21 @@
         if (!currentCropper) return;
         
         try {
-            // Dapatkan canvas hasil crop dengan rasio 4:5
+            showLoading(true);
+            
             const canvas = currentCropper.getCroppedCanvas({
                 width: 800,
-                height: 1000, // 4:5 ratio
+                height: 1000,
                 imageSmoothingEnabled: true,
                 imageSmoothingQuality: 'high',
             });
             
-            // Konversi ke blob dengan kualitas 0.8
             const blob = await new Promise(resolve => {
-                canvas.toBlob(resolve, 'image/jpeg', 0.8);
+                canvas.toBlob(resolve, 'image/jpeg', 0.7);
             });
             
-            // Tutup modal
             cancelCrop();
             
-            // Tampilkan preview
             const previewUrl = canvas.toDataURL('image/jpeg');
             if (currentCropType === 'kelurahan') {
                 document.getElementById('kelurahanPhotoPreview').src = previewUrl;
@@ -1072,12 +1068,15 @@
                 if (img) img.src = previewUrl;
             }
             
-            // Upload file
-            await uploadPhoto(blob, currentCropType, currentCropIndex);
+            // Upload dengan chunking
+            await uploadPhotoChunked(blob, currentCropType, currentCropIndex);
+            
+            showLoading(false);
             
         } catch (error) {
             console.error('Crop error:', error);
             showAlert('Gagal memproses foto', 'error');
+            showLoading(false);
         }
     }
 
@@ -1122,35 +1121,52 @@
         }
     }
 
-    // Upload photo
-    async function uploadPhoto(blob, type, index = null) {
+    // UPLOAD DENGAN CHUNKING - SOLUSI UNTUK NETWORK ERROR
+    async function uploadPhotoChunked(blob, type, index = null) {
         showUploadProgress(type, index, true);
-        updateUploadProgress(type, index, 10);
+        updateUploadProgress(type, index, 5);
         
         activeUploads++;
         
         try {
-            // Konversi blob ke base64
-            const base64Data = await new Promise(resolve => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.readAsDataURL(blob);
-            });
+            // Konversi blob ke array buffer
+            const arrayBuffer = await blob.arrayBuffer();
+            const uint8Array = new Uint8Array(arrayBuffer);
             
-            updateUploadProgress(type, index, 30);
+            // Tentukan ukuran chunk (500KB per chunk)
+            const CHUNK_SIZE = 500 * 1024; // 500KB
+            const totalChunks = Math.ceil(uint8Array.length / CHUNK_SIZE);
             
-            // Hapus prefix data URL
-            const cleanBase64 = base64Data.split(',')[1];
+            console.log(`Total chunks: ${totalChunks}, Total size: ${uint8Array.length} bytes`);
             
-            updateUploadProgress(type, index, 50);
+            // Buat ID unik untuk upload ini
+            const uploadId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
-            // Upload menggunakan JSONP
-            const result = await uploadWithJSONP(cleanBase64, 'photo.jpg', type, index);
+            // Upload setiap chunk
+            for (let i = 0; i < totalChunks; i++) {
+                const start = i * CHUNK_SIZE;
+                const end = Math.min(start + CHUNK_SIZE, uint8Array.length);
+                const chunk = uint8Array.slice(start, end);
+                
+                // Konversi chunk ke base64
+                const chunkBase64 = btoa(String.fromCharCode.apply(null, chunk));
+                
+                updateUploadProgress(type, index, 5 + (i / totalChunks) * 80);
+                
+                // Upload chunk
+                await uploadChunk(uploadId, chunkBase64, i, totalChunks, type, index);
+                
+                console.log(`Chunk ${i+1}/${totalChunks} uploaded`);
+            }
             
-            updateUploadProgress(type, index, 90);
+            updateUploadProgress(type, index, 85);
+            
+            // Finalisasi upload
+            const result = await finalizeUpload(uploadId, type, index);
+            
+            updateUploadProgress(type, index, 95);
             
             if (result.success) {
-                // Update data
                 if (type === 'kelurahan') {
                     kelurahanData.link_foto_kelurahan = result.data.link;
                 } else if (index !== null && pegawaiData[index]) {
@@ -1169,7 +1185,7 @@
             }
             
         } catch (error) {
-            console.error('Upload error:', error);
+            console.error('Chunked upload error:', error);
             showAlert('Gagal upload foto: ' + error.message, 'error');
             showUploadProgress(type, index, false);
         } finally {
@@ -1177,10 +1193,10 @@
         }
     }
 
-    // Upload dengan JSONP
-    function uploadWithJSONP(base64Data, filename, type, index) {
+    // Upload satu chunk
+    function uploadChunk(uploadId, chunkBase64, chunkIndex, totalChunks, type, index) {
         return new Promise((resolve, reject) => {
-            const callbackName = 'upload_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            const callbackName = 'chunk_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             
             window[callbackName] = function(response) {
                 delete window[callbackName];
@@ -1190,15 +1206,17 @@
                 if (response.success) {
                     resolve(response);
                 } else {
-                    reject(new Error(response.message || 'Upload failed'));
+                    reject(new Error(response.message || 'Chunk upload failed'));
                 }
             };
             
             const script = document.createElement('script');
             const url = new URL(APPS_SCRIPT_URL);
-            url.searchParams.set('action', 'uploadPhoto');
-            url.searchParams.set('file', base64Data);
-            url.searchParams.set('filename', filename);
+            url.searchParams.set('action', 'uploadChunk');
+            url.searchParams.set('uploadId', uploadId);
+            url.searchParams.set('chunk', chunkBase64);
+            url.searchParams.set('chunkIndex', chunkIndex.toString());
+            url.searchParams.set('totalChunks', totalChunks.toString());
             url.searchParams.set('type', type);
             url.searchParams.set('index', index !== null ? index.toString() : '');
             url.searchParams.set('username', currentUser);
@@ -1209,7 +1227,7 @@
                 delete window[callbackName];
                 script.remove();
                 clearTimeout(timeoutId);
-                reject(new Error('Network error'));
+                reject(new Error('Network error on chunk ' + chunkIndex));
             };
             
             document.body.appendChild(script);
@@ -1218,9 +1236,52 @@
                 if (window[callbackName]) {
                     delete window[callbackName];
                     script.remove();
-                    reject(new Error('Upload timeout'));
+                    reject(new Error('Chunk upload timeout'));
                 }
-            }, 60000); // 60 detik timeout
+            }, 30000);
+        });
+    }
+
+    // Finalisasi upload
+    function finalizeUpload(uploadId, type, index) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'finalize_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            window[callbackName] = function(response) {
+                delete window[callbackName];
+                if (script) script.remove();
+                clearTimeout(timeoutId);
+                
+                resolve(response);
+            };
+            
+            const script = document.createElement('script');
+            const url = new URL(APPS_SCRIPT_URL);
+            url.searchParams.set('action', 'finalizeUpload');
+            url.searchParams.set('uploadId', uploadId);
+            url.searchParams.set('type', type);
+            url.searchParams.set('index', index !== null ? index.toString() : '');
+            url.searchParams.set('username', currentUser);
+            url.searchParams.set('filename', 'photo.jpg');
+            url.searchParams.set('callback', callbackName);
+            
+            script.src = url.toString();
+            script.onerror = () => {
+                delete window[callbackName];
+                script.remove();
+                clearTimeout(timeoutId);
+                reject(new Error('Network error on finalize'));
+            };
+            
+            document.body.appendChild(script);
+            
+            const timeoutId = setTimeout(() => {
+                if (window[callbackName]) {
+                    delete window[callbackName];
+                    script.remove();
+                    reject(new Error('Finalize timeout'));
+                }
+            }, 30000);
         });
     }
 
