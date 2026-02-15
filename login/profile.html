@@ -45,7 +45,7 @@
         .circle3 {
             width: 200px;
             height: 200px;
-            bottom: 100px;
+            bottom: 50px;
             right: 50px;
             animation-delay: -1.5s;
         }
@@ -550,15 +550,17 @@
 
     <script>
     // KONFIGURASI - GANTI DENGAN URL APPS SCRIPT ANDA
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwv8E9kKFxGFOcxYFgFwKOzaFQMGeK7cXAG9gu-mRcqaAMdpjVfK_r8m0PHKoFVXPg/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby1RsZA7KikgjqOebugqPzYVzxry0Mm4suC5ZSOQNjfOVmtiYemriM3OMT-9TqbpMOIGA/exec';
     const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
     
+    // State
     let currentUser = null;
     let isEditModeKelurahan = false;
     let isEditModePegawai = false;
     let kelurahanData = {};
     let pegawaiData = [];
 
+    // Field definitions
     const kelurahanFields = [
         { id: 'nama_kelurahan', label: 'Nama Kelurahan', type: 'text' },
         { id: 'alamat_kelurahan', label: 'Alamat Kelurahan', type: 'textarea' },
@@ -580,11 +582,13 @@
         { id: 'no_hp', label: 'No. HP', type: 'tel' }
     ];
 
+    // Inisialisasi
     window.onload = function() {
         checkAuth();
         renderKelurahanFields();
     };
 
+    // Cek autentikasi
     function checkAuth() {
         const isLoggedIn = sessionStorage.getItem('isLoggedIn');
         const username = sessionStorage.getItem('username');
@@ -602,6 +606,7 @@
         loadUserData();
     }
 
+    // Load dari cache
     function loadFromCache() {
         try {
             const cached = localStorage.getItem(`profile_${currentUser}`);
@@ -618,6 +623,7 @@
         }
     }
 
+    // Save ke cache
     function saveToCache() {
         try {
             const data = {
@@ -631,6 +637,7 @@
         }
     }
 
+    // Load data dengan JSONP (lebih reliable)
     function loadUserData() {
         showLoading(true);
         
@@ -668,13 +675,16 @@
         url.searchParams.set('username', currentUser);
         url.searchParams.set('callback', callbackName);
         script.src = url.toString();
+        script.onerror = function() {
+            window[callbackName]({ success: false, message: 'Network error' });
+        };
         document.body.appendChild(script);
         
         setTimeout(() => {
             if (window[callbackName]) {
                 window[callbackName]({ success: false, message: 'Timeout' });
             }
-        }, 10000);
+        }, 15000);
     }
 
     function renderKelurahanFields() {
@@ -720,10 +730,11 @@
             }
         });
         
+        const fotoPreview = document.getElementById('kelurahanPhotoPreview');
         if (kelurahanData.link_foto_kelurahan && kelurahanData.link_foto_kelurahan.includes('drive.google.com')) {
-            document.getElementById('kelurahanPhotoPreview').src = kelurahanData.link_foto_kelurahan;
+            fotoPreview.src = kelurahanData.link_foto_kelurahan;
         } else {
-            document.getElementById('kelurahanPhotoPreview').src = 'https://via.placeholder.com/400x500?text=Upload+Foto';
+            fotoPreview.src = 'https://via.placeholder.com/400x500?text=Upload+Foto';
         }
         
         document.getElementById('editKelurahanText').textContent = isEditModeKelurahan ? 'Batal' : 'Edit Data';
@@ -806,6 +817,7 @@
         renderPegawaiData();
     }
 
+    // Upload foto dengan JSONP (lebih reliable dari fetch)
     function handlePhotoUpload(input, type, index = null) {
         const file = input.files[0];
         if (!file) return;
@@ -829,6 +841,7 @@
         reader.onload = function(e) {
             const base64Data = e.target.result;
             
+            // Preview lokal
             if (type === 'kelurahan') {
                 document.getElementById('kelurahanPhotoPreview').src = base64Data;
             } else if (index !== null) {
@@ -858,11 +871,14 @@
                         showAlert('Foto berhasil diupload', 'success');
                     } else {
                         showAlert('Gagal upload foto: ' + (response ? response.message : 'Unknown error'), 'error');
+                        // Kembalikan preview
                         if (type === 'kelurahan') {
                             document.getElementById('kelurahanPhotoPreview').src = kelurahanData.link_foto_kelurahan || 'https://via.placeholder.com/400x500?text=Upload+Foto';
                         } else if (index !== null) {
                             const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
-                            if (img) img.src = pegawaiData[index]?.link_foto || 'https://via.placeholder.com/80x100?text=Upload';
+                            if (img) {
+                                img.src = pegawaiData[index]?.link_foto || 'https://via.placeholder.com/80x100?text=Upload';
+                            }
                         }
                     }
                 } catch (e) {
@@ -885,6 +901,9 @@
             url.searchParams.set('username', currentUser);
             url.searchParams.set('callback', callbackName);
             script.src = url.toString();
+            script.onerror = function() {
+                window[callbackName]({ success: false, message: 'Network error' });
+            };
             document.body.appendChild(script);
             
             setTimeout(() => {
@@ -942,13 +961,16 @@
         url.searchParams.set('kelurahanData', JSON.stringify(kelurahanData));
         url.searchParams.set('callback', callbackName);
         script.src = url.toString();
+        script.onerror = function() {
+            window[callbackName]({ success: false, message: 'Network error' });
+        };
         document.body.appendChild(script);
         
         setTimeout(() => {
             if (window[callbackName]) {
                 window[callbackName]({ success: false, message: 'Save timeout' });
             }
-        }, 10000);
+        }, 15000);
     }
 
     function simpanDataPegawai(index) {
@@ -988,13 +1010,16 @@
         url.searchParams.set('pegawaiData', JSON.stringify(pegawaiData));
         url.searchParams.set('callback', callbackName);
         script.src = url.toString();
+        script.onerror = function() {
+            window[callbackName]({ success: false, message: 'Network error' });
+        };
         document.body.appendChild(script);
         
         setTimeout(() => {
             if (window[callbackName]) {
                 window[callbackName]({ success: false, message: 'Save timeout' });
             }
-        }, 10000);
+        }, 15000);
     }
 
     function handleLogout() {
