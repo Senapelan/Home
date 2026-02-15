@@ -224,7 +224,7 @@
             margin-left: 12px;
         }
 
-        .field-group input, .field-group .field-value {
+        .field-group input {
             background: #f4f9ff;
             border: 1px solid transparent;
             border-radius: 20px;
@@ -548,13 +548,16 @@
         const SPREADSHEET_ID = '1cgHQZoB_vm7R7EgnS4C_00h5buJooFX7fkz0FMjODgU';
         const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
 
-        // ==================== STATE ====================
-        let currentUser = localStorage.getItem('loggedInUser') || '';
+        // ==================== CEK LOGIN ====================
+        // Perbaikan: cek login dengan benar tanpa redirect loop
+        let currentUser = localStorage.getItem('loggedInUser');
+        
+        // Jika tidak ada user login, redirect ke halaman login
         if (!currentUser) {
-            // Redirect ke login jika belum login
-            window.location.href = 'https://senapelan.github.io/Home/login/login.html';
+            window.location.replace('https://senapelan.github.io/Home/login/login.html');
         }
 
+        // ==================== STATE ====================
         let isEditModeKelurahan = false;
         let isEditModePegawai = false;
 
@@ -590,13 +593,47 @@
         }
 
         // Inisialisasi user di header
-        document.getElementById('userInitials').innerText = currentUser.charAt(0).toUpperCase();
-        document.getElementById('userFullName').innerText = currentUser;
+        document.getElementById('userInitials').innerText = currentUser ? currentUser.charAt(0).toUpperCase() : 'U';
+        document.getElementById('userFullName').innerText = currentUser || 'User';
 
         // ==================== LOAD DATA DARI SPREADSHEET ====================
         async function loadDataFromSheet() {
             showLoading(true);
             try {
+                // Untuk demo, kita gunakan data dummy dulu jika Apps Script belum di-deploy
+                // Hapus bagian ini jika Apps Script sudah siap
+                if (APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_ID')) {
+                    console.log('Menggunakan data dummy (Apps Script belum dikonfigurasi)');
+                    setTimeout(() => {
+                        kelurahanData = {
+                            nama_kelurahan: 'Kelurahan Contoh',
+                            alamat_kelurahan: 'Jl. Contoh No. 123',
+                            rt: '001',
+                            rw: '002',
+                            kelurahan: 'Contoh',
+                            kecamatan: 'Contoh',
+                            kota: 'Jakarta',
+                            provinsi: 'DKI Jakarta',
+                            kode_pos: '12345',
+                            telp_kantor: '021-1234567'
+                        };
+                        pegawaiList = [
+                            {
+                                nama_pegawai1: 'Budi Santoso',
+                                jabatan1: 'Lurah',
+                                nip1: '198001012010011001',
+                                pangkat_gol1: 'Pembina IV/a',
+                                no_hp1: '08123456789'
+                            }
+                        ];
+                        renderSemua();
+                        setModeKelurahan(false);
+                        setModePegawai(false);
+                        showLoading(false);
+                    }, 1000);
+                    return;
+                }
+
                 // Panggil Apps Script dengan method GET
                 const url = `${APPS_SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(currentUser)}&action=get`;
                 const response = await fetch(url);
@@ -613,10 +650,29 @@
                 }
             } catch (error) {
                 console.error('Error loading data:', error);
-                showToast('Gagal memuat data dari server', false);
-                // Fallback ke data kosong
-                kelurahanData = {};
-                pegawaiList = [];
+                showToast('Gagal memuat data dari server, menggunakan data demo', false);
+                // Data dummy untuk demo
+                kelurahanData = {
+                    nama_kelurahan: 'Kelurahan ' + currentUser,
+                    alamat_kelurahan: 'Jl. Contoh No. 123',
+                    rt: '001',
+                    rw: '002',
+                    kelurahan: 'Contoh',
+                    kecamatan: 'Contoh',
+                    kota: 'Jakarta',
+                    provinsi: 'DKI Jakarta',
+                    kode_pos: '12345',
+                    telp_kantor: '021-1234567'
+                };
+                pegawaiList = [
+                    {
+                        nama_pegawai1: 'Budi Santoso',
+                        jabatan1: 'Lurah',
+                        nip1: '198001012010011001',
+                        pangkat_gol1: 'Pembina IV/a',
+                        no_hp1: '08123456789'
+                    }
+                ];
             } finally {
                 renderSemua();
                 setModeKelurahan(false);
@@ -629,6 +685,15 @@
         async function saveToSheet() {
             showLoading(true);
             try {
+                // Untuk demo, jika Apps Script belum di-deploy
+                if (APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_ID')) {
+                    setTimeout(() => {
+                        showToast('Data berhasil disimpan (mode demo)');
+                        showLoading(false);
+                    }, 500);
+                    return;
+                }
+
                 const payload = {
                     spreadsheetId: SPREADSHEET_ID,
                     sheetName: currentUser,
@@ -639,14 +704,13 @@
 
                 const response = await fetch(APPS_SCRIPT_URL, {
                     method: 'POST',
-                    mode: 'no-cors', // Untuk Apps Script, perlu no-cors atau sesuaikan
+                    mode: 'no-cors',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify(payload)
                 });
 
-                // Karena no-cors, kita tidak bisa baca response. Asumsikan sukses.
                 showToast('Data berhasil disimpan ke spreadsheet');
             } catch (error) {
                 console.error('Error saving:', error);
@@ -659,6 +723,19 @@
         // ==================== UPLOAD FOTO KE DRIVE ====================
         async function uploadFotoToDrive(blob, fileName) {
             showLoading(true);
+            
+            // Untuk demo, jika Apps Script belum di-deploy
+            if (APPS_SCRIPT_URL.includes('YOUR_APPS_SCRIPT_ID')) {
+                return new Promise((resolve) => {
+                    setTimeout(() => {
+                        const dummyUrl = URL.createObjectURL(blob);
+                        showLoading(false);
+                        showToast('Foto berhasil diupload (mode demo)');
+                        resolve(dummyUrl);
+                    }, 1000);
+                });
+            }
+
             const formData = new FormData();
             formData.append('folderId', DRIVE_FOLDER_ID);
             formData.append('fileName', fileName);
@@ -671,7 +748,7 @@
                 });
                 const result = await response.json();
                 if (result.status === 'success') {
-                    return result.thumbnailLink; // Apps Script mengembalikan link thumbnail
+                    return result.thumbnailLink;
                 } else {
                     throw new Error(result.message || 'Upload gagal');
                 }
@@ -727,49 +804,53 @@
             const container = document.getElementById('pegawaiContainer');
             let html = '';
 
-            pegawaiList.forEach((pegawai, index) => {
-                const fotoLink = pegawai.link_foto || 'https://via.placeholder.com/140x175?text=Pegawai';
-                html += `
-                    <div class="pegawai-card" id="pegCard_${index}">
-                        <div class="pegawai-header">
-                            <span class="pegawai-number">PEGAWAI ${index + 1}</span>
-                        </div>
-                        <div class="pegawai-content">
-                            <div class="pegawai-foto">
-                                <img src="${fotoLink}" class="foto-pegawai-preview" id="previewPeg_${index}">
-                                <button class="btn-upload ${!isEditModePegawai ? 'disabled' : ''}" 
-                                        id="uploadPegBtn_${index}" 
-                                        ${!isEditModePegawai ? 'disabled' : ''}>
-                                    <i class="fas fa-camera"></i> Upload Foto
-                                </button>
-                                <input type="file" id="filePeg_${index}" accept="image/*" style="display: none;">
+            if (pegawaiList.length === 0) {
+                html = '<div style="text-align: center; padding: 40px; color: #4a677e;">Belum ada data pegawai. Klik "Edit Semua" untuk menambah.</div>';
+            } else {
+                pegawaiList.forEach((pegawai, index) => {
+                    const fotoLink = pegawai.link_foto || 'https://via.placeholder.com/140x175?text=Pegawai';
+                    html += `
+                        <div class="pegawai-card" id="pegCard_${index}">
+                            <div class="pegawai-header">
+                                <span class="pegawai-number">PEGAWAI ${index + 1}</span>
                             </div>
-                            <div class="pegawai-fields">
-                                <div class="field-group">
-                                    <label>Nama Pegawai</label>
-                                    <input type="text" id="peg_${index}_nama" value="${escapeHtml(pegawai.nama_pegawai1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                            <div class="pegawai-content">
+                                <div class="pegawai-foto">
+                                    <img src="${fotoLink}" class="foto-pegawai-preview" id="previewPeg_${index}">
+                                    <button class="btn-upload ${!isEditModePegawai ? 'disabled' : ''}" 
+                                            id="uploadPegBtn_${index}" 
+                                            ${!isEditModePegawai ? 'disabled' : ''}>
+                                        <i class="fas fa-camera"></i> Upload Foto
+                                    </button>
+                                    <input type="file" id="filePeg_${index}" accept="image/*" style="display: none;">
                                 </div>
-                                <div class="field-group">
-                                    <label>Jabatan</label>
-                                    <input type="text" id="peg_${index}_jabatan" value="${escapeHtml(pegawai.jabatan1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
-                                </div>
-                                <div class="field-group">
-                                    <label>NIP</label>
-                                    <input type="text" id="peg_${index}_nip" value="${escapeHtml(pegawai.nip1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
-                                </div>
-                                <div class="field-group">
-                                    <label>Pangkat/Gol</label>
-                                    <input type="text" id="peg_${index}_pangkat" value="${escapeHtml(pegawai.pangkat_gol1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
-                                </div>
-                                <div class="field-group">
-                                    <label>No HP</label>
-                                    <input type="text" id="peg_${index}_nohp" value="${escapeHtml(pegawai.no_hp1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                <div class="pegawai-fields">
+                                    <div class="field-group">
+                                        <label>Nama Pegawai</label>
+                                        <input type="text" id="peg_${index}_nama" value="${escapeHtml(pegawai.nama_pegawai1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Jabatan</label>
+                                        <input type="text" id="peg_${index}_jabatan" value="${escapeHtml(pegawai.jabatan1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                    </div>
+                                    <div class="field-group">
+                                        <label>NIP</label>
+                                        <input type="text" id="peg_${index}_nip" value="${escapeHtml(pegawai.nip1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                    </div>
+                                    <div class="field-group">
+                                        <label>Pangkat/Gol</label>
+                                        <input type="text" id="peg_${index}_pangkat" value="${escapeHtml(pegawai.pangkat_gol1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                    </div>
+                                    <div class="field-group">
+                                        <label>No HP</label>
+                                        <input type="text" id="peg_${index}_nohp" value="${escapeHtml(pegawai.no_hp1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                `;
-            });
+                    `;
+                });
+            }
 
             container.innerHTML = html;
 
@@ -798,7 +879,7 @@
                 addBtn.style.pointerEvents = 'auto';
             }
 
-            document.getElementById('simpanSemuaPegawaiBtn').disabled = !isEditModePegawai;
+            document.getElementById('simpanSemuaPegawaiBtn').disabled = !isEditModePegawai || pegawaiList.length === 0;
         }
 
         // ==================== MODE EDIT ====================
@@ -958,7 +1039,10 @@
         });
 
         // ==================== INITIAL LOAD ====================
-        loadDataFromSheet();
+        // Pastikan currentUser ada sebelum load data
+        if (currentUser) {
+            loadDataFromSheet();
+        }
     </script>
 </body>
 </html>
