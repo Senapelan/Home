@@ -1,4 +1,575 @@
-<script>
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Senapanel</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+ 
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        .circle {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+            z-index: 0;
+        }
+
+        .circle1 {
+            width: 300px;
+            height: 300px;
+            top: -100px;
+            right: -100px;
+        }
+
+        .circle2 {
+            width: 400px;
+            height: 400px;
+            bottom: -150px;
+            left: -150px;
+            animation-delay: -3s;
+        }
+
+        .circle3 {
+            width: 200px;
+            height: 200px;
+            bottom: 100px;
+            right: 50px;
+            animation-delay: -1.5s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(180deg); }
+        }
+
+        /* Main container */
+        .main-container {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .user-details h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .user-details p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5253 100%);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(238, 82, 83, 0.4);
+        }
+
+        /* Cards Container */
+        .cards-container {
+            display: grid;
+            gap: 30px;
+        }
+
+        /* Card Kelurahan */
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .card-header h3 {
+            color: #333;
+            font-size: 1.5em;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .edit-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        /* Kelurahan Content */
+        .kelurahan-content {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
+        }
+
+        .kelurahan-fields {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .field-group {
+            margin-bottom: 15px;
+        }
+
+        .field-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+            font-size: 0.9em;
+        }
+
+        .field-group input, 
+        .field-group textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e1e1e1;
+            border-radius: 12px;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .field-group input:focus,
+        .field-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .field-group input[readonly],
+        .field-group textarea[readonly] {
+            background: #f8f9fa;
+            border-color: #e1e1e1;
+            color: #666;
+            cursor: default;
+        }
+
+        .field-group input[readonly]:focus,
+        .field-group textarea[readonly]:focus {
+            border-color: #e1e1e1;
+            box-shadow: none;
+        }
+
+        /* Photo Upload */
+        .photo-container {
+            position: relative;
+        }
+
+        .photo-preview {
+            width: 100%;
+            aspect-ratio: 4/5;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 3px solid #f0f0f0;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .photo-preview:hover {
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .photo-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            padding: 15px;
+            color: white;
+            text-align: center;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .photo-preview:hover .photo-overlay {
+            transform: translateY(0);
+        }
+
+        .photo-upload {
+            display: none;
+        }
+
+        /* Pegawai Cards */
+        .pegawai-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+
+        .pegawai-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .pegawai-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.15);
+        }
+
+        .pegawai-header {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .pegawai-photo {
+            width: 80px;
+            height: 100px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid #f0f0f0;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .pegawai-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .pegawai-photo:hover::after {
+            content: '📷';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .pegawai-info {
+            flex: 1;
+        }
+
+        .btn-tambah {
+            padding: 15px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .btn-tambah:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .btn-tambah:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-simpan {
+            padding: 12px 25px;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.95em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .btn-simpan:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        /* Loading */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255,255,255,0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Alert */
+        .alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            z-index: 10000;
+            animation: slideInRight 0.3s ease-out;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .kelurahan-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .kelurahan-fields {
+                grid-template-columns: 1fr;
+            }
+            
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .pegawai-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Animated background -->
+    <div class="circle circle1"></div>
+    <div class="circle circle2"></div>
+    <div class="circle circle3"></div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="loading-spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                <div class="user-avatar" id="userAvatar">U</div>
+                <div class="user-details">
+                    <h2 id="userName">Loading...</h2>
+                    <p id="userRole">Role: User</p>
+                </div>
+            </div>
+            <button class="logout-btn" onclick="handleLogout()">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+        </div>
+
+        <!-- Cards Container -->
+        <div class="cards-container">
+            <!-- Card Kelurahan -->
+            <div class="card" id="kelurahanCard">
+                <div class="card-header">
+                    <h3><i class="fas fa-building"></i> Data Kelurahan</h3>
+                    <button class="edit-btn" onclick="toggleEditKelurahan()" id="editKelurahanBtn">
+                        <i class="fas fa-edit"></i> <span id="editKelurahanText">Edit Data</span>
+                    </button>
+                </div>
+                <div class="kelurahan-content">
+                    <div class="kelurahan-fields" id="kelurahanFields">
+                        <!-- Fields akan diisi oleh JavaScript -->
+                    </div>
+                    <div class="photo-container">
+                        <div class="photo-preview" onclick="document.getElementById('kelurahanPhoto').click()">
+                            <img id="kelurahanPhotoPreview" src="https://via.placeholder.com/400x500?text=Upload+Foto" alt="Preview">
+                            <div class="photo-overlay">
+                                <i class="fas fa-camera"></i> Klik untuk upload
+                            </div>
+                        </div>
+                        <input type="file" id="kelurahanPhoto" class="photo-upload" accept="image/*" onchange="handlePhotoUpload(this, 'kelurahan')">
+                    </div>
+                </div>
+                <button class="btn-simpan" onclick="simpanDataKelurahan()" id="simpanKelurahanBtn" style="display: none;">
+                    <i class="fas fa-save"></i> Simpan Data Kelurahan
+                </button>
+            </div>
+
+            <!-- Card Pegawai -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><i class="fas fa-users"></i> Data Pegawai</h3>
+                    <button class="edit-btn" onclick="toggleEditPegawai()" id="editPegawaiBtn">
+                        <i class="fas fa-edit"></i> <span id="editPegawaiText">Edit Data</span>
+                    </button>
+                </div>
+                <div id="pegawaiContainer">
+                    <div class="pegawai-grid" id="pegawaiGrid"></div>
+                </div>
+                <button class="btn-tambah" onclick="tambahPegawai()" id="tambahPegawaiBtn">
+                    <i class="fas fa-plus-circle"></i> Tambah Pegawai
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <script>
     // Konfigurasi - PASTIKAN URL INI BENAR
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyqLxwyMTmlPAAIpgENVO7vTVY-rtfHsZ_LzmZLovdTAesLGPBS_oj8ZgF8RmCKuNm2hQ/exec';
     const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
@@ -468,3 +1039,5 @@
         }, 3000);
     }
 </script>
+</body>
+</html>
