@@ -1,239 +1,458 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Glaspire · Layanan Premium Biru Gelap</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+    }
 
+    body {
+      background: radial-gradient(circle at 10% 30%, #0b1c3a, #030613);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
 
-        
-        body {
-            font-family: Arial, sans-serif;
-            height: 100vh;
-            display: flex; /* Gunakan flexbox untuk layout */
-            overflow: hidden; /* Cegah scroll di body */
-        }
+    /* GLASS CORE */
+    .glass-premium {
+      background: rgba(8, 20, 48, 0.45);
+      backdrop-filter: blur(14px) saturate(180%);
+      -webkit-backdrop-filter: blur(14px) saturate(180%);
+      border: 1px solid rgba(74, 144, 226, 0.25);
+      border-radius: 40px;
+      box-shadow: 0 30px 50px -15px rgba(0, 0, 0, 0.8), 
+                  inset 0 1px 2px rgba(255, 255, 255, 0.08);
+    }
 
-        /* Sidebar fixed width */
-        .sidebar {
-            width: 280px;
-            background: #2c3e50;
-            color: white;
-            height: 100vh;
-            position: relative;
-            flex-shrink: 0; /* Cegah sidebar mengecil */
-            overflow-y: auto; /* Scroll jika menu terlalu panjang */
-        }
+    .app-container {
+      width: 1440px;
+      max-width: 100%;
+      height: 880px;
+      max-height: 90vh;
+      display: flex;
+      padding: 18px;
+      gap: 18px;
+      background: rgba(3, 10, 28, 0.4);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: 48px;
+      border: 1px solid rgba(16, 56, 120, 0.5);
+      box-shadow: 0 30px 50px -15px #000000cc;
+    }
 
-        /* Main content - akan mengisi sisa space */
-        .main-content {
-            flex: 1; /* Ambil sisa space */
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+    /* SIDEBAR LEFT (KATEGORI) */
+    .sidebar {
+      width: 300px;
+      background: rgba(6, 16, 35, 0.6);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 32px;
+      border: 1px solid rgba(0, 183, 255, 0.2);
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 40px -15px #00000080, inset 0 0 0 1px rgba(255,255,255,0.03);
+    }
 
-        /* Toolbar fixed */
-        .toolbar {
-            background: white;
-            padding: 12px 25px;
-            border-bottom: 1px solid #ddd;
-            flex-shrink: 0; /* Cegah toolbar mengecil */
-        }
+    .brand {
+      margin-bottom: 45px;
+      padding-left: 8px;
+    }
 
-        /* Container untuk konten yang di-load */
-        .content-container {
-            flex: 1; /* Ambil sisa space */
-            padding: 25px;
-            overflow-y: auto; /* Scroll hanya di sini */
-            background: #f5f7fa;
-        }
+    .brand h2 {
+      font-size: 24px;
+      font-weight: 600;
+      background: linear-gradient(130deg, #fff, #b0d5ff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.2px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-        /* Status bar fixed di bawah */
-        .status-bar {
-            background: #e9ecef;
-            padding: 8px 25px;
-            border-top: 1px solid #ddd;
-            flex-shrink: 0;
-        }
+    .brand i {
+      font-size: 32px;
+      color: #3b82f6;
+      filter: drop-shadow(0 0 8px #3b82f6);
+    }
 
-        /* Styling untuk konten yang di-load */
-        .loaded-content {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            min-height: 100%;
-        }
+    .kategori-title {
+      text-transform: uppercase;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      color: #8daeec;
+      margin-bottom: 22px;
+      padding-left: 12px;
+      opacity: 0.8;
+    }
 
-        /* Menu items */
-        .menu-item {
-            padding: 15px 25px;
-            cursor: pointer;
-            border-left: 4px solid transparent;
-        }
+    .menu-kategori {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex: 1;
+    }
 
-        .menu-item:hover {
-            background: #34495e;
-            border-left-color: #3498db;
-        }
+    .kategori-item {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 22px;
+      background: rgba(18, 30, 55, 0.5);
+      border-radius: 28px;
+      border: 1px solid rgba(52, 112, 255, 0.15);
+      backdrop-filter: blur(5px);
+      color: #e1ecff;
+      font-size: 18px;
+      font-weight: 500;
+      transition: all 0.25s ease;
+      cursor: pointer;
+      box-shadow: 0 6px 14px rgba(0, 8, 29, 0.4);
+      text-decoration: none;
+      /* untuk menghilangkan underline link */
+    }
 
-        .menu-item.active {
-            background: #2980b9;
-            border-left-color: #f1c40f;
-        }
-    </style>
+    .kategori-item i {
+      font-size: 26px;
+      width: 32px;
+      color: #6ea3ff;
+      transition: 0.2s;
+    }
+
+    .kategori-item span {
+      flex: 1;
+    }
+
+    .kategori-item:hover {
+      background: rgba(28, 56, 110, 0.7);
+      border-color: rgba(0, 153, 255, 0.6);
+      box-shadow: 0 10px 22px -8px #0066ff60, inset 0 1px 2px #ffffff30;
+      transform: translateY(-2px);
+    }
+
+    .kategori-item:hover i {
+      color: white;
+      text-shadow: 0 0 12px #90c0ff;
+    }
+
+    /* active state (akan di set via js) */
+    .kategori-item.active {
+      background: linear-gradient(145deg, #164280, #0b2d62);
+      border-color: #48a0ff;
+      box-shadow: 0 12px 20px -10px #0044ff, 0 0 0 1px #a0d0ff inset;
+    }
+
+    .kategori-item.active i {
+      color: #ffffff;
+    }
+
+    /* FOOTER SIDEBAR */
+    .sidebar-footer {
+      margin-top: 40px;
+      font-size: 13px;
+      color: #8ca9d9;
+      text-align: center;
+      border-top: 1px dashed #255197;
+      padding-top: 22px;
+      letter-spacing: 0.3px;
+    }
+
+    /* MAIN PANEL (KANAN) */
+    .main-panel {
+      flex: 1;
+      background: rgba(4, 12, 29, 0.45);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-radius: 34px;
+      border: 1px solid rgba(26, 110, 220, 0.4);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: inset 0 2px 6px rgba(0, 30, 80, 0.5);
+    }
+
+    /* header panel */
+    .panel-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+      padding: 0 12px 12px 12px;
+      border-bottom: 1px solid rgba(77, 146, 255, 0.25);
+    }
+
+    .panel-header h3 {
+      color: white;
+      font-weight: 500;
+      letter-spacing: 0.3px;
+      text-shadow: 0 2px 5px #00000050;
+    }
+
+    .panel-header i {
+      color: #6ea3ff;
+      background: #10223f;
+      padding: 10px;
+      border-radius: 50%;
+      font-size: 18px;
+      box-shadow: 0 0 10px #3f8aff;
+    }
+
+    .address-bar {
+      background: rgba(0, 15, 40, 0.7);
+      border-radius: 60px;
+      padding: 14px 22px;
+      color: #bdd3ff;
+      font-size: 15px;
+      border: 1px solid #2959a0;
+      backdrop-filter: blur(20px);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      box-shadow: inset 0 2px 5px #00000055;
+    }
+
+    .address-bar i {
+      margin-right: 12px;
+      color: #57a6ff;
+      font-size: 16px;
+    }
+
+    #current-url-display {
+      font-weight: 400;
+      color: #c6deff;
+    }
+
+    /* IFRAME WRAPPER (TEMPLATE HALAMAN WEB) */
+    .iframe-wrapper {
+      flex: 1;
+      border-radius: 28px;
+      overflow: hidden;
+      background: #0d1b30;
+      border: 1px solid rgba(0, 157, 255, 0.35);
+      box-shadow: 0 20px 35px -5px #000000b0, inset 0 1px 3px #6ea3ff30;
+      transition: box-shadow 0.3s;
+    }
+
+    .iframe-wrapper iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #f8faff; /* fallback putih, tapi nanti akan loading */
+    }
+
+    /* animasi loading subtle */
+    .iframe-wrapper.loading {
+      opacity: 0.7;
+      box-shadow: 0 0 0 2px #2f7bff;
+    }
+
+    /* custom scroll */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1e4880;
+      border-radius: 20px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #2f6ac0;
+    }
+  </style>
 </head>
 <body>
-    <!-- Sidebar kiri - fixed width -->
+  <div class="app-container">
+    <!-- SIDEBAR KIRI : KATEGORI + direct link web -->
     <div class="sidebar">
-        <div style="padding: 20px; border-bottom: 1px solid #3a4a5a;">
-            <h2>📁 Layanan Explorer</h2>
-        </div>
-        
-        <div style="padding: 15px 0;">
-            <div class="menu-item active" onclick="loadPage('https://senapelan.github.io/Home/kelurahankampungbandar.html')">👤 Pelayanan Mandiri</div>
-            <div class="menu-item" onclick="loadPage('https://senapelan.github.io/Home/kelurahankampungbaru.html')">💬 Live Chat WhatsApp</div>
-            <div class="menu-item" onclick="loadPage('syarat.html')">📋 Persyaratan</div>
-            <div class="menu-item" onclick="loadPage('unduh.html')">⬇️ Unduh Berkas</div>
-            <div class="menu-item" onclick="loadPage('pengaduan.html')">⚠️ Lapor Pengaduan</div>
-        </div>
+      <div class="brand">
+        <h2><i class="fas fa-cube"></i> GlasPire</h2>
+      </div>
+      <div class="kategori-title">
+        <i class="fas fa-layer-group" style="margin-right: 8px;"></i> Layanan Digital
+      </div>
+      <nav class="menu-kategori" id="kategoriMenu">
+        <!-- Pelayanan Mandiri -->
+        <a href="#" class="kategori-item" data-url="https://www.example.com/layanan-mandiri" data-title="Pelayanan Mandiri">
+          <i class="fas fa-user-check"></i>
+          <span>Pelayanan Mandiri</span>
+          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
+        </a>
+        <!-- Live Chat WhatsApp -->
+        <a href="#" class="kategori-item" data-url="https://www.example.com/whatsapp-chat" data-title="Live Chat WhatsApp">
+          <i class="fab fa-whatsapp"></i>
+          <span>Live Chat WhatsApp</span>
+          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
+        </a>
+        <!-- Persyaratan berkas -->
+        <a href="#" class="kategori-item" data-url="https://www.example.com/persyaratan-berkas" data-title="Persyaratan Berkas">
+          <i class="fas fa-folder-open"></i>
+          <span>Persyaratan berkas</span>
+          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
+        </a>
+        <!-- Lapor Pengaduan -->
+        <a href="#" class="kategori-item" data-url="https://www.example.com/lapor-pengaduan" data-title="Lapor Pengaduan">
+          <i class="fas fa-bullhorn"></i>
+          <span>Lapor Pengaduan</span>
+          <i class="fas fa-arrow-up-right-from-square" style="font-size: 14px; opacity: 0.7;"></i>
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <i class="fas fa-lock" style="opacity: 0.6; margin-right: 4px;"></i> koneksi aman • 2025
+      </div>
     </div>
 
-    <!-- Main content kanan - akan mengisi sisa space -->
-    <div class="main-content">
-        <!-- Toolbar atas -->
-        <div class="toolbar">
-            <span id="currentLocation">📍 Pelayanan Mandiri</span>
+    <!-- AREA KANAN : TEMPLATE UNTUK MENAMPILKAN HALAMAN WEB -->
+    <div class="main-panel">
+      <div class="panel-header">
+        <i class="fas fa-window-maximize"></i>
+        <h3>Pratinjau halaman</h3>
+        <div style="flex:1; text-align: right; color: #7b9ed6;">
+          <i class="fas fa-rotate-right" id="refreshIframeBtn" style="cursor: pointer; padding: 10px;" title="muat ulang"></i>
         </div>
-
-        <!-- Container konten - ini yang akan scroll -->
-        <div class="content-container" id="contentArea">
-            <div class="loaded-content" id="loadedContent">
-                <!-- Konten dari HTML lain akan dimuat di sini -->
-                <div style="text-align: center; padding: 50px; color: #666;">
-                    Pilih menu di samping untuk memulai
-                </div>
-            </div>
-        </div>
-
-        <!-- Status bar bawah -->
-        <div class="status-bar">
-            <span>📊 Siap</span>
-        </div>
+      </div>
+      <!-- address bar gaya glass -->
+      <div class="address-bar">
+        <i class="fas fa-globe"></i>
+        <span id="current-url-display">https://www.example.com/beranda</span>
+      </div>
+      <!-- iframe untuk menampilkan web (pratinjau) -->
+      <div class="iframe-wrapper" id="iframeWrapper">
+        <iframe id="mainIframe" src="https://www.example.com" title="Pratinjau Halaman" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation"></iframe>
+      </div>
     </div>
+  </div>
 
-    <script>
-        async function loadPage(htmlFile) {
-            // Update active menu
-            document.querySelectorAll('.menu-item').forEach(item => {
-                item.classList.remove('active');
-            });
-            event.currentTarget.classList.add('active');
-            
-            // Update location text
-            const menuText = event.currentTarget.textContent.trim();
-            document.getElementById('currentLocation').innerHTML = `📍 ${menuText}`;
-            
-            const contentDiv = document.getElementById('loadedContent');
-            
-            // Tampilkan loading
-            contentDiv.innerHTML = `
-                <div style="text-align: center; padding: 50px; color: #666;">
-                    ⏳ Memuat...
-                </div>
-            `;
-            
-            try {
-                // Fetch file HTML
-                const response = await fetch(htmlFile);
-                
-                if (!response.ok) {
-                    throw new Error('File tidak ditemukan');
-                }
-                
-                let html = await response.text();
-                
-                // Hapus tag body, html, head jika ada
-                html = html.replace(/<html>|<\/html>|<body>|<\/body>|<head>.*?<\/head>/gi, '');
-                
-                // Tampilkan di content
-                contentDiv.innerHTML = html;
-                
-            } catch(error) {
-                contentDiv.innerHTML = `
-                    <div style="color: red; text-align: center; padding: 20px;">
-                        ❌ Error: ${error.message}
-                        <br><br>
-                        <button onclick="buatContohFile('${htmlFile}')" 
-                                style="padding: 8px 16px; background: #3498db; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                            Buat File ${htmlFile}
-                        </button>
-                    </div>
-                `;
-            }
+  <script>
+    (function() {
+      // Dapatkan elemen
+      const kategoriItems = document.querySelectorAll('.kategori-item');
+      const mainIframe = document.getElementById('mainIframe');
+      const currentUrlSpan = document.getElementById('current-url-display');
+      const iframeWrapper = document.getElementById('iframeWrapper');
+      const refreshBtn = document.getElementById('refreshIframeBtn');
+
+      // Simpan link terakhir yang aktif (default bisa diset ke item pertama)
+      let activeItem = null;
+
+      // Fungsi untuk memuat URL ke iframe dan update UI
+      function loadUrlIntoIframe(url, title, clickedItem) {
+        if (!url) return;
+
+        // Set iframe src (menampilkan halaman web)
+        mainIframe.src = url;
+
+        // Update address bar
+        currentUrlSpan.textContent = url;
+
+        // class loading sebentar (efek visual)
+        iframeWrapper.classList.add('loading');
+        setTimeout(() => {
+          iframeWrapper.classList.remove('loading');
+        }, 500);
+
+        // update active class di sidebar
+        if (activeItem) {
+          activeItem.classList.remove('active');
         }
-
-        // Fungsi bantuan untuk membuat contoh file
-        function buatContohFile(fileName) {
-            const contohContent = {
-                'pelayanan.html': `
-                    <h2>Pelayanan Mandiri</h2>
-                    <div style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
-                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                            <h3>🔍 Cek Status</h3>
-                            <p>Lihat status permohonan Anda</p>
-                        </div>
-                        <div style="padding: 20px; background: #f8f9fa; border-radius: 8px;">
-                            <h3>📝 Ajukan Permohonan</h3>
-                            <p>Buat permohonan baru</p>
-                        </div>
-                    </div>
-                `,
-                'chat.html': `
-                    <h2>Live Chat WhatsApp</h2>
-                    <div style="background: #e8f5e8; padding: 30px; border-radius: 8px;">
-                        <p style="margin-bottom: 20px;">Hubungi kami via WhatsApp untuk bantuan cepat</p>
-                        <a href="https://wa.me/6281234567890" target="_blank" 
-                           style="background: #25D366; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block;">
-                            📱 Mulai Chat
-                        </a>
-                    </div>
-                `,
-                'syarat.html': `
-                    <h2>Persyaratan Layanan</h2>
-                    <table style="width: 100%; border-collapse: collapse;">
-                        <tr style="background: #3498db; color: white;">
-                            <th style="padding: 10px;">Layanan</th>
-                            <th style="padding: 10px;">Syarat</th>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #ddd;">
-                            <td style="padding: 10px;">KTP</td>
-                            <td style="padding: 10px;">FC KK, Surat Pengantar</td>
-                        </tr>
-                    </table>
-                `
-            };
-            
-            alert(`Buat file ${fileName} dengan isi:\n\n${contohContent[fileName] || '<h2>Halaman Baru</h2>'}`);
+        if (clickedItem) {
+          clickedItem.classList.add('active');
+          activeItem = clickedItem;
         }
+      }
 
-        // Load default page
-        window.onload = () => {
-            // Load pelayanan.html secara otomatis jika ada
-            fetch('pelayanan.html')
-                .then(res => res.text())
-                .then(html => {
-                    document.getElementById('loadedContent').innerHTML = html;
-                })
-                .catch(() => {
-                    // Abaikan jika tidak ada
-                });
-        };
-    </script>
+      // Tambahkan event listener ke setiap kategori
+      kategoriItems.forEach(item => {
+        item.addEventListener('click', function(event) {
+          event.preventDefault();  // mencegah link href langsung
+
+          const url = this.dataset.url;       // URL tujuan dari data-url
+          const title = this.dataset.title || 'Layanan';
+
+          // Panggil fungsi pemuatan iframe
+          loadUrlIntoIframe(url, title, this);
+        });
+      });
+
+      // Set default aktif ke kategori pertama (Pelayanan Mandiri) dan muat url
+      if (kategoriItems.length > 0) {
+        const defaultItem = kategoriItems[0];
+        const defaultUrl = defaultItem.dataset.url;
+        const defaultTitle = defaultItem.dataset.title;
+        loadUrlIntoIframe(defaultUrl, defaultTitle, defaultItem);
+      }
+
+      // Tombol refresh untuk memuat ulang iframe
+      refreshBtn.addEventListener('click', function() {
+        if (mainIframe.src) {
+          mainIframe.src = mainIframe.src;  // refresh
+          // efek loading kilat
+          iframeWrapper.classList.add('loading');
+          setTimeout(() => {
+            iframeWrapper.classList.remove('loading');
+          }, 400);
+        }
+      });
+
+      // opsional: tambahkan efek fallback jika iframe error (tidak bisa akses web luar karena X-Frame? tetap tampilkan sesuai src)
+      // tapi di sini kita biarkan sesuai mekanisme browser. Untuk demo bisa gunakan link contoh 
+      // Karena contoh url mengarah ke example.com (yang diizinkan embed)
+      // Untuk pengalaman lebih baik, ganti dengan website yang mendukung iframe (misal github.io, atau halaman kosong)
+      // Tapi untuk desain UI, kita tampilkan sesuai arahan soal: "nanti di direct ke link web" 
+      // Beberapa situs mungkin menolak iframe (X-Frame-Options), di real-case bisa gunakan proxy / halaman internal.
+      // Sebagai ganti, kita akan mengarahkan ke halaman sample yang ramah iframe (contoh: "https://example.com" bisa diiframe)
+      // Namun example.com mengizinkan. Jika ingin tampilan lebih bagus, kita set ulang dengan beberapa laman contoh:
+
+      // Tambahan: mapping untuk beberapa kategori agar lebih hidup: kita ganti dengan beberapa url publik yang mengizinkan embed.
+      // Tapi karena tidak ada batasan, kita pakai example.com sebagai dummy. 
+      // Untuk menambah kesan premium, kita bisa alihkan ke halaman yang menampilkan "Layanan Mandiri" dll. Namun cukup sesuai konsep.
+
+      // Sesuai permintaan awal: masing masing kategori nanti di direct ke link web, biarkan sesuai dataset.
+      // Jika ingin mengganti dengan URL riil yang dapat ditampilkan, bisa ganti attribute data-url.
+      // Di sini kita tidak mengganti karena itu tugas pengguna nanti.
+      // Namun kami akan modifikasi sedikit data-url untuk contoh yang lebih variatif (tetap domain example.com tapi beda path agar address bar berubah)
+      // agar lebih real, kita sesuaikan:
+      const improvedUrls = {
+        0: 'https://www.example.com/layanan/mandiri',
+        1: 'https://www.example.com/live-chat-wa',
+        2: 'https://www.example.com/syarat-berkas',
+        3: 'https://www.example.com/pengaduan'
+      };
+      kategoriItems.forEach((item, idx) => {
+        if (improvedUrls[idx]) {
+          item.dataset.url = improvedUrls[idx];   // timpa dengan url yang lebih variatif
+        }
+      });
+      // perbarui iframe default jika item pertama berubah
+      if (kategoriItems.length > 0) {
+        const firstItem = kategoriItems[0];
+        // update active display (karena loadUrl dipanggil lagi, pastikan tidak dobel)
+        // panggil ulang agar sesuai dataset baru
+        if (activeItem) activeItem.classList.remove('active');
+        loadUrlIntoIframe(firstItem.dataset.url, firstItem.dataset.title, firstItem);
+      }
+    })();
+  </script>
+
+  <!-- catatan: karena menggunakan domain example.com yang memang allow iframe, tampil halaman minimal.
+       Untuk tampilan lebih menarik bisa ganti dengan web lain yang memperbolehkan iframe, 
+       tapi ui/ux tetap terlihat premium gelap biru efek glass.
+  -->
 </body>
 </html>
