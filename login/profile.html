@@ -1,13 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profil Kelurahan & Pegawai · Premium</title>
-    <!-- Font & Icons -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz@14..32&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <!-- Cropper.js untuk crop foto 4:5 -->
+    <title>Profil Kelurahan & Pegawai · Terintegrasi Spreadsheet</title>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Cropper.js -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" rel="stylesheet">
     <style>
         * {
@@ -18,78 +19,93 @@
         }
 
         body {
-            background: #f4f6fa;
-            padding: 24px 20px;
-            display: flex;
-            justify-content: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf5 100%);
+            min-height: 100vh;
+            padding: 24px;
         }
 
-        .dashboard {
-            max-width: 1100px;
-            width: 100%;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        /* Header premium */
-        .header-premium {
+        /* Header Premium */
+        .header {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 60px;
+            padding: 16px 28px;
+            margin-bottom: 32px;
+            box-shadow: 0 8px 32px rgba(0, 30, 60, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.5);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(255,255,255,0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: 16px 28px;
-            border-radius: 48px;
-            box-shadow: 0 8px 30px rgba(0,10,30,0.06);
-            border: 1px solid rgba(255,255,255,0.6);
-            margin-bottom: 36px;
         }
 
-        .user-greeting {
+        .user-info {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-weight: 500;
-            font-size: 1.1rem;
-            color: #1b2b42;
         }
 
-        .user-greeting i {
-            font-size: 1.6rem;
-            color: #2a4e77;
+        .user-avatar {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1e3c5c, #2b4f7a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .user-detail h4 {
+            color: #1a2b3c;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .user-detail p {
+            color: #4a677e;
+            font-size: 0.85rem;
         }
 
         .logout-btn {
             background: white;
-            border: none;
+            border: 1px solid #d0ddee;
             padding: 10px 24px;
             border-radius: 40px;
             font-weight: 600;
-            font-size: 0.95rem;
             color: #1e3a5f;
-            box-shadow: 0 4px 12px rgba(0,32,64,0.08);
             cursor: pointer;
             transition: all 0.2s;
             display: flex;
             align-items: center;
             gap: 8px;
-            border: 1px solid rgba(0,0,0,0.02);
+            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
         }
 
         .logout-btn:hover {
-            background: #f0f3f8;
-            box-shadow: 0 8px 18px rgba(0,42,84,0.12);
+            background: #f8fafd;
+            border-color: #8aabca;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 16px rgba(30, 58, 95, 0.12);
         }
 
-        /* Card utama */
+        /* Card */
         .card {
-            background: #ffffffdd;
-            backdrop-filter: blur(4px);
-            border-radius: 36px;
-            padding: 28px 32px;
-            box-shadow: 0 20px 40px -12px rgba(0,20,50,0.15);
-            border: 1px solid rgba(255,255,255,0.7);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border-radius: 48px;
+            padding: 32px;
             margin-bottom: 32px;
-            transition: box-shadow 0.2s;
+            box-shadow: 0 20px 50px -20px rgba(0, 40, 80, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.7);
         }
 
         .card-header {
@@ -97,252 +113,271 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 28px;
+            flex-wrap: wrap;
+            gap: 16px;
         }
 
         .card-header h2 {
+            font-size: 1.8rem;
             font-weight: 600;
-            font-size: 1.6rem;
-            color: #14283c;
+            color: #172c3c;
             letter-spacing: -0.02em;
         }
 
-        .btn-outline {
+        .btn-edit {
             background: transparent;
-            border: 1.5px solid #2f5e8a;
-            color: #2f5e8a;
-            padding: 10px 28px;
+            border: 1.5px solid #2b4f7a;
             border-radius: 40px;
+            padding: 10px 28px;
             font-weight: 600;
-            font-size: 0.95rem;
+            color: #2b4f7a;
             cursor: pointer;
-            transition: 0.15s;
+            transition: 0.2s;
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 0.95rem;
         }
 
-        .btn-outline i {
-            font-size: 1rem;
+        .btn-edit:hover {
+            background: #e2ecf9;
+            transform: scale(1.02);
         }
 
-        .btn-outline:hover {
-            background: #e7eef8;
-        }
-
-        .btn-solid {
+        .btn-edit.active {
             background: #1e3a5f;
-            border: none;
             color: white;
-            padding: 12px 32px;
-            border-radius: 44px;
-            font-weight: 600;
-            box-shadow: 0 8px 16px #1e3a5f30;
-            cursor: pointer;
-            transition: 0.15s;
-            border: 1px solid #ffffff20;
+            border-color: #1e3a5f;
         }
 
-        .btn-solid:hover {
-            background: #143049;
-            transform: scale(0.98);
-            box-shadow: 0 4px 12px #1e3a5f40;
-        }
-
-        .btn-upload {
-            background: #eef2f6;
-            border: 1px dashed #6b8cae;
-            border-radius: 60px;
-            padding: 10px 18px;
-            font-size: 0.9rem;
-            font-weight: 500;
-            color: #1b3b58;
-            transition: 0.1s;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-upload:hover {
-            background: #e2e9f2;
-        }
-
-        /* Grid dua kolom dalam card kelurahan: foto kiri + info */
-        .kelurahan-grid {
+        /* Layout Kelurahan */
+        .kelurahan-layout {
             display: flex;
-            gap: 28px;
+            gap: 32px;
             flex-wrap: wrap;
         }
 
-        .foto-col {
-            flex: 0 0 160px;
+        .foto-section {
+            flex: 0 0 200px;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            gap: 16px;
         }
 
         .foto-preview {
-            width: 160px;
-            height: 200px; /* 4:5 */
-            border-radius: 24px;
-            background: #eef2f6;
+            width: 200px;
+            height: 250px; /* 4:5 */
+            border-radius: 32px;
             object-fit: cover;
-            box-shadow: 0 8px 18px rgba(0,0,0,0.05);
-            border: 3px solid white;
+            background: #eef2f6;
+            border: 4px solid white;
+            box-shadow: 0 12px 25px -8px rgba(0,20,40,0.2);
         }
 
-        .info-col {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 16px 24px;
-        }
-
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .field label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-            color: #4e6e8c;
+        .btn-upload {
+            background: #f0f5fc;
+            border: 2px dashed #8aabca;
+            border-radius: 60px;
+            padding: 14px;
             font-weight: 600;
-        }
-
-        .field input, .field span {
-            background: #f4f8fd;
-            border: none;
-            border-radius: 20px;
-            padding: 12px 18px;
-            font-size: 0.95rem;
-            color: #14283c;
-            border: 1px solid transparent;
-            transition: 0.1s;
+            color: #1e3a5f;
+            cursor: pointer;
+            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
             width: 100%;
         }
 
-        .field input:focus {
-            outline: none;
-            border-color: #2f5e8a;
-            background: #ffffff;
+        .btn-upload:not(.disabled):hover {
+            background: #e2ecf9;
+            border-color: #2b4f7a;
         }
 
-        .field input[readonly] {
-            background: #f4f8fd;
-            color: #2b4f6e;
-            opacity: 0.8;
-            border-color: transparent;
+        .btn-upload.disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            border-color: #b0c4db;
+            background: #eef2f6;
+        }
+
+        .info-grid {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px 20px;
+        }
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .field-group label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #4f6f8f;
+            margin-left: 12px;
+        }
+
+        .field-group input, .field-group .field-value {
+            background: #f4f9ff;
+            border: 1px solid transparent;
+            border-radius: 20px;
+            padding: 14px 18px;
+            font-size: 0.95rem;
+            color: #14283c;
+            width: 100%;
+            transition: 0.15s;
+        }
+
+        .field-group input:focus {
+            outline: none;
+            border-color: #2b4f7a;
+            background: #ffffff;
+            box-shadow: 0 0 0 4px rgba(43,79,122,0.1);
+        }
+
+        .field-group input[readonly] {
+            background: #f0f5fc;
+            color: #2b4f7a;
+            opacity: 0.9;
+            font-weight: 500;
             pointer-events: none;
         }
 
-        /* card pegawai individu */
-        .pegawai-cards {
+        /* Pegawai Cards */
+        .pegawai-container {
             display: flex;
             flex-direction: column;
             gap: 24px;
-            margin-top: 20px;
+            margin-bottom: 24px;
         }
 
-        .pegawai-item {
-            background: #f1f5f9d9;
-            backdrop-filter: blur(2px);
-            border-radius: 28px;
-            padding: 22px 26px;
-            border: 1px solid #ffffff;
-            transition: all 0.15s;
+        .pegawai-card {
+            background: #ffffff;
+            border-radius: 32px;
+            padding: 24px;
+            box-shadow: 0 8px 20px rgba(0,30,60,0.04);
+            border: 1px solid #e6edf6;
         }
 
-        .pegawai-header-card {
+        .pegawai-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
         }
 
-        .pegawai-foto-section {
+        .pegawai-number {
+            background: #e2ecf9;
+            color: #1e3a5f;
+            font-weight: 600;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.85rem;
+        }
+
+        .pegawai-content {
             display: flex;
-            gap: 20px;
+            gap: 24px;
             flex-wrap: wrap;
         }
 
+        .pegawai-foto {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            align-items: center;
+        }
+
         .foto-pegawai-preview {
-            width: 120px;
-            height: 150px; /* 4:5 */
-            border-radius: 20px;
-            background: #dbe1e9;
+            width: 140px;
+            height: 175px; /* 4:5 */
+            border-radius: 24px;
             object-fit: cover;
+            background: #eef2f6;
             border: 3px solid white;
-            box-shadow: 0 6px 14px rgba(0,0,0,0.02);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.05);
         }
 
         .pegawai-fields {
             flex: 1;
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 14px 18px;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
         }
 
-        .add-pegawai-card {
-            background: #ffffffb0;
-            border: 2px dashed #9fb8d0;
+        .add-pegawai {
+            background: rgba(255,255,255,0.5);
+            border: 2px dashed #8aabca;
             border-radius: 40px;
-            padding: 32px;
+            padding: 24px;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
+            gap: 12px;
+            color: #1e3a5f;
+            font-weight: 600;
             cursor: pointer;
             transition: 0.2s;
-            color: #1d3f60;
-            font-weight: 600;
-            gap: 8px;
             margin-top: 16px;
         }
 
-        .add-pegawai-card:hover {
-            background: #ffffff;
-            border-color: #2f5e8a;
+        .add-pegawai:not(.disabled):hover {
+            background: rgba(255,255,255,0.9);
+            border-color: #2b4f7a;
         }
 
-        /* simpan per card */
+        .add-pegawai.disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
         .action-footer {
             display: flex;
             justify-content: flex-end;
-            margin-top: 24px;
+            margin-top: 28px;
         }
 
-        .btn-simpan-card {
-            background: white;
-            border: 1px solid #cbd6e4;
-            padding: 12px 32px;
-            border-radius: 40px;
+        .btn-simpan {
+            background: #1e3a5f;
+            color: white;
+            border: none;
+            padding: 14px 42px;
+            border-radius: 60px;
             font-weight: 600;
-            color: #1a334b;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            font-size: 1rem;
             cursor: pointer;
-            transition: 0.1s;
+            transition: 0.2s;
+            box-shadow: 0 8px 18px rgba(30,58,95,0.25);
+            display: flex;
+            align-items: center;
+            gap: 12px;
         }
 
-        .btn-simpan-card i {
-            margin-right: 6px;
-            color: #2f5e8a;
+        .btn-simpan:hover:not(:disabled) {
+            background: #143049;
+            transform: translateY(-2px);
+            box-shadow: 0 14px 24px rgba(30,58,95,0.3);
         }
 
-        .btn-simpan-card:hover {
-            background: #e5ecf3;
-            border-color: #8eacc9;
+        .btn-simpan:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
         }
 
-        /* modal crop */
+        /* Modal Crop */
         .modal {
             display: none;
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: #00000080;
-            backdrop-filter: blur(6px);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(5px);
             align-items: center;
             justify-content: center;
             z-index: 1000;
@@ -350,461 +385,580 @@
 
         .modal-content {
             background: white;
-            border-radius: 40px;
-            padding: 30px;
-            max-width: 600px;
+            border-radius: 48px;
+            padding: 32px;
+            max-width: 700px;
             width: 90%;
-            box-shadow: 0 40px 70px #00000030;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
         }
 
         .modal-header {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 20px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .modal-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #4f6f8f;
         }
 
         .crop-container {
-            max-height: 400px;
-        }
-
-        img#crop-image {
-            max-width: 100%;
+            max-height: 60vh;
         }
 
         .modal-footer {
             display: flex;
             justify-content: flex-end;
-            gap: 12px;
+            gap: 16px;
             margin-top: 24px;
         }
 
-        /* loading / small */
-        .toast-notif {
-            position: fixed; bottom: 24px; right: 24px;
-            background: #1a334b; color: white; padding: 14px 28px; border-radius: 60px;
-            box-shadow: 0 12px 30px #00000030; font-weight: 500;
-            display: none; z-index: 2000;
+        /* Toast */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            background: #1e3a5f;
+            color: white;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-weight: 500;
+            box-shadow: 0 12px 28px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1001;
+        }
+
+        /* Loading */
+        .loading {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(3px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1e3a5f;
+        }
+
+        .loading i {
+            margin-right: 12px;
         }
     </style>
 </head>
 <body>
-<div class="dashboard">
-    <!-- Header dinamis: username dan logout -->
-    <div class="header-premium" id="header-section">
-        <div class="user-greeting"><i class="fas fa-user-circle"></i> <span id="displayName">Memuat...</span></div>
-        <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
-    </div>
-
-    <!-- CARD KELURAHAN -->
-    <div class="card" id="cardKelurahan">
-        <div class="card-header">
-            <h2><i class="fas fa-city" style="margin-right: 12px; color:#2f5e8a;"></i> Profil Kelurahan</h2>
-            <button class="btn-outline" id="editKelurahanBtn"><i class="fas fa-pen"></i> Edit data</button>
-        </div>
-        <div class="kelurahan-grid">
-            <!-- Kolom foto -->
-            <div class="foto-col">
-                <img src="https://via.placeholder.com/160x200?text=Kantor" class="foto-preview" id="fotoKelurahanPreview" alt="foto kelurahan">
-                <button class="btn-upload" id="uploadFotoKelurahan" disabled><i class="fas fa-cloud-upload-alt"></i> Upload 4:5</button>
-                <input type="file" id="fileKelurahan" accept="image/*" style="display: none;">
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="user-info">
+                <div class="user-avatar" id="userInitials">U</div>
+                <div class="user-detail">
+                    <h4 id="userFullName">Memuat...</h4>
+                    <p><i class="fas fa-circle" style="color: #2ecc71; font-size: 8px;"></i> Online</p>
+                </div>
             </div>
-            <!-- kolom data -->
-            <div class="info-col" id="kelurahanFields"></div>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Keluar</button>
         </div>
-        <div class="action-footer">
-            <button class="btn-simpan-card" id="simpanKelurahanBtn" disabled><i class="fas fa-save"></i> Simpan perubahan Kelurahan</button>
+
+        <!-- Card Kelurahan -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-building" style="margin-right: 12px; color: #1e3a5f;"></i> Profil Kelurahan</h2>
+                <button class="btn-edit" id="editKelurahanBtn"><i class="fas fa-pen"></i> Edit Data</button>
+            </div>
+
+            <div class="kelurahan-layout">
+                <!-- Foto Kelurahan -->
+                <div class="foto-section">
+                    <img src="https://via.placeholder.com/200x250?text=Kelurahan" alt="foto kelurahan" class="foto-preview" id="fotoKelurahanPreview">
+                    <button class="btn-upload disabled" id="uploadKelurahanBtn" disabled><i class="fas fa-cloud-upload-alt"></i> Upload Foto (4:5)</button>
+                    <input type="file" id="fileKelurahan" accept="image/*" style="display: none;">
+                </div>
+
+                <!-- Fields Kelurahan -->
+                <div class="info-grid" id="kelurahanFields"></div>
+            </div>
+
+            <div class="action-footer">
+                <button class="btn-simpan" id="simpanKelurahanBtn" disabled><i class="fas fa-save"></i> Simpan Data Kelurahan</button>
+            </div>
+        </div>
+
+        <!-- Card Pegawai -->
+        <div class="card">
+            <div class="card-header">
+                <h2><i class="fas fa-users" style="margin-right: 12px; color: #1e3a5f;"></i> Data Pegawai</h2>
+                <button class="btn-edit" id="editPegawaiBtn"><i class="fas fa-pen"></i> Edit Semua</button>
+            </div>
+
+            <div class="pegawai-container" id="pegawaiContainer"></div>
+
+            <!-- Tombol Tambah Pegawai -->
+            <div class="add-pegawai disabled" id="addPegawaiBtn">
+                <i class="fas fa-plus-circle"></i> Tambah Pegawai (0/10)
+            </div>
+
+            <div class="action-footer">
+                <button class="btn-simpan" id="simpanSemuaPegawaiBtn" disabled><i class="fas fa-save"></i> Simpan Semua Pegawai</button>
+            </div>
         </div>
     </div>
 
-    <!-- CARD PEGAWAI (container dinamis) -->
-    <div class="card" id="cardPegawai">
-        <div class="card-header">
-            <h2><i class="fas fa-users" style="margin-right: 12px; color:#2f5e8a;"></i> Data Pegawai</h2>
-            <button class="btn-outline" id="editPegawaiBtn"><i class="fas fa-pen"></i> Edit semua</button>
-        </div>
-        <div id="pegawaiContainer" class="pegawai-cards"></div>
-        <!-- tombol tambah card pegawai (max 10) -->
-        <div class="add-pegawai-card" id="addPegawaiBtn" style="display: flex;">
-            <i class="fas fa-plus-circle"></i> Tambah Pegawai (max 10)
-        </div>
-        <div class="action-footer" style="margin-top: 8px;">
-            <button class="btn-simpan-card" id="simpanSemuaPegawaiBtn" disabled><i class="fas fa-save"></i> Simpan semua pegawai</button>
-        </div>
-    </div>
-</div>
-
-<!-- Modal Crop -->
-<div class="modal" id="cropModal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3 style="font-weight:600;">Atur posisi foto (4:5)</h3>
-            <button style="border:none; background:transparent; font-size:1.6rem;" id="closeModalBtn">&times;</button>
-        </div>
-        <div class="crop-container">
-            <img id="crop-image" src="" alt="crop">
-        </div>
-        <div class="modal-footer">
-            <button class="btn-outline" id="cancelCrop">Batal</button>
-            <button class="btn-solid" id="applyCrop">Terapkan</button>
+    <!-- Modal Crop -->
+    <div class="modal" id="cropModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-crop-alt" style="margin-right: 10px;"></i> Atur Posisi Foto (4:5)</h3>
+                <button class="close-modal" id="closeModalBtn">&times;</button>
+            </div>
+            <div class="crop-container">
+                <img id="cropImage" src="" alt="crop" style="max-width: 100%;">
+            </div>
+            <div class="modal-footer">
+                <button class="btn-edit" id="cancelCropBtn" style="border-color: #d32f2f; color: #d32f2f;">Batal</button>
+                <button class="btn-simpan" id="applyCropBtn" style="padding: 12px 32px;">Terapkan</button>
+            </div>
         </div>
     </div>
-</div>
 
-<div class="toast-notif" id="toast">Tersimpan</div>
+    <!-- Toast & Loading -->
+    <div class="toast" id="toast">Berhasil disimpan</div>
+    <div class="loading" id="loading"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-<script>
-    (function() {
-        // ---------- KONFIGURASI ----------
+    <!-- Cropper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+
+    <script>
+        // ==================== KONFIGURASI APPS SCRIPT ====================
+        // GANTI URL INI DENGAN URL APPS SCRIPT YANG SUDAH ANDA DEPLOY!
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgWFDPDi1NPDGtDJeazrOEo4C26ldv-2QfEPtBrwnsDMm40I17PCgUnTR9KSZNr0dplw/exec';
+        
         const SPREADSHEET_ID = '1cgHQZoB_vm7R7EgnS4C_00h5buJooFX7fkz0FMjODgU';
         const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
-        // user login (diambil dari localStorage, di-set oleh halaman login)
-        let currentUser = localStorage.getItem('loggedInUser') || 'test_user'; 
-        // Jika tidak ada, fallback ke 'guest' (supaya demo jalan)
-        if (!localStorage.getItem('loggedInUser')) {
-            currentUser = 'demo_user';
-            localStorage.setItem('loggedInUser', 'demo_user');
+
+        // ==================== STATE ====================
+        let currentUser = localStorage.getItem('loggedInUser') || '';
+        if (!currentUser) {
+            // Redirect ke login jika belum login
+            window.location.href = 'https://senapelan.github.io/Home/login/login.html';
         }
 
-        // mode edit: view only default
         let isEditModeKelurahan = false;
         let isEditModePegawai = false;
 
-        // Data utama (disimpan setelah load/simpan)
         let kelurahanData = {};
-        let pegawaiList = []; // array hingga 10
+        let pegawaiList = []; // max 10
 
-        // Referensi element
-        const displayNameSpan = document.getElementById('displayName');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const editKelurahanBtn = document.getElementById('editKelurahanBtn');
-        const editPegawaiBtn = document.getElementById('editPegawaiBtn');
-        const simpanKelurahanBtn = document.getElementById('simpanKelurahanBtn');
-        const simpanPegawaiBtn = document.getElementById('simpanSemuaPegawaiBtn');
-        const addPegawaiDiv = document.getElementById('addPegawaiBtn');
-        const kelurahanFieldsDiv = document.getElementById('kelurahanFields');
-        const pegawaiContainer = document.getElementById('pegawaiContainer');
-        const uploadKelurahanBtn = document.getElementById('uploadFotoKelurahan');
-        const fileKelurahan = document.getElementById('fileKelurahan');
-        const fotoKelurahanPreview = document.getElementById('fotoKelurahanPreview');
+        let cropper = null;
+        let currentCropResolve = null;
 
-        // State crop
-        let cropper;
-        let activeCropResolve = null;
-        let currentCropInputFile = null;
-        let targetFieldKelurahan = false; // true jika kelurahan, false untuk pegawai index
+        // ==================== UTILITY ====================
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return String(unsafe)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+        }
 
-        // Tampilkan nama user
-        displayNameSpan.innerText = currentUser;
+        function showToast(message, isSuccess = true) {
+            const toast = document.getElementById('toast');
+            toast.style.background = isSuccess ? '#1e3a5f' : '#c0392b';
+            toast.innerText = message;
+            toast.style.display = 'block';
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
 
-        // Logout
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('loggedInUser');
-            window.location.href = 'https://senapelan.github.io/Home/login/login.html';
-        });
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'flex' : 'none';
+        }
 
-        // Load data dari spreadsheet via apps script web app (simulasi dengan fetch)
-        // Untuk demo, kita buat fungsi loadFromSpreadsheet yang membaca sheet nama=currentUser
-        async function loadUserData() {
-            showToast('Memuat data...');
+        // Inisialisasi user di header
+        document.getElementById('userInitials').innerText = currentUser.charAt(0).toUpperCase();
+        document.getElementById('userFullName').innerText = currentUser;
+
+        // ==================== LOAD DATA DARI SPREADSHEET ====================
+        async function loadDataFromSheet() {
+            showLoading(true);
             try {
-                // URL APPS SCRIPT WEBAPP (diganti dengan milik sendiri setelah deploy)
-                // Di sini kita gunakan mock data dulu karena tidak bisa menyertakan Apps Script asli.
-                // Implementasi asli: GET request ke apps script dengan parameter ?spreadsheetId=&sheetName=
-                // Untuk contoh, kita set data kosong atau data dari localStorage sementara.
-                const stored = localStorage.getItem(`profile_${currentUser}`);
-                if (stored) {
-                    const parsed = JSON.parse(stored);
-                    kelurahanData = parsed.kelurahan || {};
-                    pegawaiList = parsed.pegawai || [];
+                // Panggil Apps Script dengan method GET
+                const url = `${APPS_SCRIPT_URL}?spreadsheetId=${SPREADSHEET_ID}&sheetName=${encodeURIComponent(currentUser)}&action=get`;
+                const response = await fetch(url);
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    kelurahanData = result.data.kelurahan || {};
+                    pegawaiList = result.data.pegawai || [];
                 } else {
-                    // default kosong
+                    // Sheet baru atau error, buat data kosong
                     kelurahanData = {};
                     pegawaiList = [];
+                    showToast('Sheet baru dibuat untuk user ini', false);
                 }
-                // Pastikan panjang pegawai array sesuai (hingga 10)
-                renderSemua();
-            } catch (e) {
-                console.warn('Gagal load, pakai default', e);
+            } catch (error) {
+                console.error('Error loading data:', error);
+                showToast('Gagal memuat data dari server', false);
+                // Fallback ke data kosong
                 kelurahanData = {};
                 pegawaiList = [];
+            } finally {
                 renderSemua();
+                setModeKelurahan(false);
+                setModePegawai(false);
+                showLoading(false);
             }
-            // Set mode view only
-            setModeKelurahan(false);
-            setModePegawai(false);
         }
 
-        // Simpan ke spreadsheet (APPS script) dan localStorage lokal
-        async function simpanKeSpreadsheet() {
-            showToast('Menyimpan ke server...');
-            // Di sini panggil Apps Script doPost dengan data kelurahanData & pegawaiList
-            // Untuk demo cukup simpan di localStorage
-            localStorage.setItem(`profile_${currentUser}`, JSON.stringify({
-                kelurahan: kelurahanData,
-                pegawai: pegawaiList
-            }));
-            // Tidak ada Apps Script live, tapi kita kirim bayangan
-            // Seharusnya fetch ke endpoint dengan method POST, body JSON
-            // Contoh:
-            /*
-            fetch('APPS_SCRIPT_URL', {
-                method: 'POST',
-                mode: 'no-cors',
-                body: JSON.stringify({spreadsheetId: SPREADSHEET_ID, sheetName: currentUser, data: {kelurahanData, pegawaiList}})
-            });
-            */
-            showToast('Tersimpan (simulasi)');
+        // ==================== SIMPAN KE SPREADSHEET ====================
+        async function saveToSheet() {
+            showLoading(true);
+            try {
+                const payload = {
+                    spreadsheetId: SPREADSHEET_ID,
+                    sheetName: currentUser,
+                    action: 'save',
+                    kelurahan: kelurahanData,
+                    pegawai: pegawaiList
+                };
+
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Untuk Apps Script, perlu no-cors atau sesuaikan
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // Karena no-cors, kita tidak bisa baca response. Asumsikan sukses.
+                showToast('Data berhasil disimpan ke spreadsheet');
+            } catch (error) {
+                console.error('Error saving:', error);
+                showToast('Gagal menyimpan ke spreadsheet', false);
+            } finally {
+                showLoading(false);
+            }
         }
 
-        // Render semua komponen
+        // ==================== UPLOAD FOTO KE DRIVE ====================
+        async function uploadFotoToDrive(blob, fileName) {
+            showLoading(true);
+            const formData = new FormData();
+            formData.append('folderId', DRIVE_FOLDER_ID);
+            formData.append('fileName', fileName);
+            formData.append('file', blob, fileName);
+
+            try {
+                const response = await fetch(APPS_SCRIPT_URL + '?action=upload', {
+                    method: 'POST',
+                    body: formData
+                });
+                const result = await response.json();
+                if (result.status === 'success') {
+                    return result.thumbnailLink; // Apps Script mengembalikan link thumbnail
+                } else {
+                    throw new Error(result.message || 'Upload gagal');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showToast('Gagal upload foto', false);
+                throw error;
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        // ==================== RENDER FUNCTIONS ====================
         function renderSemua() {
             renderKelurahanFields();
             renderPegawaiCards();
         }
 
-        // Render fields kelurahan dari objek
         function renderKelurahanFields() {
-            const fieldNames = [
-                'nama_kelurahan','alamat_kelurahan','rt','rw','kelurahan','kecamatan',
-                'kota','provinsi','kode_pos','telp_kantor'
+            const fields = [
+                'nama_kelurahan', 'alamat_kelurahan', 'rt', 'rw', 'kelurahan',
+                'kecamatan', 'kota', 'provinsi', 'kode_pos', 'telp_kantor'
             ];
+            
             let html = '';
-            fieldNames.forEach(f => {
-                const label = f.replace(/_/g,' ').replace(/\b\w/g, l => l.toUpperCase());
-                const value = kelurahanData[f] || '';
-                html += `<div class="field"><label>${label}</label><input type="text" id="input_${f}" value="${escapeHtml(value)}" ${!isEditModeKelurahan ? 'readonly' : ''}></div>`;
+            fields.forEach(field => {
+                const label = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                const value = kelurahanData[field] || '';
+                html += `
+                    <div class="field-group">
+                        <label>${label}</label>
+                        <input type="text" 
+                               id="kel_${field}" 
+                               value="${escapeHtml(value)}" 
+                               ${!isEditModeKelurahan ? 'readonly' : ''}>
+                    </div>
+                `;
             });
-            kelurahanFieldsDiv.innerHTML = html;
+            document.getElementById('kelurahanFields').innerHTML = html;
 
-            // foto preview
+            // Foto preview
             if (kelurahanData.link_foto_kelurahan) {
-                fotoKelurahanPreview.src = kelurahanData.link_foto_kelurahan;
-            } else {
-                fotoKelurahanPreview.src = 'https://via.placeholder.com/160x200?text=Kantor';
+                document.getElementById('fotoKelurahanPreview').src = kelurahanData.link_foto_kelurahan;
             }
 
-            uploadKelurahanBtn.disabled = !isEditModeKelurahan;
-            simpanKelurahanBtn.disabled = !isEditModeKelurahan;
+            // Update status tombol
+            document.getElementById('uploadKelurahanBtn').disabled = !isEditModeKelurahan;
+            document.getElementById('uploadKelurahanBtn').classList.toggle('disabled', !isEditModeKelurahan);
+            document.getElementById('simpanKelurahanBtn').disabled = !isEditModeKelurahan;
         }
 
         function renderPegawaiCards() {
-            if (!pegawaiList) pegawaiList = [];
-            let containerHtml = '';
-            pegawaiList.forEach((peg, idx) => {
-                containerHtml += buatCardPegawai(idx, peg);
-            });
-            pegawaiContainer.innerHTML = containerHtml;
+            const container = document.getElementById('pegawaiContainer');
+            let html = '';
 
-            // Attach listener untuk upload foto per pegawai, dan field input
-            pegawaiList.forEach((_, idx) => {
-                const uploadBtn = document.getElementById(`uploadPegawai_${idx}`);
-                const fileInput = document.getElementById(`filePegawai_${idx}`);
-                if (uploadBtn) {
-                    uploadBtn.disabled = !isEditModePegawai;
-                    uploadBtn.onclick = () => fileInput.click();
-                }
-                if (fileInput) {
-                    fileInput.onchange = (e) => handlePegawaiFileSelect(e, idx);
-                }
-                // disable semua input jika readonly
-                const fields = ['nama_pegawai','jabatan','nip','pangkat_gol','no_hp'];
-                fields.forEach(f => {
-                    const inp = document.getElementById(`peg_${idx}_${f}`);
-                    if (inp) inp.readOnly = !isEditModePegawai;
-                });
+            pegawaiList.forEach((pegawai, index) => {
+                const fotoLink = pegawai.link_foto || 'https://via.placeholder.com/140x175?text=Pegawai';
+                html += `
+                    <div class="pegawai-card" id="pegCard_${index}">
+                        <div class="pegawai-header">
+                            <span class="pegawai-number">PEGAWAI ${index + 1}</span>
+                        </div>
+                        <div class="pegawai-content">
+                            <div class="pegawai-foto">
+                                <img src="${fotoLink}" class="foto-pegawai-preview" id="previewPeg_${index}">
+                                <button class="btn-upload ${!isEditModePegawai ? 'disabled' : ''}" 
+                                        id="uploadPegBtn_${index}" 
+                                        ${!isEditModePegawai ? 'disabled' : ''}>
+                                    <i class="fas fa-camera"></i> Upload Foto
+                                </button>
+                                <input type="file" id="filePeg_${index}" accept="image/*" style="display: none;">
+                            </div>
+                            <div class="pegawai-fields">
+                                <div class="field-group">
+                                    <label>Nama Pegawai</label>
+                                    <input type="text" id="peg_${index}_nama" value="${escapeHtml(pegawai.nama_pegawai1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                </div>
+                                <div class="field-group">
+                                    <label>Jabatan</label>
+                                    <input type="text" id="peg_${index}_jabatan" value="${escapeHtml(pegawai.jabatan1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                </div>
+                                <div class="field-group">
+                                    <label>NIP</label>
+                                    <input type="text" id="peg_${index}_nip" value="${escapeHtml(pegawai.nip1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                </div>
+                                <div class="field-group">
+                                    <label>Pangkat/Gol</label>
+                                    <input type="text" id="peg_${index}_pangkat" value="${escapeHtml(pegawai.pangkat_gol1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                </div>
+                                <div class="field-group">
+                                    <label>No HP</label>
+                                    <input type="text" id="peg_${index}_nohp" value="${escapeHtml(pegawai.no_hp1 || '')}" ${!isEditModePegawai ? 'readonly' : ''}>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
             });
 
-            // tombol tambah pegawai hanya muncul jika <10 dan mode edit
-            if (pegawaiList.length < 10 && isEditModePegawai) {
-                addPegawaiDiv.style.display = 'flex';
+            container.innerHTML = html;
+
+            // Attach event listeners untuk tombol upload
+            pegawaiList.forEach((_, index) => {
+                const uploadBtn = document.getElementById(`uploadPegBtn_${index}`);
+                const fileInput = document.getElementById(`filePeg_${index}`);
+                
+                if (uploadBtn && fileInput) {
+                    uploadBtn.onclick = () => {
+                        if (isEditModePegawai) fileInput.click();
+                    };
+                    fileInput.onchange = (e) => handlePegawaiFileSelect(e, index);
+                }
+            });
+
+            // Update tombol tambah pegawai
+            const addBtn = document.getElementById('addPegawaiBtn');
+            addBtn.innerHTML = `<i class="fas fa-plus-circle"></i> Tambah Pegawai (${pegawaiList.length}/10)`;
+            
+            if (pegawaiList.length >= 10 || !isEditModePegawai) {
+                addBtn.classList.add('disabled');
+                addBtn.style.pointerEvents = 'none';
             } else {
-                addPegawaiDiv.style.display = 'none';
+                addBtn.classList.remove('disabled');
+                addBtn.style.pointerEvents = 'auto';
             }
-            simpanPegawaiBtn.disabled = !isEditModePegawai;
+
+            document.getElementById('simpanSemuaPegawaiBtn').disabled = !isEditModePegawai;
         }
 
-        function buatCardPegawai(idx, data) {
-            const fotoLink = data.link_foto || `https://via.placeholder.com/120x150?text=Pegawai+${idx+1}`;
-            return `
-            <div class="pegawai-item" id="pegawaiCard_${idx}">
-                <div class="pegawai-header-card">
-                    <span style="font-weight:600; background:white; padding:4px 16px; border-radius:60px;">Pegawai ${idx+1}</span>
-                </div>
-                <div class="pegawai-foto-section">
-                    <img src="${fotoLink}" class="foto-pegawai-preview" id="previewPegawai_${idx}">
-                    <div style="display:flex; flex-direction:column; gap:8px;">
-                        <button class="btn-upload" id="uploadPegawai_${idx}" ${!isEditModePegawai ? 'disabled' : ''}><i class="fas fa-camera"></i> Upload foto</button>
-                        <input type="file" id="filePegawai_${idx}" accept="image/*" style="display:none;">
-                    </div>
-                    <div class="pegawai-fields">
-                        <div class="field"><label>Nama</label><input type="text" id="peg_${idx}_nama_pegawai" value="${escapeHtml(data.nama_pegawai||'')}" ${!isEditModePegawai?'readonly':''}></div>
-                        <div class="field"><label>Jabatan</label><input type="text" id="peg_${idx}_jabatan" value="${escapeHtml(data.jabatan||'')}" ${!isEditModePegawai?'readonly':''}></div>
-                        <div class="field"><label>NIP</label><input type="text" id="peg_${idx}_nip" value="${escapeHtml(data.nip||'')}" ${!isEditModePegawai?'readonly':''}></div>
-                        <div class="field"><label>Pangkat/Gol</label><input type="text" id="peg_${idx}_pangkat_gol" value="${escapeHtml(data.pangkat_gol||'')}" ${!isEditModePegawai?'readonly':''}></div>
-                        <div class="field"><label>No HP</label><input type="text" id="peg_${idx}_no_hp" value="${escapeHtml(data.no_hp||'')}" ${!isEditModePegawai?'readonly':''}></div>
-                    </div>
-                </div>
-            </div>`;
-        }
-
-        // helper escape
-        function escapeHtml(unsafe) {
-            if (!unsafe) return '';
-            return unsafe.replace(/[&<>"]/g, function(m) {
-                if(m === '&') return '&amp;'; if(m === '<') return '&lt;'; if(m === '>') return '&gt;'; if(m === '"') return '&quot;';
-                return m;
-            });
-        }
-
-        // Mode Edit
+        // ==================== MODE EDIT ====================
         function setModeKelurahan(edit) {
             isEditModeKelurahan = edit;
+            const btn = document.getElementById('editKelurahanBtn');
+            btn.innerHTML = edit ? '<i class="fas fa-eye"></i> Selesai' : '<i class="fas fa-pen"></i> Edit Data';
+            btn.classList.toggle('active', edit);
             renderKelurahanFields();
-            editKelurahanBtn.innerHTML = edit ? '<i class="fas fa-eye"></i> Selesai melihat' : '<i class="fas fa-pen"></i> Edit data';
         }
 
         function setModePegawai(edit) {
             isEditModePegawai = edit;
+            const btn = document.getElementById('editPegawaiBtn');
+            btn.innerHTML = edit ? '<i class="fas fa-eye"></i> Selesai' : '<i class="fas fa-pen"></i> Edit Semua';
+            btn.classList.toggle('active', edit);
             renderPegawaiCards();
-            editPegawaiBtn.innerHTML = edit ? '<i class="fas fa-eye"></i> Selesai melihat' : '<i class="fas fa-pen"></i> Edit semua';
         }
 
-        // Event edit toggles
-        editKelurahanBtn.addEventListener('click', () => {
-            setModeKelurahan(!isEditModeKelurahan);
-        });
-
-        editPegawaiBtn.addEventListener('click', () => {
-            setModePegawai(!isEditModePegawai);
-        });
-
-        // Simpan kelurahan
-        simpanKelurahanBtn.addEventListener('click', async () => {
-            // ambil data dari field
-            const fieldNames = ['nama_kelurahan','alamat_kelurahan','rt','rw','kelurahan','kecamatan','kota','provinsi','kode_pos','telp_kantor'];
-            fieldNames.forEach(f => {
-                const el = document.getElementById(`input_${f}`);
-                if (el) kelurahanData[f] = el.value;
-            });
-            // foto sudah diset via link_foto_kelurahan saat upload
-            await simpanKeSpreadsheet();
-            setModeKelurahan(false);
-        });
-
-        // Simpan semua pegawai
-        simpanPegawaiBtn.addEventListener('click', async () => {
-            for (let i = 0; i < pegawaiList.length; i++) {
-                const base = pegawaiList[i] || {};
-                pegawaiList[i] = {
-                    nama_pegawai: document.getElementById(`peg_${i}_nama_pegawai`)?.value || '',
-                    jabatan: document.getElementById(`peg_${i}_jabatan`)?.value || '',
-                    nip: document.getElementById(`peg_${i}_nip`)?.value || '',
-                    pangkat_gol: document.getElementById(`peg_${i}_pangkat_gol`)?.value || '',
-                    no_hp: document.getElementById(`peg_${i}_no_hp`)?.value || '',
-                    link_foto: base.link_foto // pertahankan
-                };
-            }
-            await simpanKeSpreadsheet();
-            setModePegawai(false);
-        });
-
-        // Tambah pegawai
-        addPegawaiDiv.addEventListener('click', () => {
-            if (pegawaiList.length < 10 && isEditModePegawai) {
-                pegawaiList.push({});
-                renderPegawaiCards();
-            }
-        });
-
-        // Upload foto kelurahan
-        uploadKelurahanBtn.addEventListener('click', () => {
-            if (!isEditModeKelurahan) return;
-            fileKelurahan.click();
-        });
-
-        fileKelurahan.addEventListener('change', (e) => {
-            if (e.target.files.length) {
-                openCropModal(URL.createObjectURL(e.target.files[0]), (croppedBlob) => {
-                    // upload ke drive & dapatkan thumbnail link
-                    uploadToDrive(croppedBlob).then(link => {
-                        kelurahanData.link_foto_kelurahan = link;
-                        fotoKelurahanPreview.src = link;
-                        showToast('Foto kelurahan diperbarui');
-                    }).catch(() => alert('Gagal upload'));
-                });
-            }
-        });
-
-        function handlePegawaiFileSelect(e, idx) {
-            if (e.target.files.length) {
-                openCropModal(URL.createObjectURL(e.target.files[0]), (croppedBlob) => {
-                    uploadToDrive(croppedBlob).then(link => {
-                        if (!pegawaiList[idx]) pegawaiList[idx] = {};
-                        pegawaiList[idx].link_foto = link;
-                        document.getElementById(`previewPegawai_${idx}`).src = link;
-                        showToast('Foto pegawai diperbarui');
-                    }).catch(() => alert('Gagal upload'));
-                });
-            }
-        }
-
-        // Modal crop logic
-        function openCropModal(imageSrc, resolveCallback) {
+        // ==================== CROP MODAL ====================
+        function openCropModal(imageSrc, resolve) {
             const modal = document.getElementById('cropModal');
-            const img = document.getElementById('crop-image');
+            const img = document.getElementById('cropImage');
             img.src = imageSrc;
             modal.style.display = 'flex';
+            
             if (cropper) cropper.destroy();
             cropper = new Cropper(img, {
                 aspectRatio: 4/5,
                 viewMode: 1,
                 autoCropArea: 1,
-                background: false,
+                background: false
             });
-            activeCropResolve = resolveCallback;
+            
+            currentCropResolve = resolve;
         }
 
-        document.getElementById('applyCrop').addEventListener('click', () => {
-            if (cropper && activeCropResolve) {
+        document.getElementById('applyCropBtn').addEventListener('click', () => {
+            if (cropper && currentCropResolve) {
                 cropper.getCroppedCanvas().toBlob(blob => {
-                    activeCropResolve(blob);
+                    currentCropResolve(blob);
                     document.getElementById('cropModal').style.display = 'none';
                     cropper.destroy();
                 });
             }
         });
 
-        document.getElementById('cancelCrop').addEventListener('click', () => {
+        function closeCropModal() {
             document.getElementById('cropModal').style.display = 'none';
             if (cropper) cropper.destroy();
-        });
-        document.getElementById('closeModalBtn').addEventListener('click', () => {
-            document.getElementById('cropModal').style.display = 'none';
-            if (cropper) cropper.destroy();
+        }
+
+        document.getElementById('closeModalBtn').addEventListener('click', closeCropModal);
+        document.getElementById('cancelCropBtn').addEventListener('click', closeCropModal);
+
+        // ==================== HANDLE UPLOAD ====================
+        // Upload foto kelurahan
+        document.getElementById('uploadKelurahanBtn').addEventListener('click', () => {
+            if (isEditModeKelurahan) {
+                document.getElementById('fileKelurahan').click();
+            }
         });
 
-        // Simulasi upload ke drive (return dummy thumbnail)
-        async function uploadToDrive(blob) {
-            // Di sini seharusnya kirim ke Apps Script yang upload ke folder ID dan balikin link thumbnail.
-            // Untuk simulasi, kembalikan object URL sementara
-            return new Promise((res) => {
-                const url = URL.createObjectURL(blob);
-                // nanti di production ganti dengan link thumbnail dari drive
-                setTimeout(() => res(url), 500);
+        document.getElementById('fileKelurahan').addEventListener('change', (e) => {
+            if (e.target.files.length) {
+                openCropModal(URL.createObjectURL(e.target.files[0]), async (croppedBlob) => {
+                    try {
+                        const fileName = `kelurahan_${currentUser}_${Date.now()}.jpg`;
+                        const thumbnailLink = await uploadFotoToDrive(croppedBlob, fileName);
+                        kelurahanData.link_foto_kelurahan = thumbnailLink;
+                        document.getElementById('fotoKelurahanPreview').src = thumbnailLink;
+                        showToast('Foto kelurahan berhasil diupload');
+                    } catch (error) {
+                        console.error(error);
+                    }
+                });
+            }
+        });
+
+        // Upload foto pegawai
+        async function handlePegawaiFileSelect(e, index) {
+            if (e.target.files.length) {
+                openCropModal(URL.createObjectURL(e.target.files[0]), async (croppedBlob) => {
+                    try {
+                        const fileName = `pegawai_${currentUser}_${index}_${Date.now()}.jpg`;
+                        const thumbnailLink = await uploadFotoToDrive(croppedBlob, fileName);
+                        
+                        // Update data pegawai
+                        if (!pegawaiList[index]) pegawaiList[index] = {};
+                        pegawaiList[index].link_foto = thumbnailLink;
+                        
+                        // Update preview
+                        document.getElementById(`previewPeg_${index}`).src = thumbnailLink;
+                        showToast('Foto pegawai berhasil diupload');
+                    } catch (error) {
+                        console.error(error);
+                    }
+                });
+            }
+        }
+
+        // ==================== SIMPAN DATA ====================
+        document.getElementById('simpanKelurahanBtn').addEventListener('click', async () => {
+            // Ambil data dari input
+            const fields = [
+                'nama_kelurahan', 'alamat_kelurahan', 'rt', 'rw', 'kelurahan',
+                'kecamatan', 'kota', 'provinsi', 'kode_pos', 'telp_kantor'
+            ];
+            
+            fields.forEach(field => {
+                const el = document.getElementById(`kel_${field}`);
+                if (el) kelurahanData[field] = el.value;
             });
-        }
 
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.innerText = msg;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2000);
-        }
+            await saveToSheet();
+            setModeKelurahan(false);
+        });
 
-        // init
-        loadUserData();
-    })();
-</script>
+        document.getElementById('simpanSemuaPegawaiBtn').addEventListener('click', async () => {
+            // Ambil data dari semua input pegawai
+            for (let i = 0; i < pegawaiList.length; i++) {
+                pegawaiList[i] = {
+                    nama_pegawai1: document.getElementById(`peg_${i}_nama`)?.value || '',
+                    jabatan1: document.getElementById(`peg_${i}_jabatan`)?.value || '',
+                    nip1: document.getElementById(`peg_${i}_nip`)?.value || '',
+                    pangkat_gol1: document.getElementById(`peg_${i}_pangkat`)?.value || '',
+                    no_hp1: document.getElementById(`peg_${i}_nohp`)?.value || '',
+                    link_foto: pegawaiList[i]?.link_foto || ''
+                };
+            }
+
+            await saveToSheet();
+            setModePegawai(false);
+        });
+
+        // ==================== TAMBAH PEGAWAI ====================
+        document.getElementById('addPegawaiBtn').addEventListener('click', () => {
+            if (isEditModePegawai && pegawaiList.length < 10) {
+                pegawaiList.push({});
+                renderPegawaiCards();
+            }
+        });
+
+        // ==================== LOGOUT ====================
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            localStorage.removeItem('loggedInUser');
+            window.location.href = 'https://senapelan.github.io/Home/login/login.html';
+        });
+
+        // ==================== EDIT MODE TOGGLES ====================
+        document.getElementById('editKelurahanBtn').addEventListener('click', () => {
+            setModeKelurahan(!isEditModeKelurahan);
+        });
+
+        document.getElementById('editPegawaiBtn').addEventListener('click', () => {
+            setModePegawai(!isEditModePegawai);
+        });
+
+        // ==================== INITIAL LOAD ====================
+        loadDataFromSheet();
+    </script>
 </body>
 </html>
