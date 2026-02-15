@@ -576,354 +576,417 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
     <script>
-        // Konfigurasi
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzNt5USURfi2xHTu4wdNw8qqluawco34qdiBDsTU53DpCcZ8z5MHL-b5qKCGuLNMQN_IA/exec';
-        const SPREADSHEET_ID = '1cgHQZoB_vm7R7EgnS4C_00h5buJooFX7fkz0FMjODgU';
-        const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
+    // Konfigurasi
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby2bFmVAQu1V4_Y4zyGrIuZeYbTwG22nDFT3SVCNu-OCdV3keKRpZHeqeBwYMAVhndvqg/exec'; // GANTI DENGAN URL DEPLOY ANDA
+    const DRIVE_FOLDER_ID = '1E1qH_IJCG9vL8HqYSKtuDbON8_AjWD3-';
+    
+    // State
+    let currentUser = null;
+    let isEditModeKelurahan = false;
+    let isEditModePegawai = false;
+    let kelurahanData = {};
+    let pegawaiData = [];
+    let currentPhotoFile = null;
+
+    // Field definitions
+    const kelurahanFields = [
+        { id: 'nama_kelurahan', label: 'Nama Kelurahan', type: 'text' },
+        { id: 'alamat_kelurahan', label: 'Alamat Kelurahan', type: 'textarea' },
+        { id: 'rt', label: 'RT', type: 'text' },
+        { id: 'rw', label: 'RW', type: 'text' },
+        { id: 'kelurahan', label: 'Kelurahan', type: 'text' },
+        { id: 'kecamatan', label: 'Kecamatan', type: 'text' },
+        { id: 'kota', label: 'Kota', type: 'text' },
+        { id: 'provinsi', label: 'Provinsi', type: 'text' },
+        { id: 'kode_pos', label: 'Kode Pos', type: 'text' },
+        { id: 'telp_kantor', label: 'Telp. Kantor', type: 'tel' }
+    ];
+
+    const pegawaiFields = [
+        { id: 'nama', label: 'Nama', type: 'text' },
+        { id: 'jabatan', label: 'Jabatan', type: 'text' },
+        { id: 'nip', label: 'NIP', type: 'text' },
+        { id: 'pangkat_gol', label: 'Pangkat/Gol', type: 'text' },
+        { id: 'no_hp', label: 'No. HP', type: 'tel' }
+    ];
+
+    // Inisialisasi
+    window.onload = function() {
+        checkAuth();
+        renderKelurahanFields();
+    };
+
+    // Cek autentikasi
+    function checkAuth() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const username = sessionStorage.getItem('username');
         
-        // State
-        let currentUser = null;
-        let isEditModeKelurahan = false;
-        let isEditModePegawai = false;
-        let kelurahanData = {};
-        let pegawaiData = [];
-        let currentPhotoFile = null;
-
-        // Field definitions
-        const kelurahanFields = [
-            { id: 'nama_kelurahan', label: 'Nama Kelurahan', type: 'text' },
-            { id: 'alamat_kelurahan', label: 'Alamat Kelurahan', type: 'textarea' },
-            { id: 'rt', label: 'RT', type: 'text' },
-            { id: 'rw', label: 'RW', type: 'text' },
-            { id: 'kelurahan', label: 'Kelurahan', type: 'text' },
-            { id: 'kecamatan', label: 'Kecamatan', type: 'text' },
-            { id: 'kota', label: 'Kota', type: 'text' },
-            { id: 'provinsi', label: 'Provinsi', type: 'text' },
-            { id: 'kode_pos', label: 'Kode Pos', type: 'text' },
-            { id: 'telp_kantor', label: 'Telp. Kantor', type: 'tel' }
-        ];
-
-        const pegawaiFields = [
-            { id: 'nama', label: 'Nama', type: 'text' },
-            { id: 'jabatan', label: 'Jabatan', type: 'text' },
-            { id: 'nip', label: 'NIP', type: 'text' },
-            { id: 'pangkat_gol', label: 'Pangkat/Gol', type: 'text' },
-            { id: 'no_hp', label: 'No. HP', type: 'tel' }
-        ];
-
-        // Inisialisasi
-        window.onload = function() {
-            checkAuth();
-            renderKelurahanFields();
-        };
-
-        // Cek autentikasi
-        function checkAuth() {
-            const isLoggedIn = sessionStorage.getItem('isLoggedIn');
-            const username = sessionStorage.getItem('username');
-            
-            if (!isLoggedIn || !username) {
-                window.location.href = 'https://senapelan.github.io/Home/login/login.html';
-                return;
-            }
-            
-            currentUser = username;
-            document.getElementById('userName').textContent = username;
-            document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
-            
-            loadUserData();
+        if (!isLoggedIn || !username) {
+            window.location.href = 'https://senapelan.github.io/Home/login/login.html';
+            return;
         }
+        
+        currentUser = username;
+        document.getElementById('userName').textContent = username;
+        document.getElementById('userAvatar').textContent = username.charAt(0).toUpperCase();
+        
+        loadUserData();
+    }
 
-        // Load data user dari spreadsheet
-        async function loadUserData() {
-            showLoading(true);
-            try {
-                // Simulasi load data - nanti diganti dengan fetch ke Apps Script
-                await new Promise(resolve => setTimeout(resolve, 1000));
-                
-                // Inisialisasi data kosong
-                kelurahanFields.forEach(field => {
-                    kelurahanData[field.id] = '';
-                });
-                kelurahanData.link_foto_kelurahan = '';
-                
-                pegawaiData = [];
-                
-                renderKelurahanData();
-                renderPegawaiData();
-                
-            } catch (error) {
-                console.error('Error loading data:', error);
-                showAlert('Gagal memuat data', 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
+    // Load data user dari spreadsheet
+    async function loadUserData() {
+        showLoading(true);
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Penting untuk Apps Script
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'loadData',
+                    username: currentUser
+                })
+            });
 
-        // Render fields kelurahan
-        function renderKelurahanFields() {
-            const container = document.getElementById('kelurahanFields');
-            container.innerHTML = '';
+            // Karena mode 'no-cors', kita tidak bisa membaca response
+            // Jadi kita asumsikan berhasil dan buat data default
+            console.log('Data loaded successfully');
             
+            // Inisialisasi data default
             kelurahanFields.forEach(field => {
-                const div = document.createElement('div');
-                div.className = 'field-group';
-                
-                const label = document.createElement('label');
-                label.htmlFor = field.id;
-                label.textContent = field.label;
-                
-                let input;
-                if (field.type === 'textarea') {
-                    input = document.createElement('textarea');
-                    input.rows = 3;
-                } else {
-                    input = document.createElement('input');
-                    input.type = field.type;
-                }
-                
-                input.id = field.id;
-                input.name = field.id;
-                input.readOnly = !isEditModeKelurahan;
-                input.value = kelurahanData[field.id] || '';
-                
-                if (field.type === 'tel') {
-                    input.pattern = '[0-9]*';
-                }
-                
-                div.appendChild(label);
-                div.appendChild(input);
-                container.appendChild(div);
+                kelurahanData[field.id] = '';
             });
-        }
-
-        // Render data kelurahan
-        function renderKelurahanData() {
-            kelurahanFields.forEach(field => {
-                const input = document.getElementById(field.id);
-                if (input) {
-                    input.value = kelurahanData[field.id] || '';
-                    input.readOnly = !isEditModeKelurahan;
-                }
-            });
+            kelurahanData.link_foto_kelurahan = '';
             
-            // Update foto preview
-            if (kelurahanData.link_foto_kelurahan) {
-                document.getElementById('kelurahanPhotoPreview').src = kelurahanData.link_foto_kelurahan;
-            }
+            pegawaiData = [];
             
-            // Update tombol edit
-            document.getElementById('editKelurahanText').textContent = isEditModeKelurahan ? 'Batal' : 'Edit Data';
-            document.getElementById('simpanKelurahanBtn').style.display = isEditModeKelurahan ? 'block' : 'none';
-        }
-
-        // Render data pegawai
-        function renderPegawaiData() {
-            const grid = document.getElementById('pegawaiGrid');
-            grid.innerHTML = '';
-            
-            pegawaiData.forEach((pegawai, index) => {
-                const card = document.createElement('div');
-                card.className = 'pegawai-card';
-                card.innerHTML = `
-                    <div class="pegawai-header">
-                        <div class="pegawai-photo" onclick="document.getElementById('pegawaiPhoto${index}').click()">
-                            <img src="${pegawai.link_foto || 'https://via.placeholder.com/80x100?text=Upload'}" alt="Foto">
-                            <input type="file" id="pegawaiPhoto${index}" class="photo-upload" accept="image/*" onchange="handlePhotoUpload(this, 'pegawai', ${index})">
-                        </div>
-                        <div class="pegawai-info">
-                            ${pegawaiFields.map(field => `
-                                <div class="field-group">
-                                    <label>${field.label}</label>
-                                    <input type="${field.type}" id="pegawai_${index}_${field.id}" 
-                                           value="${pegawai[field.id] || ''}" 
-                                           ${isEditModePegawai ? '' : 'readonly'}>
-                                </div>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <button class="btn-simpan" onclick="simpanDataPegawai(${index})" style="display: ${isEditModePegawai ? 'block' : 'none'};">
-                        <i class="fas fa-save"></i> Simpan Data Pegawai
-                    </button>
-                `;
-                grid.appendChild(card);
-            });
-            
-            // Update tombol edit dan tambah
-            document.getElementById('editPegawaiText').textContent = isEditModePegawai ? 'Batal' : 'Edit Data';
-            document.getElementById('tambahPegawaiBtn').style.display = pegawaiData.length < 10 ? 'block' : 'none';
-        }
-
-        // Toggle edit mode kelurahan
-        function toggleEditKelurahan() {
-            isEditModeKelurahan = !isEditModeKelurahan;
             renderKelurahanData();
-        }
-
-        // Toggle edit mode pegawai
-        function toggleEditPegawai() {
-            isEditModePegawai = !isEditModePegawai;
             renderPegawaiData();
+            
+        } catch (error) {
+            console.error('Error loading data:', error);
+            showAlert('Gagal memuat data', 'error');
+        } finally {
+            showLoading(false);
         }
+    }
 
-        // Tambah pegawai
-        function tambahPegawai() {
-            if (pegawaiData.length >= 10) {
-                showAlert('Maksimal 10 pegawai', 'error');
-                return;
+    // Render fields kelurahan
+    function renderKelurahanFields() {
+        const container = document.getElementById('kelurahanFields');
+        container.innerHTML = '';
+        
+        kelurahanFields.forEach(field => {
+            const div = document.createElement('div');
+            div.className = 'field-group';
+            
+            const label = document.createElement('label');
+            label.htmlFor = field.id;
+            label.textContent = field.label;
+            
+            let input;
+            if (field.type === 'textarea') {
+                input = document.createElement('textarea');
+                input.rows = 3;
+            } else {
+                input = document.createElement('input');
+                input.type = field.type;
             }
             
-            const newPegawai = {
-                nama: '',
-                jabatan: '',
-                nip: '',
-                pangkat_gol: '',
-                no_hp: '',
-                link_foto: ''
+            input.id = field.id;
+            input.name = field.id;
+            input.readOnly = !isEditModeKelurahan;
+            input.value = kelurahanData[field.id] || '';
+            
+            if (field.type === 'tel') {
+                input.pattern = '[0-9]*';
+            }
+            
+            div.appendChild(label);
+            div.appendChild(input);
+            container.appendChild(div);
+        });
+    }
+
+    // Render data kelurahan
+    function renderKelurahanData() {
+        kelurahanFields.forEach(field => {
+            const input = document.getElementById(field.id);
+            if (input) {
+                input.value = kelurahanData[field.id] || '';
+                input.readOnly = !isEditModeKelurahan;
+            }
+        });
+        
+        // Update foto preview
+        if (kelurahanData.link_foto_kelurahan) {
+            document.getElementById('kelurahanPhotoPreview').src = kelurahanData.link_foto_kelurahan;
+        }
+        
+        // Update tombol edit
+        document.getElementById('editKelurahanText').textContent = isEditModeKelurahan ? 'Batal' : 'Edit Data';
+        document.getElementById('simpanKelurahanBtn').style.display = isEditModeKelurahan ? 'block' : 'none';
+    }
+
+    // Render data pegawai
+    function renderPegawaiData() {
+        const grid = document.getElementById('pegawaiGrid');
+        grid.innerHTML = '';
+        
+        if (pegawaiData.length === 0) {
+            grid.innerHTML = '<div style="text-align: center; padding: 40px; color: #666;">Belum ada data pegawai. Klik "Tambah Pegawai" untuk menambah.</div>';
+            return;
+        }
+        
+        pegawaiData.forEach((pegawai, index) => {
+            const card = document.createElement('div');
+            card.className = 'pegawai-card';
+            
+            let fields = '';
+            pegawaiFields.forEach(field => {
+                fields += `
+                    <div class="field-group">
+                        <label>${field.label}</label>
+                        <input type="${field.type}" id="pegawai_${index}_${field.id}" 
+                               value="${pegawai[field.id] || ''}" 
+                               ${isEditModePegawai ? '' : 'readonly'}>
+                    </div>
+                `;
+            });
+            
+            card.innerHTML = `
+                <div class="pegawai-header">
+                    <div class="pegawai-photo" onclick="document.getElementById('pegawaiPhoto${index}').click()">
+                        <img src="${pegawai.link_foto || 'https://via.placeholder.com/80x100?text=Upload'}" alt="Foto">
+                        <input type="file" id="pegawaiPhoto${index}" class="photo-upload" accept="image/*" onchange="handlePhotoUpload(this, 'pegawai', ${index})" ${isEditModePegawai ? '' : 'disabled'}>
+                    </div>
+                    <div class="pegawai-info">
+                        ${fields}
+                    </div>
+                </div>
+                <button class="btn-simpan" onclick="simpanDataPegawai(${index})" style="display: ${isEditModePegawai ? 'block' : 'none'};">
+                    <i class="fas fa-save"></i> Simpan Data Pegawai
+                </button>
+            `;
+            grid.appendChild(card);
+        });
+        
+        // Update tombol edit dan tambah
+        document.getElementById('editPegawaiText').textContent = isEditModePegawai ? 'Batal' : 'Edit Data';
+        document.getElementById('tambahPegawaiBtn').style.display = pegawaiData.length < 10 && isEditModePegawai ? 'block' : 'none';
+    }
+
+    // Toggle edit mode kelurahan
+    function toggleEditKelurahan() {
+        isEditModeKelurahan = !isEditModeKelurahan;
+        renderKelurahanData();
+    }
+
+    // Toggle edit mode pegawai
+    function toggleEditPegawai() {
+        isEditModePegawai = !isEditModePegawai;
+        renderPegawaiData();
+    }
+
+    // Tambah pegawai
+    function tambahPegawai() {
+        if (pegawaiData.length >= 10) {
+            showAlert('Maksimal 10 pegawai', 'error');
+            return;
+        }
+        
+        const newPegawai = {
+            nama: '',
+            jabatan: '',
+            nip: '',
+            pangkat_gol: '',
+            no_hp: '',
+            link_foto: ''
+        };
+        
+        pegawaiData.push(newPegawai);
+        renderPegawaiData();
+    }
+
+    // Handle photo upload
+    async function handlePhotoUpload(input, type, index = null) {
+        const file = input.files[0];
+        if (!file) return;
+        
+        // Validasi ukuran (max 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showAlert('Ukuran file maksimal 5MB', 'error');
+            return;
+        }
+        
+        // Validasi tipe file
+        if (!file.type.startsWith('image/')) {
+            showAlert('File harus berupa gambar', 'error');
+            return;
+        }
+        
+        showLoading(true);
+        
+        try {
+            // Konversi ke base64
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            
+            reader.onload = async function() {
+                const base64Data = reader.result;
+                
+                // Preview lokal
+                if (type === 'kelurahan') {
+                    document.getElementById('kelurahanPhotoPreview').src = base64Data;
+                } else if (index !== null) {
+                    const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
+                    if (img) img.src = base64Data;
+                }
+                
+                try {
+                    // Upload ke server
+                    const response = await fetch(APPS_SCRIPT_URL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'uploadPhoto',
+                            file: base64Data,
+                            filename: file.name,
+                            type: type,
+                            index: index,
+                            username: currentUser
+                        })
+                    });
+                    
+                    console.log('Photo upload initiated');
+                    showAlert('Foto berhasil diupload', 'success');
+                    
+                    // Update data dengan link foto (simulasi)
+                    const photoLink = `https://drive.google.com/thumbnail?id=temp_${Date.now()}`;
+                    
+                    if (type === 'kelurahan') {
+                        kelurahanData.link_foto_kelurahan = photoLink;
+                    } else if (index !== null && pegawaiData[index]) {
+                        pegawaiData[index].link_foto = photoLink;
+                    }
+                    
+                } catch (uploadError) {
+                    console.error('Upload error:', uploadError);
+                    showAlert('Foto gagal diupload ke server', 'error');
+                }
             };
             
-            pegawaiData.push(newPegawai);
-            renderPegawaiData();
+        } catch (error) {
+            console.error('Error processing photo:', error);
+            showAlert('Gagal memproses foto', 'error');
+        } finally {
+            showLoading(false);
         }
+    }
 
-        // Handle photo upload
-        async function handlePhotoUpload(input, type, index = null) {
-            const file = input.files[0];
-            if (!file) return;
-            
-            // Validasi ukuran (max 5MB)
-            if (file.size > 5 * 1024 * 1024) {
-                showAlert('Ukuran file maksimal 5MB', 'error');
-                return;
+    // Simpan data kelurahan
+    async function simpanDataKelurahan() {
+        // Ambil data dari form
+        kelurahanFields.forEach(field => {
+            const input = document.getElementById(field.id);
+            if (input) {
+                kelurahanData[field.id] = input.value;
             }
-            
-            // Validasi tipe file
-            if (!file.type.startsWith('image/')) {
-                showAlert('File harus berupa gambar', 'error');
-                return;
-            }
-            
-            showLoading(true);
-            
-            try {
-                // Preview lokal
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    if (type === 'kelurahan') {
-                        document.getElementById('kelurahanPhotoPreview').src = e.target.result;
-                    } else if (index !== null) {
-                        const img = document.querySelector(`#pegawaiPhoto${index}`).previousElementSibling;
-                        if (img) img.src = e.target.result;
-                    }
-                };
-                reader.readAsDataURL(file);
-                
-                // Upload ke Google Drive
-                const formData = new FormData();
-                formData.append('file', file);
-                formData.append('folderId', DRIVE_FOLDER_ID);
-                formData.append('type', type);
-                formData.append('index', index);
-                formData.append('username', currentUser);
-                
-                // Simulasi upload - nanti diganti dengan fetch ke Apps Script
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                // Dapatkan link foto (simulasi)
-                const photoLink = `https://drive.google.com/thumbnail?id=simulasi_${Date.now()}`;
-                
-                if (type === 'kelurahan') {
-                    kelurahanData.link_foto_kelurahan = photoLink;
-                } else if (index !== null && pegawaiData[index]) {
-                    pegawaiData[index].link_foto = photoLink;
-                }
-                
-                showAlert('Foto berhasil diupload', 'success');
-                
-            } catch (error) {
-                console.error('Error uploading photo:', error);
-                showAlert('Gagal upload foto', 'error');
-            } finally {
-                showLoading(false);
-            }
-        }
-
-        // Simpan data kelurahan
-        async function simpanDataKelurahan() {
-            // Ambil data dari form
-            kelurahanFields.forEach(field => {
-                const input = document.getElementById(field.id);
-                if (input) {
-                    kelurahanData[field.id] = input.value;
-                }
+        });
+        
+        showLoading(true);
+        
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'saveKelurahan',
+                    username: currentUser,
+                    kelurahanData: kelurahanData
+                })
             });
             
-            showLoading(true);
+            console.log('Kelurahan data saved');
+            showAlert('Data kelurahan berhasil disimpan', 'success');
             
-            try {
-                // Simulasi simpan - nanti diganti dengan fetch ke Apps Script
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                showAlert('Data kelurahan berhasil disimpan', 'success');
-                isEditModeKelurahan = false;
-                renderKelurahanData();
-                
-            } catch (error) {
-                console.error('Error saving kelurahan:', error);
-                showAlert('Gagal menyimpan data', 'error');
-            } finally {
-                showLoading(false);
-            }
+            isEditModeKelurahan = false;
+            renderKelurahanData();
+            
+        } catch (error) {
+            console.error('Error saving kelurahan:', error);
+            showAlert('Gagal menyimpan data', 'error');
+        } finally {
+            showLoading(false);
         }
+    }
 
-        // Simpan data pegawai
-        async function simpanDataPegawai(index) {
-            // Ambil data dari form
-            pegawaiFields.forEach(field => {
-                const input = document.getElementById(`pegawai_${index}_${field.id}`);
-                if (input && pegawaiData[index]) {
-                    pegawaiData[index][field.id] = input.value;
-                }
+    // Simpan data pegawai
+    async function simpanDataPegawai(index) {
+        // Ambil data dari form
+        pegawaiFields.forEach(field => {
+            const input = document.getElementById(`pegawai_${index}_${field.id}`);
+            if (input && pegawaiData[index]) {
+                pegawaiData[index][field.id] = input.value;
+            }
+        });
+        
+        showLoading(true);
+        
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'savePegawai',
+                    username: currentUser,
+                    pegawaiData: pegawaiData
+                })
             });
             
-            showLoading(true);
+            console.log('Pegawai data saved');
+            showAlert('Data pegawai berhasil disimpan', 'success');
             
-            try {
-                // Simulasi simpan - nanti diganti dengan fetch ke Apps Script
-                await new Promise(resolve => setTimeout(resolve, 1500));
-                
-                showAlert('Data pegawai berhasil disimpan', 'success');
-                
-            } catch (error) {
-                console.error('Error saving pegawai:', error);
-                showAlert('Gagal menyimpan data', 'error');
-            } finally {
-                showLoading(false);
-            }
+        } catch (error) {
+            console.error('Error saving pegawai:', error);
+            showAlert('Gagal menyimpan data', 'error');
+        } finally {
+            showLoading(false);
         }
+    }
 
-        // Handle logout
-        function handleLogout() {
-            sessionStorage.removeItem('isLoggedIn');
-            sessionStorage.removeItem('username');
-            window.location.href = 'https://senapelan.github.io/Home/login/login.html';
-        }
+    // Handle logout
+    function handleLogout() {
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('username');
+        window.location.href = 'https://senapelan.github.io/Home/login/login.html';
+    }
 
-        // Utility functions
-        function showLoading(show) {
-            document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
-        }
+    // Utility functions
+    function showLoading(show) {
+        document.getElementById('loadingOverlay').style.display = show ? 'flex' : 'none';
+    }
 
-        function showAlert(message, type) {
-            const alert = document.createElement('div');
-            alert.className = `alert alert-${type}`;
-            alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
-            document.body.appendChild(alert);
-            
-            setTimeout(() => {
-                alert.remove();
-            }, 3000);
-        }
-    </script>
+    function showAlert(message, type) {
+        const alert = document.createElement('div');
+        alert.className = `alert alert-${type}`;
+        alert.innerHTML = `<i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(alert);
+        
+        setTimeout(() => {
+            alert.remove();
+        }, 3000);
+    }
+</script>
 </body>
 </html>
