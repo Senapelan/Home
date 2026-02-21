@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Padang Terubuk · admin 2026</title>
+  <!-- Google Font & boxicons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/boxicons@2.1.4/css/boxicons.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", system-ui, -apple-system, sans-serif;
+      background: #0f1217;
+      height: 100vh;
+      overflow-x: hidden;
+      color: #eef2f6;
+    }
+
+    /* premium glassmorphism + smooth transitions */
+    .header, .sidebar, .welcome-card, .resize-handle::after, .menu-link, .sub-link, .toggle-btn {
+      transition: all 0.2s cubic-bezier(0.2, 0, 0, 1);
+    }
+
+    /* ----- HEADER FUTURISTIC 2026 ----- */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 68px;
+      background: rgba(18, 25, 34, 0.85);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(72, 120, 160, 0.25);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      z-index: 1000;
+      color: white;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .toggle-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(90, 150, 200, 0.2);
+      color: #d6eaff;
+      font-size: 26px;
+      width: 44px;
+      height: 44px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 4px 12px rgba(0, 10, 20, 0.6);
+    }
+
+    .toggle-btn:hover {
+      background: rgba(30, 100, 140, 0.3);
+      border-color: #3b9bd7;
+      color: white;
+      transform: scale(1.02);
+    }
+
+    .logo-header {
+      height: 44px;
+      width: auto;
+      border-radius: 12px;
+      background: #0f1a24;
+      padding: 4px;
+      box-shadow: 0 6px 14px rgba(0, 30, 50, 0.8);
+      border: 1px solid #2a4a62;
+    }
+
+    .header-title .main {
+      font-weight: 600;
+      font-size: 1.3rem;
+      letter-spacing: -0.3px;
+      background: linear-gradient(135deg, #fff, #bddbff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-title .sub {
+      font-size: 0.75rem;
+      opacity: 0.65;
+      font-weight: 400;
+      color: #a0c0da;
+    }
+
+    .header-right {
+      background: rgba(10, 30, 45, 0.7);
+      padding: 8px 22px;
+      border-radius: 40px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      border: 1px solid #2b5470;
+      backdrop-filter: blur(4px);
+      color: #e2f0ff;
+      letter-spacing: 0.3px;
+      box-shadow: inset 0 1px 2px #3f6d8f;
+    }
+
+    /* ----- LAYOUT ----- */
+    .app-wrapper {
+      display: flex;
+      padding-top: 68px;
+      height: 100vh;
+    }
+
+    /* SIDEBAR CONTAINER */
+    .sidebar-container {
+      position: relative;
+      flex-shrink: 0;
+      height: calc(100vh - 68px);
+      transition: width 0.05s linear;
+      width: 320px;
+    }
+
+    .resize-handle {
+      position: absolute;
+      top: 0;
+      right: -5px;
+      width: 10px;
+      height: 100%;
+      cursor: col-resize;
+      z-index: 1100;
+      background: transparent;
+    }
+
+    .resize-handle::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background: #3f6b8f;
+      border-radius: 6px;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    .resize-handle:hover::after,
+    .resize-handle:active::after {
+      opacity: 1;
+      background: #70b0e0;
+      box-shadow: 0 0 6px #3fa0f0;
+    }
+
+    /* SIDEBAR DARK PREMIUM */
+    .sidebar {
+      width: 100%;
+      height: 100%;
+      background: rgba(16, 24, 32, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-right: 1px solid rgba(72, 130, 180, 0.2);
+      box-shadow: 8px 0 30px -20px #000000;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .sidebar-inner {
+      padding: 20px 0 24px 0;
+      height: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: #2a4f6e #1d2c3a;
+    }
+
+    .sidebar-inner::-webkit-scrollbar {
+      width: 5px;
+    }
+    .sidebar-inner::-webkit-scrollbar-track {
+      background: #1d2c3a;
+    }
+    .sidebar-inner::-webkit-scrollbar-thumb {
+      background: #2a4f6e;
+      border-radius: 20px;
+    }
+
+    /* brand */
+    .sidebar-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 18px 22px 18px;
+      border-bottom: 1px solid rgba(80, 140, 190, 0.2);
+      margin-bottom: 16px;
+      white-space: nowrap;
+    }
+
+    .sidebar-brand img {
+      height: 48px;
+      width: 48px;
+      background: #11212e;
+      border-radius: 14px;
+      padding: 5px;
+      border: 1px solid #306080;
+      box-shadow: 0 6px 12px rgba(0,15,30,0.8);
+    }
+
+    .sidebar-brand span {
+      font-weight: 600;
+      font-size: 1.1rem;
+      background: linear-gradient(145deg, #ffffff, #b2d9ff);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    /* menu */
+    .menu-link {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 18px;
+      color: #cbd5e1;
+      text-decoration: none;
+      font-size: 0.95rem;
+      font-weight: 450;
+      border-radius: 14px;
+      margin: 4px 12px;
+      white-space: nowrap;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .menu-link i {
+      font-size: 1.5rem;
+      min-width: 28px;
+      color: #6c9fd1;
+    }
+
+    .menu-link .menu-text {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .menu-link .chevron {
+      margin-left: auto;
+      font-size: 1.4rem;
+      color: #5d8bb4;
+      transition: transform 0.3s;
+    }
+
+    .menu-link:hover {
+      background: rgba(40, 85, 120, 0.3);
+      border-color: rgba(80, 160, 230, 0.4);
+      color: white;
+    }
+
+    .menu-link:hover i {
+      color: #a3d0ff;
+    }
+
+    /* sub & nested */
+    .sub-menu, .nested-sub-menu {
+      list-style: none;
+      padding-left: 8px;
+      margin-left: 28px;
+      border-left: 1px solid rgba(85, 150, 210, 0.3);
+      display: none;
+    }
+
+    .sub-menu.show, .nested-sub-menu.show {
+      display: block;
+    }
+
+    .sub-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 18px 10px 0;
+      font-size: 0.88rem;
+      color: #b6ccdf;
+      text-decoration: none;
+      white-space: nowrap;
+      border-radius: 10px;
+      transition: background 0.15s, color 0.15s;
+      cursor: pointer;
+      margin-left: 6px;
+    }
+
+    .sub-link i {
+      font-size: 1.1rem;
+      min-width: 22px;
+      color: #5887b5;
+    }
+
+    .sub-link:hover {
+      background: rgba(55, 105, 145, 0.3);
+      color: white;
+    }
+
+    .nested-link {
+      padding-left: 38px;
+      font-size: 0.82rem;
+    }
+
+    /* collapsed state */
+    .sidebar-container.collapsed .menu-text,
+    .sidebar-container.collapsed .chevron,
+    .sidebar-container.collapsed .sub-menu,
+    .sidebar-container.collapsed .nested-sub-menu,
+    .sidebar-container.collapsed .sidebar-brand span {
+      display: none !important;
+    }
+
+    .sidebar-container.collapsed .menu-link {
+      justify-content: center;
+      padding: 12px 0;
+      margin: 4px 10px;
+    }
+
+    .sidebar-container.collapsed .menu-link i {
+      margin: 0;
+      font-size: 1.7rem;
+    }
+
+    .sidebar-container.collapsed .sidebar-brand {
+      justify-content: center;
+      padding: 6px 0 18px 0;
+    }
+
+    /* content area */
+    .content-area {
+      flex: 1;
+      background: #0f131a;
+      padding: 28px 32px;
+      position: relative;
+      overflow-y: auto;
+      min-width: 0;
+    }
+
+    #content-frame {
+      width: 100%;
+      height: calc(100vh - 128px);
+      border: none;
+      border-radius: 32px;
+      background: #1b232f;
+      box-shadow: 0 20px 40px -10px black, inset 0 1px 1px rgba(255,255,255,0.03);
+      display: block; /* Diubah dari none ke block */
+    }
+
+    .welcome-card {
+      display: none; /* Disembunyikan */
+    }
+
+    /* loading */
+    .loading-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(10, 22, 36, 0.85);
+      backdrop-filter: blur(20px);
+      padding: 22px 40px;
+      border-radius: 70px;
+      border: 1px solid #306c9c;
+      box-shadow: 0 20px 30px -10px black;
+      display: none;
+      z-index: 200;
+      color: #eaf3ff;
+      font-weight: 500;
+      font-size: 1.2rem;
+    }
+
+    .loading-overlay i {
+      margin-right: 14px;
+      font-size: 1.8rem;
+      vertical-align: middle;
+      animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .error-message {
+      background: rgba(130, 30, 40, 0.2);
+      backdrop-filter: blur(12px);
+      border: 1px solid #b55a6b;
+      color: #ffc6cf;
+      padding: 18px 28px;
+      border-radius: 40px;
+      margin-top: 24px;
+      display: none;
+    }
+
+    .error-message a {
+      color: white;
+      text-decoration: underline wavy #ffa0a0;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <button class="toggle-btn" id="toggleSidebarBtn">
+        <i class='bx bx-chevron-left' id="toggleIcon"></i>
+      </button>
+      
+      <div class="header-title">
+        <span class="main">PELAYANAN KELURHAAN</span>
+      </div>
+    </div>
+    <div class="header-right" id="currentDate"></div>
+  </header>
+
+  <div class="app-wrapper">
+    <div class="sidebar-container" id="sidebarContainer" style="width: 320px;">
+      <div class="sidebar">
+        <div class="sidebar-inner">
+          <div class="sidebar-brand">
+            <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="logo">
+            <span>Padang Terubuk</span>
+          </div>
+          <div class="menu-container" id="menuContainer"></div>
+        </div>
+      </div>
+      <div class="resize-handle" id="resizeHandle"></div>
+    </div>
+
+    <main class="content-area">
+      <div class="loading-overlay" id="loadingOverlay">
+        <i class='bx bx-loader-alt'></i> memuat konten ...
+      </div>
+      <div class="welcome-card" id="welcomePlaceholder">
+        <!-- Konten welcome card dihapus -->
+      </div>
+      <div class="error-message" id="errorMessage">
+        <i class='bx bx-error-circle'></i>
+        <span id="errorText">gagal memuat. coba buka di tab baru →</span>
+      </div>
+      <iframe id="content-frame" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-top-navigation allow-popups-to-escape-sandbox"></iframe>
+    </main>
+  </div>
+
+  <script>
+    (function() {
+      // ----- DATA MENU DENGAN NESTED SUB (PREMIUM 2026) -----
+      const menuData = [
+        { icon: 'bx-home-alt-2', text: 'Beranda', link: 'https://senapelan.github.io/Home/profileasnprivate/PROFILEASN.html' },
+        { icon: 'bx-mail-send', text: 'Surat Pelayanan', children: [
+          { text: 'Surat Keterangan Umum', children: [
+              { text: 'Ket. Orang yang Sama', link: 'https://forms.gle/QFBSu7ED5zeGx9e79' },
+              { text: 'Ket. Belum Menikah', link: 'https://forms.gle/YE1oUG52EjTDyoX9A' },
+              { text: 'Ket. Memiliki Pekerjaan', link: 'https://forms.gle/YE1oUG52EjTDyoX9A' },
+              { text: 'Ket. Memiliki Rumah', link: 'https://forms.gle/YE1oUG52EjTDyoX9A' },
+              { text: 'Ket. Domisili Tempat Tinggal', link: 'https://forms.gle/hLJoyy4pGXNbFiBJ7' },
+              { text: 'Ket. Keterangan Goib', link: '#' },
+              { text: 'Ket. Tanggungan Keluarga', link: '#' },
+              { text: 'Ket. Domisili WNA', link: '#' },
+              { text: 'Ket. Usaha Pinjam Uang', link: '#' },
+              { text: 'Ket. Penghasilan', link: '#' },
+              { text: 'Ket. Umum Lainnya', link: '#' },
+          ]},
+          { text: 'Rekomendasi Pangkalan LPG', link: '#' },
+          { text: 'Pengantar Nikah', children: [
+              { text: 'N1 Nikah', link: '#' },
+              { text: 'N6 Kematian', link: '#' },
+              { text: 'Blanko Nikah', link: '#' }
+          ]},
+          { text: 'Pernyataan Ahli Waris', children: (() => {
+              let arr = [];
+              for(let i=1; i<=10; i++) arr.push({ text: i+' Orang', link: '#' });
+              return arr;
+            })()
+          }
+        ]},
+        { icon: 'bx-file-blank', text: 'Surat Dinas Kelurahan', children: [
+          { text: 'Surat Keluar', link: '#' }, { text: 'Undangan', link: '#' }, { text: 'Notulen', link: '#' },
+          { text: 'Absensi Rapat', link: '#' }, { text: 'Nota Dinas', link: '#' }, { text: 'SPPD', link: '#' }
+        ]},
+        { icon: 'bx-folder-open', text: 'Administrasi Kelurahan', children: [
+          { text: 'Dashboard Arsip Surat', link: '#' }, { text: 'Pencatatan Surat Masuk', link: '#' },
+          { text: 'Pencatatan Surat Keluar', link: '#' }, { text: 'Pencatatan Register Surat', link: '#' },
+          { text: 'Pencatatan Legalisir Surat', link: '#' }
+        ]}
+      ];
+
+      const menuContainer = document.getElementById('menuContainer');
+      function renderMenu(items, level = 0) {
+        let html = '<ul style="list-style:none; padding:0;">';
+        items.forEach(item => {
+          const hasChildren = item.children && item.children.length;
+          const uid = (item.text + Math.random()).replace(/\s/g, '') + level;
+          if (hasChildren) {
+            html += `<li class="menu-item">
+              <div class="menu-link parent-link" data-target="${uid}">
+                <i class='bx ${item.icon || (level === 0 ? 'bx-folder' : 'bx-subdirectory-right')}'></i>
+                <span class="menu-text">${item.text}</span>
+                <i class='bx bx-chevron-down chevron'></i>
+              </div>
+              <ul class="${level === 0 ? 'sub-menu' : 'nested-sub-menu'}" id="${uid}">`;
+            html += renderMenu(item.children, level + 1);
+            html += '</ul></li>';
+          } else {
+            const icon = level === 0 ? (item.icon || 'bx-file') : 'bx-circle';
+            html += `<li class="menu-item">
+              <div class="${level === 0 ? 'menu-link' : 'sub-link'}" data-link="${item.link || '#'}">
+                <i class='bx ${icon}' style="font-size:${level>0?'0.9rem':'1.4rem'};"></i>
+                <span class="menu-text">${item.text}</span>
+              </div>
+            </li>`;
+          }
+        });
+        html += '</ul>';
+        return html;
+      }
+      menuContainer.innerHTML = renderMenu(menuData);
+
+      // ----- ELEMEN -----
+      const frame = document.getElementById('content-frame');
+      const welcome = document.getElementById('welcomePlaceholder');
+      const loading = document.getElementById('loadingOverlay');
+      const errorMsg = document.getElementById('errorMessage');
+      const errorText = document.getElementById('errorText');
+
+      // Langsung load beranda saat halaman dimuat
+      const berandaLink = 'https://senapelan.github.io/Home/profileasnprivate/PROFILEASN.html';
+      
+      function loadInIframe(url) {
+        if (!url || url === '#') { alert('demo: link tidak aktif'); return; }
+        welcome.style.display = 'none';
+        errorMsg.style.display = 'none';
+        loading.style.display = 'flex';
+        frame.style.display = 'block';
+        frame.src = url;
+
+        const timeout = setTimeout(() => {
+          try {
+            if (frame.contentDocument && frame.contentDocument.body.innerHTML==='') handleError(url);
+          } catch (e) { handleError(url); }
+        }, 4000);
+
+        frame.onload = () => { clearTimeout(timeout); loading.style.display = 'none'; };
+        frame.onerror = () => { clearTimeout(timeout); handleError(url); };
+      }
+
+      function handleError(url) {
+        loading.style.display = 'none';
+        errorMsg.style.display = 'block';
+        errorText.innerHTML = `⛔ batasan cors · <a href="${url}" target="_blank">buka di tab baru ↗</a>`;
+      }
+
+      // Load beranda saat halaman dimuat
+      window.addEventListener('load', function() {
+        loadInIframe(berandaLink);
+      });
+
+      // ----- EVENT CLICK -----
+      document.querySelectorAll('.parent-link').forEach(p => {
+        p.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const target = document.getElementById(this.dataset.target);
+          const chev = this.querySelector('.chevron');
+          if (target) {
+            target.classList.toggle('show');
+            if (chev) chev.style.transform = target.classList.contains('show') ? 'rotate(180deg)' : 'rotate(0)';
+          }
+        });
+      });
+
+      document.querySelectorAll('[data-link]').forEach(el => {
+        el.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const link = this.dataset.link;
+          if (link && link !== '#') loadInIframe(link);
+          else if (link === '#') alert('🔒 HALAMAN INI BELUM UPDATE');
+        });
+      });
+
+      // toggle collapse
+      const sidebar = document.getElementById('sidebarContainer');
+      const toggleBtn = document.getElementById('toggleSidebarBtn');
+      const toggleIcon = document.getElementById('toggleIcon');
+      let collapsed = false, lastWidth = 320;
+
+      toggleBtn.addEventListener('click', () => {
+        if (!collapsed) {
+          lastWidth = parseInt(sidebar.style.width) || 320;
+          sidebar.style.width = '75px';
+          sidebar.classList.add('collapsed');
+          toggleIcon.classList.replace('bx-chevron-left', 'bx-chevron-right');
+        } else {
+          sidebar.style.width = lastWidth + 'px';
+          sidebar.classList.remove('collapsed');
+          toggleIcon.classList.replace('bx-chevron-right', 'bx-chevron-left');
+        }
+        collapsed = !collapsed;
+        document.querySelectorAll('.sub-menu, .nested-sub-menu').forEach(s => s.classList.remove('show'));
+        document.querySelectorAll('.chevron').forEach(c => c.style.transform = 'rotate(0)');
+      });
+
+      // resize handler
+      const handle = document.getElementById('resizeHandle');
+      let resizing = false, startX, startW;
+      
+      handle.addEventListener('mousedown', (e) => {
+        e.preventDefault();
+        if (sidebar.classList.contains('collapsed')) {
+          sidebar.classList.remove('collapsed');
+          toggleIcon.classList.replace('bx-chevron-right', 'bx-chevron-left');
+          collapsed = false;
+          sidebar.style.width = '320px';
+          lastWidth = 320;
+        }
+        resizing = true;
+        startX = e.clientX;
+        startW = sidebar.offsetWidth;
+        document.addEventListener('mousemove', move);
+        document.addEventListener('mouseup', up);
+      });
+
+      function move(e) {
+        if (!resizing) return;
+        let newW = startW + (e.clientX - startX);
+        
+        // Batasan lebar: minimum 75px, maksimum 1200px
+        if (newW < 75) newW = 75;
+        if (newW > 1200) newW = 1200;
+        
+        sidebar.style.width = newW + 'px';
+        lastWidth = newW;
+        
+        // Jika lebar di bawah 150px, otomatis collapsed
+        if (newW < 150 && !sidebar.classList.contains('collapsed')) {
+          sidebar.classList.add('collapsed');
+          toggleIcon.classList.replace('bx-chevron-left', 'bx-chevron-right');
+          collapsed = true;
+        } 
+        // Jika lebar di atas 150px dan dalam keadaan collapsed, kembalikan ke normal
+        else if (newW >= 150 && sidebar.classList.contains('collapsed')) {
+          sidebar.classList.remove('collapsed');
+          toggleIcon.classList.replace('bx-chevron-right', 'bx-chevron-left');
+          collapsed = false;
+        }
+      }
+
+      function up() {
+        resizing = false;
+        document.removeEventListener('mousemove', move);
+        document.removeEventListener('mouseup', up);
+      }
+
+      // date
+      document.getElementById('currentDate').innerText = new Date().toLocaleDateString('id-ID', { day:'numeric', month:'long', year:'numeric' });
+    })();
+  </script>
+</body>
+</html>
