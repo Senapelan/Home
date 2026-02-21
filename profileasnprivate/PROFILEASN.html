@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil ASN</title>
+
+<style>
+/* ================= RESET ================= */
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    background:#0b0f1a;
+    font-family:Arial, Helvetica, sans-serif;
+    color:#fff;
+    overflow-x:hidden;
+
+    /* ⬇️ PENTING: agar konten tidak ketutup running text */
+    padding-bottom:70px;
+}
+
+h2{
+    text-align:center;
+    margin:30px 0;
+    letter-spacing:2px;
+}
+
+/* ================= CONTAINER ================= */
+.container{
+    width:100%;
+    max-width:1600px;
+    margin:auto;
+    padding:0 20px;
+}
+
+/* ================= GRID RESPONSIVE ================= */
+.grid{
+    display:grid;
+    gap:40px;
+}
+
+/* HP */
+.grid{ grid-template-columns:1fr; }
+
+/* Tablet */
+@media (min-width:600px){
+    .grid{ grid-template-columns:repeat(2,1fr); }
+}
+
+/* Laptop */
+@media (min-width:900px){
+    .grid{ grid-template-columns:repeat(3,1fr); }
+}
+
+/* Desktop */
+@media (min-width:1200px){
+    .grid{ grid-template-columns:repeat(4,1fr); }
+}
+
+/* TV */
+@media (min-width:1500px){
+    .grid{ grid-template-columns:repeat(5,1fr); }
+}
+
+/* ================= VIDEO CARD ================= */
+.video-card{
+    perspective:1000px;
+    display:flex;
+    justify-content:center;
+}
+
+.video-inner{
+    position:relative;
+    width:100%;
+    max-width:220px;
+    height:300px;
+    transform-style:preserve-3d;
+    transition:transform 0.8s;
+    cursor:pointer;
+}
+
+.video-card.active .video-inner{
+    transform:rotateY(180deg);
+}
+
+.video-front,
+.video-back{
+    position:absolute;
+    width:100%;
+    height:300px;
+    backface-visibility:hidden;
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:0 0 15px #ffae00;
+}
+
+.video-front:hover{
+    box-shadow:0 0 25px #ffae00, 0 0 45px #ffae00;
+}
+
+.video-front video{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+.video-back{
+    background:#111;
+    transform:rotateY(180deg);
+    padding:12px;
+    font-size:14px;
+}
+
+.video-back h3{
+    margin:10px 0 5px;
+    color:#ffae00;
+    font-size:15px;
+}
+
+/* ================= FOTO ================= */
+.photo{
+    width:100%;
+    height:400px;
+    border-radius:16px;
+    overflow:hidden;
+    cursor:pointer;
+    box-shadow:0 0 15px #00eaff;
+}
+
+.photo:hover{
+    box-shadow:0 0 25px #00eaff,0 0 45px #00eaff;
+}
+
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+}
+
+/* ================= MODAL FOTO ================= */
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.85);
+    justify-content:center;
+    align-items:center;
+    z-index:1000;
+}
+
+.modal img{
+    max-width:90%;
+    max-height:90%;
+    border-radius:12px;
+    box-shadow:0 0 40px #00eaff;
+}
+
+.close{
+    position:absolute;
+    top:25px;
+    right:40px;
+    font-size:34px;
+    cursor:pointer;
+    color:#fff;
+}
+
+/* ================= RUNNING TEXT ================= */
+.running-text{
+    position:fixed;
+    bottom:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:#7a7a7a;
+    display:flex;
+    align-items:center;
+    overflow:hidden;
+    z-index:2000;
+    box-shadow:0 -5px 15px rgba(0,0,0,0.5);
+}
+
+.running-text span{
+    white-space:nowrap;
+    padding-left:100%;
+    font-size:20px;
+    font-weight:bold;
+    color:#fff;
+    animation:marquee 30s linear infinite;
+}
+
+@keyframes marquee{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-100%); }
+}
+</style>
+
+
+<style>
+/* ================= STYLE POP UP PINTU PEMKO ================= */
+:root{
+    --neon:#00ffe1;
+    --metal:#6b6f75;
+    --metal-dark:#2b2f35;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+/* ================= OVERLAY (TIDAK HITAM) ================= */
+#doorOverlay{
+    position:fixed;
+    inset:0;
+    z-index:9999;
+    pointer-events:auto;
+}
+
+/* ================= PINTU ================= */
+.door{
+    position:absolute;
+    width:100%;
+    height:50%;
+    background:
+        linear-gradient(
+            120deg,
+            var(--metal-dark),
+            var(--metal),
+            var(--metal-dark)
+        );
+    box-shadow:
+        inset 0 0 40px rgba(0,0,0,.9),
+        inset 0 0 80px rgba(0,0,0,.8);
+    transition:transform 1.6s cubic-bezier(.77,0,.18,1);
+    overflow:hidden;
+}
+
+.door.top{
+    top:0;
+    border-bottom:3px solid var(--neon);
+}
+
+.door.bottom{
+    bottom:0;
+    border-top:3px solid var(--neon);
+}
+
+.door::before{
+    content:"";
+    position:absolute;
+    left:10%;
+    right:10%;
+    height:2px;
+    background:rgba(0,255,225,.6);
+    box-shadow:0 0 20px rgba(0,255,225,.7);
+}
+
+.door.top::before{ bottom:18%; }
+.door.bottom::before{ top:18%; }
+
+.door-img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    opacity:.65;
+}
+
+/* ================= LOGO ================= */
+.center-logo{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-180%);
+    z-index:5;
+    pointer-events:none;
+    transition:transform 1.6s cubic-bezier(.77,0,.18,1), opacity .4s;
+}
+
+.center-logo img{
+    width:90px;
+    filter:drop-shadow(0 0 12px rgba(0,255,225,.9));
+}
+
+/* ================= TOMBOL ================= */
+.center-text{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    z-index:6;
+    transition:opacity .4s ease;
+}
+
+.center-text button{
+    background:linear-gradient(
+        180deg,
+        rgba(0,0,0,.85),
+        rgba(0,0,0,.95)
+    );
+    border:1px solid rgba(0,255,225,.6);
+    color:var(--neon);
+    padding:22px 48px;
+    font-size:22px;
+    letter-spacing:4px;
+    border-radius:10px;
+    cursor:pointer;
+    text-shadow:0 0 12px var(--neon);
+    box-shadow:
+        0 0 25px rgba(0,255,225,.7),
+        inset 0 0 25px rgba(0,0,0,.9);
+}
+
+/* HILANGKAN BLUR */
+.center-text button{
+    backdrop-filter:none;
+}
+
+/* ================= OPEN ================= */
+.open .door.top{
+    transform:translateY(-110%);
+}
+
+.open .door.bottom{
+    transform:translateY(110%);
+}
+
+.open .center-text{
+    opacity:0;
+}
+
+.open .center-logo{
+    transform:translate(-50%,-260%);
+    opacity:0;
+}
+</style>
+
+
+
+<style>
+body{
+    margin:0;
+    font-family:Arial, Helvetica, sans-serif;
+}
+audio{
+    display:none; /* disembunyikan */
+}
+</style>
+
+
+
+<link rel="icon" type="image/png" href="FOTOWEB/favicon-32x32.png">
+</head>
+
+<body>
+
+<h2>SELAMAT DATANG DI PROFILE ASN KELURAHAN PADANG TERUBUK</h2>
+<div class="container">
+    <div class="grid" id="videoGrid"></div>
+</div>
+
+<h2>GALERI FOTO</h2>
+<div class="container">
+    <div class="grid" id="photoGrid"></div>
+</div>
+
+<!-- PINTU POP UP -->
+<div id="doorOverlay">
+
+    <div class="door top">
+        <img src="FOTOWEB/pintupopup.jpg" class="door-img">
+    </div>
+
+    <div class="center-logo">
+        <img src="FOTOWEB/pemko.png">
+    </div>
+
+    <div class="center-text">
+        <button onclick="openDoor()">BUKA PROFILE ASN</button>
+    </div>
+
+    <div class="door bottom">
+        <img src="FOTOWEB/pintupopup.jpg" class="door-img">
+    </div>
+
+</div>
+
+<!-- ================= RUNNING TEXT ================= -->
+<div class="running-text">
+    <span>
+        SELAMAT DATANG PROFIL ASN KELURAHAN PADANG TERUBUK — 
+        PELAYANAN ADMINISTRASI SI CEPAT SISTEMATIS CERMAT DAN CEPAT —
+        JAM PELAYANAN: SENIN–JUMAT 08.00–16.00 WIB
+    </span>
+</div>
+
+
+<audio id="bgm" loop preload="auto">
+    <source src="MUSIK/profileasn.mp3" type="audio/mpeg">
+</audio>
+
+
+
+<!-- MODAL FOTO -->
+<div class="modal" id="modal">
+    <span class="close" onclick="closeModal()">✖</span>
+    <img id="modalImg">
+</div>
+
+<script>
+/* ================= DATA VIDEO ================= */
+const videos = [
+{
+    files: [
+        "VIDEOPROFILE/f1video1.mp4",
+        "VIDEOPROFILE/f1video2.mp4",
+    ],
+    nama:"TRY HOLLY",
+    jabatan:"Operator Layanan Operasional",
+    golongan:"Pengatur Muda (V)",
+    hp:"+62 821-7008-9590"
+},
+{
+    files: [
+        "VIDEOPROFILE/f2video1.mp4",
+        "VIDEOPROFILE/f2video2.mp4"
+    ],
+    nama:"SITISALMAH, SE",
+    jabatan:"Kasi PMK",
+    golongan:"Penata Muda Tk. I (III/b)",
+    hp:"+62 813-7191-9501"
+},
+{
+    files: [
+        "VIDEOPROFILE/f3video1.mp4",
+        "VIDEOPROFILE/f3video2.mp4"
+    ],
+    nama:"JUNI HARDI, S.STP",
+    jabatan:"Plt. Lurah",
+    golongan:"Penata (III/c)",
+    hp:"+62 823-8320-1818"
+},
+{
+    files: [
+        "VIDEOPROFILE/f4video1.mp4",
+        "VIDEOPROFILE/f4video2.mp4"
+    ],
+    nama:"IMELDA RAHMI, S.Pdi",
+    jabatan:"Plt. Seklur",
+    golongan:"Penata Muda Tk. I (III/b)",
+    hp:"+62 813-6525-6807"
+},
+{
+    files: [
+        "VIDEOPROFILE/f5video1.mp4",
+        "VIDEOPROFILE/f5video2.mp4"
+    ],
+    nama:"SUKARDIANTO, S.A.P",
+    jabatan:"Kasi KESOS",
+    golongan:"Penata Muda Tk. I (III/b)",
+    hp:"+62 813-7190-6937"
+}
+];
+
+/* ================= DATA FOTO ================= */
+const photos = [
+    "FOTOPROFILEASN/foto1.png",
+    "FOTOPROFILEASN/foto2.png",
+    "FOTOPROFILEASN/foto3.png",
+    "FOTOPROFILEASN/foto4.png",
+    "FOTOPROFILEASN/foto5.png"
+];
+
+/* ================= RENDER VIDEO ================= */
+const videoGrid = document.getElementById("videoGrid");
+
+videos.forEach(v => {
+
+    const card = document.createElement("div");
+    card.className = "video-card";
+
+    card.innerHTML = `
+        <div class="video-inner">
+            <div class="video-front">
+                <video muted autoplay></video>
+            </div>
+            <div class="video-back">
+                <h3>${v.nama}</h3>
+                <p>Jabatan: ${v.jabatan}</p>
+                <p>Pangkat/Gol: ${v.golongan}</p>
+                <p>No HP: ${v.hp}</p>
+            </div>
+        </div>
+    `;
+
+    const videoEl = card.querySelector("video");
+    let index = 0;
+
+    function playVideo(){
+        videoEl.src = v.files[index];
+        videoEl.load();
+        videoEl.play();
+    }
+
+    videoEl.addEventListener("ended", () => {
+        index = (index + 1) % v.files.length;
+        playVideo();
+    });
+
+    playVideo();
+
+    card.onclick = () => card.classList.toggle("active");
+
+    videoGrid.appendChild(card);
+});
+
+/* ================= RENDER FOTO ================= */
+const photoGrid=document.getElementById("photoGrid");
+
+photos.forEach(p=>{
+    const div=document.createElement("div");
+    div.className="photo";
+    div.innerHTML=`<img src="${p}">`;
+    div.onclick=()=>openModal(p);
+    photoGrid.appendChild(div);
+});
+
+/* ================= MODAL ================= */
+function openModal(src){
+    document.getElementById("modal").style.display="flex";
+    document.getElementById("modalImg").src=src;
+}
+function closeModal(){
+    document.getElementById("modal").style.display="none";
+}
+</script>
+
+<script>
+let started = false;
+
+document.addEventListener("click", function () {
+    if(started) return;
+
+    const audio = document.getElementById("bgm");
+    audio.volume = 0.4;
+
+    audio.play().then(()=>{
+        started = true;
+        console.log("Musik dimulai");
+    }).catch(err=>{
+        console.log("Gagal autoplay:", err);
+    });
+}, { once: true });
+</script>
+
+<script>
+/* ================= SKRIPT POP UP ================= */
+function openDoor(){
+    const overlay = document.getElementById("doorOverlay");
+    overlay.classList.add("open");
+
+    setTimeout(()=>{
+        overlay.remove();
+    },1600);
+}
+</script>
+
+</body>
+</html>
