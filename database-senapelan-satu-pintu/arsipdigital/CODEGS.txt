@@ -1,0 +1,285 @@
+// Google Apps Script - Update dengan kolom TANGGAL SURAT DIBUAT
+// Konfigurasi
+const SPREADSHEET_ID = '1pn_vmrNfRJpqnpNRO9_WylFLdPswZ7yIQ1myu_eJBd8';
+const PARENT_FOLDER_ID = '1kMQrURLfF_cwpSl04aJSC3vkbuK6owsZ';
+
+// Handle CORS untuk request dari GitHub Pages
+function doGet(e) {
+  return handleRequest(e);
+}
+
+function doPost(e) {
+  return handleRequest(e);
+}
+
+function handleRequest(e) {
+  // Set CORS headers
+  const output = ContentService.createTextOutput();
+  output.setMimeType(ContentService.MimeType.JSON);
+  
+  // Handle preflight OPTIONS request
+  if (e && e.postData && e.postData.type === 'OPTIONS') {
+    return output.setContent(JSON.stringify({ success: true }));
+  }
+  
+  try {
+    // Parse action from request
+    const params = e.parameter || {};
+    const postData = e.postData ? JSON.parse(e.postData.contents) : {};
+    const action = params.action || postData.action || '';
+    
+    let result;
+    
+    switch(action) {
+      case 'getMasterData':
+        result = getMasterData();
+        break;
+      case 'uploadArsip':
+        result = uploadArsip(postData);
+        break;
+      default:
+        result = { success: false, error: 'Action tidak dikenal' };
+    }
+    
+    return output.setContent(JSON.stringify(result));
+    
+  } catch (error) {
+    return output.setContent(JSON.stringify({ 
+      success: false, 
+      error: error.toString() 
+    }));
+  }
+}
+
+// Fungsi untuk mendapatkan master data
+function getMasterData() {
+  try {
+    const masterData = {
+      jenisArsip: [
+        'Arsip Administrasi Umum',
+        'Arsip Kependudukan & Pelayanan',
+        'Arsip Pemerintahan & Kelembagaan (LKK)',
+        'Arsip Keuangan Kelurahan',
+        'Arsip Pembangunan & Perencanaan',
+        'Arsip Kepegawaian',
+        'Arsip Aset & Inventaris',
+        'Arsip Tanah & Wilayah (Penting)'
+      ],
+      kategori: {
+        'Arsip Administrasi Umum': [
+          'Surat Keluar - Surat dari Kelurahan',
+          'Surat Masuk - Surat dari Kecamatan',
+          'Surat Masuk - Surat dari OPD Kota',
+          'Surat Masuk - Surat dari RT/RW',
+          'Surat Masuk - Surat dari masyarakat',
+          'Surat Masuk - Undangan & edaran'
+        ],
+        'Arsip Kependudukan & Pelayanan': [
+          'Register Pelayanan - Buku register surat keterangan',
+          'Register Pelayanan - Rekap pelayanan harian/bulanan',
+          'Berkas Permohonan Masyarakat - Surat Umum',
+          'Berkas Permohonan Masyarakat - Surat Tidak Mampu (SKTM)',
+          'Berkas Permohonan Masyarakat - Surat Lahir',
+          'Berkas Permohonan Masyarakat - Surat Kematian',
+          'Berkas Permohonan Masyarakat - Surat Domisili Usaha PT/CV',
+          'Berkas Permohonan Masyarakat - Rekomendasi Pangalan Gas 3Kg',
+          'Berkas Permohonan Masyarakat - Surat pengantar nikah',
+          'Berkas Permohonan Masyarakat - Surat keterangan ahli waris',
+          'Berkas Permohonan Masyarakat - Surat SKPT',
+          'Berkas Permohonan Masyarakat - Surat SKGR', 
+          'Berkas Permohonan Masyarakat - Legalisasi dokumen',
+          'Data Kependudukan - Rekap KK per RT/RW',
+          'Data Kependudukan - Data penduduk per RT',
+          'Data Kependudukan - Data pindah datang',
+          'Data Kependudukan - Data kelahiran & kematian'
+        ],
+        'Arsip Pemerintahan & Kelembagaan (LKK)': [
+          'Lembaga Kemasyarakatan - LPM',
+          'Lembaga Kemasyarakatan - RT/RW',
+          'Lembaga Kemasyarakatan - PKK',
+          'Lembaga Kemasyarakatan - Karang Taruna',
+          'Lembaga Kemasyarakatan - Posyandu',
+          'Lembaga Kemasyarakatan - LPS',
+          'Lembaga Kemasyarakatan - BKMT',
+          'Berita Acara - Rapat kelurahan',
+          'Berita Acara - Musyawarah warga',
+          'Berita Acara - Mediasi / penyelesaian masalah'
+        ],
+        'Arsip Keuangan Kelurahan': [
+          'Dokumen Anggaran - DPA Kelurahan',
+          'Dokumen Anggaran - RKA',
+          'Dokumen Anggaran - SPJ kegiatan',
+          'Dokumen Anggaran - Bukti pengeluaran',
+          'Laporan - Laporan realisasi anggaran',
+          'Laporan - Buku kas umum'
+        ],
+        'Arsip Pembangunan & Perencanaan': [
+          'Musrenbang Kelurahan - Usulan RT/RW',
+          'Musrenbang Kelurahan - Berita acara',
+          'Musrenbang Kelurahan - Daftar prioritas',
+          'Dokumentasi Kegiatan - Foto kegiatan',
+          'Dokumentasi Kegiatan - Laporan kegiatan',
+          'Dokumentasi Kegiatan - RAB'
+        ],
+        'Arsip Kepegawaian': [
+          'Data Pegawai Kelurahan - SK pengangkatan',
+          'Data Pegawai Kelurahan - SK kenaikan pangkat',
+          'Data Pegawai Kelurahan - Cuti',
+          'Data Pegawai Kelurahan - Absensi'
+        ],
+        'Arsip Aset & Inventaris': [
+          'Kartu Inventaris Barang (KIB)',
+          'Daftar barang milik daerah',
+          'Berita acara serah terima barang'
+        ],
+        'Arsip Tanah & Wilayah (Penting)': [
+          'Peta wilayah kelurahan',
+          'Data tanah fasilitas umum',
+          'Arsip sengketa tanah',
+          'Data batas wilayah'
+        ]
+      },
+      status: ['Aktif', 'Inaktif', 'Permanen', 'Musnah']
+    };
+    
+    return { success: true, data: masterData };
+    
+  } catch (error) {
+    return { success: false, error: error.toString() };
+  }
+}
+
+// Fungsi utama upload arsip
+function uploadArsip(data) {
+  try {
+    // Validasi data
+    if (!data.namaDokumen || !data.jenisArsip || !data.kategori || !data.fileData) {
+      throw new Error('Data tidak lengkap');
+    }
+    
+    // Validasi ekstensi file
+    const allowedExtensions = ['jpg', 'jpeg', 'png', 'bmp', 'pdf', 'doc', 'docx', 'xls', 'xlsx'];
+    const fileExt = data.fileName.split('.').pop().toLowerCase();
+    
+    if (!allowedExtensions.includes(fileExt)) {
+      throw new Error('Ekstensi file tidak diizinkan. Gunakan: ' + allowedExtensions.join(', '));
+    }
+    
+    // 1. PROSES SIMPAN FILE KE GOOGLE DRIVE
+    const parentFolder = DriveApp.getFolderById(PARENT_FOLDER_ID);
+    
+    // Cek atau buat folder berdasarkan jenis arsip
+    let arsipFolder;
+    const folders = parentFolder.getFoldersByName(data.jenisArsip);
+    
+    if (folders.hasNext()) {
+      arsipFolder = folders.next();
+    } else {
+      arsipFolder = parentFolder.createFolder(data.jenisArsip);
+    }
+    
+    // Decode base64 dan buat file
+    const base64Data = data.fileData.split(',')[1] || data.fileData;
+    const fileBlob = Utilities.base64Decode(base64Data);
+    const blob = Utilities.newBlob(fileBlob, data.fileType || 'application/octet-stream', data.fileName);
+    const file = arsipFolder.createFile(blob);
+    
+    // Rename file dengan nama dokumen
+    const newFileName = `${data.namaDokumen.replace(/[^a-zA-Z0-9]/g, '_')}.${fileExt}`;
+    file.setName(newFileName);
+    
+    // 2. PROSES SIMPAN KE SPREADSHEET
+    const ss = SpreadsheetApp.openById(SPREADSHEET_ID);
+    
+    // Cek atau buat sheet baru
+    let sheet = ss.getSheetByName(data.jenisArsip);
+    
+    if (!sheet) {
+      sheet = ss.insertSheet(data.jenisArsip);
+      
+      // Buat header - UPDATE DENGAN MENAMBAHKAN KOLOM TANGGAL SURAT DIBUAT
+      const headers = [
+        'NO.',
+        'TANGGAL UPLOAD',
+        'NOMOR ARSIP',
+        'TANGGAL SURAT DIBUAT', // KOLOM BARU
+        'NAMA DOKUMEN',
+        'JENIS ARSIP',
+        'KATEGORI',
+        'TAHUN',
+        'ASAL DOKUMEN',
+        'LINK FILE',
+        'DIUPLOAD OLEH',
+        'STATUS',
+        'KETERANGAN'
+      ];
+      
+      sheet.getRange(1, 1, 1, headers.length).setValues([headers]);
+      sheet.getRange(1, 1, 1, headers.length).setFontWeight('bold');
+      sheet.setFrozenRows(1);
+      
+      // Atur lebar kolom
+      sheet.setColumnWidth(1, 50);  // NO.
+      sheet.setColumnWidth(2, 180); // TANGGAL UPLOAD
+      sheet.setColumnWidth(3, 150); // NOMOR ARSIP
+      sheet.setColumnWidth(4, 150); // TANGGAL SURAT DIBUAT
+      sheet.setColumnWidth(5, 250); // NAMA DOKUMEN
+      sheet.setColumnWidth(6, 200); // JENIS ARSIP
+      sheet.setColumnWidth(7, 300); // KATEGORI
+      sheet.setColumnWidth(8, 80);  // TAHUN
+      sheet.setColumnWidth(9, 150); // ASAL DOKUMEN
+      sheet.setColumnWidth(10, 300); // LINK FILE
+      sheet.setColumnWidth(11, 150); // DIUPLOAD OLEH
+      sheet.setColumnWidth(12, 100); // STATUS
+      sheet.setColumnWidth(13, 200); // KETERANGAN
+    }
+    
+    // Dapatkan nomor urut
+    const lastRow = sheet.getLastRow();
+    const no = lastRow; // Karena header di baris 1, maka data dimulai dari baris 2
+    
+    // Format tanggal surat dibuat
+    let tanggalSuratFormatted = '-';
+    if (data.tanggalSuratDibuat) {
+      const tanggalParts = data.tanggalSuratDibuat.split('-');
+      if (tanggalParts.length === 3) {
+        const date = new Date(tanggalParts[0], tanggalParts[1] - 1, tanggalParts[2]);
+        tanggalSuratFormatted = Utilities.formatDate(date, Session.getScriptTimeZone(), 'dd MMMM yyyy');
+      }
+    }
+    
+    // Siapkan data baris - UPDATE DENGAN MENAMBAHKAN TANGGAL SURAT DIBUAT
+    const rowData = [
+      no,
+      new Date(), // Tanggal upload
+      data.nomorArsip || '-',
+      tanggalSuratFormatted, // TANGGAL SURAT DIBUAT
+      data.namaDokumen,
+      data.jenisArsip,
+      data.kategori,
+      data.tahun || new Date().getFullYear().toString(),
+      data.asalDokumen || '-',
+      file.getUrl(), // Link file
+      data.diuploadOleh || '-',
+      data.statusArsip || 'Aktif',
+      data.keterangan || '-'
+    ];
+    
+    // Simpan ke sheet
+    sheet.appendRow(rowData);
+    
+    return {
+      success: true,
+      message: 'Arsip berhasil diupload',
+      fileUrl: file.getUrl(),
+      sheetName: data.jenisArsip,
+      fileName: newFileName
+    };
+    
+  } catch (error) {
+    return {
+      success: false,
+      error: error.toString()
+    };
+  }
+}
