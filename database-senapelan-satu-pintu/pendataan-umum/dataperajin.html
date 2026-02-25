@@ -386,6 +386,26 @@
             margin-left: 4px;
         }
 
+        /* Tombol Tutup untuk Progress Sukses */
+        .btn-close {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.2s;
+        }
+
+        .btn-close:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 640px) {
             .form-grid {
                 grid-template-columns: 1fr;
@@ -524,6 +544,8 @@
             </div>
             <div class="progress-percentage" id="progressPercentage">0%</div>
             <div class="progress-status" id="progressStatus">Memulai...</div>
+            <!-- Tombol Close akan muncul saat sukses -->
+            <button class="btn-close" id="closeProgressBtn" style="display: none;">TUTUP</button>
         </div>
     </div>
 
@@ -632,36 +654,63 @@
     const progressStatus = document.getElementById('progressStatus');
     const progressIcon = document.getElementById('progressIcon');
     const progressTitle = document.getElementById('progressTitle');
+    const closeProgressBtn = document.getElementById('closeProgressBtn');
 
     function showProgress() {
         progressOverlay.style.display = 'flex';
         document.body.style.overflow = 'hidden';
-        updateProgress(0, 'Memulai...');
+        closeProgressBtn.style.display = 'none'; // Sembunyikan tombol close
+        updateProgress(0, 'Memulai proses...');
     }
 
     function updateProgress(percent, status) {
         progressBar.style.width = percent + '%';
         progressPercentage.textContent = percent + '%';
-        progressStatus.textContent = status;
         
-        if (percent === 100) {
+        // Update status berdasarkan persentase
+        if (percent === 20) {
+            progressStatus.textContent = 'FILE ANDA SEDANG DI CEK TRY HOLLY';
+            progressIcon.innerHTML = '🔍';
+            progressTitle.textContent = 'MEMERIKSA FILE';
+        } 
+        else if (percent === 50) {
+            progressStatus.textContent = 'DATA ANDA SEDANG DI UPLOAD DAN DI CEK ULANG OLEH TRY HOLLY';
+            progressIcon.innerHTML = '📤';
+            progressTitle.textContent = 'MENGUPLOAD';
+        }
+        else if (percent === 80) {
+            progressStatus.textContent = 'PASTIKAN JARINGAN ANDA BAGUS. MOHON TUNGGU SEBENTAR....';
+            progressIcon.innerHTML = '⏳';
+            progressTitle.textContent = 'MENYIMPAN';
+        }
+        else if (percent === 100) {
+            progressStatus.textContent = 'SELAMAT DATA ANDA TELAH TERSIMPAN DIDATABASE';
             progressIcon.innerHTML = '✅';
             progressTitle.textContent = 'BERHASIL!';
+            // Tampilkan tombol close
+            closeProgressBtn.style.display = 'block';
+        }
+        else {
+            // Untuk persentase lain, gunakan status yang dikirim
+            if (status) progressStatus.textContent = status;
         }
     }
 
     function hideProgress() {
-        setTimeout(() => {
-            progressOverlay.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        }, 500);
+        progressOverlay.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        // Reset ke teks awal untuk next submit
+        progressIcon.innerHTML = '📤';
+        progressTitle.textContent = 'MENGIRIM DATA';
+        closeProgressBtn.style.display = 'none';
     }
 
-    function scrollToTop() {
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
+    // Tombol Close
+    closeProgressBtn.addEventListener('click', function() {
+        hideProgress();
+    });
 
-    // ========== SUBMIT FORM ==========
+    // ========== HANDLE FORM SUBMISSION ==========
     document.getElementById('craftForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -691,12 +740,21 @@
         document.getElementById('btnText').innerHTML = '<span class="loading-spinner"></span> MENYIMPAN...';
         
         try {
-            updateProgress(10, 'Membaca file...');
+            updateProgress(10, 'Menyiapkan file...');
             
             const reader = new FileReader();
             
             reader.onload = async function(event) {
-                updateProgress(30, 'Mengirim data...');
+                // Progress 20% - File sedang dicek
+                updateProgress(20, 'FILE ANDA SEDANG DI CEK TRY HOLLY');
+                
+                // Simulasi proses cek file (sedikit delay)
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Progress 30% - Persiapan data
+                updateProgress(30, 'Menyiapkan data...');
+                
+                const base64File = event.target.result;
                 
                 const formData = new URLSearchParams();
                 formData.append('tanggal', new Date().toLocaleDateString('id-ID'));
@@ -707,11 +765,12 @@
                 formData.append('telepon', telepon);
                 formData.append('alamat', alamat);
                 formData.append('keterangan', keterangan || '-');
-                formData.append('file', event.target.result);
+                formData.append('file', base64File);
                 formData.append('filename', file.name);
                 formData.append('filetype', file.type);
                 
-                updateProgress(50, 'Menyimpan...');
+                // Progress 50% - Upload data
+                updateProgress(50, 'DATA ANDA SEDANG DI UPLOAD DAN DI CEK ULANG OLEH TRY HOLLY');
                 
                 await fetch(BASE_URL, {
                     method: 'POST',
@@ -720,7 +779,14 @@
                     body: formData.toString()
                 });
                 
-                updateProgress(100, 'Selesai!');
+                // Progress 80% - Menunggu konfirmasi
+                updateProgress(80, 'PASTIKAN JARINGAN ANDA BAGUS. MOHON TUNGGU SEBENTAR....');
+                
+                // Simulasi proses penyimpanan di database
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                // Progress 100% - Selesai
+                updateProgress(100, 'SELAMAT DATA ANDA TELAH TERSIMPAN DIDATABASE');
                 showAlert('✓ Data berhasil disimpan!', 'success');
                 
                 // Reset form
@@ -732,7 +798,13 @@
                 
                 setTimeout(() => getTotalPerajin(), 2000);
                 scrollToTop();
-                setTimeout(() => hideProgress(), 1500);
+                
+                // JANGAN sembunyikan progress otomatis
+                // User harus klik tombol TUTUP
+                
+                // Enable submit button
+                document.getElementById('submitBtn').disabled = false;
+                document.getElementById('btnText').innerHTML = 'SIMPAN DATA PERAJIN';
             };
             
             reader.readAsDataURL(file);
@@ -740,7 +812,6 @@
         } catch (error) {
             showAlert('Gagal: ' + error.message, 'error');
             hideProgress();
-        } finally {
             document.getElementById('submitBtn').disabled = false;
             document.getElementById('btnText').innerHTML = 'SIMPAN DATA PERAJIN';
         }
@@ -774,6 +845,11 @@
 
     if (window.history.replaceState) {
         window.history.replaceState(null, null, window.location.href);
+    }
+
+    // ========== SCROLL TO TOP ==========
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
     </script>
 </body>
