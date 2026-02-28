@@ -997,6 +997,301 @@
             letter-spacing: 0.5px;
         }
 
+
+/* Loading Spinner Circular dengan efek bengkok ular seperti Play Store */
+.loading-spinner-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(5px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.spinner-wrapper {
+    background: white;
+    padding: 30px 40px;
+    border-radius: 30px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    min-width: 280px;
+}
+
+.spinner-wrapper::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #667eea, #764ba2, #ff6b6b, #667eea);
+    background-size: 300% 100%;
+    animation: gradientMove 2s linear infinite;
+}
+
+@keyframes gradientMove {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 300% 0%; }
+}
+
+.circular-spinner {
+    position: relative;
+    width: 160px;
+    height: 160px;
+    margin: 10px auto 25px;
+}
+
+/* Lingkaran luar dengan efek bengkok */
+.progress-ring {
+    position: relative;
+    width: 160px;
+    height: 160px;
+}
+
+.progress-ring svg {
+    width: 160px;
+    height: 160px;
+    transform: rotate(-90deg);
+    overflow: visible;
+}
+
+/* Background lingkaran abu-abu */
+.progress-ring-bg {
+    stroke: #e0e0e0;
+    stroke-width: 8;
+    fill: none;
+    stroke-linecap: round;
+}
+
+/* Lingkaran progress dengan efek bengkok */
+.progress-ring-fill {
+    stroke: url(#snakeGradient);
+    stroke-width: 8;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 377; /* Keliling lingkaran: 2 * π * 60 */
+    stroke-dashoffset: 377;
+    transition: stroke-dashoffset 0.2s ease;
+    filter: drop-shadow(0 0 6px rgba(102, 126, 234, 0.6));
+}
+
+/* Definisi gradient untuk efek bengkok */
+.gradient-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+}
+
+/* Animasi untuk membuat garis terlihat bengkok/keriting */
+@keyframes squiggle {
+    0% {
+        stroke-dasharray: 60, 317;
+        stroke-width: 8;
+    }
+    20% {
+        stroke-dasharray: 120, 257;
+        stroke-width: 10;
+    }
+    40% {
+        stroke-dasharray: 180, 197;
+        stroke-width: 8;
+    }
+    60% {
+        stroke-dasharray: 240, 137;
+        stroke-width: 12;
+    }
+    80% {
+        stroke-dasharray: 300, 77;
+        stroke-width: 8;
+    }
+    100% {
+        stroke-dasharray: 377, 0;
+        stroke-width: 8;
+    }
+}
+
+/* Efek tambahan untuk bengkok ular */
+.snake-effect {
+    animation: snakeWiggle 0.8s ease-in-out infinite;
+}
+
+@keyframes snakeWiggle {
+    0% {
+        stroke-dasharray: 40, 337, 40, 337;
+        stroke-width: 6;
+    }
+    25% {
+        stroke-dasharray: 80, 297, 80, 297;
+        stroke-width: 10;
+    }
+    50% {
+        stroke-dasharray: 120, 257, 120, 257;
+        stroke-width: 6;
+    }
+    75% {
+        stroke-dasharray: 160, 217, 160, 217;
+        stroke-width: 10;
+    }
+    100% {
+        stroke-dasharray: 40, 337, 40, 337;
+        stroke-width: 6;
+    }
+}
+
+/* Titik-titik kecil di sepanjang garis */
+.dots-on-line {
+    animation: dotsMove 1s linear infinite;
+}
+
+@keyframes dotsMove {
+    0% {
+        stroke-dasharray: 5, 372;
+        stroke-width: 8;
+    }
+    100% {
+        stroke-dasharray: 5, 372;
+        stroke-width: 8;
+        transform: rotate(360deg);
+    }
+}
+
+/* Kombinasi efek untuk Play Store style */
+.playstore-style {
+    animation: playstoreSnake 1.5s ease-in-out infinite;
+}
+
+@keyframes playstoreSnake {
+    0% {
+        stroke-dasharray: 50, 327;
+        stroke-width: 6;
+        stroke: #667eea;
+    }
+    20% {
+        stroke-dasharray: 100, 277;
+        stroke-width: 10;
+        stroke: #764ba2;
+    }
+    40% {
+        stroke-dasharray: 150, 227;
+        stroke-width: 6;
+        stroke: #ff6b6b;
+    }
+    60% {
+        stroke-dasharray: 200, 177;
+        stroke-width: 12;
+        stroke: #4ecdc4;
+    }
+    80% {
+        stroke-dasharray: 250, 127;
+        stroke-width: 6;
+        stroke: #667eea;
+    }
+    100% {
+        stroke-dasharray: 300, 77;
+        stroke-width: 8;
+        stroke: #764ba2;
+    }
+}
+
+/* Angka persentase di tengah */
+.spinner-percentage {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 36px;
+    font-weight: 800;
+    color: #667eea;
+    text-shadow: 2px 2px 4px rgba(102, 126, 234, 0.2);
+    font-family: 'Inter', sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 10;
+    background: rgba(255, 255, 255, 0.9);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.spinner-percentage .percent-number {
+    font-size: 42px;
+    line-height: 1;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 800;
+}
+
+.spinner-percentage .percent-symbol {
+    font-size: 18px;
+    color: #999;
+    margin-top: 2px;
+}
+
+/* Status text */
+.spinner-status {
+    font-size: 18px;
+    color: #333;
+    margin: 15px 0 5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.spinner-substatus {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .spinner-wrapper {
+        padding: 20px 25px;
+        margin: 20px;
+    }
+    
+    .circular-spinner {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .progress-ring svg {
+        width: 140px;
+        height: 140px;
+    }
+    
+    .spinner-percentage {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .spinner-percentage .percent-number {
+        font-size: 32px;
+    }
+}
+
+
     </style>
 </head>
 <body>
@@ -1475,7 +1770,7 @@
                         <option value="100">1-100</option>
                         <option value="500">1-500</option>
                         <option value="1000">1-1000</option>
-                        <option value="all">SEMUA</option>
+                        <option value="all" selected>SEMUA</option>
                     </select>
                     <span>entri</span>
                 </div>
@@ -1641,6 +1936,85 @@
         <i class="fas fa-check-circle"></i>
         <span id="notificationMessage">Data berhasil disimpan!</span>
     </div>
+
+
+<!-- Loading Spinner Circular dengan efek bengkok ular ala Play Store -->
+<div class="loading-spinner-container" id="loadingSpinner">
+    <div class="spinner-wrapper">
+        <!-- Gradient definitions untuk efek warna -->
+        <svg class="gradient-defs">
+            <defs>
+                <linearGradient id="snakeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#667eea">
+                        <animate attributeName="stop-color" values="#667eea;#764ba2;#ff6b6b;#4ecdc4;#667eea" dur="4s" repeatCount="indefinite" />
+                    </stop>
+                    <stop offset="25%" stop-color="#764ba2">
+                        <animate attributeName="stop-color" values="#764ba2;#ff6b6b;#4ecdc4;#667eea;#764ba2" dur="4s" repeatCount="indefinite" />
+                    </stop>
+                    <stop offset="50%" stop-color="#ff6b6b">
+                        <animate attributeName="stop-color" values="#ff6b6b;#4ecdc4;#667eea;#764ba2;#ff6b6b" dur="4s" repeatCount="indefinite" />
+                    </stop>
+                    <stop offset="75%" stop-color="#4ecdc4">
+                        <animate attributeName="stop-color" values="#4ecdc4;#667eea;#764ba2;#ff6b6b;#4ecdc4" dur="4s" repeatCount="indefinite" />
+                    </stop>
+                    <stop offset="100%" stop-color="#667eea">
+                        <animate attributeName="stop-color" values="#667eea;#764ba2;#ff6b6b;#4ecdc4;#667eea" dur="4s" repeatCount="indefinite" />
+                    </stop>
+                </linearGradient>
+                
+                <!-- Pattern untuk efek bengkok tambahan -->
+                <pattern id="snakePattern" patternUnits="userSpaceOnUse" width="20" height="20">
+                    <circle cx="10" cy="10" r="2" fill="white" opacity="0.3">
+                        <animate attributeName="r" values="2;4;2" dur="1s" repeatCount="indefinite" />
+                    </circle>
+                </pattern>
+            </defs>
+        </svg>
+        
+        <div class="circular-spinner">
+            <div class="progress-ring">
+                <svg viewBox="0 0 200 200">
+                    <!-- Background circle -->
+                    <circle class="progress-ring-bg" cx="100" cy="100" r="60"></circle>
+                    
+                    <!-- Progress circle dengan efek bengkok ular -->
+                    <circle 
+                        class="progress-ring-fill playstore-style" 
+                        cx="100" 
+                        cy="100" 
+                        r="60" 
+                        id="progressCircle"
+                        stroke-dasharray="377"
+                        stroke-dashoffset="377"
+                    ></circle>
+                    
+                    <!-- Tambahan titik-titik untuk efek bengkok -->
+                    <circle 
+                        class="progress-ring-fill dots-on-line" 
+                        cx="100" 
+                        cy="100" 
+                        r="60" 
+                        id="progressDots"
+                        stroke="white"
+                        stroke-width="2"
+                        fill="none"
+                        stroke-dasharray="5, 372"
+                        stroke-dashoffset="377"
+                        opacity="0.5"
+                    ></circle>
+                </svg>
+            </div>
+            <div class="spinner-percentage">
+                <span class="percent-number" id="spinnerPercent">0</span>
+                <span class="percent-symbol">%</span>
+            </div>
+        </div>
+        <div class="spinner-status" id="spinnerStatus">Memuat Data</div>
+        <div class="spinner-substatus" id="spinnerSubStatus">Mempersiapkan tampilan...</div>
+    </div>
+</div>
+
+
 
 	    <!-- Footer -->
     <div class="footer">
@@ -1927,52 +2301,75 @@
 
     // Progress bar
     function showProgress(action = 'Mengirim') {
-        const progressWrapper = document.getElementById('progressWrapper');
-        const progressFill = document.getElementById('progressFill');
-        const progressPercentage = document.getElementById('progressPercentage');
-        const progressStatus = document.getElementById('progressStatus');
-        const progressAction = document.getElementById('progressAction');
-        const submitBtn = document.getElementById('submitBtn');
-        const simpanSemuaBtn = document.getElementById('simpanSemuaAnggotaBtn');
+    const progressWrapper = document.getElementById('progressWrapper');
+    const progressFill = document.getElementById('progressFill');
+    const progressPercentage = document.getElementById('progressPercentage');
+    const progressStatus = document.getElementById('progressStatus');
+    const progressAction = document.getElementById('progressAction');
+    const submitBtn = document.getElementById('submitBtn');
+    const simpanSemuaBtn = document.getElementById('simpanSemuaAnggotaBtn');
+    
+    progressAction.textContent = action;
+    progressWrapper.style.display = 'block';
+    if (submitBtn) submitBtn.disabled = true;
+    if (simpanSemuaBtn) simpanSemuaBtn.disabled = true;
+    
+    progressWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    
+    let startTime = null;
+    const duration = 8000; // 8 detik
+    
+    const animate = (currentTime) => {
+        if (!startTime) startTime = currentTime;
         
-        progressAction.textContent = action;
-        progressWrapper.style.display = 'block';
-        if (submitBtn) submitBtn.disabled = true;
-        if (simpanSemuaBtn) simpanSemuaBtn.disabled = true;
+        const elapsed = currentTime - startTime;
+        const progress = Math.min((elapsed / duration) * 100, 100);
         
-        progressWrapper.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Efek easing (smooth step)
+        const easedProgress = progress; // Bisa ditambahkan easing function jika mau
         
-        let progress = 0;
-        const interval = setInterval(() => {
-            progress += 2;
-            progressFill.style.width = progress + '%';
-            progressPercentage.textContent = progress + '%';
+        // Update tampilan
+        progressFill.style.width = easedProgress + '%';
+        
+        // Angka bergerak halus dengan 1 desimal
+        const displayNumber = Math.floor(easedProgress);
+        progressPercentage.textContent = displayNumber + '%';
+        
+        // Update status berdasarkan progress
+        if (displayNumber <= 20) {
+            progressStatus.textContent = '📦 Menyiapkan data...';
+        } else if (displayNumber <= 40) {
+            progressStatus.textContent = '📤 Menghubungi server...';
+        } else if (displayNumber <= 60) {
+            progressStatus.textContent = '📤 Mengirim ke database Google Sheets...';
+        } else if (displayNumber <= 80) {
+            progressStatus.textContent = '⚙️ Memproses dan memvalidasi data...';
+        } else if (displayNumber < 100) {
+            progressStatus.textContent = '⏳ Menyelesaikan proses...';
+        }
+        
+        if (progress < 100) {
+            requestAnimationFrame(animate);
+        } else {
+            // Progress mencapai 100%
+            progressPercentage.textContent = '100%';
+            progressStatus.innerHTML = '✅ <span class="success-message">DATA BERHASIL DI UPDATE KE DATABASE!</span>';
             
-            if (progress <= 30) {
-                progressStatus.textContent = '📦 Menyiapkan data...';
-            } else if (progress <= 60) {
-                progressStatus.textContent = '📤 Mengirim ke database Google Sheets...';
-            } else if (progress <= 90) {
-                progressStatus.textContent = '⚙️ Memproses dan memvalidasi data...';
-            } else if (progress < 100) {
-                progressStatus.textContent = '⏳ Menyelesaikan proses...';
-            } else {
-                progressStatus.innerHTML = '✅ <span class="success-message">DATA BERHASIL DI UPDATE KE DATABASE!</span>';
-                clearInterval(interval);
+            setTimeout(() => {
+                progressWrapper.style.display = 'none';
+                progressFill.style.width = '0%';
+                progressPercentage.textContent = '0%';
+                progressStatus.textContent = 'Memulai proses...';
+                if (submitBtn) submitBtn.disabled = false;
+                if (simpanSemuaBtn) simpanSemuaBtn.disabled = false;
                 
-                setTimeout(() => {
-                    progressWrapper.style.display = 'none';
-                    progressFill.style.width = '0%';
-                    progressPercentage.textContent = '0%';
-                    progressStatus.textContent = 'Memulai proses...';
-                    if (submitBtn) submitBtn.disabled = false;
-                    if (simpanSemuaBtn) simpanSemuaBtn.disabled = false;
-                    
-                    loadData();
-                }, 2000);
-            }
-        }, 60);
-    }
+                loadData();
+            }, 500);
+        }
+    };
+    
+    requestAnimationFrame(animate);
+}
 
     // Set default values untuk select
     function setDefaultSelectValues() {
@@ -3341,106 +3738,181 @@
 
     // Load data
     function loadData() {
-        const entry = document.getElementById('entrySelect').value;
+    const entry = document.getElementById('entrySelect').value;
+
+    // Tampilkan circular loader
+    showCircularLoader('Memuat Data', 'Menyiapkan permintaan...');
+    
+    // Progress 10% - Mulai koneksi
+    setTimeout(() => {
+        if (window.updateCircularProgress) {
+            window.updateCircularProgress(10, 'Memuat Data', 'Menghubungi server...');
+        }
+    }, 100);
+    
+    const startTime = Date.now();
+    
+    fetch(SCRIPT_URL + '?action=get&entry=' + entry)
+    .then(response => {
+        // Progress 40% - Koneksi berhasil
+        const elapsed = Date.now() - startTime;
+        let progress = 40;
         
-        fetch(SCRIPT_URL + '?action=get&entry=' + entry)
-        .then(response => response.json())
-        .then(data => {
-            const tbody = document.getElementById('tableBody');
-            
-            if (!data.data || data.data.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="38" class="empty-table">
-                            <i class="fas fa-database" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
-                            Belum ada data penduduk, silahkan input data terlebih dahulu
-                        </td>
-                    </tr>
-                `;
-                allData = [];
-                return;
-            }
-
-            // Simpan spreadsheetRowIndex ke setiap baris data
-            allData = data.data.map((row, index) => {
-                return {
-                    ...row,
-                    spreadsheetRowIndex: index + 2 // Baris 1 adalah header
-                };
-            });
-            
-            displayData(allData);
-        })
-        .catch(error => {
-            console.error('Error loading data:', error);
-            document.getElementById('tableBody').innerHTML = `
-                <tr>
-                    <td colspan="38" class="empty-table">
-                        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #e74c3c; margin-bottom: 10px; display: block;"></i>
-                        Gagal memuat data. Silahkan refresh halaman.
-                    </td>
-                </tr>
-            `;
-        });
-    }
-
-    // Display data
-    function displayData(data) {
+        // Deteksi kecepatan koneksi
+        if (elapsed < 300) {
+            progress = 45;
+        } else if (elapsed < 800) {
+            progress = 40;
+        } else {
+            progress = 30;
+        }
+        
+        if (window.updateCircularProgress) {
+            window.updateCircularProgress(progress, 'Memuat Data', 'Menerima respons dari server...');
+        }
+        
+        return response.json();
+    })
+    .then(data => {
+        // Progress 70% - Data diterima
+        if (window.updateCircularProgress) {
+            window.updateCircularProgress(70, 'Memuat Data', 'Memproses data...');
+        }
+        
         const tbody = document.getElementById('tableBody');
         
-        if (!data || data.length === 0) {
+        if (!data.data || data.data.length === 0) {
             tbody.innerHTML = `
                 <tr>
                     <td colspan="38" class="empty-table">
-                        <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
-                        Tidak ada data yang cocok dengan pencarian
+                        <i class="fas fa-database" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
+                        Belum ada data penduduk, silahkan input data terlebih dahulu
                     </td>
                 </tr>
             `;
+            allData = [];
+            
+            // SELESAIKAN LOADER
+            if (window.completeCircularLoader) {
+                window.completeCircularLoader(true);
+            }
             return;
         }
-        
-        let html = '';
-        
-        data.forEach((row, index) => {
-            // Cari index asli di allData berdasarkan spreadsheetRowIndex
-            const originalIndex = allData.findIndex(item => item.spreadsheetRowIndex === row.spreadsheetRowIndex);
-            
-            html += '<tr>';
-            html += `<td>
-                <button class="action-btn" onclick="editData(${originalIndex})" title="Edit Data">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn edit-anggota-btn" onclick="editAnggota(${originalIndex})" title="Edit Anggota">
-                    <i class="fas fa-user-edit"></i>
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteData(${originalIndex})" title="Hapus Data">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>`;
-            
-            const headers = [
-                'TIMESTAMP', 'KODE KELUARGA', 'NOMOR KK', 'NAMA KEPALA KELUARGA',
-                'ALAMAT', 'RT', 'RW', 'KELURAHAN/DESA', 'KECAMATAN', 'KABUPATEN/KOTA',
-                'KODE POS', 'PROVINSI', 'KODE ANGGOTA KELUARGA', 'NAMA LENGKAP',
-                'NIK', 'JENIS KELAMIN', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'AGAMA',
-                'PENDIDIKAN', 'PEKERJAAN', 'STATUS PERKAWINAN',
-                'STATUS HUBUNGAN DALAM KELUARGA', 'KEWARGANEGARAAN', 'NO PASPOR',
-                'NO KITAS/KITAP', 'NAMA AYAH', 'NAMA IBU', 'SUKU', 'STATUS KEKAYAAN',
-                'STATUS KESEHATAN', 'RIWAYAT PENYAKIT', 'JENIS PENYAKIT',
-                'STATUS KEBERSIHAN', 'NOMOR TELEPON', 'ALAMAT EMAIL'
-            ];
-            
-            headers.forEach(header => {
-                let value = row[header] || '';
-                html += `<td>${value}</td>`;
-            });
-            
-            html += '</tr>';
+
+        // Simpan spreadsheetRowIndex ke setiap baris data
+        allData = data.data.map((row, index) => {
+            return {
+                ...row,
+                spreadsheetRowIndex: index + 2
+            };
         });
         
-        tbody.innerHTML = html;
+        // Progress 85% - Data siap ditampilkan
+        if (window.updateCircularProgress) {
+            window.updateCircularProgress(85, 'Memuat Data', 'Menyiapkan tampilan...');
+        }
+        
+        // Deteksi ukuran data
+        setTimeout(() => {
+            displayData(allData);
+            
+            // Progress 95% - Tampilan sedang dirender
+            if (window.updateCircularProgress) {
+                window.updateCircularProgress(95, 'Memuat Data', 'Merender tabel...');
+            }
+            
+            // SELESAIKAN LOADER setelah rendering
+            setTimeout(() => {
+                if (window.completeCircularLoader) {
+                    window.completeCircularLoader(true);
+                }
+            }, 500);
+            
+        }, 200);
+    })
+    .catch(error => {
+        console.error('Error loading data:', error);
+        document.getElementById('tableBody').innerHTML = `
+            <tr>
+                <td colspan="38" class="empty-table">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #e74c3c; margin-bottom: 10px; display: block;"></i>
+                    Gagal memuat data. Silahkan refresh halaman.
+                </td>
+            </tr>
+        `;
+        
+        // SELESAIKAN LOADER meskipun error
+        if (window.completeCircularLoader) {
+            window.completeCircularLoader(false);
+        }
+    });
+}
+
+
+
+
+    // Display data
+    function displayData(data) {
+    const tbody = document.getElementById('tableBody');
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="38" class="empty-table">
+                    <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
+                    Tidak ada data yang cocok dengan pencarian
+                </td>
+            </tr>
+        `;
+        return;
     }
+    
+    let html = '';
+    
+    data.forEach((row, index) => {
+        // Cari index asli di allData berdasarkan spreadsheetRowIndex
+        const originalIndex = allData.findIndex(item => item.spreadsheetRowIndex === row.spreadsheetRowIndex);
+        
+        html += '<tr>';
+        html += `<td>
+            <button class="action-btn" onclick="editData(${originalIndex})" title="Edit Data">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn edit-anggota-btn" onclick="editAnggota(${originalIndex})" title="Edit Anggota">
+                <i class="fas fa-user-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteData(${originalIndex})" title="Hapus Data">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>`;
+        
+        const headers = [
+            'TIMESTAMP', 'KODE KELUARGA', 'NOMOR KK', 'NAMA KEPALA KELUARGA',
+            'ALAMAT', 'RT', 'RW', 'KELURAHAN/DESA', 'KECAMATAN', 'KABUPATEN/KOTA',
+            'KODE POS', 'PROVINSI', 'KODE ANGGOTA KELUARGA', 'NAMA LENGKAP',
+            'NIK', 'JENIS KELAMIN', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'AGAMA',
+            'PENDIDIKAN', 'PEKERJAAN', 'STATUS PERKAWINAN',
+            'STATUS HUBUNGAN DALAM KELUARGA', 'KEWARGANEGARAAN', 'NO PASPOR',
+            'NO KITAS/KITAP', 'NAMA AYAH', 'NAMA IBU', 'SUKU', 'STATUS KEKAYAAN',
+            'STATUS KESEHATAN', 'RIWAYAT PENYAKIT', 'JENIS PENYAKIT',
+            'STATUS KEBERSIHAN', 'NOMOR TELEPON', 'ALAMAT EMAIL'
+        ];
+        
+        headers.forEach(header => {
+            let value = row[header] || '';
+            html += `<td>${value}</td>`;
+        });
+        
+        html += '</tr>';
+    });
+    
+    tbody.innerHTML = html;
+    
+    // Trigger progress update jika ada
+    if (window.updateCircularProgress) {
+        window.updateCircularProgress(98, 'Memuat Data', 'Menyempurnakan tampilan...');
+    }
+}
 
     // Search data
     function searchData() {
@@ -4004,6 +4476,91 @@
         document.getElementById('deleteAnggotaCardModal').style.display = 'none';
         deleteAnggotaCardIndex = -1;
     }
+
+
+// Fungsi untuk menampilkan loading spinner dengan progress REAL mengikuti sinyal
+function showCircularLoader(status = 'Memuat Data', subStatus = 'Mempersiapkan tampilan...') {
+    const spinner = document.getElementById('loadingSpinner');
+    const statusEl = document.getElementById('spinnerStatus');
+    const subStatusEl = document.getElementById('spinnerSubStatus');
+    const percentEl = document.getElementById('spinnerPercent');
+    const progressCircle = document.getElementById('progressCircle');
+    const progressDots = document.getElementById('progressDots');
+    
+    // Reset
+    percentEl.textContent = '0';
+    statusEl.textContent = status;
+    subStatusEl.textContent = subStatus;
+    
+    // Hitung keliling lingkaran (2 * π * r) dengan r=60
+    const circumference = 2 * Math.PI * 60; // 377
+    
+    // Set stroke-dashoffset awal
+    progressCircle.style.strokeDashoffset = circumference;
+    if (progressDots) progressDots.style.strokeDashoffset = circumference;
+    
+    // Tampilkan spinner
+    spinner.style.display = 'flex';
+    
+    // Simpan fungsi update progress ke window agar bisa dipanggil dari luar
+    window.updateCircularProgress = function(progress, newStatus, newSubStatus) {
+        // Update persentase
+        percentEl.textContent = Math.min(Math.floor(progress), 100);
+        
+        // Hitung stroke-dashoffset
+        const offset = circumference - (Math.min(progress, 100) / 100) * circumference;
+        progressCircle.style.strokeDashoffset = offset;
+        if (progressDots) progressDots.style.strokeDashoffset = offset;
+        
+        // Update status jika ada
+        if (newStatus) statusEl.textContent = newStatus;
+        if (newSubStatus) subStatusEl.textContent = newSubStatus;
+        
+        // Efek bengkok dinamis berdasarkan progress
+        if (progress <= 30) {
+            // Koneksi lemot - efek bengkok lambat
+            progressCircle.style.strokeDasharray = '40, 337, 40, 337';
+        } else if (progress <= 60) {
+            // Koneksi sedang - efek bengkok sedang
+            progressCircle.style.strokeDasharray = '80, 297, 80, 297';
+        } else if (progress <= 85) {
+            // Koneksi cepat - efek bengkok cepat
+            progressCircle.style.strokeDasharray = '120, 257, 120, 257';
+        } else if (progress < 100) {
+            // Data besar - efek bengkok padat
+            progressCircle.style.strokeDasharray = '160, 217, 160, 217';
+        } else {
+            // Selesai
+            progressCircle.style.strokeDasharray = '377, 0';
+        }
+    };
+    
+    // Fungsi untuk menyelesaikan loading
+    window.completeCircularLoader = function(success = true) {
+        // Update ke 100%
+        window.updateCircularProgress(100, success ? '✅ Selesai!' : '❌ Gagal!', 
+            success ? 'Data berhasil ditampilkan' : 'Silahkan coba lagi');
+        
+        // HILANGKAN SPINNER setelah 500ms
+        setTimeout(() => {
+            hideCircularLoader();
+            // Bersihkan fungsi global
+            delete window.updateCircularProgress;
+            delete window.completeCircularLoader;
+        }, 500);
+    };
+    
+    return circumference;
+}
+
+// Fungsi untuk menyembunyikan loading spinner
+function hideCircularLoader() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'none';
+    }
+}
+
 
     // Inisialisasi
     window.onload = function() {
