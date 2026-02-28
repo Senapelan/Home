@@ -1485,7 +1485,7 @@
                         <option value="100">1-100</option>
                         <option value="500">1-500</option>
                         <option value="1000">1-1000</option>
-                        <option value="all">SEMUA</option>
+                        <option value="all" selected>SEMUA</option>
                     </select>
                     <span>entri</span>
                 </div>
@@ -2636,13 +2636,14 @@
         
         currentEditAnggotaCardIndex = index;
         
-        const rowIndex = allData.findIndex(row => 
+        // Cari di allData berdasarkan NIK dan Nama untuk mendapatkan spreadsheetRowIndex
+        const foundData = allData.find(row => 
             row['NIK'] === data['NIK'] && 
             row['NAMA LENGKAP'] === data['NAMA LENGKAP']
         );
         
-        if (rowIndex !== -1) {
-            currentEditAnggotaRowIndex = rowIndex;
+        if (foundData) {
+            currentEditAnggotaRowIndex = foundData.spreadsheetRowIndex;
         }
         
         const modalBody = document.getElementById('editAnggotaCardModalBody');
@@ -2975,7 +2976,7 @@
         
         const formData = {
             action: 'update',
-            rowIndex: currentEditAnggotaRowIndex + 2,
+            rowIndex: currentEditAnggotaRowIndex,
             timestamp: timestamp,
             kodeKeluarga: data['KODE KELUARGA'],
             nomorKK: data['NOMOR KK'],
@@ -3061,12 +3062,12 @@
         
         const data = existingAnggotaList[deleteAnggotaCardIndex];
         
-        const rowIndex = allData.findIndex(row => 
+        const foundData = allData.find(row => 
             row['NIK'] === data['NIK'] && 
             row['NAMA LENGKAP'] === data['NAMA LENGKAP']
         );
         
-        if (rowIndex === -1) {
+        if (!foundData) {
             showNotification('Data tidak ditemukan', true);
             closeDeleteAnggotaCardModal();
             return;
@@ -3074,7 +3075,7 @@
         
         const formData = {
             action: 'delete',
-            rowIndex: rowIndex + 2
+            rowIndex: foundData.spreadsheetRowIndex
         };
         
         showProgress('Menghapus');
@@ -3317,7 +3318,7 @@
 
         if (editRowIndex) {
             formData.action = 'update';
-            formData.rowIndex = parseInt(editRowIndex) + 2;
+            formData.rowIndex = parseInt(editRowIndex);
             showProgress('Mengupdate');
         } else {
             formData.action = 'add';
@@ -3377,7 +3378,14 @@
                 return;
             }
 
-            allData = data.data;
+            // Simpan spreadsheetRowIndex ke setiap baris data
+            allData = data.data.map((row, index) => {
+                return {
+                    ...row,
+                    spreadsheetRowIndex: index + 2 // Baris 1 adalah header
+                };
+            });
+            
             displayData(allData);
             
             document.getElementById('tableContainer').classList.remove('visible');
@@ -3401,86 +3409,91 @@
 
     // Display data
     function displayData(data) {
-        const tbody = document.getElementById('tableBody');
+    const tbody = document.getElementById('tableBody');
+    
+    if (!data || data.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="38" class="empty-table">
+                    <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
+                    Tidak ada data yang cocok dengan pencarian
+                </td>
+            </tr>
+        `;
+        return;
+    }
+    
+    let html = '';
+            
+    data.forEach((row, index) => {
+        // Cari index asli di allData berdasarkan spreadsheetRowIndex
+        const originalIndex = allData.findIndex(item => item.spreadsheetRowIndex === row.spreadsheetRowIndex);
         
-        if (!data || data.length === 0) {
-            tbody.innerHTML = `
-                <tr>
-                    <td colspan="38" class="empty-table">
-                        <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
-                        Tidak ada data yang cocok dengan pencarian
-                    </td>
-                </tr>
-            `;
-            return;
-        }
+        html += '<tr>';
+        html += `<td>
+            <button class="action-btn" onclick="editData(${originalIndex})" title="Edit Data">
+                <i class="fas fa-edit"></i>
+            </button>
+            <button class="action-btn edit-anggota-btn" onclick="editAnggota(${originalIndex})" title="Edit Anggota">
+                <i class="fas fa-user-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" onclick="deleteData(${originalIndex})" title="Hapus Data">
+                <i class="fas fa-trash"></i>
+            </button>
+        </td>`;
         
-        let html = '';
-                
-        data.forEach((row, index) => {
-            html += '<tr>';
-            html += `<td>
-                <button class="action-btn" onclick="editData(${index})" title="Edit Data">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="action-btn edit-anggota-btn" onclick="editAnggota(${index})" title="Edit Anggota">
-                    <i class="fas fa-user-edit"></i>
-                </button>
-                <button class="action-btn delete-btn" onclick="deleteData(${index})" title="Hapus Data">
-                    <i class="fas fa-trash"></i>
-                </button>
-            </td>`;
-            
-            const headers = [
-                'TIMESTAMP', 'KODE KELUARGA', 'NOMOR KK', 'NAMA KEPALA KELUARGA',
-                'ALAMAT', 'RT', 'RW', 'KELURAHAN/DESA', 'KECAMATAN', 'KABUPATEN/KOTA',
-                'KODE POS', 'PROVINSI', 'KODE ANGGOTA KELUARGA', 'NAMA LENGKAP',
-                'NIK', 'JENIS KELAMIN', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'AGAMA',
-                'PENDIDIKAN', 'PEKERJAAN', 'STATUS PERKAWINAN',
-                'STATUS HUBUNGAN DALAM KELUARGA', 'KEWARGANEGARAAN', 'NO PASPOR',
-                'NO KITAS/KITAP', 'NAMA AYAH', 'NAMA IBU', 'SUKU', 'STATUS KEKAYAAN',
-                'STATUS KESEHATAN', 'RIWAYAT PENYAKIT', 'JENIS PENYAKIT',
-                'STATUS KEBERSIHAN', 'NOMOR TELEPON', 'ALAMAT EMAIL'
-            ];
-            
-            headers.forEach(header => {
-                let value = row[header] || '';
-                html += `<td>${value}</td>`;
-            });
-            
-            html += '</tr>';
+        const headers = [
+            'TIMESTAMP', 'KODE KELUARGA', 'NOMOR KK', 'NAMA KEPALA KELUARGA',
+            'ALAMAT', 'RT', 'RW', 'KELURAHAN/DESA', 'KECAMATAN', 'KABUPATEN/KOTA',
+            'KODE POS', 'PROVINSI', 'KODE ANGGOTA KELUARGA', 'NAMA LENGKAP',
+            'NIK', 'JENIS KELAMIN', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'AGAMA',
+            'PENDIDIKAN', 'PEKERJAAN', 'STATUS PERKAWINAN',
+            'STATUS HUBUNGAN DALAM KELUARGA', 'KEWARGANEGARAAN', 'NO PASPOR',
+            'NO KITAS/KITAP', 'NAMA AYAH', 'NAMA IBU', 'SUKU', 'STATUS KEKAYAAN',
+            'STATUS KESEHATAN', 'RIWAYAT PENYAKIT', 'JENIS PENYAKIT',
+            'STATUS KEBERSIHAN', 'NOMOR TELEPON', 'ALAMAT EMAIL'
+        ];
+        
+        headers.forEach(header => {
+            let value = row[header] || '';
+            html += `<td>${value}</td>`;
         });
         
-        tbody.innerHTML = html;
-    }
+        html += '</tr>';
+    });
+    
+    tbody.innerHTML = html;
+}
 
     // Search data
     function searchData() {
-        const searchKK = document.getElementById('searchKK').value.toUpperCase();
-        const searchNIK = document.getElementById('searchNIK').value.toUpperCase();
-        const searchNama = document.getElementById('searchNama').value.toUpperCase();
-        
-        const tableContainer = document.getElementById('tableContainer');
-        
-        if (!searchKK && !searchNIK && !searchNama) {
-            tableContainer.classList.remove('visible');
-            tableContainer.classList.add('hidden');
-            return;
-        }
-        
-        tableContainer.classList.remove('hidden');
-        tableContainer.classList.add('visible');
-        
-        const filtered = allData.filter(row => {
-            const matchKK = !searchKK || (row['NOMOR KK'] && row['NOMOR KK'].includes(searchKK));
-            const matchNIK = !searchNIK || (row['NIK'] && row['NIK'].includes(searchNIK));
-            const matchNama = !searchNama || (row['NAMA LENGKAP'] && row['NAMA LENGKAP'].includes(searchNama));
-            
-            return matchKK && matchNIK && matchNama;
-        });
-        
-        displayData(filtered);
+    const searchKK = document.getElementById('searchKK').value.toUpperCase();
+    const searchNIK = document.getElementById('searchNIK').value.toUpperCase();
+    const searchNama = document.getElementById('searchNama').value.toUpperCase();
+    
+    const tableContainer = document.getElementById('tableContainer');
+    
+    if (!searchKK && !searchNIK && !searchNama) {
+        tableContainer.classList.remove('visible');
+        tableContainer.classList.add('hidden');
+        return;
     }
+    
+    tableContainer.classList.remove('hidden');
+    tableContainer.classList.add('visible');
+    
+    // Filter data tapi simpan index asli
+    const filtered = allData.filter(row => {
+        const matchKK = !searchKK || (row['NOMOR KK'] && row['NOMOR KK'].includes(searchKK));
+        const matchNIK = !searchNIK || (row['NIK'] && row['NIK'].includes(searchNIK));
+        const matchNama = !searchNama || (row['NAMA LENGKAP'] && row['NAMA LENGKAP'].includes(searchNama));
+        
+        return matchKK && matchNIK && matchNama;
+    });
+    
+    // Tampilkan data filtered
+    displayData(filtered);
+}
 
     // Edit data (Kepala Keluarga)
     function editData(index) {
@@ -3493,6 +3506,7 @@
         }
         
         currentEditIndex = index;
+        const spreadsheetRowIndex = data.spreadsheetRowIndex;
         
         document.getElementById('nomor_kk').value = data['NOMOR KK'] || '';
         document.getElementById('nama_kepala_keluarga').value = data['NAMA KEPALA KELUARGA'] || '';
@@ -3534,7 +3548,7 @@
         document.getElementById('nomor_telepon').value = data['NOMOR TELEPON'] || '';
         document.getElementById('email').value = data['ALAMAT EMAIL'] || '';
         
-        document.getElementById('edit_row_index').value = index;
+        document.getElementById('edit_row_index').value = spreadsheetRowIndex;
         document.getElementById('currentKK').value = data['NOMOR KK'];
         document.getElementById('submitBtn').innerHTML = '<i class="fas fa-edit"></i> UPDATE KEPALA KELUARGA';
         
@@ -3557,7 +3571,7 @@
             return;
         }
         
-        currentEditAnggotaIndex = index;
+        currentEditAnggotaIndex = data.spreadsheetRowIndex;
         
         const modalBody = document.getElementById('editAnggotaModalBody');
         modalBody.innerHTML = `
@@ -3844,7 +3858,13 @@
     function submitEditAnggota() {
         if (currentEditAnggotaIndex === -1) return;
         
-        const data = allData[currentEditAnggotaIndex];
+        const data = allData.find(row => row.spreadsheetRowIndex === currentEditAnggotaIndex);
+        
+        if (!data) {
+            showNotification('Data tidak ditemukan', true);
+            closeEditAnggotaModal();
+            return;
+        }
         
         const nik = document.getElementById('edit_nik').value;
         const nama = document.getElementById('edit_nama_lengkap').value;
@@ -3888,7 +3908,7 @@
         
         const formData = {
             action: 'update',
-            rowIndex: currentEditAnggotaIndex + 2,
+            rowIndex: currentEditAnggotaIndex,
             timestamp: timestamp,
             kodeKeluarga: data['KODE KELUARGA'],
             nomorKK: data['NOMOR KK'],
@@ -3952,7 +3972,7 @@
         const data = allData[index];
         if (!data) return;
         
-        deleteIndex = index;
+        deleteIndex = data.spreadsheetRowIndex;
         
         document.getElementById('deleteInfo').innerHTML = `
             <strong>NIK:</strong> ${data['NIK'] || '-'}<br>
@@ -3969,7 +3989,7 @@
         
         const formData = {
             action: 'delete',
-            rowIndex: deleteIndex + 2
+            rowIndex: deleteIndex
         };
         
         showProgress('Menghapus');
