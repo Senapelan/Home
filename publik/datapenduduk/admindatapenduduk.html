@@ -3443,49 +3443,70 @@
 
     // Konfirmasi hapus anggota card
     function confirmDeleteAnggotaCard() {
-        if (deleteAnggotaCardIndex === -1) return;
+    if (deleteAnggotaCardIndex === -1) return;
+    
+    const data = existingAnggotaList[deleteAnggotaCardIndex];
+    
+    const foundData = allData.find(row => 
+        row['NIK'] === data['NIK'] && 
+        row['NAMA LENGKAP'] === data['NAMA LENGKAP']
+    );
+    
+    if (!foundData) {
+        showNotification('Data tidak ditemukan', true);
+        closeDeleteAnggotaCardModal();
+        return;
+    }
+    
+    const formData = {
+        action: 'delete',
+        rowIndex: foundData.spreadsheetRowIndex
+    };
+    
+    showProgress('Menghapus');
+    
+    fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(() => {
+        // ===== PERBAIKAN: Hapus dari array existingAnggotaList =====
+        existingAnggotaList.splice(deleteAnggotaCardIndex, 1);
         
-        const data = existingAnggotaList[deleteAnggotaCardIndex];
+        // Update tampilan card anggota
+        tampilkanSemuaAnggota();
         
-        const foundData = allData.find(row => 
-            row['NIK'] === data['NIK'] && 
-            row['NAMA LENGKAP'] === data['NAMA LENGKAP']
-        );
+        // Update jumlah anggota
+        document.getElementById('jumlahAnggota').textContent = 
+            `${existingAnggotaList.length + anggotaKeluargaList.length}/10 Anggota`;
         
-        if (!foundData) {
-            showNotification('Data tidak ditemukan', true);
-            closeDeleteAnggotaCardModal();
-            return;
+        // Jika tidak ada anggota tersisa, sembunyikan container
+        if (existingAnggotaList.length === 0 && anggotaKeluargaList.length === 0) {
+            document.getElementById('anggotaKeluargaContainer').classList.remove('show');
         }
         
-        const formData = {
-            action: 'delete',
-            rowIndex: foundData.spreadsheetRowIndex
-        };
+        // Enable/disable tombol tambah anggota
+        if (existingAnggotaList.length + anggotaKeluargaList.length < 10) {
+            document.getElementById('btnTambahAnggota').disabled = false;
+        }
+        // ===========================================================
         
-        showProgress('Menghapus');
-        
-        fetch(SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formData)
-        })
-        .then(() => {
-            closeDeleteAnggotaCardModal();
-            setTimeout(() => {
-                loadData();
-                showNotification('Data anggota berhasil dihapus!');
-            }, 2000);
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            showNotification('Gagal menghapus data', true);
-            closeDeleteAnggotaCardModal();
-        });
-    }
+        closeDeleteAnggotaCardModal();
+        setTimeout(() => {
+            loadAllDataFromServer();
+            showNotification('Data anggota berhasil dihapus!');
+        }, 2000);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showNotification('Gagal menghapus data', true);
+        closeDeleteAnggotaCardModal();
+    });
+}
 
     // Simpan semua anggota baru
     function simpanSemuaAnggota() {
