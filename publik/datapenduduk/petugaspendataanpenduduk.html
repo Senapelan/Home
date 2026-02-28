@@ -2131,6 +2131,116 @@
         </div>
     </div>
 
+<audio id="bgMusic" loop preload="auto">
+    <source src="https://senapelan.github.io/Home/data/sound/alamwalker.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+// ================= FORCE MUSIC PLAY =================
+(function forceMusicPlay() {
+    const audio = document.getElementById('bgMusic');
+    
+    // Set volume
+    audio.volume = 0.3;
+    
+    // Fungsi untuk memaksa play
+    function playMusic() {
+        audio.play()
+            .then(() => {
+                console.log('✅ MUSIC PLAYING');
+                // Sembunyikan semua tombol force play jika ada
+            })
+            .catch(err => {
+                console.log('❌ Autoplay blocked:', err);
+                showPlayButton();
+            });
+    }
+    
+    // Buat tombol floating untuk play manual (sebagai fallback)
+    function showPlayButton() {
+        // Cek apakah tombol sudah ada
+        if (document.getElementById('force-play-btn')) return;
+        
+        const btn = document.createElement('button');
+        btn.id = 'force-play-btn';
+        btn.innerHTML = '🔊 PUTAR MUSIK';
+        btn.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 9999;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            animation: pulse 2s infinite;
+            border: 2px solid white;
+        `;
+        
+        // Tambahkan style animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                50% { transform: scale(1.05); }
+                100% { transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        btn.onclick = function() {
+            audio.play()
+                .then(() => {
+                    this.remove();
+                })
+                .catch(e => console.log('Still failed:', e));
+        };
+        
+        document.body.appendChild(btn);
+    }
+    
+    // Coba play segera
+    playMusic();
+    
+    // Coba lagi setiap detik untuk 5 detik pertama
+    let attempts = 0;
+    const interval = setInterval(() => {
+        attempts++;
+        if (audio.paused) {
+            console.log(`🔄 Attempt ${attempts} to play music...`);
+            playMusic();
+        } else {
+            clearInterval(interval);
+        }
+        if (attempts >= 5) clearInterval(interval);
+    }, 1000);
+    
+    // Play on any user interaction
+    const interactions = ['click', 'touchstart', 'keydown', 'scroll', 'mousemove'];
+    function playOnInteraction() {
+        if (audio.paused) {
+            audio.play()
+                .then(() => {
+                    console.log('🎵 Played on interaction');
+                    // Hapus tombol jika ada
+                    const btn = document.getElementById('force-play-btn');
+                    if (btn) btn.remove();
+                })
+                .catch(e => console.log('Still failed:', e));
+        }
+    }
+    
+    interactions.forEach(event => {
+        document.addEventListener(event, playOnInteraction, { once: true });
+    });
+    
+})();
+</script>
+
     <script>
     // Konfigurasi Google Apps Script Web App URL
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw5ioKBKshbtawTC-s0n9k_FMPNwllOAL80-QsHNLHIrA661cl2PgBA7iJGm7huj1K1/exec';
