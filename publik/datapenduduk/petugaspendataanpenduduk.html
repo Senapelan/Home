@@ -3979,37 +3979,47 @@
 
     // FUNGSI BARU: Load semua data dari server
     function loadAllDataFromServer() {
-        showCircularLoader('Memuat Data', 'Mengambil data dari server...');
+    showCircularLoader('Memuat Data', 'Mengambil data dari server...');
+    
+    fetch(SCRIPT_URL + '?action=get&entry=all')
+    .then(response => response.json())
+    .then(data => {
+        if (!data.data || data.data.length === 0) {
+            allData = [];
+        } else {
+            allData = data.data.map((row, index) => {
+                // Pastikan semua field penting terbaca dengan benar
+                return {
+                    ...row,
+                    'NIK': row['NIK'] ? row['NIK'].toString() : '', // Konversi ke string
+                    'NOMOR KK': row['NOMOR KK'] ? row['NOMOR KK'].toString() : '',
+                    'NAMA LENGKAP': row['NAMA LENGKAP'] ? row['NAMA LENGKAP'].toString() : '',
+                    spreadsheetRowIndex: index + 2
+                };
+            });
+            
+            // Debug: tampilkan sample data
+            console.log('Data loaded:', allData.length, 'records');
+            if (allData.length > 0) {
+                console.log('Sample NIK:', allData[0]['NIK']);
+            }
+        }
         
-        fetch(SCRIPT_URL + '?action=get&entry=all')
-        .then(response => response.json())
-        .then(data => {
-            if (!data.data || data.data.length === 0) {
-                allData = [];
-            } else {
-                allData = data.data.map((row, index) => {
-                    return {
-                        ...row,
-                        spreadsheetRowIndex: index + 2
-                    };
-                });
-            }
-            
-            if (window.completeCircularLoader) {
-                window.completeCircularLoader(true);
-            }
-            
-            // Reset tampilan pencarian
-            resetSearchDisplay();
-        })
-        .catch(error => {
-            console.error('Error loading data:', error);
-            showNotification('Gagal memuat data dari server', true);
-            if (window.completeCircularLoader) {
-                window.completeCircularLoader(false);
-            }
-        });
-    }
+        if (window.completeCircularLoader) {
+            window.completeCircularLoader(true);
+        }
+        
+        // Reset tampilan pencarian
+        resetSearchDisplay();
+    })
+    .catch(error => {
+        console.error('Error loading data:', error);
+        showNotification('Gagal memuat data dari server', true);
+        if (window.completeCircularLoader) {
+            window.completeCircularLoader(false);
+        }
+    });
+}
 
     // FUNGSI BARU: Reset tampilan pencarian
     function resetSearchDisplay() {
@@ -4057,81 +4067,109 @@
         displayDataInTable(displayData);
     }
 
-    // FUNGSI BARU: Perform search
-    function performSearch() {
-        const searchKK = document.getElementById('searchKKInput').value.trim();
-        const searchNIK = document.getElementById('searchNIKInput').value.trim();
-        const searchNama = document.getElementById('searchNamaInput').value.trim().toUpperCase();
+    // FUNGSI BARU: Perform search (DIPERBAIKI)
+function performSearch() {
+    const searchKK = document.getElementById('searchKKInput').value.trim();
+    const searchNIK = document.getElementById('searchNIKInput').value.trim();
+    const searchNama = document.getElementById('searchNamaInput').value.trim().toUpperCase();
+    
+    // Cek apakah ada input pencarian
+    if (!searchKK && !searchNIK && !searchNama) {
+        showNotification('Silahkan isi minimal satu kolom pencarian', true);
+        return;
+    }
+    
+    showCircularLoader('Mencari Data', 'Memproses pencarian...');
+    
+    setTimeout(() => {
+        // Filter data berdasarkan kriteria dengan pencarian yang lebih akurat
+        const filtered = allData.filter(row => {
+            // Konversi nilai ke string untuk perbandingan
+            const nomorKK = (row['NOMOR KK'] || '').toString();
+            const nik = (row['NIK'] || '').toString();
+            const namaLengkap = (row['NAMA LENGKAP'] || '').toString().toUpperCase();
+            
+            // Logika pencarian yang lebih baik
+            let matchKK = true;
+            let matchNIK = true;
+            let matchNama = true;
+            
+            if (searchKK) {
+                // Cek apakah nomor KK mengandung kata kunci pencarian
+                matchKK = nomorKK.includes(searchKK);
+            }
+            
+            if (searchNIK) {
+                // PERBAIKAN: Cek apakah NIK mengandung kata kunci pencarian
+                // dan pastikan pencarian case-sensitive untuk angka
+                matchNIK = nik.includes(searchNIK);
+                
+                // Debug: console log untuk melihat perbandingan
+                console.log('Mencari NIK:', searchNIK, 'dalam data:', nik, 'Hasil:', matchNIK);
+            }
+            
+            if (searchNama) {
+                // Cek apakah nama mengandung kata kunci pencarian
+                matchNama = namaLengkap.includes(searchNama);
+            }
+            
+            return matchKK && matchNIK && matchNama;
+        });
         
-        // Cek apakah ada input pencarian
-        if (!searchKK && !searchNIK && !searchNama) {
-            showNotification('Silahkan isi minimal satu kolom pencarian', true);
-            return;
+        // Debug: tampilkan jumlah hasil
+        console.log('Hasil pencarian:', filtered.length, 'data ditemukan');
+        
+        currentSearchResults = filtered;
+        
+        // Update info hasil pencarian
+        const searchResultInfo = document.getElementById('searchResultInfo');
+        const searchResultText = document.getElementById('searchResultText');
+        const resultCount = document.getElementById('resultCount');
+        
+        let searchTerms = [];
+        if (searchKK) searchTerms.push(`KK: ${searchKK}`);
+        if (searchNIK) searchTerms.push(`NIK: ${searchNIK}`);
+        if (searchNama) searchTerms.push(`Nama: ${searchNama}`);
+        
+        searchResultText.innerHTML = `Hasil pencarian untuk: ${searchTerms.join(' | ')}`;
+        resultCount.textContent = filtered.length;
+        searchResultInfo.style.display = 'flex';
+        
+        if (filtered.length > 0) {
+            // Tampilkan tabel dan kontrol
+            document.getElementById('tableContainer').classList.add('show');
+            document.getElementById('tableControls').style.display = 'flex';
+            
+            // Tampilkan data (batasi sesuai entry select)
+            const entry = document.getElementById('entrySelect').value;
+            let displayData = filtered;
+            
+            if (entry !== 'all') {
+                const limit = parseInt(entry);
+                displayData = filtered.slice(0, limit);
+            }
+            
+            displayDataInTable(displayData);
+        } else {
+            // Tidak ada data
+            document.getElementById('tableContainer').classList.add('show');
+            document.getElementById('tableControls').style.display = 'flex';
+            
+            document.getElementById('tableBody').innerHTML = `
+                <tr>
+                    <td colspan="38" class="empty-table">
+                        <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
+                        Tidak ada data yang cocok dengan pencarian
+                    </td>
+                </tr>
+            `;
         }
         
-        showCircularLoader('Mencari Data', 'Memproses pencarian...');
-        
-        setTimeout(() => {
-            // Filter data berdasarkan kriteria
-            const filtered = allData.filter(row => {
-                const matchKK = !searchKK || (row['NOMOR KK'] && row['NOMOR KK'].includes(searchKK));
-                const matchNIK = !searchNIK || (row['NIK'] && row['NIK'].includes(searchNIK));
-                const matchNama = !searchNama || (row['NAMA LENGKAP'] && row['NAMA LENGKAP'].includes(searchNama));
-                
-                return matchKK && matchNIK && matchNama;
-            });
-            
-            currentSearchResults = filtered;
-            
-            // Update info hasil pencarian
-            const searchResultInfo = document.getElementById('searchResultInfo');
-            const searchResultText = document.getElementById('searchResultText');
-            const resultCount = document.getElementById('resultCount');
-            
-            let searchTerms = [];
-            if (searchKK) searchTerms.push(`KK: ${searchKK}`);
-            if (searchNIK) searchTerms.push(`NIK: ${searchNIK}`);
-            if (searchNama) searchTerms.push(`Nama: ${searchNama}`);
-            
-            searchResultText.innerHTML = `Hasil pencarian untuk: ${searchTerms.join(' | ')}`;
-            resultCount.textContent = filtered.length;
-            searchResultInfo.style.display = 'flex';
-            
-            if (filtered.length > 0) {
-                // Tampilkan tabel dan kontrol
-                document.getElementById('tableContainer').classList.add('show');
-                document.getElementById('tableControls').style.display = 'flex';
-                
-                // Tampilkan data (batasi sesuai entry select)
-                const entry = document.getElementById('entrySelect').value;
-                let displayData = filtered;
-                
-                if (entry !== 'all') {
-                    const limit = parseInt(entry);
-                    displayData = filtered.slice(0, limit);
-                }
-                
-                displayDataInTable(displayData);
-            } else {
-                // Tidak ada data
-                document.getElementById('tableContainer').classList.add('show');
-                document.getElementById('tableControls').style.display = 'flex';
-                
-                document.getElementById('tableBody').innerHTML = `
-                    <tr>
-                        <td colspan="38" class="empty-table">
-                            <i class="fas fa-search" style="font-size: 48px; color: #ccc; margin-bottom: 10px; display: block;"></i>
-                            Tidak ada data yang cocok dengan pencarian
-                        </td>
-                    </tr>
-                `;
-            }
-            
-            if (window.completeCircularLoader) {
-                window.completeCircularLoader(true);
-            }
-        }, 500); // Simulasi proses pencarian
-    }
+        if (window.completeCircularLoader) {
+            window.completeCircularLoader(true);
+        }
+    }, 500);
+}
 
     // FUNGSI BARU: Tampilkan data di tabel
     function displayDataInTable(data) {
