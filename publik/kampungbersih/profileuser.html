@@ -355,151 +355,74 @@
     </div>
 
     <script>
-        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnK4SO-kM6fEVOZr_QpDs0GWbtQUTgbzYC6OLd2bqyYnPHka8wVjTt7wE23PouF27vkg/exec';
-        const FOLDER_ID = '1iw0StZSshq9XmxAELExCUF-RoxvJKDnL';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwgVAq6dfIX_ZyfwuwItiKzTtdhDNcDHoAOVAXp4vbNsGyuda9YItB9qdEiQbnggE_Eqg/exec';
+    const FOLDER_ID = '1iw0StZSshq9XmxAELExCUF-RoxvJKDnL';
+    
+    let currentUsername = null;
+    let isEditMode = false;
+
+    function getCurrentUser() {
+        let user = sessionStorage.getItem('currentUser');
+        if (!user) {
+            const urlParams = new URLSearchParams(window.location.search);
+            user = urlParams.get('username');
+        }
+        if (!user) {
+            window.location.href = 'formlogin.html';
+            return null;
+        }
+        return user;
+    }
+
+    function showAlert(message, type) {
+        const alertDiv = document.getElementById('alert');
+        alertDiv.className = `alert alert-${type}`;
+        alertDiv.textContent = message;
+        alertDiv.style.display = 'block';
+        setTimeout(() => {
+            alertDiv.style.display = 'none';
+        }, 3000);
+    }
+
+    function setLoading(button, isLoading, originalText) {
+        if (isLoading) {
+            button.disabled = true;
+            button.innerHTML = '<span class="loading"></span> ' + originalText;
+        } else {
+            button.disabled = false;
+            button.innerHTML = originalText;
+        }
+    }
+
+    async function getProfile() {
+        try {
+            const url = `${APPS_SCRIPT_URL}?action=getProfile&username=${encodeURIComponent(currentUsername)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Get profile error:', error);
+            return { success: false };
+        }
+    }
+
+    async function saveProfile() {
+        const saveBtn = document.getElementById('saveBtn');
+        setLoading(saveBtn, true, 'Menyimpan...');
+
+        const nama = document.getElementById('nama').value;
+        const alamat = document.getElementById('alamat').value;
+        const rt = document.getElementById('rt').value;
+        const rw = document.getElementById('rw').value;
+        const bank_sampah = document.getElementById('bank_sampah').value;
+        const pkk = document.getElementById('pkk').value;
+        const posyandu = document.getElementById('posyandu').value;
         
-        let currentUsername = null;
-        let isEditMode = false;
-
-        function getCurrentUser() {
-            let user = sessionStorage.getItem('currentUser');
-            if (!user) {
-                const urlParams = new URLSearchParams(window.location.search);
-                user = urlParams.get('username');
-            }
-            if (!user) {
-                window.location.href = 'formlogin.html';
-                return null;
-            }
-            return user;
-        }
-
-        function showAlert(message, type) {
-            const alertDiv = document.getElementById('alert');
-            alertDiv.className = `alert alert-${type}`;
-            alertDiv.textContent = message;
-            alertDiv.style.display = 'block';
-            setTimeout(() => {
-                alertDiv.style.display = 'none';
-            }, 3000);
-        }
-
-        function setLoading(button, isLoading, originalText) {
-            if (isLoading) {
-                button.disabled = true;
-                button.innerHTML = '<span class="loading"></span> ' + originalText;
-            } else {
-                button.disabled = false;
-                button.innerHTML = originalText;
-            }
-        }
-
-        async function callAppsScript(action, data = {}) {
-            try {
-                let url = `${APPS_SCRIPT_URL}?action=${action}&username=${encodeURIComponent(currentUsername)}`;
-                for (const [key, value] of Object.entries(data)) {
-                    url += `&${key}=${encodeURIComponent(value)}`;
-                }
-                const response = await fetch(url);
-                const result = await response.json();
-                return result;
-            } catch (error) {
-                console.error('Error:', error);
-                throw error;
-            }
-        }
-
-        async function getProfile() {
-            try {
-                const result = await callAppsScript('getProfile');
-                return result;
-            } catch (error) {
-                console.error('Get profile error:', error);
-                return { success: false };
-            }
-        }
-
-        async function updateProfile(profileData) {
-            try {
-                const result = await callAppsScript('updateProfile', profileData);
-                return result;
-            } catch (error) {
-                console.error('Update profile error:', error);
-                return { success: false };
-            }
-        }
-
-        async function uploadPhoto(base64Image) {
-            try {
-                const result = await callAppsScript('uploadPhoto', { image: base64Image });
-                return result;
-            } catch (error) {
-                console.error('Upload photo error:', error);
-                return { success: false };
-            }
-        }
-
-        function loadProfileData(profile) {
-            document.getElementById('displayNIK').textContent = profile.username || '-';
-            document.getElementById('nama').value = profile.nama || '';
-            document.getElementById('alamat').value = profile.alamat || '';
-            document.getElementById('rt').value = profile.rt || '';
-            document.getElementById('rw').value = profile.rw || '';
-            document.getElementById('bank_sampah').value = profile.bank_sampah || 'Tidak';
-            document.getElementById('pkk').value = profile.pkk || 'Tidak';
-            document.getElementById('posyandu').value = profile.posyandu || 'Tidak';
-
-            const photoContainer = document.getElementById('photoContainer');
-            if (profile.foto_url && profile.foto_url !== '') {
-                photoContainer.innerHTML = `<img src="${profile.foto_url}?t=${Date.now()}" alt="Foto Profil">`;
-            } else {
-                photoContainer.innerHTML = `<div class="photo-placeholder"><span>📷</span></div>`;
-            }
-        }
-
-        function enableEditMode() {
-            isEditMode = true;
-            document.getElementById('nama').disabled = false;
-            document.getElementById('alamat').disabled = false;
-            document.getElementById('rt').disabled = false;
-            document.getElementById('rw').disabled = false;
-            document.getElementById('bank_sampah').disabled = false;
-            document.getElementById('pkk').disabled = false;
-            document.getElementById('posyandu').disabled = false;
-            document.getElementById('uploadBtn').style.display = 'inline-block';
-            document.getElementById('editBtn').style.display = 'none';
-            document.getElementById('saveBtn').style.display = 'inline-block';
-        }
-
-        function disableEditMode() {
-            isEditMode = false;
-            document.getElementById('nama').disabled = true;
-            document.getElementById('alamat').disabled = true;
-            document.getElementById('rt').disabled = true;
-            document.getElementById('rw').disabled = true;
-            document.getElementById('bank_sampah').disabled = true;
-            document.getElementById('pkk').disabled = true;
-            document.getElementById('posyandu').disabled = true;
-            document.getElementById('uploadBtn').style.display = 'none';
-            document.getElementById('editBtn').style.display = 'inline-block';
-            document.getElementById('saveBtn').style.display = 'none';
-        }
-
-        async function saveProfile() {
-            const saveBtn = document.getElementById('saveBtn');
-            setLoading(saveBtn, true, 'Menyimpan...');
-
-            const profileData = {
-                nama: document.getElementById('nama').value,
-                alamat: document.getElementById('alamat').value,
-                rt: document.getElementById('rt').value,
-                rw: document.getElementById('rw').value,
-                bank_sampah: document.getElementById('bank_sampah').value,
-                pkk: document.getElementById('pkk').value,
-                posyandu: document.getElementById('posyandu').value
-            };
-
-            const result = await updateProfile(profileData);
+        try {
+            const url = `${APPS_SCRIPT_URL}?action=updateProfile&username=${encodeURIComponent(currentUsername)}&nama=${encodeURIComponent(nama)}&alamat=${encodeURIComponent(alamat)}&rt=${encodeURIComponent(rt)}&rw=${encodeURIComponent(rw)}&bank_sampah=${encodeURIComponent(bank_sampah)}&pkk=${encodeURIComponent(pkk)}&posyandu=${encodeURIComponent(posyandu)}`;
+            
+            const response = await fetch(url);
+            const result = await response.json();
             
             if (result.success) {
                 showAlert('✅ Profil berhasil disimpan!', 'success');
@@ -507,88 +430,149 @@
             } else {
                 showAlert('❌ Gagal menyimpan profil: ' + (result.message || 'Terjadi kesalahan'), 'error');
             }
-            
-            setLoading(saveBtn, false, '💾 Simpan Perubahan');
+        } catch (error) {
+            console.error('Save profile error:', error);
+            showAlert('❌ Gagal menyimpan profil: ' + error.message, 'error');
         }
-
-        async function handlePhotoUpload(file) {
-            if (!file) return;
-            
-            if (!file.type.match('image.*')) {
-                showAlert('❌ File harus berupa gambar!', 'error');
-                return;
-            }
-            
-            if (file.size > 2 * 1024 * 1024) {
-                showAlert('❌ Ukuran gambar maksimal 2MB!', 'error');
-                return;
-            }
-
-            const progressDiv = document.getElementById('uploadProgress');
-            progressDiv.style.display = 'block';
-            
-            const reader = new FileReader();
-            reader.onloadend = async function() {
-                const base64 = reader.result.split(',')[1];
-                const result = await uploadPhoto(base64);
-                
-                progressDiv.style.display = 'none';
-                
-                if (result.success) {
-                    showAlert('✅ Foto berhasil diupload!', 'success');
-                    const photoContainer = document.getElementById('photoContainer');
-                    photoContainer.innerHTML = `<img src="${result.url}?t=${Date.now()}" alt="Foto Profil">`;
-                } else {
-                    showAlert('❌ Gagal upload foto: ' + (result.message || 'Terjadi kesalahan'), 'error');
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-
-        async function init() {
-            currentUsername = getCurrentUser();
-            if (!currentUsername) return;
-            
-            sessionStorage.setItem('currentUser', currentUsername);
-            
-            const profile = await getProfile();
-            
-            if (profile && profile.success) {
-                loadProfileData(profile);
-                showAlert('📋 Profil berhasil dimuat', 'info');
-            } else {
-                loadProfileData({
-                    username: currentUsername,
-                    nama: '',
-                    alamat: '',
-                    rt: '',
-                    rw: '',
-                    bank_sampah: 'Tidak',
-                    pkk: 'Tidak',
-                    posyandu: 'Tidak',
-                    foto_url: ''
-                });
-                showAlert('📝 Silakan lengkapi profil Anda.', 'info');
-                enableEditMode();
-            }
-        }
-
-        document.getElementById('editBtn').onclick = enableEditMode;
-        document.getElementById('saveBtn').onclick = saveProfile;
-        document.getElementById('logoutBtn').onclick = () => {
-            sessionStorage.removeItem('currentUser');
-            sessionStorage.removeItem('userRole');
-            sessionStorage.removeItem('userEmail');
-            window.location.href = 'formlogin.html';
-        };
         
-        document.getElementById('fileInput').onchange = (e) => {
-            if (e.target.files && e.target.files[0]) {
-                handlePhotoUpload(e.target.files[0]);
+        setLoading(saveBtn, false, '💾 Simpan Perubahan');
+    }
+
+    async function uploadPhoto(base64Image) {
+        try {
+            const url = `${APPS_SCRIPT_URL}?action=uploadPhoto&username=${encodeURIComponent(currentUsername)}&image=${encodeURIComponent(base64Image)}`;
+            const response = await fetch(url);
+            const result = await response.json();
+            return result;
+        } catch (error) {
+            console.error('Upload photo error:', error);
+            return { success: false };
+        }
+    }
+
+    function loadProfileData(profile) {
+        document.getElementById('displayNIK').textContent = profile.username || '-';
+        document.getElementById('nama').value = profile.nama || '';
+        document.getElementById('alamat').value = profile.alamat || '';
+        document.getElementById('rt').value = profile.rt || '';
+        document.getElementById('rw').value = profile.rw || '';
+        document.getElementById('bank_sampah').value = profile.bank_sampah || 'Tidak';
+        document.getElementById('pkk').value = profile.pkk || 'Tidak';
+        document.getElementById('posyandu').value = profile.posyandu || 'Tidak';
+
+        const photoContainer = document.getElementById('photoContainer');
+        if (profile.foto_url && profile.foto_url !== '') {
+            photoContainer.innerHTML = `<img src="${profile.foto_url}?t=${Date.now()}" alt="Foto Profil">`;
+        } else {
+            photoContainer.innerHTML = `<div class="photo-placeholder"><span>📷</span></div>`;
+        }
+    }
+
+    function enableEditMode() {
+        isEditMode = true;
+        document.getElementById('nama').disabled = false;
+        document.getElementById('alamat').disabled = false;
+        document.getElementById('rt').disabled = false;
+        document.getElementById('rw').disabled = false;
+        document.getElementById('bank_sampah').disabled = false;
+        document.getElementById('pkk').disabled = false;
+        document.getElementById('posyandu').disabled = false;
+        document.getElementById('uploadBtn').style.display = 'inline-block';
+        document.getElementById('editBtn').style.display = 'none';
+        document.getElementById('saveBtn').style.display = 'inline-block';
+    }
+
+    function disableEditMode() {
+        isEditMode = false;
+        document.getElementById('nama').disabled = true;
+        document.getElementById('alamat').disabled = true;
+        document.getElementById('rt').disabled = true;
+        document.getElementById('rw').disabled = true;
+        document.getElementById('bank_sampah').disabled = true;
+        document.getElementById('pkk').disabled = true;
+        document.getElementById('posyandu').disabled = true;
+        document.getElementById('uploadBtn').style.display = 'none';
+        document.getElementById('editBtn').style.display = 'inline-block';
+        document.getElementById('saveBtn').style.display = 'none';
+    }
+
+    async function handlePhotoUpload(file) {
+        if (!file) return;
+        
+        if (!file.type.match('image.*')) {
+            showAlert('❌ File harus berupa gambar!', 'error');
+            return;
+        }
+        
+        if (file.size > 2 * 1024 * 1024) {
+            showAlert('❌ Ukuran gambar maksimal 2MB!', 'error');
+            return;
+        }
+
+        const progressDiv = document.getElementById('uploadProgress');
+        progressDiv.style.display = 'block';
+        
+        const reader = new FileReader();
+        reader.onloadend = async function() {
+            const base64 = reader.result.split(',')[1];
+            const result = await uploadPhoto(base64);
+            
+            progressDiv.style.display = 'none';
+            
+            if (result.success) {
+                showAlert('✅ Foto berhasil diupload!', 'success');
+                const photoContainer = document.getElementById('photoContainer');
+                photoContainer.innerHTML = `<img src="${result.url}?t=${Date.now()}" alt="Foto Profil">`;
+            } else {
+                showAlert('❌ Gagal upload foto: ' + (result.message || 'Terjadi kesalahan'), 'error');
             }
         };
+        reader.readAsDataURL(file);
+    }
 
-        init();
-    </script>
+    async function init() {
+        currentUsername = getCurrentUser();
+        if (!currentUsername) return;
+        
+        sessionStorage.setItem('currentUser', currentUsername);
+        
+        const profile = await getProfile();
+        
+        if (profile && profile.success) {
+            loadProfileData(profile);
+        } else {
+            loadProfileData({
+                username: currentUsername,
+                nama: '',
+                alamat: '',
+                rt: '',
+                rw: '',
+                bank_sampah: 'Tidak',
+                pkk: 'Tidak',
+                posyandu: 'Tidak',
+                foto_url: ''
+            });
+            showAlert('📝 Silakan lengkapi profil Anda.', 'info');
+            enableEditMode();
+        }
+    }
+
+    document.getElementById('editBtn').onclick = enableEditMode;
+    document.getElementById('saveBtn').onclick = saveProfile;
+    document.getElementById('logoutBtn').onclick = () => {
+        sessionStorage.removeItem('currentUser');
+        sessionStorage.removeItem('userRole');
+        sessionStorage.removeItem('userEmail');
+        window.location.href = 'formlogin.html';
+    };
+    
+    document.getElementById('fileInput').onchange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+            handlePhotoUpload(e.target.files[0]);
+        }
+    };
+
+    init();
+</script>
 </body>
 </html>
