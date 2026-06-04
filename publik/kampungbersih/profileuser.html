@@ -1,1 +1,603 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Profil Peserta - Kampung Bersih</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(102, 126, 234, 0.4), rgba(118, 75, 162, 0.4)), url('https://senapelan.github.io/Home/data/foto/backgroundprojeccamat.png');
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .profile-photo {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .profile-photo img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #667eea;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .photo-placeholder {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            border: 4px solid white;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        .photo-placeholder span {
+            font-size: 60px;
+        }
+
+        .upload-btn {
+            margin-top: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #667eea;
+            outline: none;
+        }
+
+        .form-group input:disabled, .form-group select:disabled {
+            background: #f5f5f5;
+            color: #666;
+        }
+
+        .status-group {
+            display: flex;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .status-item {
+            flex: 1;
+        }
+
+        .status-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+
+        .status-item select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-edit, .btn-save, .btn-logout {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-edit {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-save {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-logout {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-edit:hover, .btn-save:hover, .btn-logout:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .alert {
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .row-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-nik {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-nik strong {
+            color: #667eea;
+        }
+
+        @media (max-width: 600px) {
+            .row-2cols {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            .button-group {
+                flex-direction: column;
+            }
+            .content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <div class="header">
+                <h1>🌿 Profil Peserta</h1>
+                <p>Program Kampung Bersih - Camat Senapelan</p>
+            </div>
+            <div class="content">
+                <div id="alert" class="alert"></div>
+
+                <div class="info-nik">
+                    <strong>NIK:</strong> <span id="displayNIK">-</span>
+                </div>
+
+                <div class="profile-photo">
+                    <div id="photoContainer">
+                        <div class="photo-placeholder">
+                            <span>📷</span>
+                        </div>
+                    </div>
+                    <button class="upload-btn" id="uploadBtn" onclick="document.getElementById('fileInput').click()" style="display: none;">📸 Upload Foto</button>
+                    <input type="file" id="fileInput" style="display: none;" accept="image/jpeg,image/png,image/jpg">
+                    <div id="uploadProgress" style="display: none; font-size: 12px; margin-top: 5px;">⏳ Mengupload...</div>
+                </div>
+
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label>Nama Lengkap</label>
+                        <input type="text" id="nama" placeholder="Nama lengkap Anda" disabled>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Alamat</label>
+                        <input type="text" id="alamat" placeholder="Alamat lengkap" disabled>
+                    </div>
+
+                    <div class="row-2cols">
+                        <div class="form-group">
+                            <label>RT</label>
+                            <input type="text" id="rt" placeholder="RT" disabled>
+                        </div>
+                        <div class="form-group">
+                            <label>RW</label>
+                            <input type="text" id="rw" placeholder="RW" disabled>
+                        </div>
+                    </div>
+
+                    <div class="status-group">
+                        <div class="status-item">
+                            <label>🏦 Bank Sampah</label>
+                            <select id="bank_sampah" disabled>
+                                <option value="Tidak">Tidak Aktif</option>
+                                <option value="Aktif">Aktif</option>
+                            </select>
+                        </div>
+                        <div class="status-item">
+                            <label>👩‍👧 PKK</label>
+                            <select id="pkk" disabled>
+                                <option value="Tidak">Tidak Aktif</option>
+                                <option value="Aktif">Aktif</option>
+                            </select>
+                        </div>
+                        <div class="status-item">
+                            <label>👶 Posyandu</label>
+                            <select id="posyandu" disabled>
+                                <option value="Tidak">Tidak Aktif</option>
+                                <option value="Aktif">Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="button-group">
+                        <button type="button" class="btn-edit" id="editBtn">✏️ Edit Profil</button>
+                        <button type="button" class="btn-save" id="saveBtn" style="display: none;">💾 Simpan Perubahan</button>
+                        <button type="button" class="btn-logout" id="logoutBtn">🚪 Logout</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxyz-kar_vKzwyaFnRoHs8I6RpT1L5uQV5-RGYBRljyNrBENE0TCJ7-wPGN-mt10eZ5aw/exec';
+        const FOLDER_ID = '1iw0StZSshq9XmxAELExCUF-RoxvJKDnL';
+        
+        let currentUsername = null;
+        let isEditMode = false;
+
+        // Ambil username dari session/localStorage
+        function getCurrentUser() {
+            // Coba ambil dari sessionStorage (set saat login)
+            let user = sessionStorage.getItem('currentUser');
+            if (!user) {
+                // Fallback: ambil dari URL parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                user = urlParams.get('username');
+            }
+            if (!user) {
+                // Redirect ke login jika tidak ada user
+                window.location.href = 'index.html';
+            }
+            return user;
+        }
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('alert');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+            alertDiv.style.display = 'block';
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function setLoading(button, isLoading, originalText) {
+            if (isLoading) {
+                button.disabled = true;
+                button.innerHTML = '<span class="loading"></span> ' + originalText;
+            } else {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }
+        }
+
+        async function callAppsScript(action, data) {
+            try {
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=${action}&username=${encodeURIComponent(currentUsername)}&${new URLSearchParams(data).toString()}`);
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Error:', error);
+                throw error;
+            }
+        }
+
+        async function getProfile() {
+            try {
+                const result = await callAppsScript('getProfile', {});
+                return result;
+            } catch (error) {
+                console.error('Get profile error:', error);
+                return { success: false };
+            }
+        }
+
+        async function updateProfile(profileData) {
+            try {
+                const params = new URLSearchParams(profileData).toString();
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=updateProfile&username=${encodeURIComponent(currentUsername)}&${params}`);
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Update profile error:', error);
+                return { success: false };
+            }
+        }
+
+        async function uploadPhoto(base64Image) {
+            try {
+                const response = await fetch(`${APPS_SCRIPT_URL}?action=uploadPhoto&username=${encodeURIComponent(currentUsername)}&image=${encodeURIComponent(base64Image)}`);
+                const result = await response.json();
+                return result;
+            } catch (error) {
+                console.error('Upload photo error:', error);
+                return { success: false };
+            }
+        }
+
+        function loadProfileData(profile) {
+            document.getElementById('displayNIK').textContent = profile.username || '-';
+            document.getElementById('nama').value = profile.nama || '';
+            document.getElementById('alamat').value = profile.alamat || '';
+            document.getElementById('rt').value = profile.rt || '';
+            document.getElementById('rw').value = profile.rw || '';
+            document.getElementById('bank_sampah').value = profile.bank_sampah || 'Tidak';
+            document.getElementById('pkk').value = profile.pkk || 'Tidak';
+            document.getElementById('posyandu').value = profile.posyandu || 'Tidak';
+
+            // Load foto
+            const photoContainer = document.getElementById('photoContainer');
+            if (profile.foto_url && profile.foto_url !== '') {
+                photoContainer.innerHTML = `<img src="${profile.foto_url}?t=${Date.now()}" alt="Foto Profil">`;
+            } else {
+                photoContainer.innerHTML = `<div class="photo-placeholder"><span>📷</span></div>`;
+            }
+        }
+
+        function enableEditMode() {
+            isEditMode = true;
+            document.getElementById('nama').disabled = false;
+            document.getElementById('alamat').disabled = false;
+            document.getElementById('rt').disabled = false;
+            document.getElementById('rw').disabled = false;
+            document.getElementById('bank_sampah').disabled = false;
+            document.getElementById('pkk').disabled = false;
+            document.getElementById('posyandu').disabled = false;
+            document.getElementById('uploadBtn').style.display = 'inline-block';
+            document.getElementById('editBtn').style.display = 'none';
+            document.getElementById('saveBtn').style.display = 'inline-block';
+        }
+
+        function disableEditMode() {
+            isEditMode = false;
+            document.getElementById('nama').disabled = true;
+            document.getElementById('alamat').disabled = true;
+            document.getElementById('rt').disabled = true;
+            document.getElementById('rw').disabled = true;
+            document.getElementById('bank_sampah').disabled = true;
+            document.getElementById('pkk').disabled = true;
+            document.getElementById('posyandu').disabled = true;
+            document.getElementById('uploadBtn').style.display = 'none';
+            document.getElementById('editBtn').style.display = 'inline-block';
+            document.getElementById('saveBtn').style.display = 'none';
+        }
+
+        async function saveProfile() {
+            const saveBtn = document.getElementById('saveBtn');
+            setLoading(saveBtn, true, 'Menyimpan...');
+
+            const profileData = {
+                nama: document.getElementById('nama').value,
+                alamat: document.getElementById('alamat').value,
+                rt: document.getElementById('rt').value,
+                rw: document.getElementById('rw').value,
+                bank_sampah: document.getElementById('bank_sampah').value,
+                pkk: document.getElementById('pkk').value,
+                posyandu: document.getElementById('posyandu').value
+            };
+
+            const result = await updateProfile(profileData);
+            
+            if (result.success) {
+                showAlert('✅ Profil berhasil disimpan!', 'success');
+                disableEditMode();
+                loadProfileData(profileData);
+            } else {
+                showAlert('❌ Gagal menyimpan profil: ' + (result.message || 'Terjadi kesalahan'), 'error');
+            }
+            
+            setLoading(saveBtn, false, '💾 Simpan Perubahan');
+        }
+
+        async function handlePhotoUpload(file) {
+            if (!file) return;
+            
+            if (!file.type.match('image.*')) {
+                showAlert('❌ File harus berupa gambar!', 'error');
+                return;
+            }
+            
+            if (file.size > 2 * 1024 * 1024) {
+                showAlert('❌ Ukuran gambar maksimal 2MB!', 'error');
+                return;
+            }
+
+            const progressDiv = document.getElementById('uploadProgress');
+            progressDiv.style.display = 'block';
+            
+            const reader = new FileReader();
+            reader.onloadend = async function() {
+                const base64 = reader.result.split(',')[1];
+                const result = await uploadPhoto(base64);
+                
+                progressDiv.style.display = 'none';
+                
+                if (result.success) {
+                    showAlert('✅ Foto berhasil diupload!', 'success');
+                    // Refresh foto
+                    const photoContainer = document.getElementById('photoContainer');
+                    photoContainer.innerHTML = `<img src="${result.url}?t=${Date.now()}" alt="Foto Profil">`;
+                } else {
+                    showAlert('❌ Gagal upload foto: ' + (result.message || 'Terjadi kesalahan'), 'error');
+                }
+            };
+            reader.readAsDataURL(file);
+        }
+
+        async function init() {
+            currentUsername = getCurrentUser();
+            if (!currentUsername) return;
+            
+            // Set current user ke sessionStorage
+            sessionStorage.setItem('currentUser', currentUsername);
+            
+            const profile = await getProfile();
+            
+            if (profile.success) {
+                loadProfileData(profile);
+            } else if (profile.needsSetup) {
+                // Data profil baru dibuat, load dengan data kosong
+                loadProfileData({
+                    username: currentUsername,
+                    nama: '',
+                    alamat: '',
+                    rt: '',
+                    rw: '',
+                    bank_sampah: 'Tidak',
+                    pkk: 'Tidak',
+                    posyandu: 'Tidak',
+                    foto_url: ''
+                });
+                showAlert('📝 Selamat datang! Silakan lengkapi profil Anda.', 'info');
+                enableEditMode();
+            } else {
+                showAlert('❌ Gagal memuat profil: ' + (profile.message || 'Terjadi kesalahan'), 'error');
+            }
+        }
+
+        // Event listeners
+        document.getElementById('editBtn').onclick = enableEditMode;
+        document.getElementById('saveBtn').onclick = saveProfile;
+        document.getElementById('logoutBtn').onclick = () => {
+            sessionStorage.removeItem('currentUser');
+            window.location.href = 'index.html';
+        };
+        
+        document.getElementById('fileInput').onchange = (e) => {
+            if (e.target.files && e.target.files[0]) {
+                handlePhotoUpload(e.target.files[0]);
+            }
+        };
+
+        // Jalankan init
+        init();
+    </script>
+</body>
+</html>
