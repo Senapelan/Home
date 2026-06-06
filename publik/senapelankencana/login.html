@@ -1,1 +1,514 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Login | Senapelan Kencana</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png">
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Video Background */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: 0;
+        }
+
+        /* Overlay tipis agar teks tetap terbaca */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(0, 20, 40, 0.25), rgba(0, 40, 70, 0.2));
+            backdrop-filter: blur(1px);
+            z-index: 1;
+        }
+
+        /* Partikel abstrak ringan */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.05));
+            border-radius: 50%;
+            animation: floatParticle 22s infinite ease-in-out;
+            backdrop-filter: blur(2px);
+        }
+
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            15% {
+                opacity: 0.5;
+            }
+            85% {
+                opacity: 0.3;
+            }
+            100% {
+                transform: translateY(-20vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .login-container {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            max-width: 480px;
+            margin: 1.5rem;
+            animation: fadeSlideUp 0.7s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(35px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ========== EFEK KACA TEMBUS PANDANG (VERY TRANSPARENT) ========== */
+        .login-card {
+            /* Sangat transparan seperti kaca bening */
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(1px) saturate(150%);
+            border-radius: 2rem;
+            padding: 2.3rem 2rem 2.8rem;
+            /* Efek kaca: border tipis + shadow minimal + efek pantulan */
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                0 0 0 1px rgba(255, 255, 255, 0.2),
+                inset 0 1px 0 rgba(255, 255, 255, 0.15);
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        /* Hover sedikit lebih terang tapi tetap tembus pandang */
+        .login-card:hover {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(14px) saturate(160%);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.15),
+                0 0 0 1px rgba(255, 255, 255, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        /* Efek kilauan cahaya pada kaca (seperti pantulan sinar) */
+        .login-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.15), 
+                transparent);
+            transition: left 0.8s ease;
+            border-radius: 2rem;
+            pointer-events: none;
+        }
+
+        .login-card:hover::before {
+            left: 150%;
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 1.8rem;
+            position: relative;
+        }
+
+        .brand img {
+            width: 150px;
+            height: auto;
+            margin-bottom: 0.75rem;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.2));
+            transition: transform 0.3s ease;
+        }
+
+        .brand img:hover {
+            transform: scale(1.03);
+        }
+
+        .brand h2 {
+    font-size: 1.9rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #84fab0, #8fd3f4);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    letter-spacing: -0.3px;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+        .brand p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-top: 6px;
+            font-weight: 500;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-label i {
+            width: 20px;
+            color: #C8E4FF;
+        }
+
+        /* Input field dengan efek kaca tembus pandang */
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 1.5rem;
+            background: #1a2a3a;
+            backdrop-filter: blur(4px);
+            transition: all 0.3s ease;
+            outline: none;
+            font-weight: 500;
+            color: white;
+        }
+
+        .input-field::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 400;
+        }
+
+        .input-field:focus {
+            border-color: rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.12);
+            box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.15);
+        }
+
+        /* Tombol login dengan efek kaca tembus pandang */
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: rgba(30, 100, 160, 0.65);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 2rem;
+            font-weight: 700;
+            font-size: 1rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 0.8rem;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+        }
+
+        .login-btn:hover {
+            background: rgba(40, 120, 185, 0.75);
+            border-color: rgba(255, 255, 255, 0.55);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 24px rgba(0, 0, 0, 0.2);
+        }
+
+        .login-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* Pesan error dengan efek kaca tembus pandang */
+        .error-message {
+            background: rgba(200, 60, 60, 0.65);
+            backdrop-filter: blur(10px);
+            color: white;
+            padding: 12px 16px;
+            border-radius: 1.2rem;
+            font-size: 0.8rem;
+            margin-top: 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Footer dengan efek kaca tembus pandang */
+        .info-footer {
+            text-align: center;
+            margin-top: 1.8rem;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.8);
+            background: rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .loader {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 520px) {
+            .login-card {
+                padding: 1.8rem 1.5rem 2.2rem;
+            }
+            .brand h2 {
+                font-size: 1.5rem;
+            }
+            .brand img {
+                width: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Video Background -->
+    <video class="video-background" autoplay loop muted playsinline>
+        <source src="https://senapelan.github.io/Home/data/video/home.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+
+    <!-- Overlay tipis untuk readability -->
+    <div class="overlay"></div>
+
+    <!-- Efek Partikel Ringan -->
+    <div class="particles" id="particlesContainer"></div>
+
+    <div class="login-container">
+        <div class="login-card">
+            <div class="brand">
+                <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png" alt="Logo Senapelan Kencana">
+                <h2>SENAPELAN KENCANA</h2>
+                <p>Kendali Dan evaluasi network center analisis</p>
+            </div>
+
+            <form id="loginForm" autocomplete="off">
+                <div class="input-group">
+                    <div class="input-label">
+                        <i class="fas fa-user-astronaut"></i>
+                        <span>Username</span>
+                    </div>
+                    <input type="text" id="username" class="input-field" placeholder="Masukkan username" autocomplete="off" required>
+                </div>
+                <div class="input-group">
+                    <div class="input-label">
+                        <i class="fas fa-key"></i>
+                        <span>Password</span>
+                    </div>
+                    <input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="off" required>
+                </div>
+                <button type="submit" id="loginButton" class="login-btn">
+                    <i class="fas fa-sign-in-alt"></i> 
+                    <span>LOGIN</span>
+                </button>
+            </form>
+            <div id="errorBox" style="min-height: 75px;"></div>
+            <div class="info-footer">
+                <i class="fas fa-database"></i> Senapelan Kencana - Inovasi REIN RIZKA KARVY, S.STP., M.Si
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi Apps Script
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqHrTRt9i-QLUMDzJ7Ce2pFSolfqa-IMBJH5-0a-5fT9Q2q1bEToLOxmt1REdcS_0Rxg/exec";
+        
+        // Elemen DOM
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginBtn = document.getElementById('loginButton');
+        const errorContainer = document.getElementById('errorBox');
+        
+        // Membuat partikel
+        function createParticles() {
+            const container = document.getElementById('particlesContainer');
+            const particleCount = 35;
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                const size = Math.random() * 40 + 10;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.animationDuration = `${Math.random() * 20 + 14}s`;
+                particle.style.animationDelay = `${Math.random() * 12}s`;
+                particle.style.background = `radial-gradient(circle, rgba(255, 255, 255, 0.25), rgba(100, 160, 230, 0.05))`;
+                particle.style.opacity = Math.random() * 0.4 + 0.1;
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+        
+        function showError(message) {
+            errorContainer.innerHTML = `
+                <div class="error-message">
+                    <i class="fas fa-shield-alt" style="font-size: 1rem;"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            setTimeout(() => {
+                if (errorContainer.innerHTML.includes(message.substring(0, 20))) {
+                    errorContainer.innerHTML = '';
+                }
+            }, 5000);
+        }
+        
+        function clearError() {
+            errorContainer.innerHTML = '';
+        }
+        
+        function setLoading(isLoading) {
+            if (isLoading) {
+                loginBtn.disabled = true;
+                loginBtn.style.opacity = "0.7";
+                loginBtn.innerHTML = `<span class="loader"></span> <span>Memverifikasi Akses...</span>`;
+            } else {
+                loginBtn.disabled = false;
+                loginBtn.style.opacity = "1";
+                loginBtn.innerHTML = `<i class="fas fa-gem"></i> <span>LOGIN</span>`;
+            }
+        }
+        
+        async function authenticateUser(username, password) {
+            try {
+                const url = `${APPS_SCRIPT_URL}?action=login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`;
+                const response = await fetch(url, {
+                    method: 'GET',
+                    mode: 'cors',
+                    cache: 'no-cache'
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                const data = await response.json();
+                return data;
+            } catch (err) {
+                console.error("Fetch error:", err);
+                return { success: false, message: `Gagal terhubung ke server: ${err.message}` };
+            }
+        }
+        
+        async function handleLogin(event) {
+            event.preventDefault();
+            clearError();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!username || !password) {
+                showError("Username dan password wajib diisi.");
+                return;
+            }
+            
+            setLoading(true);
+            const result = await authenticateUser(username, password);
+            setLoading(false);
+            
+            if (result && result.success === true) {
+                sessionStorage.setItem('isLoggedIn', 'true');
+                sessionStorage.setItem('adminUsername', username);
+                setTimeout(() => {
+                    window.location.href = "https://senapelan.github.io/Home/publik/senapelankencana/dashboard_kencana.html";
+                }, 200);
+            } else {
+                const errorMsg = result?.message || "Username atau password salah.";
+                showError(`❌ ${errorMsg}`);
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        }
+        
+        loginForm.addEventListener('submit', handleLogin);
+
+        // Efek 3D ringan pada kaca (opsional)
+        const card = document.querySelector('.login-card');
+        if(card) {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width - 0.5;
+                const y = (e.clientY - rect.top) / rect.height - 0.5;
+                card.style.transform = `perspective(1000px) rotateX(${y * 2}deg) rotateY(${x * 2}deg)`;
+                card.style.transition = "transform 0.1s ease";
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = "perspective(1000px) rotateX(0deg) rotateY(0deg)";
+                card.style.transition = "transform 0.4s ease";
+            });
+        }
+    </script>
+</body>
+</html>
