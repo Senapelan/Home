@@ -586,37 +586,37 @@ iframe {
         sidebar.classList.toggle('open');
     }
 
-    // Inisialisasi dashboard
-    async function initDashboard() {
-        console.log("Init Dashboard dimulai...");
-        const username = checkAuth();
-        if (!username) return;
-        
-        console.log("Username:", username);
-        
-        // Load default page (GIAT KECAMATAN)
-        setTimeout(() => {
-            // Cari elemen menu GIAT KECAMATAN dan klik
-            const giatLink = document.querySelector('.nav-link[onclick*="giatkecamatan"]');
-            if (giatLink) {
-                console.log("Menemukan link giat kecamatan, klik otomatis");
-                giatlink.click();
-            } else {
-                console.log("Link giat kecamatan tidak ditemukan, coba cara lain");
-                // Fallback: panggil loadPage langsung
-                loadPage('giatkecamatan', null);
-            }
-        }, 500);
-        
-        // Ambil data user dari spreadsheet
-        const userData = await getUserData(username);
-        console.log("UserData final:", userData);
-        if (userData.success) {
-            updateProfile(userData.name, userData.photo);
+// Inisialisasi dashboard
+async function initDashboard() {
+    console.log("Init Dashboard dimulai...");
+    const username = checkAuth();
+    if (!username) return;
+    
+    console.log("Username:", username);
+    
+    // Load default page (GIAT KECAMATAN)
+    setTimeout(() => {
+        // Cari elemen menu GIAT KECAMATAN dan klik
+        const giatLink = document.querySelector('.nav-link[onclick*="giatkecamatan"]');
+        if (giatLink) {
+            console.log("Menemukan link giat kecamatan, klik otomatis");
+            giatLink.click();
         } else {
-            updateProfile(username, null);
+            console.log("Link giat kecamatan tidak ditemukan, coba cara lain");
+            // Fallback: panggil loadPage langsung
+            loadPage('giatkecamatan', null);
         }
+    }, 500);
+    
+    // Ambil data user dari spreadsheet
+    const userData = await getUserData(username);
+    console.log("UserData final:", userData);
+    if (userData.success) {
+        updateProfile(userData.name, userData.photo);
+    } else {
+        updateProfile(username, null);
     }
+}
 
     // Buka submenu default
     document.addEventListener('DOMContentLoaded', () => {
