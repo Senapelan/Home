@@ -2,75 +2,417 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Peta Wilayah - Senapelan Kencana</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Peta Wilayah | Senapelan Kencana</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f0f4f8;
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a2a3a 0%, #1a4a6a 100%);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Background pattern elegan */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                radial-gradient(circle at 20% 80%, rgba(255,255,255,0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        /* Container utama */
+        .map-wrapper {
             min-height: 100vh;
             display: flex;
-            justify-content: center;
             align-items: center;
-            padding: 20px;
+            justify-content: center;
+            padding: 1.5rem;
+            position: relative;
+            z-index: 1;
         }
-        .map-container {
+
+        /* Card Glassmorphism Elegan */
+        .map-card {
             width: 100%;
-            max-width: 1200px;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            max-width: 1400px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
             overflow: hidden;
-            padding: 20px;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.35),
+                0 0 0 1px rgba(255, 255, 255, 0.15);
+            transition: all 0.4s ease;
+            animation: fadeSlideUp 0.6s ease-out;
         }
-        .map-title {
-            text-align: center;
-            margin-bottom: 20px;
+
+        .map-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.4);
+            background: rgba(255, 255, 255, 0.1);
         }
-        .map-title h2 {
-            color: #0a2a3a;
-            font-size: 1.8rem;
-        }
-        .map-title p {
-            color: #6c757d;
-            margin-top: 5px;
-        }
-        iframe {
-            width: 100%;
-            height: 600px;
-            border-radius: 12px;
-            border: 1px solid #ddd;
-        }
-        @media (max-width: 768px) {
-            iframe {
-                height: 450px;
+
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
             }
-            .map-title h2 {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Header dengan efek glass */
+        .map-header {
+            padding: 1.5rem 2rem;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.05));
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .map-title-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .map-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        }
+
+        .map-icon i {
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .map-title-section h1 {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff, #a0d4ff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .map-title-section p {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Info badge */
+        .info-badge {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .info-badge i {
+            color: #ffd700;
+        }
+
+        /* Container peta */
+        .map-container {
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Efek glass untuk iframe wrapper */
+        .map-frame-wrapper {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 1.5rem;
+            padding: 0.5rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        .map-frame-wrapper iframe {
+            width: 100%;
+            height: 65vh;
+            border-radius: 1rem;
+            border: none;
+            display: block;
+            transition: all 0.3s ease;
+        }
+
+        /* Kontrol peta mini */
+        .map-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .zoom-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .zoom-btn {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 0.75rem;
+            padding: 0.6rem 1rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .zoom-btn:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+        }
+
+        .location-info {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Footer */
+        .map-footer {
+            padding: 1rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.5);
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .map-wrapper {
+                padding: 1rem;
+            }
+            .map-header {
+                padding: 1rem;
+                flex-direction: column;
+                text-align: center;
+            }
+            .map-title-section {
+                flex-direction: column;
+                text-align: center;
+            }
+            .map-title-section h1 {
                 font-size: 1.3rem;
             }
+            .map-container {
+                padding: 1rem;
+            }
+            .map-frame-wrapper iframe {
+                height: 50vh;
+            }
+            .zoom-btn span {
+                display: none;
+            }
+            .zoom-btn {
+                padding: 0.6rem;
+            }
+        }
+
+        @media (min-width: 1400px) {
+            .map-frame-wrapper iframe {
+                height: 70vh;
+            }
+        }
+
+        /* Loading effect */
+        .map-frame-wrapper {
+            position: relative;
+        }
+
+        .map-frame-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: translateX(-100%);
+            animation: loadingShimmer 1.5s infinite;
+            pointer-events: none;
+            border-radius: 1rem;
+        }
+
+        @keyframes loadingShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
         }
     </style>
 </head>
 <body>
-    <div class="map-container">
-        <div class="map-title">
-            <h2>🗺️ PETA WILAYAH KECAMATAN SENAPELAN</h2>
-            <p>Kecamatan Senapelan - Pekanbaru, Riau</p>
+    <div class="map-wrapper">
+        <div class="map-card">
+            <div class="map-header">
+                <div class="map-title-section">
+                    <div class="map-icon">
+                        <i class="fas fa-map-marked-alt"></i>
+                    </div>
+                    <div>
+                        <h1>PETA WILAYAH</h1>
+                        <p>
+                            <i class="fas fa-location-dot" style="color: #ff6b6b;"></i>
+                            Kecamatan Senapelan, Pekanbaru, Riau
+                        </p>
+                    </div>
+                </div>
+                <div class="info-badge">
+                    <i class="fas fa-info-circle"></i>
+                    <span>GPS • Real Time Location</span>
+                </div>
+            </div>
+
+            <div class="map-container">
+                <div class="map-frame-wrapper">
+                    <iframe 
+                        id="googleMap"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d9465.01409574012!2d101.4358219294975!3d0.5360524126969863!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac745b5bc549%3A0xfe07919eb5876a60!2sSenapelan%2C%20Pekanbaru%20City%2C%20Riau!5e1!3m2!1sen!2sid!4v1780745151029!5m2!1sen!2sid" 
+                        width="100%" 
+                        height="600" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+
+                <div class="map-controls">
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="zoomIn" title="Perbesar">
+                            <i class="fas fa-search-plus"></i>
+                            <span>Zoom In</span>
+                        </button>
+                        <button class="zoom-btn" id="zoomOut" title="Perkecil">
+                            <i class="fas fa-search-minus"></i>
+                            <span>Zoom Out</span>
+                        </button>
+                        <button class="zoom-btn" id="fullscreenBtn" title="Layar Penuh">
+                            <i class="fas fa-expand"></i>
+                            <span>Fullscreen</span>
+                        </button>
+                    </div>
+                    <div class="location-info">
+                        <i class="fas fa-map-pin"></i>
+                        <span>Kecamatan Senapelan • 0°32'10.2"N 101°26'09.8"E</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="map-footer">
+                <span><i class="fas fa-copyright"></i> Senapelan Kencana</span>
+                <span><i class="fas fa-map"></i> Data Geospasial Terkini</span>
+                <span><i class="fas fa-sync-alt"></i> Terupdate 2026</span>
+            </div>
         </div>
-        <iframe 
-            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d9465.01409574012!2d101.4358219294975!3d0.5360524126969863!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac745b5bc549%3A0xfe07919eb5876a60!2sSenapelan%2C%20Pekanbaru%20City%2C%20Riau!5e1!3m2!1sen!2sid!4v1780745151029!5m2!1sen!2sid" 
-            width="100%" 
-            height="600" 
-            style="border:0;" 
-            allowfullscreen="" 
-            loading="lazy" 
-            referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
     </div>
+
+    <script>
+        const iframe = document.getElementById('googleMap');
+        let currentZoom = 14; // default zoom level untuk referensi
+
+        // Zoom In - catatan: mengubah URL jika diperlukan, atau reload dengan parameter zoom
+        document.getElementById('zoomIn').addEventListener('click', () => {
+            // Untuk Google Maps embed, kita bisa reload dengan parameter zoom
+            let src = iframe.src;
+            if (src.includes('&zoom=')) {
+                src = src.replace(/&zoom=\d+/, '&zoom=' + (currentZoom + 1));
+            } else if (src.includes('?zoom=')) {
+                src = src.replace(/\?zoom=\d+/, '?zoom=' + (currentZoom + 1));
+            } else {
+                src += '&zoom=' + (currentZoom + 1);
+            }
+            currentZoom++;
+            iframe.src = src;
+        });
+
+        // Zoom Out
+        document.getElementById('zoomOut').addEventListener('click', () => {
+            let src = iframe.src;
+            if (src.includes('&zoom=')) {
+                src = src.replace(/&zoom=\d+/, '&zoom=' + Math.max(10, currentZoom - 1));
+            } else if (src.includes('?zoom=')) {
+                src = src.replace(/\?zoom=\d+/, '?zoom=' + Math.max(10, currentZoom - 1));
+            } else {
+                src += '&zoom=' + Math.max(10, currentZoom - 1);
+            }
+            currentZoom = Math.max(10, currentZoom - 1);
+            iframe.src = src;
+        });
+
+        // Fullscreen mode untuk iframe container
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            const container = document.querySelector('.map-frame-wrapper');
+            if (!document.fullscreenElement) {
+                container.requestFullscreen().catch(err => {
+                    console.log(`Error: ${err.message}`);
+                });
+            } else {
+                document.exitFullscreen();
+            }
+        });
+
+        // Efek loading selesai
+        const frameWrapper = document.querySelector('.map-frame-wrapper');
+        iframe.addEventListener('load', () => {
+            frameWrapper.style.opacity = '1';
+        });
+    </script>
 </body>
 </html>
