@@ -26,7 +26,6 @@
             margin: 0 auto;
         }
 
-        /* Header Modern */
         .header {
             background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6e 100%);
             border-radius: 28px;
@@ -60,7 +59,6 @@
             backdrop-filter: blur(10px);
         }
 
-        /* Tabs Modern */
         .tabs {
             display: flex;
             gap: 8px;
@@ -105,7 +103,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Filter Bar */
         .filter-bar {
             background: white;
             border-radius: 24px;
@@ -167,7 +164,6 @@
             color: #1e4a76;
         }
 
-        /* Stats Cards */
         .stats-row {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -219,7 +215,6 @@
             color: #5b6e8c;
         }
 
-        /* Table Styles */
         .participant-header {
             display: flex;
             justify-content: space-between;
@@ -307,7 +302,6 @@
             font-size: 0.75rem;
         }
 
-        /* Summary Boxes */
         .summary-boxes {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -326,7 +320,6 @@
             color: #5b6e8c;
         }
 
-        /* Charts Grid */
         .charts-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -380,7 +373,6 @@
             color: #7e8aa2;
         }
 
-        /* Responsive */
         @media (max-width: 768px) {
             body { padding: 12px; }
             .header { padding: 18px 20px; }
@@ -421,9 +413,9 @@
     <div class="filter-bar">
         <div class="bank-filters" id="bankFilters">
             <div class="filter-chip active" data-bank="all"><i class="fas fa-building"></i> Semua Bank</div>
-            <div class="filter-chip" data-bank="ID_BS_MU"><i class="fas fa-rose"></i> Mawar Utama</div>
-            <div class="filter-chip" data-bank="ID_BS_LU"><i class="fas fa-road"></i> Lorong Utama</div>
-            <div class="filter-chip" data-bank="ID_BS_K"><i class="fas fa-flower"></i> Kemuning</div>
+            <div class="filter-chip" data-bank="ID_BS_MU"><i class="fas fa-recycle"></i> Mawar Utama</div>
+            <div class="filter-chip" data-bank="ID_BS_LU"><i class="fas fa-recycle"></i> Lorong Utama</div>
+            <div class="filter-chip" data-bank="ID_BS_K"><i class="fas fa-recycle"></i> Kemuning</div>
         </div>
         <div class="date-filter">
             <i class="fas fa-calendar-day"></i>
@@ -434,7 +426,6 @@
         </div>
     </div>
 
-    <!-- TAB 1 -->
     <div id="tab1" class="tab-pane active">
         <div class="stats-row">
             <div class="stat-card">
@@ -463,21 +454,21 @@
         <div class="table-wrapper">
             <table class="peserta-table">
                 <thead>
-                    <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>Tgl Setor</th><th style="color:#2ecc71;"><i class="fas fa-seedling"></i> Organik</th><th style="color:#f1c40f;"><i class="fas fa-recycle"></i> An-Organik</th><th style="color:#e74c3c;"><i class="fas fa-trash"></i> Residu</th><th style="color:#3498db;"><i class="fas fa-chart-simple"></i> Total</th></tr>
+                    <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>Tgl Setor</th><th style="color:#2ecc71;"><i class="fas fa-seedling"></i> Organik</th><th style="color:#f1c40f;"><i class="fas fa-recycle"></i> An-Organik</th><th style="color:#e74c3c;"><i class="fas fa-trash"></i> Residu</th><th style="color:#3498db;"><i class="fas fa-chart-simple"></i> Total</th> </tr>
                 </thead>
-                <tbody id="tableBody"><td><td colspan="8" class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr></tbody>
-            </table>
+                <tbody id="tableBody"><tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</tr</tbody>
+              </table>
         </div>
     </div>
 
-    <!-- TAB 2 -->
     <div id="tab2" class="tab-pane">
         <h3 style="margin-bottom: 16px;"><i class="fas fa-chart-bar"></i> Rekap Bulanan</h3>
         <div class="table-wrapper">
             <table class="peserta-table">
-                <thead><tr><th>Bulan</th><th>Organik</th><th>An-Organik</th><th>Residu</th><th>Total</th><th>Status</th></tr></thead>
-                <tbody id="rekapBody"><td><td colspan="6" class="loading">Memuat...</td></tr</tbody>
-            </table>
+                <thead><tr><th>Bulan</th><th>Organik</th><th>An-Organik</th><th>Residu</th><th>Total</th><th>Status</th> </tr>
+                </thead>
+                <tbody id="rekapBody"><tr><td colspan="6" class="loading">Memuat...</tr</tbody>
+              </table>
         </div>
         <div class="summary-boxes" id="summaryBoxes"></div>
         <div class="info-badge" id="penguranganInfo">
@@ -485,7 +476,6 @@
         </div>
     </div>
 
-    <!-- TAB 3 -->
     <div id="tab3" class="tab-pane">
         <div class="charts-grid">
             <div class="chart-card">
@@ -519,22 +509,59 @@
     let currentLimit = 100;
     let charts = {};
 
+    const daysInIndonesian = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+    const monthsInIndonesian = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+
     function parseDate(str) {
         if (!str) return null;
-        let d = new Date(str);
-        if (!isNaN(d.getTime()) && d.getFullYear() > 2000) return d;
+        if (str instanceof Date && !isNaN(str)) return str;
         
-        const match = str.match(/(\w+)\s+(\w+)\s+(\d+)\s+(\d+)/);
-        if (match) {
+        let d = new Date(str);
+        if (!isNaN(d.getTime()) && d.getFullYear() > 2000) {
+            return d;
+        }
+        
+        const jsDateMatch = str.match(/(\w{3})\s+(\w{3})\s+(\d{1,2})\s+(\d{4})/);
+        if (jsDateMatch) {
             const months = {Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11};
-            const month = months[match[2]];
-            const day = parseInt(match[3]);
-            const year = parseInt(match[4]);
-            if (!isNaN(month) && !isNaN(day) && !isNaN(year)) {
+            const month = months[jsDateMatch[2]];
+            const day = parseInt(jsDateMatch[3]);
+            const year = parseInt(jsDateMatch[4]);
+            if (month !== undefined && !isNaN(day) && !isNaN(year)) {
                 return new Date(year, month, day);
             }
         }
+        
+        const isoMatch = str.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+        if (isoMatch) {
+            return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]));
+        }
+        
+        const indoMatch = str.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
+        if (indoMatch) {
+            const months = {Januari:0, Februari:1, Maret:2, April:3, Mei:4, Juni:5, Juli:6, Agustus:7, September:8, Oktober:9, November:10, Desember:11};
+            const month = months[indoMatch[2]];
+            const day = parseInt(indoMatch[1]);
+            const year = parseInt(indoMatch[3]);
+            if (month !== undefined && !isNaN(day) && !isNaN(year)) {
+                return new Date(year, month, day);
+            }
+        }
+        
         return null;
+    }
+
+    function formatDateToIndonesian(dateString) {
+        if (!dateString) return '-';
+        let date = parseDate(dateString);
+        if (!date || isNaN(date.getTime())) return dateString;
+        
+        const dayName = daysInIndonesian[date.getDay()];
+        const day = date.getDate();
+        const monthName = monthsInIndonesian[date.getMonth()];
+        const year = date.getFullYear();
+        
+        return `${dayName}, ${day} ${monthName} ${year}`;
     }
 
     function getAvatarHtml(linkFoto, nama) {
@@ -577,7 +604,7 @@
             tbody.innerHTML = `<tr><td colspan="8" class="error">
                 <i class="fas fa-exclamation-triangle"></i> Error: ${error.message}<br>
                 <small>Pastikan menjalankan melalui web server (Live Server) atau install ekstensi CORS Unblock</small>
-            </td></tr>`;
+             </td></tr>`;
         }
     }
 
@@ -606,6 +633,16 @@
             });
         }
         
+        // ============ SORTIR: TANGGAL TERBARU DI ATAS (DESCENDING) ============
+        temp.sort((a, b) => {
+            let dateA = parseDate(a.tanggal_setor);
+            let dateB = parseDate(b.tanggal_setor);
+            if (!dateA && !dateB) return 0;
+            if (!dateA) return 1;
+            if (!dateB) return -1;
+            return dateB - dateA; // DESCENDING: terbaru di atas
+        });
+        
         filteredData = temp;
         updateStats();
         renderTable();
@@ -619,17 +656,29 @@
         const now = new Date();
         let hari = 0, minggu = 0, bulan = 0;
         
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay());
+        startOfWeek.setHours(0, 0, 0, 0);
+        
         filteredData.forEach(row => {
             let d = parseDate(row.tanggal_setor);
-            if (!d) return;
-            let kg = row.total_kg || 0;
-            if (d.toDateString() === now.toDateString()) hari += kg;
+            if (!d || isNaN(d.getTime())) return;
             
-            const startOfWeek = new Date(now);
-            startOfWeek.setDate(now.getDate() - now.getDay());
-            if (d >= startOfWeek) minggu += kg;
+            const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+            let kg = parseFloat(row.total_kg) || 0;
             
-            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) bulan += kg;
+            if (dateOnly.getTime() === today.getTime()) {
+                hari += kg;
+            }
+            
+            if (dateOnly >= startOfWeek) {
+                minggu += kg;
+            }
+            
+            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                bulan += kg;
+            }
         });
         
         document.getElementById('hariIni').innerHTML = hari.toFixed(1) + ' <span class="stat-unit">kg</span>';
@@ -647,13 +696,13 @@
         }
         
         tbody.innerHTML = display.map(row => {
-            const tgl = row.tanggal_setor ? row.tanggal_setor.split(' ').slice(0,4).join(' ') : '-';
+            const formattedDate = formatDateToIndonesian(row.tanggal_setor);
             return `
                 <tr>
                     <td>${getAvatarHtml(row.link_foto, row.nama_peserta)}</td>
                     <td><strong>${escapeHtml(row.nama_peserta)}</strong></td>
                     <td>${escapeHtml(row.alamat_peserta || '-')}<br><small style="color:#7e8aa2;">RT:${row.rt || '-'} RW:${row.rw || '-'}</small></td>
-                    <td style="font-size:0.75rem;">${tgl}</td>
+                    <td style="font-size:0.75rem;">${formattedDate}</td>
                     <td><span class="kg-badge" style="background:#d5f4e6;">${(row.organik||0).toFixed(1)} kg</span></td>
                     <td><span class="kg-badge" style="background:#fef5e0;">${(row.an_organik||0).toFixed(1)} kg</span></td>
                     <td><span class="kg-badge" style="background:#ffe0e0;">${(row.residu||0).toFixed(1)} kg</span></td>
@@ -668,16 +717,16 @@
         
         filteredData.forEach(row => {
             let d = parseDate(row.tanggal_setor);
-            if (!d) return;
+            if (!d || isNaN(d.getTime())) return;
             const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
             if (!bulanMap.has(key)) {
                 bulanMap.set(key, {organik:0, an_organik:0, residu:0, total:0});
             }
             let agg = bulanMap.get(key);
-            agg.organik += row.organik || 0;
-            agg.an_organik += row.an_organik || 0;
-            agg.residu += row.residu || 0;
-            agg.total += row.total_kg || 0;
+            agg.organik += parseFloat(row.organik) || 0;
+            agg.an_organik += parseFloat(row.an_organik) || 0;
+            agg.residu += parseFloat(row.residu) || 0;
+            agg.total += parseFloat(row.total_kg) || 0;
         });
         
         const sorted = Array.from(bulanMap.keys()).sort();
@@ -715,9 +764,7 @@
         
         tbody.innerHTML = html;
         
-        // ============ PERBAIKAN RUMUS PENGURANGAN TPA ============
-        // Rumus yang benar: (Total Setor / Estimasi) × 100%
-        const estimasiBulanan = 22500; // 750 kg/hari × 30 hari
+        const estimasiBulanan = 22500;
         const persenPengurangan = totalAll > 0 ? (totalAll / estimasiBulanan * 100).toFixed(2) : 0;
         
         document.getElementById('penguranganInfo').innerHTML = `
@@ -740,7 +787,9 @@
         
         const pesertaTotal = new Map();
         filteredData.forEach(row => {
-            pesertaTotal.set(row.nama_peserta, (pesertaTotal.get(row.nama_peserta)||0) + (row.total_kg||0));
+            const nama = row.nama_peserta || 'Unknown';
+            const total = parseFloat(row.total_kg) || 0;
+            pesertaTotal.set(nama, (pesertaTotal.get(nama)||0) + total);
         });
         const top10 = Array.from(pesertaTotal.entries()).sort((a,b)=>b[1]-a[1]).slice(0,10);
         
@@ -756,10 +805,10 @@
         let komposisi = { organik:0, an_organik:0, residu:0 };
         filteredData.forEach(row => {
             let d = parseDate(row.tanggal_setor);
-            if (d && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
-                komposisi.organik += row.organik||0;
-                komposisi.an_organik += row.an_organik||0;
-                komposisi.residu += row.residu||0;
+            if (d && !isNaN(d.getTime()) && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+                komposisi.organik += parseFloat(row.organik) || 0;
+                komposisi.an_organik += parseFloat(row.an_organik) || 0;
+                komposisi.residu += parseFloat(row.residu) || 0;
             }
         });
         
@@ -774,15 +823,14 @@
         const bulanTotal = new Map();
         filteredData.forEach(row => {
             let d = parseDate(row.tanggal_setor);
-            if (d) {
+            if (d && !isNaN(d.getTime())) {
                 const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-                bulanTotal.set(key, (bulanTotal.get(key)||0) + (row.total_kg||0));
+                bulanTotal.set(key, (bulanTotal.get(key)||0) + (parseFloat(row.total_kg) || 0));
             }
         });
         const months = Array.from(bulanTotal.keys()).sort();
         const setorValues = months.map(m => bulanTotal.get(m));
         const baseline = 22500;
-        // Perbaikan rumus untuk grafik: (total setor / baseline) * 100
         const persen = setorValues.map(v => ((v / baseline) * 100).toFixed(1));
         
         if (charts.line) charts.line.destroy();
