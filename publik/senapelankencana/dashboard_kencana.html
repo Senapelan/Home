@@ -23,13 +23,12 @@
             overflow-x: hidden;
         }
 
-        /* ========== DASHBOARD LAYOUT ========== */
         .dashboard-container {
             display: flex;
             min-height: 100vh;
         }
 
-        /* ========== SIDEBAR MENU KIRI ========== */
+        /* Sidebar */
         .sidebar {
             width: 280px;
             background: linear-gradient(180deg, #0a2a3a 0%, #0d3b4f 100%);
@@ -116,7 +115,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Submenu */
         .submenu {
             padding-left: 2.5rem;
             max-height: 0;
@@ -133,12 +131,7 @@
             max-height: 300px;
         }
 
-        .nav-header i {
-            margin-right: 8px;
-            font-size: 0.7rem;
-        }
-
-        /* ========== MAIN CONTENT ========== */
+        /* Main Content */
         .main-content {
             flex: 1;
             margin-left: 280px;
@@ -249,7 +242,6 @@
             min-height: calc(100vh - 73px);
         }
 
-        /* Iframe Container */
         .iframe-container {
             background: white;
             border-radius: 1rem;
@@ -297,7 +289,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Mobile Responsive */
+        /* Mobile */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -350,11 +342,11 @@
                     <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.7rem;"></i>
                 </div>
                 <div class="submenu" id="monografiSub">
-                    <div class="nav-link" onclick="loadPage('penduduk')">
+                    <div class="nav-link" onclick="loadPage('penduduk', this)">
                         <i class="fas fa-users"></i>
                         <span>DATA PENDUDUK</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('peta')">
+                    <div class="nav-link" onclick="loadPage('peta', this)">
                         <i class="fas fa-map"></i>
                         <span>PETA WILAYAH</span>
                     </div>
@@ -369,27 +361,27 @@
                     <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.7rem;"></i>
                 </div>
                 <div class="submenu" id="kelembagaanSub">
-                    <div class="nav-link" onclick="loadPage('pkk')">
+                    <div class="nav-link" onclick="loadPage('pkk', this)">
                         <i class="fas fa-female"></i>
                         <span>PKK</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('posyandu')">
+                    <div class="nav-link" onclick="loadPage('posyandu', this)">
                         <i class="fas fa-child"></i>
                         <span>POS YANDU</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('lpm')">
+                    <div class="nav-link" onclick="loadPage('lpm', this)">
                         <i class="fas fa-handshake"></i>
                         <span>LPM</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('lps')">
+                    <div class="nav-link" onclick="loadPage('lps', this)">
                         <i class="fas fa-chart-bar"></i>
                         <span>LPS</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('banksampah')">
+                    <div class="nav-link" onclick="loadPage('banksampah', this)">
                         <i class="fas fa-recycle"></i>
                         <span>BANK SAMPAH</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('karangtaruna')">
+                    <div class="nav-link" onclick="loadPage('karangtaruna', this)">
                         <i class="fas fa-users"></i>
                         <span>KARANG TARUNA</span>
                     </div>
@@ -439,7 +431,7 @@
 </div>
 
 <script>
-    // Konfigurasi Apps Script untuk mengambil data user & foto profil
+    // Konfigurasi Apps Script - PASTIKAN URL INI SAMA dengan yang di login.html
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqHrTRt9i-QLUMDzJ7Ce2pFSolfqa-IMBJH5-0a-5fT9Q2q1bEToLOxmt1REdcS_0Rxg/exec";
     
     // Cek apakah sudah login
@@ -447,17 +439,21 @@
         const isLoggedIn = sessionStorage.getItem('isLoggedIn');
         const username = sessionStorage.getItem('adminUsername');
         
+        console.log("Check Auth - isLoggedIn:", isLoggedIn, "username:", username);
+        
         if (!isLoggedIn || isLoggedIn !== 'true') {
+            console.log("Redirect ke login karena belum login");
             window.location.href = "https://senapelan.github.io/Home/publik/senapelankencana/login.html";
             return false;
         }
         return username;
     }
 
-    // Ambil data user (nama & foto profil) dari Spreadsheet
+    // Ambil data user dari Spreadsheet
     async function getUserData(username) {
         try {
             const url = `${APPS_SCRIPT_URL}?action=getUser&username=${encodeURIComponent(username)}`;
+            console.log("Fetching user data from:", url);
             const response = await fetch(url, {
                 method: 'GET',
                 mode: 'cors',
@@ -465,6 +461,7 @@
             });
             if (!response.ok) throw new Error('Gagal mengambil data user');
             const data = await response.json();
+            console.log("User data response:", data);
             return data;
         } catch (err) {
             console.error('Error:', err);
@@ -472,7 +469,7 @@
         }
     }
 
-    // Update profil di UI
+    // Update profil
     function updateProfile(name, photoUrl) {
         const userNameEl = document.getElementById('userName');
         const profileAvatarEl = document.getElementById('profileAvatar');
@@ -493,8 +490,10 @@
         parentItem.classList.toggle('open');
     }
 
-    // Load halaman ke iframe
-    function loadPage(page) {
+    // Load halaman ke iframe (DIPERBAIKI)
+    let currentActiveLink = null;
+    
+    function loadPage(page, element) {
         const iframe = document.getElementById('contentFrame');
         const loadingOverlay = document.getElementById('loadingOverlay');
         
@@ -528,6 +527,8 @@
                 url = 'https://senapelan.github.io/Home/publik/datapenduduk/dashboardpendudukkecamatan.html';
         }
         
+        console.log("Loading page:", url);
+        
         // Tampilkan loading
         loadingOverlay.style.display = 'flex';
         
@@ -543,14 +544,19 @@
         
         // Timeout fallback
         setTimeout(() => {
-            loadingOverlay.style.display = 'none';
-        }, 3000);
+            if (loadingOverlay.style.display === 'flex') {
+                loadingOverlay.style.display = 'none';
+            }
+        }, 5000);
         
         // Update active state
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.classList.remove('active');
-        });
-        event.target.classList.add('active');
+        if (currentActiveLink) {
+            currentActiveLink.classList.remove('active');
+        }
+        if (element) {
+            element.classList.add('active');
+            currentActiveLink = element;
+        }
     }
 
     // Logout
@@ -568,21 +574,29 @@
 
     // Inisialisasi dashboard
     async function initDashboard() {
+        console.log("Init Dashboard dimulai...");
         const username = checkAuth();
         if (!username) return;
         
+        console.log("Username:", username);
+        
         // Load default page (Data Penduduk)
         setTimeout(() => {
-            const defaultLink = document.querySelector('.nav-link[onclick*="penduduk"]');
-            if (defaultLink) {
-                defaultLink.click();
+            // Cari elemen menu Data Penduduk dan klik
+            const pendudukLink = document.querySelector('.nav-link[onclick*="penduduk"]');
+            if (pendudukLink) {
+                console.log("Menemukan link penduduk, klik otomatis");
+                pendudukLink.click();
             } else {
-                loadPage('penduduk');
+                console.log("Link penduduk tidak ditemukan, coba cara lain");
+                // Fallback: panggil loadPage langsung
+                loadPage('penduduk', null);
             }
-        }, 100);
+        }, 500);
         
         // Ambil data user dari spreadsheet
         const userData = await getUserData(username);
+        console.log("UserData final:", userData);
         if (userData.success) {
             updateProfile(userData.name, userData.photo);
         } else {
@@ -592,11 +606,15 @@
 
     // Buka submenu default
     document.addEventListener('DOMContentLoaded', () => {
+        console.log("DOM Content Loaded");
         initDashboard();
         // Buka submenu Monografi secara default
         setTimeout(() => {
-            document.getElementById('monografiItem').classList.add('open');
-        }, 200);
+            const monografiItem = document.getElementById('monografiItem');
+            if (monografiItem) {
+                monografiItem.classList.add('open');
+            }
+        }, 300);
     });
 </script>
 </body>
