@@ -1,1 +1,603 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Dashboard | Senapelan Kencana</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png">
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ========== DASHBOARD LAYOUT ========== */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* ========== SIDEBAR MENU KIRI ========== */
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #0a2a3a 0%, #0d3b4f 100%);
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-header img {
+            width: 70px;
+            height: auto;
+            margin-bottom: 0.75rem;
+        }
+
+        .sidebar-header h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .sidebar-header p {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.7);
+            margin-top: 0.25rem;
+        }
+
+        .nav-menu {
+            padding: 0 1rem 2rem;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-header {
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.85rem 1rem;
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .nav-link i {
+            width: 24px;
+            font-size: 1.1rem;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .nav-link.active {
+            background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Submenu */
+        .submenu {
+            padding-left: 2.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .submenu .nav-link {
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+        }
+
+        .nav-item.open .submenu {
+            max-height: 300px;
+        }
+
+        .nav-header i {
+            margin-right: 8px;
+            font-size: 0.7rem;
+        }
+
+        /* ========== MAIN CONTENT ========== */
+        .main-content {
+            flex: 1;
+            margin-left: 280px;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .page-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0a2a3a, #2c7ec0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .page-title p {
+            font-size: 0.8rem;
+            color: #6c757d;
+            margin-top: 0.25rem;
+        }
+
+        /* Profile Section */
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-info {
+            text-align: right;
+        }
+
+        .profile-info .name {
+            font-weight: 600;
+            color: #1a2a3a;
+            font-size: 0.9rem;
+        }
+
+        .profile-info .role {
+            font-size: 0.7rem;
+            color: #6c757d;
+        }
+
+        .profile-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            overflow: hidden;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar i {
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .profile-avatar:hover {
+            transform: scale(1.05);
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.2rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Content Area */
+        .content-area {
+            padding: 2rem;
+            background: #f8fafc;
+            min-height: calc(100vh - 73px);
+        }
+
+        /* Iframe Container */
+        .iframe-container {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            min-height: 600px;
+        }
+
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+
+        /* Loading Overlay */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 999;
+            display: none;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: #2c7ec0;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 260px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .top-bar {
+                padding: 1rem;
+            }
+            .content-area {
+                padding: 1rem;
+            }
+            .menu-toggle {
+                display: block !important;
+            }
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #2c7ec0;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png" alt="Logo">
+            <h3>Senapelan Kencana</h3>
+            <p>Admin Dashboard</p>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-header">MAIN MENU</div>
+            
+            <!-- MONOGRAFI KECAMATAN -->
+            <div class="nav-item" id="monografiItem">
+                <div class="nav-link" onclick="toggleSubmenu('monografiSub')">
+                    <i class="fas fa-chart-line"></i>
+                    <span>MONOGRAFI KECAMATAN</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.7rem;"></i>
+                </div>
+                <div class="submenu" id="monografiSub">
+                    <div class="nav-link" onclick="loadPage('penduduk')">
+                        <i class="fas fa-users"></i>
+                        <span>DATA PENDUDUK</span>
+                    </div>
+                    <div class="nav-link" onclick="loadPage('peta')">
+                        <i class="fas fa-map"></i>
+                        <span>PETA WILAYAH</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KELEMBAGAAN -->
+            <div class="nav-item" id="kelembagaanItem">
+                <div class="nav-link" onclick="toggleSubmenu('kelembagaanSub')">
+                    <i class="fas fa-building"></i>
+                    <span>KELEMBAGAAN</span>
+                    <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.7rem;"></i>
+                </div>
+                <div class="submenu" id="kelembagaanSub">
+                    <div class="nav-link" onclick="loadPage('pkk')">
+                        <i class="fas fa-female"></i>
+                        <span>PKK</span>
+                    </div>
+                    <div class="nav-link" onclick="loadPage('posyandu')">
+                        <i class="fas fa-child"></i>
+                        <span>POS YANDU</span>
+                    </div>
+                    <div class="nav-link" onclick="loadPage('lpm')">
+                        <i class="fas fa-handshake"></i>
+                        <span>LPM</span>
+                    </div>
+                    <div class="nav-link" onclick="loadPage('lps')">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>LPS</span>
+                    </div>
+                    <div class="nav-link" onclick="loadPage('banksampah')">
+                        <i class="fas fa-recycle"></i>
+                        <span>BANK SAMPAH</span>
+                    </div>
+                    <div class="nav-link" onclick="loadPage('karangtaruna')">
+                        <i class="fas fa-users"></i>
+                        <span>KARANG TARUNA</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="top-bar">
+            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="page-title">
+                <h1>SENAPELAN KENCANA</h1>
+                <p>Dashboard Monitoring & Evaluasi</p>
+            </div>
+            <div class="profile-section">
+                <div class="profile-info">
+                    <div class="name" id="userName">Loading...</div>
+                    <div class="role">Administrator</div>
+                </div>
+                <div class="profile-avatar" id="profileAvatar">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <button class="logout-btn" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </button>
+            </div>
+        </div>
+        <div class="content-area">
+            <div class="iframe-container">
+                <iframe id="contentFrame" src=""></iframe>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner">
+        <i class="fas fa-spinner"></i>
+        <p style="margin-top: 1rem;">Memuat data...</p>
+    </div>
+</div>
+
+<script>
+    // Konfigurasi Apps Script untuk mengambil data user & foto profil
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqHrTRt9i-QLUMDzJ7Ce2pFSolfqa-IMBJH5-0a-5fT9Q2q1bEToLOxmt1REdcS_0Rxg/exec";
+    
+    // Cek apakah sudah login
+    function checkAuth() {
+        const isLoggedIn = sessionStorage.getItem('isLoggedIn');
+        const username = sessionStorage.getItem('adminUsername');
+        
+        if (!isLoggedIn || isLoggedIn !== 'true') {
+            window.location.href = "https://senapelan.github.io/Home/publik/senapelankencana/login.html";
+            return false;
+        }
+        return username;
+    }
+
+    // Ambil data user (nama & foto profil) dari Spreadsheet
+    async function getUserData(username) {
+        try {
+            const url = `${APPS_SCRIPT_URL}?action=getUser&username=${encodeURIComponent(username)}`;
+            const response = await fetch(url, {
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-cache'
+            });
+            if (!response.ok) throw new Error('Gagal mengambil data user');
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            console.error('Error:', err);
+            return { success: false, name: username, photo: null };
+        }
+    }
+
+    // Update profil di UI
+    function updateProfile(name, photoUrl) {
+        const userNameEl = document.getElementById('userName');
+        const profileAvatarEl = document.getElementById('profileAvatar');
+        
+        userNameEl.textContent = name || sessionStorage.getItem('adminUsername') || 'Admin';
+        
+        if (photoUrl && photoUrl !== '') {
+            profileAvatarEl.innerHTML = `<img src="${photoUrl}" alt="Profile" onerror="this.src='', this.onerror=null; this.innerHTML='<i class=\'fas fa-user-circle\'></i>'">`;
+        } else {
+            profileAvatarEl.innerHTML = '<i class="fas fa-user-circle"></i>';
+        }
+    }
+
+    // Toggle submenu
+    function toggleSubmenu(id) {
+        const submenu = document.getElementById(id);
+        const parentItem = submenu.closest('.nav-item');
+        parentItem.classList.toggle('open');
+    }
+
+    // Load halaman ke iframe
+    function loadPage(page) {
+        const iframe = document.getElementById('contentFrame');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        
+        let url = '';
+        switch(page) {
+            case 'penduduk':
+                url = 'https://senapelan.github.io/Home/publik/datapenduduk/dashboardpendudukkecamatan.html';
+                break;
+            case 'peta':
+                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardpeta.html';
+                break;
+            case 'pkk':
+                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardpkk.html';
+                break;
+            case 'posyandu':
+                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardposyandu.html';
+                break;
+            case 'lpm':
+                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardlpm.html';
+                break;
+            case 'lps':
+                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dasboardlps.html';
+                break;
+            case 'banksampah':
+                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardbanksampah.html';
+                break;
+            case 'karangtaruna':
+                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardkarangtaruna.html';
+                break;
+            default:
+                url = 'https://senapelan.github.io/Home/publik/datapenduduk/dashboardpendudukkecamatan.html';
+        }
+        
+        // Tampilkan loading
+        loadingOverlay.style.display = 'flex';
+        
+        // Set iframe source
+        iframe.src = url;
+        
+        // Sembunyikan loading setelah iframe load
+        iframe.onload = () => {
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+            }, 500);
+        };
+        
+        // Timeout fallback
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+        }, 3000);
+        
+        // Update active state
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+        event.target.classList.add('active');
+    }
+
+    // Logout
+    function logout() {
+        sessionStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('adminUsername');
+        window.location.href = "https://senapelan.github.io/Home/publik/senapelankencana/login.html";
+    }
+
+    // Toggle sidebar untuk mobile
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        sidebar.classList.toggle('open');
+    }
+
+    // Inisialisasi dashboard
+    async function initDashboard() {
+        const username = checkAuth();
+        if (!username) return;
+        
+        // Load default page (Data Penduduk)
+        setTimeout(() => {
+            const defaultLink = document.querySelector('.nav-link[onclick*="penduduk"]');
+            if (defaultLink) {
+                defaultLink.click();
+            } else {
+                loadPage('penduduk');
+            }
+        }, 100);
+        
+        // Ambil data user dari spreadsheet
+        const userData = await getUserData(username);
+        if (userData.success) {
+            updateProfile(userData.name, userData.photo);
+        } else {
+            updateProfile(username, null);
+        }
+    }
+
+    // Buka submenu default
+    document.addEventListener('DOMContentLoaded', () => {
+        initDashboard();
+        // Buka submenu Monografi secara default
+        setTimeout(() => {
+            document.getElementById('monografiItem').classList.add('open');
+        }, 200);
+    });
+</script>
+</body>
+</html>
