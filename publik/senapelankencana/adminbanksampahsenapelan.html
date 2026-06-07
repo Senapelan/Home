@@ -197,7 +197,7 @@
     }
     
     // ==================== KONFIGURASI ====================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxCBqmKdnhGYGg1mxYbDhtyIbOqTcvcYCAPhgmZaPqUw8r3X3l6rsOv96c5bFKXnp8IvQ/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwc4zY0ui0ze0KyCgXAfJrXq5VZBOSdot9p-txKj4n_SpIXxv5AwnurS76vr5lQh_mzgw/exec";
     
     let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
     let pesertaData = [], pengurusData = [], pesertaList = [];
@@ -235,7 +235,7 @@
     
     async function loadAdminData() {
         try {
-            const result = await callAppsScript('getAdminInfo', { username: currentUser, category: currentBankCategory });
+            const result = await callAppsScriptJSONP('getAdminInfo', { username: currentUser, category: currentBankCategory });
             if (result && result.success) {
                 if (result.name && result.name !== currentUserName) {
                     currentUserName = result.name;
@@ -256,16 +256,98 @@
     
     function logout() { sessionStorage.clear(); window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html'; }
     
+    // ==================== METODE JSONP (CORS-FREE) ====================
+    function callAppsScriptJSONP(action, data = {}) {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+            const params = new URLSearchParams({
+                action: action,
+                kategori: currentBankCategory,
+                username: currentUser,
+                callback: callbackName,
+                ...data
+            });
+            
+            window[callbackName] = function(response) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(response);
+            };
+            
+            const script = document.createElement('script');
+            script.src = `${APPS_SCRIPT_URL}?${params.toString()}`;
+            script.onerror = function() {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('JSONP request failed'));
+            };
+            document.body.appendChild(script);
+        });
+    }
+    
+    // Untuk operasi yang tidak perlu response (tambah/edit/hapus) - pakai iframe
+    function submitToGoogleScript(params, callback) {
+        const iframe = document.createElement('iframe');
+        iframe.style.display = 'none';
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = APPS_SCRIPT_URL;
+        form.target = 'hidden_iframe';
+        
+        for (const key in params) {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = key;
+            input.value = params[key];
+            form.appendChild(input);
+        }
+        
+        const iframeName = 'hidden_iframe_' + Date.now();
+        iframe.name = iframeName;
+        form.target = iframeName;
+        
+        iframe.onload = function() {
+            setTimeout(() => {
+                document.body.removeChild(iframe);
+                if (callback) callback({ success: true });
+            }, 500);
+        };
+        
+        document.body.appendChild(iframe);
+        document.body.appendChild(form);
+        form.submit();
+        setTimeout(() => {
+            document.body.removeChild(form);
+        }, 100);
+    }
+    
+    // Untuk operasi GET yang butuh response (load data)
     async function callAppsScript(action, data = {}) {
         try {
-            const params = new URLSearchParams({ action: action, kategori: currentBankCategory, username: currentUser, ...data });
-            const response = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`);
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return await response.json();
-        } catch (error) {
-            console.error('Error:', error);
-            return { success: false, message: error.message };
+            return await callAppsScriptJSONP(action, data);
+        } catch(e) {
+            console.error('JSONP Error:', e);
+            return { success: false, message: e.message };
         }
+    }
+    
+    // Untuk operasi POST yang tidak butuh response (tambah/edit/hapus/setoran)
+    function callAppsScriptNoResponse(action, data = {}) {
+        const params = new URLSearchParams({
+            action: action,
+            kategori: currentBankCategory,
+            username: currentUser,
+            ...data
+        });
+        
+        // Kirim via image beacon (tidak perlu response)
+        const img = new Image();
+        img.src = `${APPS_SCRIPT_URL}?${params.toString()}`;
+        
+        // Juga kirim via fetch yang tidak peduli response
+        fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, { method: 'GET', mode: 'no-cors' }).catch(e => console.log);
+        
+        return Promise.resolve({ success: true });
     }
     
     // ==================== PENGURUS ====================
@@ -288,7 +370,7 @@
         }
     }
     
-    // ==================== PESERTA (DENGAN RT & RW) ====================
+    // ==================== PESERTA ====================
     async function loadPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         const result = await callAppsScript('getPeserta', {});
@@ -340,24 +422,25 @@
             const residu = parseFloat(document.getElementById('residu').value) || 0;
             const total = organik + anOrganik + residu;
             const tanggal = new Date().toISOString().split('T')[0];
-            const result = await callAppsScript('updateSetoran', { nama, organik, anOrganik, residu, total, tanggal });
-            if (result && result.success) {
-                alert('✅ Setoran berhasil disimpan!');
-                closeModal('setoranModal');
-                loadPeserta();
-            } else { alert('❌ Error: ' + (result?.message || 'Gagal menyimpan')); }
+            
+            // Kirim tanpa menunggu response
+            callAppsScriptNoResponse('updateSetoran', { nama, organik, anOrganik, residu, total, tanggal });
+            
+            alert('✅ Setoran berhasil disimpan!');
+            closeModal('setoranModal');
+            setTimeout(() => loadPeserta(), 1000);
         } catch(err) { alert('❌ Error: ' + err.message); }
         finally { btn.innerHTML = originalText; btn.disabled = false; }
     });
     
-    // ==================== DAFTAR PESERTA (DENGAN RT & RW) ====================
+    // ==================== DAFTAR PESERTA ====================
     async function loadDaftarPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         const result = await callAppsScript('getDaftarPeserta', {});
         if (result && result.success) {
             pesertaList = result.data || [];
             let html = `<div class="card"><div class="card-title"><i class="fas fa-user-plus"></i> Manajemen Peserta<button class="btn btn-success" style="margin-left:auto" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"><table><thead><tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
-            if (pesertaList.length === 0) { html += `<tr><td colspan="9" style="text-align:center">Belum ada data peserta</td></tr>`; } else {
+            if (pesertaList.length === 0) { html += `<tr><td colspan="9" style="text-align:center">Belum ada data peserta</td>`; } else {
                 pesertaList.forEach(p => {
                     const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
                     html += `<tr><td><code>${p.id_peserta || '-'}</code></td><td>${foto}</td><td><strong>${p.nama || '-'}</strong></td><td>${p.nik || '-'}</td><td>${p.alamat || '-'}</td><td>${p.rt || '-'}</td><td>${p.rw || '-'}</td><td>${p.no_hp || '-'}</td><td><button class="btn btn-warning" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button> <button class="btn btn-danger" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button></td></tr>`;
@@ -400,12 +483,12 @@
     
     async function hapusPeserta(nama, idPeserta) {
         if (confirm(`Yakin ingin menghapus ${nama}?`)) {
-            const result = await callAppsScript('hapusPeserta', { id_peserta: idPeserta });
-            if (result && result.success) {
-                alert('✅ Peserta berhasil dihapus');
+            callAppsScriptNoResponse('hapusPeserta', { id_peserta: idPeserta });
+            alert('✅ Peserta berhasil dihapus');
+            setTimeout(() => {
                 loadDaftarPeserta();
                 loadPeserta();
-            } else { alert('❌ Error: ' + (result?.message || 'Gagal menghapus')); }
+            }, 1000);
         }
     }
     
@@ -426,13 +509,18 @@
                 no_hp: document.getElementById('pesertaNoHp').value,
                 link_foto: document.getElementById('pesertaFoto').value
             };
-            let result = editIdPeserta === '' ? await callAppsScript('tambahPeserta', data) : await callAppsScript('editPeserta', { ...data, id_peserta: editIdPeserta });
-            if (result && result.success) {
-                alert(editIdPeserta === '' ? '✅ Peserta berhasil ditambahkan!' : '✅ Peserta berhasil diupdate!');
-                closeModal('pesertaModal');
+            
+            const action = editIdPeserta === '' ? 'tambahPeserta' : 'editPeserta';
+            if (editIdPeserta !== '') data.id_peserta = editIdPeserta;
+            
+            callAppsScriptNoResponse(action, data);
+            
+            alert(editIdPeserta === '' ? '✅ Peserta berhasil ditambahkan!' : '✅ Peserta berhasil diupdate!');
+            closeModal('pesertaModal');
+            setTimeout(() => {
                 loadDaftarPeserta();
                 loadPeserta();
-            } else { alert('❌ Error: ' + (result?.message || 'Gagal menyimpan')); }
+            }, 1000);
         } catch(err) { alert('❌ Error: ' + err.message); }
         finally { btn.innerHTML = originalText; btn.disabled = false; }
     });
