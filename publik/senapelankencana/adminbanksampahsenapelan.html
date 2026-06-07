@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Dashboard | Bank Sampah Senapelan</title>
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
@@ -138,6 +135,7 @@
             <div class="submenu-item" data-page="pengurus"><i class="fas fa-users"></i><span>Pengurus</span></div>
             <div class="submenu-item" data-page="peserta"><i class="fas fa-user-friends"></i><span>Peserta</span></div>
         </div>
+        <div class="menu-item" data-page="riwayat"><i class="fas fa-history"></i><span>Riwayat Setoran</span></div>
         <div class="menu-item" data-page="daftar"><i class="fas fa-user-plus"></i><span>Daftarkan Peserta</span></div>
         <div class="menu-item" data-page="rekap"><i class="fas fa-chart-line"></i><span>Rekap Bulanan</span></div>
         <div class="menu-item" data-page="grafik"><i class="fas fa-chart-pie"></i><span>Grafik Analisis</span></div>
@@ -204,7 +202,7 @@
         });
     }
     
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvs-yV5AvHKjbtkUh7VgSjioEy_6g29qSJpS0hN81jj5xNi8uSovs7JSR6ps9vQhtbVQ/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzs8weVGaMo37dNplt7dZTOupuCC9A-b9WclkVjQV7rBfxi_SWs3YW6r6x6xYr3aoaE9A/exec";
     
     let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
     let pesertaData = [], pengurusData = [], pesertaList = [];
@@ -272,32 +270,19 @@
     
     function logout() { sessionStorage.clear(); window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html'; }
     
-    // ==================== METODE CALL APPS SCRIPT (FIRE AND FORGET) ====================
-    // Untuk operasi yang TIDAK PERLU RESPONSE (tambah/edit/hapus/setoran)
+    // Fire and Forget untuk operasi yang tidak perlu response
     function callAppsScriptFireAndForget(action, data = {}) {
-        const params = new URLSearchParams({
-            action: action,
-            kategori: currentBankCategory,
-            username: currentUser,
-            ...data
-        });
-        // Kirim via image beacon - tidak peduli response
+        const params = new URLSearchParams({ action, kategori: currentBankCategory, username: currentUser, ...data });
         const img = new Image();
         img.src = `${APPS_SCRIPT_URL}?${params.toString()}`;
         return { success: true };
     }
     
-    // Untuk operasi yang BUTUH RESPONSE (get data)
+    // JSONP untuk operasi yang butuh response
     async function callAppsScript(action, data = {}) {
         return new Promise((resolve) => {
             const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-            const params = new URLSearchParams({
-                action: action,
-                kategori: currentBankCategory,
-                username: currentUser,
-                callback: callbackName,
-                ...data
-            });
+            const params = new URLSearchParams({ action, kategori: currentBankCategory, username: currentUser, callback: callbackName, ...data });
             
             window[callbackName] = function(response) {
                 delete window[callbackName];
@@ -312,11 +297,7 @@
                 document.body.removeChild(script);
                 resolve({ success: false, message: 'Request failed' });
             };
-            setTimeout(() => {
-                if (window[callbackName]) {
-                    window[callbackName]({ success: false, message: 'Timeout' });
-                }
-            }, 15000);
+            setTimeout(() => { if (window[callbackName]) window[callbackName]({ success: false, message: 'Timeout' }); }, 15000);
             document.body.appendChild(script);
         });
     }
@@ -396,7 +377,7 @@
         document.getElementById('setoranModal').style.display = 'flex';
     }
     
-    // SUBMIT SETORAN - FIRE AND FORGET (tidak menunggu response)
+    // SUBMIT SETORAN
     document.getElementById('setoranForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
@@ -414,14 +395,10 @@
             const total = organik + anOrganik + residu;
             const tanggal = new Date().toISOString().split('T')[0];
             
-            // Kirim tanpa menunggu response
             callAppsScriptFireAndForget('updateSetoran', { nama, organik, anOrganik, residu, total, tanggal });
             
-            // Langsung kasih notifikasi sukses
             closeModal('setoranModal');
             showToast('✅ Setoran berhasil disimpan!', 'success');
-            
-            // Refresh data setelah 1 detik
             setTimeout(() => { loadPeserta(); }, 1000);
         } catch(err) {
             showToast('❌ Error: ' + err.message, 'error');
@@ -431,6 +408,49 @@
             isProcessing = false;
         }
     });
+    
+    // ==================== RIWAYAT SETORAN ====================
+    async function loadRiwayat() {
+        document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat riwayat setoran...</div>';
+        const result = await callAppsScript('getRiwayatSetoran', {});
+        if (result && result.success && result.data && result.data.length > 0) {
+            let html = `<div class="card">
+                <div class="card-title"><span><i class="fas fa-history"></i> Riwayat Setoran Sampah</span>
+                <div class="search-box"><input type="text" id="searchRiwayat" placeholder="Cari nama..." onkeyup="filterRiwayat()"></div></div>
+                <div class="table-container"><table id="riwayatTable"><thead><tr>
+                    <th>Tanggal</th><th>Nama</th><th>Alamat</th><th>RT/RW</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th>
+                </tr></thead><tbody id="riwayatTableBody">`;
+            
+            result.data.forEach(r => {
+                const tgl = r.tanggal ? new Date(r.tanggal).toLocaleDateString('id-ID') : '-';
+                const rtRw = `RT ${r.rt || '-'} / RW ${r.rw || '-'}`;
+                html += `<tr data-nama="${(r.nama || '').toLowerCase()}">
+                    <td>${tgl}</td>
+                    <td><strong>${r.nama || '-'}</strong></td>
+                    <td>${r.alamat || '-'}</td>
+                    <td><span class="rt-rw-badge">${rtRw}</span></td>
+                    <td class="organic-badge">${(r.organik || 0).toFixed(1)} kg</td>
+                    <td class="anorganic-badge">${(r.an_organik || 0).toFixed(1)} kg</td>
+                    <td class="residu-badge">${(r.residu || 0).toFixed(1)} kg</td>
+                    <td><strong class="total-weight">${(r.total || 0).toFixed(1)} kg</strong></td>
+                </tr>`;
+            });
+            
+            html += `</tbody></table></div></div>`;
+            document.getElementById('pageContent').innerHTML = html;
+        } else {
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada riwayat setoran.</p></div>`;
+        }
+    }
+    
+    function filterRiwayat() {
+        const search = document.getElementById('searchRiwayat')?.value.toLowerCase() || '';
+        const rows = document.querySelectorAll('#riwayatTableBody tr');
+        rows.forEach(row => {
+            const nama = row.getAttribute('data-nama') || '';
+            row.style.display = nama.includes(search) ? '' : 'none';
+        });
+    }
     
     // ==================== DAFTAR PESERTA (MANAJEMEN) ====================
     async function loadDaftarPeserta() {
@@ -503,7 +523,6 @@
         });
         
         if (confirm.isConfirmed) {
-            // Fire and forget - tidak menunggu response
             callAppsScriptFireAndForget('hapusPeserta', { id_peserta: idPeserta });
             showToast('✅ Peserta berhasil dihapus', 'success');
             setTimeout(() => {
@@ -513,7 +532,7 @@
         }
     }
     
-    // SUBMIT PESERTA - FIRE AND FORGET
+    // SUBMIT PESERTA
     document.getElementById('pesertaForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
@@ -537,7 +556,6 @@
             const action = editIdPeserta === '' ? 'tambahPeserta' : 'editPeserta';
             if (editIdPeserta !== '') data.id_peserta = editIdPeserta;
             
-            // Fire and forget - tidak menunggu response
             callAppsScriptFireAndForget(action, data);
             
             closeModal('pesertaModal');
@@ -586,7 +604,15 @@
     }
     
     function loadPage(page) {
-        const titles = { profile: 'Profile Bank Sampah', pengurus: 'Pengurus Bank Sampah', peserta: 'Data Peserta', daftar: 'Daftarkan Peserta Baru', rekap: 'Rekap Bulanan', grafik: 'Grafik Analisis' };
+        const titles = { 
+            profile: 'Profile Bank Sampah', 
+            pengurus: 'Pengurus Bank Sampah', 
+            peserta: 'Data Peserta', 
+            riwayat: 'Riwayat Setoran',
+            daftar: 'Daftarkan Peserta Baru', 
+            rekap: 'Rekap Bulanan', 
+            grafik: 'Grafik Analisis'
+        };
         document.getElementById('pageTitle').innerHTML = titles[page] || 'Dashboard';
         document.getElementById('pageSubtitle').innerHTML = `Bank Sampah ${currentBankName} | ${currentUserName}`;
         
@@ -594,6 +620,7 @@
             document.getElementById('pageContent').innerHTML = `<div class="card"><div class="card-title"><i class="fas fa-building"></i> Profile Bank Sampah ${currentBankName}</div><div style="text-align:center;padding:20px"><img src="https://senapelan.github.io/Home/data/foto/logobaksampahsenapelan.png" style="width:150px;border-radius:20px;margin-bottom:20px"><h3>Bank Sampah ${currentBankName}</h3><p>📍 Kecamatan Senapelan, Kota Pekanbaru</p><p>Bank Sampah ${currentBankName} adalah program pengelolaan sampah berbasis masyarakat yang bertujuan untuk mengurangi volume sampah ke TPA.</p><hr><p><i class="fas fa-tag"></i> Kode Bank: ${currentBankCategory}</p></div></div>`;
         } else if (page === 'pengurus') loadPengurus();
         else if (page === 'peserta') loadPeserta();
+        else if (page === 'riwayat') loadRiwayat();
         else if (page === 'daftar') loadDaftarPeserta();
         else if (page === 'rekap') loadRekap();
         else if (page === 'grafik') loadGrafik();
