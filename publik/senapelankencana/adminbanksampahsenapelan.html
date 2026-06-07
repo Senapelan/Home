@@ -202,7 +202,7 @@
         });
     }
     
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzs8weVGaMo37dNplt7dZTOupuCC9A-b9WclkVjQV7rBfxi_SWs3YW6r6x6xYr3aoaE9A/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvs-yV5AvHKjbtkUh7VgSjioEy_6g29qSJpS0hN81jj5xNi8uSovs7JSR6ps9vQhtbVQ/exec";
     
     let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
     let pesertaData = [], pengurusData = [], pesertaList = [];
@@ -270,7 +270,6 @@
     
     function logout() { sessionStorage.clear(); window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html'; }
     
-    // Fire and Forget untuk operasi yang tidak perlu response
     function callAppsScriptFireAndForget(action, data = {}) {
         const params = new URLSearchParams({ action, kategori: currentBankCategory, username: currentUser, ...data });
         const img = new Image();
@@ -278,7 +277,6 @@
         return { success: true };
     }
     
-    // JSONP untuk operasi yang butuh response
     async function callAppsScript(action, data = {}) {
         return new Promise((resolve) => {
             const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -323,53 +321,53 @@
     
     // ==================== PESERTA (TAMPILAN UTAMA) ====================
     async function loadPeserta() {
-    document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
-    const result = await callAppsScript('getPeserta', {});
-    if (result && result.success && result.data && result.data.length > 0) {
-        let html = `<div class="card">
-            <div class="card-title"><span><i class="fas fa-user-friends"></i> Daftar Peserta Bank Sampah ${currentBankName}</span>
-            <div class="search-box"><input type="text" id="searchPeserta" placeholder="Cari nama..." onkeyup="filterPeserta()"></div></div>
-            <div class="table-container"><table id="pesertaTable"><thead><tr>
-                <th>Aksi</th>
-                <th>Foto</th>
-                <th>Nama</th>
-                <th>Alamat</th>
-                <th>RT/RW</th>
-                <th>No HP</th>
-                <th>Tgl Setor</th>
-                <th>Organik</th>
-                <th>An Organik</th>
-                <th>Residu</th>
-                <th>Total</th>
-            </tr></thead><tbody id="pesertaTableBody">`;
-        
-        result.data.forEach(p => {
-            const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
-            const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
-            const tgl = p.tanggal_setor && p.tanggal_setor !== '' && p.tanggal_setor !== '-' ? new Date(p.tanggal_setor).toLocaleDateString('id-ID') : '-';
-            const rtRw = `RT ${p.rt || '-'} / RW ${p.rw || '-'}`;
+        document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
+        const result = await callAppsScript('getPeserta', {});
+        if (result && result.success && result.data && result.data.length > 0) {
+            let html = `<div class="card">
+                <div class="card-title"><span><i class="fas fa-user-friends"></i> Daftar Peserta Bank Sampah ${currentBankName}</span>
+                <div class="search-box"><input type="text" id="searchPeserta" placeholder="Cari nama..." onkeyup="filterPeserta()"></div></div>
+                <div class="table-container"><table id="pesertaTable"><thead><tr>
+                    <th>Aksi</th>
+                    <th>Foto</th>
+                    <th>Nama</th>
+                    <th>Alamat</th>
+                    <th>RT/RW</th>
+                    <th>No HP</th>
+                    <th>Tgl Setor</th>
+                    <th>Organik</th>
+                    <th>An Organik</th>
+                    <th>Residu</th>
+                    <th>Total</th>
+                </tr></thead><tbody id="pesertaTableBody">`;
             
-            html += `<tr data-nama="${(p.nama || '').toLowerCase()}">
-                <td><button class="btn btn-primary btn-sm" onclick="openSetoranModal('${(p.nama || '').replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Setor</button></td>
-                <td>${foto}</td>
-                <td><strong>${p.nama || '-'}</strong></td>
-                <td>${p.alamat || '-'}</td>
-                <td><span class="rt-rw-badge">${rtRw}</span></td>
-                <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
-                <td><small>${tgl}</small></td>
-                <td class="organic-badge">${(p.organik || 0).toFixed(1)} kg</td>
-                <td class="anorganic-badge">${(p.an_organik || 0).toFixed(1)} kg</td>
-                <td class="residu-badge">${(p.residu || 0).toFixed(1)} kg</td>
-                <td><strong class="total-weight">${(p.total || 0).toFixed(1)} kg</strong></td>
-            </tr>`;
-        });
-        
-        html += `</tbody></table></div></div>`;
-        document.getElementById('pageContent').innerHTML = html;
-    } else {
-        document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada data peserta. Silakan daftarkan peserta melalui menu "Daftarkan Peserta".</p></div>`;
+            result.data.forEach(p => {
+                const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
+                const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
+                const tgl = p.tanggal_setor && p.tanggal_setor !== '' && p.tanggal_setor !== '-' ? new Date(p.tanggal_setor).toLocaleDateString('id-ID') : '-';
+                const rtRw = `RT ${p.rt || '-'} / RW ${p.rw || '-'}`;
+                
+                html += `<tr data-nama="${(p.nama || '').toLowerCase()}">
+                    <td><button class="btn btn-primary btn-sm" onclick="openSetoranModal('${(p.nama || '').replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Setor</button></td>
+                    <td>${foto}</td>
+                    <td><strong>${p.nama || '-'}</strong></td>
+                    <td>${p.alamat || '-'}</td>
+                    <td><span class="rt-rw-badge">${rtRw}</span></td>
+                    <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
+                    <td><small>${tgl}</small></td>
+                    <td class="organic-badge">${(p.organik || 0).toFixed(1)} kg</td>
+                    <td class="anorganic-badge">${(p.an_organik || 0).toFixed(1)} kg</td>
+                    <td class="residu-badge">${(p.residu || 0).toFixed(1)} kg</td>
+                    <td class="total-weight">${(p.total || 0).toFixed(1)} kg</td>
+                </tr>`;
+            });
+            
+            html += `</tbody></table></div></div>`;
+            document.getElementById('pageContent').innerHTML = html;
+        } else {
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada data peserta. Silakan daftarkan peserta melalui menu "Daftarkan Peserta".</p></div>`;
+        }
     }
-}
     
     function filterPeserta() {
         const search = document.getElementById('searchPeserta')?.value.toLowerCase() || '';
@@ -389,7 +387,6 @@
         document.getElementById('setoranModal').style.display = 'flex';
     }
     
-    // SUBMIT SETORAN
     document.getElementById('setoranForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
@@ -422,44 +419,44 @@
     });
     
     // ==================== RIWAYAT SETORAN ====================
-async function loadRiwayat() {
-    document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat riwayat setoran...</div>';
-    const result = await callAppsScript('getRiwayatSetoran', {});
-    if (result && result.success && result.data && result.data.length > 0) {
-        let html = `<div class="card">
-            <div class="card-title"><span><i class="fas fa-history"></i> Riwayat Setoran Sampah</span>
-            <div class="search-box"><input type="text" id="searchRiwayat" placeholder="Cari nama..." onkeyup="filterRiwayat()"></div></div>
-            <div class="table-container"><table id="riwayatTable"><thead><tr>
-                <th>Tanggal</th>
-                <th>Foto</th>
-                <th>Nama</th>
-                <th>Organik</th>
-                <th>An Organik</th>
-                <th>Residu</th>
-                <th>Total</th>
-            </tr></thead><tbody id="riwayatTableBody">`;
-        
-        result.data.forEach(r => {
-            const tgl = r.tanggal ? new Date(r.tanggal).toLocaleDateString('id-ID') : '-';
-            const foto = r.foto ? `<img src="${r.foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${r.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
+    async function loadRiwayat() {
+        document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat riwayat setoran...</div>';
+        const result = await callAppsScript('getRiwayatSetoran', {});
+        if (result && result.success && result.data && result.data.length > 0) {
+            let html = `<div class="card">
+                <div class="card-title"><span><i class="fas fa-history"></i> Riwayat Setoran Sampah</span>
+                <div class="search-box"><input type="text" id="searchRiwayat" placeholder="Cari nama..." onkeyup="filterRiwayat()"></div></div>
+                <div class="table-container"><table id="riwayatTable"><thead><tr>
+                    <th>Tanggal</th>
+                    <th>Foto</th>
+                    <th>Nama</th>
+                    <th>Organik</th>
+                    <th>An Organik</th>
+                    <th>Residu</th>
+                    <th>Total</th>
+                </tr></thead><tbody id="riwayatTableBody">`;
             
-            html += `<tr data-nama="${(r.nama || '').toLowerCase()}">
-                <td>${tgl}</td>
-                <td>${foto}</td>
-                <td><strong>${r.nama || '-'}</strong></td>
-                <td class="organic-badge">${(r.organik || 0).toFixed(1)} kg</td>
-                <td class="anorganic-badge">${(r.an_organik || 0).toFixed(1)} kg</td>
-                <td class="residu-badge">${(r.residu || 0).toFixed(1)} kg</td>
-                <td><strong class="total-weight">${(r.total || 0).toFixed(1)} kg</strong></td>
-            </tr>`;
-        });
-        
-        html += `</tbody></table></div></div>`;
-        document.getElementById('pageContent').innerHTML = html;
-    } else {
-        document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada riwayat setoran.</p></div>`;
+            result.data.forEach(r => {
+                const tgl = r.tanggal ? new Date(r.tanggal).toLocaleDateString('id-ID') : '-';
+                const foto = r.foto ? `<img src="${r.foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${r.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
+                
+                html += `<tr data-nama="${(r.nama || '').toLowerCase()}">
+                    <td>${tgl}</td>
+                    <td>${foto}</td>
+                    <td><strong>${r.nama || '-'}</strong></td>
+                    <td class="organic-badge">${(r.organik || 0).toFixed(1)} kg</td>
+                    <td class="anorganic-badge">${(r.an_organik || 0).toFixed(1)} kg</td>
+                    <td class="residu-badge">${(r.residu || 0).toFixed(1)} kg</td>
+                    <td><strong class="total-weight">${(r.total || 0).toFixed(1)} kg</strong></td>
+                </table>`;
+            });
+            
+            html += `</tbody></table></div></div>`;
+            document.getElementById('pageContent').innerHTML = html;
+        } else {
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada riwayat setoran.</p></div>`;
+        }
     }
-}
     
     function filterRiwayat() {
         const search = document.getElementById('searchRiwayat')?.value.toLowerCase() || '';
@@ -476,7 +473,7 @@ async function loadRiwayat() {
         const result = await callAppsScript('getDaftarPeserta', {});
         if (result && result.success && result.data) {
             pesertaList = result.data || [];
-            let html = `<div class="card"><div class="card-title"><span><i class="fas fa-user-plus"></i> Manajemen Peserta</span><button class="btn btn-success" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"><table><thead><tr><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
+            let html = `<div class="card"><div class="card-title"><span><i class="fas fa-user-plus"></i> Manajemen Peserta</span><button class="btn btn-success" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"><table><thead><tr><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th><tr></thead><tbody>`;
             if (pesertaList.length === 0) { 
                 html += `<tr><td colspan="8" style="text-align:center">Belum ada data peserta</td></tr>`; 
             } else {
@@ -494,7 +491,7 @@ async function loadRiwayat() {
                             <button class="btn btn-warning btn-sm" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button>
                         </td>
-                    </tr>`;
+                    </table>`;
                 });
             }
             html += `</tbody></table></div></div>`;
@@ -550,7 +547,6 @@ async function loadRiwayat() {
         }
     }
     
-    // SUBMIT PESERTA
     document.getElementById('pesertaForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
