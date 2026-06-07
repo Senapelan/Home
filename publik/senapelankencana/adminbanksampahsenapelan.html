@@ -581,7 +581,7 @@
             <span class="close-modal" onclick="closeModal('pesertaModal')">&times;</span>
         </div>
         <form id="pesertaForm">
-            <input type="hidden" id="editIndex" value="">
+            <input type="hidden" id="editIdPeserta" value="">
             <div class="form-group">
                 <label>Nama Lengkap</label>
                 <input type="text" id="pesertaNama" required>
@@ -609,7 +609,7 @@
 
 <script>
     // ==================== KONFIGURASI ====================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbww1u7p61eHLtIptVxLl7u0MARsCTXXY-UPqZz-HJCMHJpIqrbnt6U0LLEvaHm--jphhA/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtxA3ZWCFPZTenU3eSLsqbcGpIru-CK45gVgv4ar1vKrtv0cnNacE-yigMlrXjE6wO7g/exec";
     
     // State
     let currentBankCategory = '';
@@ -695,9 +695,9 @@
         let html = `<div class="card">
             <div class="card-title"><i class="fas fa-users"></i> Struktur Pengurus Bank Sampah ${currentBankName}</div>
             <div class="table-container">
-                <table>
+                 <table>
                     <thead>
-                        <tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
+                         <tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
                     </thead>
                     <tbody>`;
         
@@ -707,17 +707,17 @@
                 `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
             const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
             html += `<tr>
-                <td>${foto}</td>
-                <td><strong>${p.nama || '-'}</strong></td>
-                <td>${p.jabatan || '-'}</td>
-                <td>${p.alamat || '-'}</td>
-                <td>${p.no_hp || '-'}</td>
-                <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="btn btn-success" style="text-decoration:none"><i class="fab fa-whatsapp"></i> Hubungi</a>` : '-'}</td>
-            </tr>`;
+                 <td>${foto}</td>
+                 <td><strong>${p.nama || '-'}</strong></td>
+                 <td>${p.jabatan || '-'}</td>
+                 <td>${p.alamat || '-'}</td>
+                 <td>${p.no_hp || '-'}</td>
+                 <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="btn btn-success" style="text-decoration:none"><i class="fab fa-whatsapp"></i> Hubungi</a>` : '-'}</td>
+             </tr>`;
         });
         
         html += `</tbody>
-                </table>
+                 </table>
             </div>
         </div>`;
         document.getElementById('pageContent').innerHTML = html;
@@ -752,7 +752,7 @@
             <div class="table-container">
                 <table id="pesertaTable">
                     <thead>
-                        <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>No HP</th><th>Tanggal Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th><th>Aksi</th></tr>
+                         <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>No HP</th><th>Tanggal Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th><th>Aksi</th></tr>
                     </thead>
                     <tbody id="pesertaTableBody">`;
         
@@ -764,22 +764,22 @@
             const tgl = p.tanggal_setor && p.tanggal_setor !== '' ? 
                 new Date(p.tanggal_setor).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
             
-            html += `<tr data-nama="${(p.nama || '').toLowerCase()}">
-                <td>${foto}</td>
-                <td><strong>${p.nama || '-'}</strong></td>
-                <td>${p.alamat || '-'}</td>
-                <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
-                <td><small>${tgl}</small></td>
-                <td class="organic">${p.organik || 0} kg</td>
-                <td class="anorganic">${p.an_organik || 0} kg</td>
-                <td class="residu">${p.residu || 0} kg</td>
-                <td><strong>${p.total || 0} kg</strong></td>
-                <td><button class="btn btn-primary" onclick="openSetoranModal('${p.nama}', ${idx})"><i class="fas fa-edit"></i> Setor</button></td>
-            </tr>`;
+            html += `<tr data-id="${p.id_peserta}" data-nama="${(p.nama || '').toLowerCase()}">
+                 <td>${foto}</td>
+                 <td><strong>${p.nama || '-'}</strong></td>
+                 <td>${p.alamat || '-'}</td>
+                 <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
+                 <td><small>${tgl}</small></td>
+                 <td class="organic">${p.organik || 0} kg</td>
+                 <td class="anorganic">${p.an_organik || 0} kg</td>
+                 <td class="residu">${p.residu || 0} kg</td>
+                 <td><strong>${p.total || 0} kg</strong></td>
+                 <td><button class="btn btn-primary" onclick="openSetoranModal('${p.nama}', '${p.id_peserta}')"><i class="fas fa-edit"></i> Setor</button></td>
+             </tr>`;
         });
         
         html += `</tbody>
-                </table>
+                 </table>
             </div>
         </div>`;
         document.getElementById('pageContent').innerHTML = html;
@@ -794,7 +794,7 @@
         });
     }
     
-    function openSetoranModal(nama, idx) {
+    function openSetoranModal(nama, idPeserta) {
         document.getElementById('setoranNama').value = nama;
         document.getElementById('displayNama').value = nama;
         document.getElementById('organik').value = '';
@@ -850,9 +850,9 @@
                 <button class="btn btn-success" style="margin-left:auto" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button>
             </div>
             <div class="table-container">
-                <table>
+                 <table>
                     <thead>
-                        <tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
+                         <tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
                     </thead>
                     <tbody>`;
         
@@ -863,23 +863,23 @@
                 const foto = p.link_foto && p.link_foto !== '' ? 
                     `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://via.placeholder.com/40?text=User'">` : 
                     `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
-                html += `<tr>
-                    <td><code>${p.id_peserta || '-'}</code></td>
-                    <td>${foto}</td>
-                    <td><strong>${p.nama || '-'}</strong></td>
-                    <td>${p.nik || '-'}</td>
-                    <td>${p.alamat || '-'}</td>
-                    <td>${p.no_hp || '-'}</td>
-                    <td>
-                        <button class="btn btn-warning" onclick="editPeserta(${idx})"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger" onclick="hapusPeserta('${p.nama}', ${idx})"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
+                html += `<tr data-id-peserta="${p.id_peserta}">
+                     <td><code>${p.id_peserta || '-'}</code></td>
+                     <td>${foto}</td>
+                     <td><strong>${p.nama || '-'}</strong></td>
+                     <td>${p.nik || '-'}</td>
+                     <td>${p.alamat || '-'}</td>
+                     <td>${p.no_hp || '-'}</td>
+                     <td>
+                        <button class="btn btn-warning" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button>
+                     </td>
+                 </tr>`;
             });
         }
         
         html += `</tbody>
-                </table>
+                 </table>
             </div>
         </div>`;
         document.getElementById('pageContent').innerHTML = html;
@@ -887,7 +887,7 @@
     
     function openTambahPeserta() {
         document.getElementById('pesertaModalTitle').innerHTML = '<i class="fas fa-plus"></i> Tambah Peserta';
-        document.getElementById('editIndex').value = '';
+        document.getElementById('editIdPeserta').value = '';
         document.getElementById('pesertaNama').value = '';
         document.getElementById('pesertaNik').value = '';
         document.getElementById('pesertaAlamat').value = '';
@@ -896,10 +896,16 @@
         document.getElementById('pesertaModal').style.display = 'flex';
     }
     
-    function editPeserta(idx) {
-        const p = pesertaList[idx];
+    function editPeserta(idPeserta) {
+        // Cari data peserta berdasarkan ID
+        const p = pesertaList.find(item => item.id_peserta === idPeserta);
+        if (!p) {
+            alert('Data peserta tidak ditemukan!');
+            return;
+        }
+        
         document.getElementById('pesertaModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Peserta';
-        document.getElementById('editIndex').value = idx;
+        document.getElementById('editIdPeserta').value = idPeserta;
         document.getElementById('pesertaNama').value = p.nama || '';
         document.getElementById('pesertaNik').value = p.nik || '';
         document.getElementById('pesertaAlamat').value = p.alamat || '';
@@ -908,11 +914,10 @@
         document.getElementById('pesertaModal').style.display = 'flex';
     }
     
-    async function hapusPeserta(nama, idx) {
+    async function hapusPeserta(nama, idPeserta) {
         if (confirm(`Yakin ingin menghapus ${nama}?`)) {
             const result = await callAppsScript('hapusPeserta', {
-                sheetName: 'INPUT_PESERTA',
-                rowIndex: idx + 2
+                id_peserta: idPeserta
             });
             if (result.success) {
                 alert('✅ Peserta berhasil dihapus');
@@ -926,7 +931,7 @@
     
     document.getElementById('pesertaForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const editIdx = document.getElementById('editIndex').value;
+        const editIdPeserta = document.getElementById('editIdPeserta').value;
         const data = {
             nama: document.getElementById('pesertaNama').value,
             nik: document.getElementById('pesertaNik').value,
@@ -936,14 +941,19 @@
         };
         
         let result;
-        if (editIdx === '') {
+        if (editIdPeserta === '') {
+            // Tambah baru
             result = await callAppsScript('tambahPeserta', data);
         } else {
-            result = await callAppsScript('editPeserta', { ...data, rowIndex: parseInt(editIdx) + 2 });
+            // Edit existing
+            result = await callAppsScript('editPeserta', { 
+                ...data, 
+                id_peserta: editIdPeserta 
+            });
         }
         
         if (result.success) {
-            alert(editIdx === '' ? '✅ Peserta berhasil ditambahkan!' : '✅ Peserta berhasil diupdate!');
+            alert(editIdPeserta === '' ? '✅ Peserta berhasil ditambahkan!' : '✅ Peserta berhasil diupdate!');
             closeModal('pesertaModal');
             loadDaftarPeserta();
             loadPeserta();
