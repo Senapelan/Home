@@ -32,7 +32,7 @@
             height: 100%;
             background: linear-gradient(180deg, #1b5e20 0%, #0d3b12 100%);
             color: white;
-            transition: all 0.3s;
+            transition: left 0.3s ease;
             z-index: 1000;
             overflow-y: auto;
             box-shadow: 4px 0 20px rgba(0,0,0,0.1);
@@ -51,6 +51,7 @@
             margin-bottom: 12px;
             background: white;
             padding: 8px;
+            object-fit: cover;
         }
 
         .sidebar-header h3 {
@@ -183,6 +184,13 @@
             color: white;
             font-weight: bold;
             font-size: 1.2rem;
+            overflow: hidden;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         .logout-btn {
@@ -417,40 +425,36 @@
             object-fit: cover;
         }
 
-        @media (max-width: 768px) {
-            .sidebar {
-                left: -280px;
-            }
-            .sidebar.active {
-                left: 0;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .charts-grid {
-                grid-template-columns: 1fr;
-            }
-            .menu-toggle {
-                display: block;
-                position: fixed;
-                top: 20px;
-                left: 20px;
-                z-index: 1001;
-                background: #2e7d32;
-                color: white;
-                padding: 10px;
-                border-radius: 10px;
-                cursor: pointer;
-            }
-            .top-bar {
-                margin-top: 50px;
-            }
-        }
-
+        /* Menu Toggle Button */
         .menu-toggle {
             display: none;
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: #2e7d32;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 12px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            font-size: 1rem;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.3s;
         }
 
+        .menu-toggle:hover {
+            background: #1b5e20;
+            transform: scale(1.02);
+        }
+
+        .menu-toggle i {
+            font-size: 1.2rem;
+        }
+
+        /* Loading */
         .loading {
             text-align: center;
             padding: 50px;
@@ -470,18 +474,147 @@
             border-radius: 8px;
             font-size: 0.9rem;
         }
+
+        /* Overlay untuk mobile */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                left: -280px;
+                box-shadow: none;
+            }
+            
+            .sidebar.active {
+                left: 0;
+                box-shadow: 4px 0 20px rgba(0,0,0,0.3);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+                padding-top: 20px;
+            }
+            
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .menu-toggle {
+                display: flex;
+            }
+            
+            .top-bar {
+                margin-top: 60px;
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .page-title {
+                text-align: center;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .table-container {
+                font-size: 0.75rem;
+            }
+            
+            th, td {
+                padding: 8px 6px;
+            }
+            
+            .btn {
+                padding: 4px 8px;
+                font-size: 0.7rem;
+            }
+            
+            .card-title {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .search-box {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .search-box input {
+                width: 100%;
+            }
+            
+            .user-info {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-content {
+                padding: 10px;
+                padding-top: 20px;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 6px 4px;
+                font-size: 0.7rem;
+            }
+            
+            .btn {
+                padding: 3px 6px;
+                font-size: 0.65rem;
+            }
+            
+            .menu-toggle {
+                padding: 8px 12px;
+                top: 15px;
+                left: 15px;
+            }
+            
+            .top-bar {
+                margin-top: 55px;
+                padding: 12px;
+            }
+        }
     </style>
 </head>
 <body>
 
-<div class="menu-toggle" onclick="toggleSidebar()">
+<!-- Menu Toggle Button -->
+<button class="menu-toggle" onclick="toggleSidebar()">
     <i class="fas fa-bars"></i>
-</div>
+    <span>Menu</span>
+</button>
+
+<!-- Sidebar Overlay (untuk mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <!-- Sidebar -->
 <div class="sidebar" id="sidebar">
     <div class="sidebar-header">
-        <img src="https://senapelan.github.io/Home/data/foto/logobaksampahsenapelan.png" alt="Logo">
+        <img src="https://senapelan.github.io/Home/data/foto/logobaksampahsenapelan.png" alt="Logo" onerror="this.src='https://via.placeholder.com/80?text=BS'">
         <h3>BANK SAMPAH</h3>
         <h3>SENAPELAN</h3>
         <p id="sidebarBankName">Loading...</p>
@@ -621,6 +754,29 @@
     let pesertaList = [];
     let charts = {};
 
+    // ==================== SIDEBAR FUNCTIONS ====================
+    function toggleSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.toggle('active');
+        overlay.classList.toggle('active');
+        
+        // Cegah scroll pada body saat sidebar terbuka di mobile
+        if (sidebar.classList.contains('active') && window.innerWidth <= 768) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
+        }
+    }
+    
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    
     // ==================== CHECK LOGIN ====================
     function checkLogin() {
         const loggedIn = sessionStorage.getItem('banksampah_loggedIn');
@@ -649,16 +805,14 @@
                 category: currentBankCategory
             });
             if (result.success) {
-                // Update nama admin
                 if (result.name && result.name !== currentUserName) {
                     currentUserName = result.name;
                     sessionStorage.setItem('banksampah_userFullName', result.name);
                 }
                 document.getElementById('userName').innerHTML = `${result.name || currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
                 
-                // Tampilkan foto admin jika ada
                 if (result.photoUrl && result.photoUrl !== '') {
-                    document.getElementById('userAvatar').innerHTML = `<img src="${result.photoUrl}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; background:#fff;">`;
+                    document.getElementById('userAvatar').innerHTML = `<img src="${result.photoUrl}" alt="Foto Admin">`;
                 } else {
                     const initial = (result.name || currentUserName).charAt(0).toUpperCase();
                     document.getElementById('userAvatar').innerHTML = initial;
@@ -679,10 +833,6 @@
     function logout() {
         sessionStorage.clear();
         window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html';
-    }
-    
-    function toggleSidebar() {
-        document.getElementById('sidebar').classList.toggle('active');
     }
     
     // ==================== APPS SCRIPT CALL ====================
@@ -730,9 +880,9 @@
         let html = `<div class="card">
             <div class="card-title"><i class="fas fa-users"></i> Struktur Pengurus Bank Sampah ${currentBankName}</div>
             <div class="table-container">
-                 <table>
+                <table>
                     <thead>
-                         <tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
+                        <tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
                     </thead>
                     <tbody>`;
         
@@ -742,17 +892,17 @@
                 `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
             const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
             html += `<tr>
-                 <td>${foto}</td>
-                 <td><strong>${p.nama || '-'}</strong></td>
-                 <td>${p.jabatan || '-'}</td>
-                 <td>${p.alamat || '-'}</td>
-                 <td>${p.no_hp || '-'}</td>
-                 <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="btn btn-success" style="text-decoration:none"><i class="fab fa-whatsapp"></i> Hubungi</a>` : '-'}</td>
-             </tr>`;
+                <td>${foto}</td>
+                <td><strong>${p.nama || '-'}</strong></td>
+                <td>${p.jabatan || '-'}</td>
+                <td>${p.alamat || '-'}</td>
+                <td>${p.no_hp || '-'}</td>
+                <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="btn btn-success" style="text-decoration:none"><i class="fab fa-whatsapp"></i> Hubungi</a>` : '-'}</td>
+            </tr>`;
         });
         
         html += `</tbody>
-                 </table>
+                </table>
             </div>
         </div>`;
         document.getElementById('pageContent').innerHTML = html;
@@ -787,7 +937,7 @@
             <div class="table-container">
                 <table id="pesertaTable">
                     <thead>
-                         <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>No HP</th><th>Tanggal Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th><th>Aksi</th></tr>
+                        <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>No HP</th><th>Tanggal Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th><th>Aksi</th></tr>
                     </thead>
                     <tbody id="pesertaTableBody">`;
         
@@ -800,21 +950,21 @@
                 new Date(p.tanggal_setor).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
             
             html += `<tr data-id="${p.id_peserta}" data-nama="${(p.nama || '').toLowerCase()}">
-                 <td>${foto}</td>
-                 <td><strong>${p.nama || '-'}</strong></td>
-                 <td>${p.alamat || '-'}</td>
-                 <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
-                 <td><small>${tgl}</small></td>
-                 <td class="organic">${p.organik || 0} kg</td>
-                 <td class="anorganic">${p.an_organik || 0} kg</td>
-                 <td class="residu">${p.residu || 0} kg</td>
-                 <td><strong>${p.total || 0} kg</strong></td>
-                 <td><button class="btn btn-primary" onclick="openSetoranModal('${p.nama}', '${p.id_peserta}')"><i class="fas fa-edit"></i> Setor</button></td>
-             </tr>`;
+                <td>${foto}</td>
+                <td><strong>${p.nama || '-'}</strong></td>
+                <td>${p.alamat || '-'}</td>
+                <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
+                <td><small>${tgl}</small></td>
+                <td class="organic">${p.organik || 0} kg</td>
+                <td class="anorganic">${p.an_organik || 0} kg</td>
+                <td class="residu">${p.residu || 0} kg</td>
+                <td><strong>${p.total || 0} kg</strong></td>
+                <td><button class="btn btn-primary" onclick="openSetoranModal('${p.nama}', '${p.id_peserta}')"><i class="fas fa-edit"></i> Setor</button></td>
+            </tr>`;
         });
         
         html += `</tbody>
-                 </table>
+                </table>
             </div>
         </div>`;
         document.getElementById('pageContent').innerHTML = html;
@@ -1105,6 +1255,7 @@
     // ==================== NAVIGATION ====================
     function loadPage(page) {
         const titles = {
+            profile: 'Profile Bank Sampah',
             pengurus: 'Pengurus Bank Sampah',
             peserta: 'Data Peserta',
             daftar: 'Daftarkan Peserta Baru',
@@ -1115,12 +1266,31 @@
         document.getElementById('pageTitle').innerHTML = titles[page] || 'Dashboard';
         document.getElementById('pageSubtitle').innerHTML = `Bank Sampah ${currentBankName} | ${currentUserName}`;
         
-        if (page === 'pengurus') loadPengurus();
+        if (page === 'profile') {
+            // Tampilkan profile bank sampah
+            document.getElementById('pageContent').innerHTML = `<div class="card">
+                <div class="card-title"><i class="fas fa-building"></i> Profile Bank Sampah ${currentBankName}</div>
+                <div style="text-align: center; padding: 20px;">
+                    <img src="https://senapelan.github.io/Home/data/foto/logobaksampahsenapelan.png" style="width: 150px; border-radius: 20px; margin-bottom: 20px;">
+                    <h3>Bank Sampah ${currentBankName}</h3>
+                    <p style="margin-top: 10px; color: #666;">📍 Kecamatan Senapelan, Kota Pekanbaru</p>
+                    <p style="margin-top: 10px;">Bank Sampah ${currentBankName} adalah program pengelolaan sampah berbasis masyarakat yang bertujuan untuk mengurangi volume sampah ke TPA dan meningkatkan kesadaran masyarakat dalam memilah sampah.</p>
+                    <hr style="margin: 20px 0;">
+                    <p><i class="fas fa-tag"></i> Kode Bank: ${currentBankCategory}</p>
+                    <p><i class="fas fa-calendar"></i> Bergabung: 2024</p>
+                </div>
+            </div>`;
+        } else if (page === 'pengurus') loadPengurus();
         else if (page === 'peserta') loadPeserta();
         else if (page === 'daftar') loadDaftarPeserta();
         else if (page === 'rekap') loadRekap();
         else if (page === 'grafik') loadGrafik();
         else loadPeserta();
+        
+        // Tutup sidebar setelah memilih menu (untuk mobile)
+        if (window.innerWidth <= 768) {
+            closeSidebar();
+        }
     }
     
     // ==================== EVENT LISTENER ====================
@@ -1131,9 +1301,6 @@
                 loadPage(page);
                 document.querySelectorAll('.menu-item, .submenu-item').forEach(i => i.classList.remove('active'));
                 item.classList.add('active');
-                if (window.innerWidth <= 768) {
-                    toggleSidebar();
-                }
             }
         });
     });
@@ -1147,6 +1314,13 @@
             event.target.style.display = 'none';
         }
     }
+    
+    // Reset sidebar saat resize ke desktop
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            closeSidebar();
+        }
+    });
     
     // ==================== INIT ====================
     if (checkLogin()) {
