@@ -11,471 +11,76 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100%;
-            background: linear-gradient(180deg, #1b5e20 0%, #0d3b12 100%);
-            color: white;
-            transition: left 0.3s ease;
-            z-index: 1000;
-            overflow-y: auto;
-            box-shadow: 4px 0 20px rgba(0,0,0,0.1);
-        }
-
-        .sidebar-header {
-            padding: 25px 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .sidebar-header img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 12px;
-            background: white;
-            padding: 8px;
-            object-fit: cover;
-        }
-
-        .sidebar-header h3 {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header p {
-            font-size: 0.8rem;
-            opacity: 0.8;
-        }
-
-        .sidebar-menu {
-            padding: 20px 0;
-        }
-
-        .menu-item {
-            padding: 12px 25px;
-            margin: 5px 15px;
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-        }
-
-        .menu-item i {
-            width: 24px;
-            font-size: 1.2rem;
-        }
-
-        .menu-item:hover {
-            background: rgba(255,255,255,0.15);
-            transform: translateX(5px);
-        }
-
-        .menu-item.active {
-            background: #2e7d32;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-        }
-
-        .submenu {
-            padding-left: 55px;
-            margin: 5px 15px;
-        }
-
-        .submenu-item {
-            padding: 8px 15px;
-            margin: 3px 0;
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 0.85rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .submenu-item:hover {
-            background: rgba(255,255,255,0.1);
-        }
-
-        .submenu-item.active {
-            background: #388e3c;
-        }
-
-        .main-content {
-            margin-left: 280px;
-            padding: 20px;
-            transition: all 0.3s;
-        }
-
-        .top-bar {
-            background: white;
-            border-radius: 15px;
-            padding: 15px 25px;
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        }
-
-        .page-title h2 {
-            color: #1b5e20;
-            font-size: 1.3rem;
-        }
-
-        .page-title p {
-            color: #666;
-            font-size: 0.8rem;
-            margin-top: 5px;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-
-        .user-name {
-            text-align: right;
-        }
-
-        .user-name .name {
-            font-weight: 600;
-            color: #1b5e20;
-        }
-
-        .user-name .role {
-            font-size: 0.7rem;
-            color: #666;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1.2rem;
-            overflow: hidden;
-        }
-
-        .user-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .logout-btn {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logout-btn:hover {
-            background: #c82333;
-            transform: scale(1.02);
-        }
-
-        .card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #1b5e20;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 700px;
-        }
-
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        th {
-            background: #f5f5f5;
-            font-weight: 600;
-            color: #333;
-            position: sticky;
-            top: 0;
-        }
-
-        tr:hover {
-            background: #f9f9f9;
-        }
-
-        .btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: #2e7d32;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: #1b5e20;
-        }
-
-        .btn-warning {
-            background: #ff9800;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background: #f57c00;
-        }
-
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background: #c82333;
-        }
-
-        .btn-success {
-            background: #25D366;
-            color: white;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: #333;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            font-size: 0.9rem;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 2000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            width: 90%;
-            max-width: 500px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .close-modal {
-            cursor: pointer;
-            font-size: 1.5rem;
-            color: #999;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background: linear-gradient(135deg, #2e7d32, #1b5e20);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-        }
-
-        .stat-card h3 {
-            font-size: 2rem;
-            margin-bottom: 5px;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-        }
-
-        .chart-container {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-        }
-
-        .wa-link {
-            color: #25D366;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%); min-height: 100vh; }
+        .sidebar { position: fixed; left: 0; top: 0; width: 280px; height: 100%; background: linear-gradient(180deg, #1b5e20 0%, #0d3b12 100%); color: white; transition: left 0.3s ease; z-index: 1000; overflow-y: auto; box-shadow: 4px 0 20px rgba(0,0,0,0.1); }
+        .sidebar-header { padding: 25px 20px; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); }
+        .sidebar-header img { width: 80px; height: 80px; border-radius: 50%; margin-bottom: 12px; background: white; padding: 8px; object-fit: cover; }
+        .sidebar-header h3 { font-size: 1.1rem; margin-bottom: 5px; }
+        .sidebar-header p { font-size: 0.8rem; opacity: 0.8; }
+        .sidebar-menu { padding: 20px 0; }
+        .menu-item { padding: 12px 25px; margin: 5px 15px; border-radius: 12px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 12px; font-size: 0.95rem; }
+        .menu-item i { width: 24px; font-size: 1.2rem; }
+        .menu-item:hover { background: rgba(255,255,255,0.15); transform: translateX(5px); }
+        .menu-item.active { background: #2e7d32; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .submenu { padding-left: 55px; margin: 5px 15px; }
+        .submenu-item { padding: 8px 15px; margin: 3px 0; border-radius: 10px; cursor: pointer; transition: all 0.3s; font-size: 0.85rem; display: flex; align-items: center; gap: 10px; }
+        .submenu-item:hover { background: rgba(255,255,255,0.1); }
+        .submenu-item.active { background: #388e3c; }
+        .main-content { margin-left: 280px; padding: 20px; transition: all 0.3s; }
+        .top-bar { background: white; border-radius: 15px; padding: 15px 25px; margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .page-title h2 { color: #1b5e20; font-size: 1.3rem; }
+        .page-title p { color: #666; font-size: 0.8rem; margin-top: 5px; }
+        .user-info { display: flex; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .user-name { text-align: right; }
+        .user-name .name { font-weight: 600; color: #1b5e20; }
+        .user-name .role { font-size: 0.7rem; color: #666; }
+        .user-avatar { width: 45px; height: 45px; background: linear-gradient(135deg, #2e7d32, #1b5e20); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1.2rem; overflow: hidden; }
+        .user-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .logout-btn { background: #dc3545; color: white; border: none; padding: 8px 16px; border-radius: 10px; cursor: pointer; font-weight: 600; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .logout-btn:hover { background: #c82333; transform: scale(1.02); }
+        .card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
+        .card-title { font-size: 1.2rem; font-weight: 600; color: #1b5e20; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; min-width: 700px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
+        th { background: #f5f5f5; font-weight: 600; color: #333; position: sticky; top: 0; }
+        tr:hover { background: #f9f9f9; }
+        .btn { padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s; }
+        .btn-primary { background: #2e7d32; color: white; }
+        .btn-primary:hover { background: #1b5e20; }
+        .btn-warning { background: #ff9800; color: white; }
+        .btn-warning:hover { background: #f57c00; }
+        .btn-danger { background: #dc3545; color: white; }
+        .btn-danger:hover { background: #c82333; }
+        .btn-success { background: #25D366; color: white; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 0.9rem; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
+        .modal-content { background: white; border-radius: 20px; padding: 25px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; }
+        .close-modal { cursor: pointer; font-size: 1.5rem; color: #999; }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background: linear-gradient(135deg, #2e7d32, #1b5e20); color: white; padding: 20px; border-radius: 15px; text-align: center; }
+        .stat-card h3 { font-size: 2rem; margin-bottom: 5px; }
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; }
+        .chart-container { background: white; border-radius: 20px; padding: 20px; }
+        .wa-link { color: #25D366; text-decoration: none; font-weight: 600; }
+        .wa-link:hover { text-decoration: underline; }
         .organic { background: #4caf50; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; }
         .anorganic { background: #ff9800; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; }
         .residu { background: #f44336; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; }
-
-        .foto-bullet {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .menu-toggle {
-            display: none;
-            position: fixed;
-            top: 20px;
-            left: 20px;
-            z-index: 1001;
-            background: #2e7d32;
-            color: white;
-            padding: 12px 16px;
-            border-radius: 12px;
-            cursor: pointer;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            font-size: 1rem;
-            align-items: center;
-            gap: 8px;
-            border: none;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2rem;
-            color: #666;
-        }
-
-        .search-box {
-            margin-left: auto;
-            display: flex;
-            gap: 10px;
-        }
-
-        .search-box input {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 0.9rem;
-        }
-
-        .sidebar-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 999;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .sidebar-overlay.active {
-            display: block;
-            opacity: 1;
-        }
-
-        .rt-rw-badge {
-            background: #e8f5e9;
-            color: #2e7d32;
-            padding: 2px 8px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            display: inline-block;
-        }
-
+        .foto-bullet { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .menu-toggle { display: none; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #2e7d32; color: white; padding: 12px 16px; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 1rem; align-items: center; gap: 8px; border: none; }
+        .menu-toggle:hover { background: #1b5e20; }
+        .loading { text-align: center; padding: 50px; font-size: 1.2rem; color: #666; }
+        .search-box { margin-left: auto; display: flex; gap: 10px; }
+        .search-box input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+        .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
+        .sidebar-overlay.active { display: block; opacity: 1; }
+        .rt-rw-badge { background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; display: inline-block; }
         @media (max-width: 768px) {
             .sidebar { left: -280px; box-shadow: none; }
             .sidebar.active { left: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
@@ -496,11 +101,7 @@
 </head>
 <body>
 
-<button class="menu-toggle" onclick="toggleSidebar()">
-    <i class="fas fa-bars"></i>
-    <span>Menu</span>
-</button>
-
+<button class="menu-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i><span>Menu</span></button>
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <div class="sidebar" id="sidebar">
@@ -540,6 +141,7 @@
     <div id="pageContent"><div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading...</div></div>
 </div>
 
+<!-- Modal Setoran -->
 <div id="setoranModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Input Setoran Sampah</h3><span class="close-modal" onclick="closeModal('setoranModal')">&times;</span></div>
@@ -554,6 +156,7 @@
     </div>
 </div>
 
+<!-- Modal Peserta dengan RT & RW -->
 <div id="pesertaModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3 id="pesertaModalTitle">Tambah Peserta</h3><span class="close-modal" onclick="closeModal('pesertaModal')">&times;</span></div>
@@ -574,36 +177,27 @@
 </div>
 
 <script>
-    // HAPUS SERVICE WORKER YANG MEMBLOKIR
+    // HAPUS SERVICE WORKER
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then(function(registrations) {
-            for(let registration of registrations) {
-                registration.unregister();
-                console.log('Service Worker unregistered');
-            }
+            for(let registration of registrations) { registration.unregister(); }
         });
     }
+
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-nEFJdapo95SauEwA6sWUCEBjKKHZaDRlHvQJeuBxJSkHTdYO6lkmDX_aizZRQEBLxw/exec";
     
-    // ==================== KONFIGURASI ====================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxc9QAVMznImfBzU17eXSbhDeqUyaWx_IUXN3rvexCz5vqJFIcv5bjFYYY9KU3bCfzKiA/exec";
-    
-    let currentBankCategory = '';
-    let currentBankName = '';
-    let currentUser = '';
-    let currentUserName = '';
-    let pesertaData = [];
-    let pengurusData = [];
-    let pesertaList = [];
+    let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
+    let pesertaData = [], pengurusData = [], pesertaList = [];
 
     function toggleSidebar() {
         document.getElementById('sidebar').classList.toggle('active');
         document.getElementById('sidebarOverlay').classList.toggle('active');
     }
-    
     function closeSidebar() {
         document.getElementById('sidebar').classList.remove('active');
         document.getElementById('sidebarOverlay').classList.remove('active');
     }
+    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     
     function checkLogin() {
         const loggedIn = sessionStorage.getItem('banksampah_loggedIn');
@@ -630,7 +224,7 @@
                 }
                 document.getElementById('userName').innerHTML = `${result.name || currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
                 if (result.photoUrl && result.photoUrl !== '') {
-                    document.getElementById('userAvatar').innerHTML = `<img src="${result.photoUrl}" alt="Foto Admin">`;
+                    document.getElementById('userAvatar').innerHTML = `<img src="${result.photoUrl}">`;
                 } else {
                     document.getElementById('userAvatar').innerHTML = (result.name || currentUserName).charAt(0).toUpperCase();
                 }
@@ -638,42 +232,19 @@
                 document.getElementById('userAvatar').innerHTML = currentUserName.charAt(0).toUpperCase();
                 document.getElementById('userName').innerHTML = `${currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
             }
-        } catch (error) {
+        } catch(e) {
             document.getElementById('userAvatar').innerHTML = currentUserName.charAt(0).toUpperCase();
-            document.getElementById('userName').innerHTML = `${currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
         }
     }
     
-    function logout() {
-        sessionStorage.clear();
-        window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html';
-    }
+    function logout() { sessionStorage.clear(); window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html'; }
     
     async function callAppsScript(action, data = {}) {
         try {
-            const params = new URLSearchParams();
-            params.append('action', action);
-            params.append('kategori', currentBankCategory);
-            params.append('username', currentUser);
-            
-            for (const key in data) {
-                if (data.hasOwnProperty(key) && data[key] !== undefined && data[key] !== null) {
-                    params.append(key, data[key]);
-                }
-            }
-            
-            const url = `${APPS_SCRIPT_URL}?${params.toString()}`;
-            console.log("Requesting:", url);
-            
-            const response = await fetch(url, { method: 'GET' });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP ${response.status}`);
-            }
-            
-            const result = await response.json();
-            console.log("Response:", result);
-            return result;
+            const params = new URLSearchParams({ action: action, kategori: currentBankCategory, username: currentUser, ...data });
+            const response = await fetch(`${APPS_SCRIPT_URL}?${params.toString()}`);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
         } catch (error) {
             console.error('Error:', error);
             return { success: false, message: error.message };
@@ -690,7 +261,7 @@
             pengurusData.forEach(p => {
                 const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
                 const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
-                html += `<tr><td>${foto}</td><td><strong>${p.nama || '-'}</strong></td><td>${p.jabatan || '-'}</td><td>${p.alamat || '-'}</td><td>${p.no_hp || '-'}</td><td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="btn btn-success" style="text-decoration:none"><i class="fab fa-whatsapp"></i> Hubungi</a>` : '-'}</td></tr>`;
+                html += `<tr><td>${foto}</td><td><strong>${p.nama || '-'}</strong></td><td>${p.jabatan || '-'}</td><td>${p.alamat || '-'}</td><td>${p.no_hp || '-'}</td><td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="btn btn-success"><i class="fab fa-whatsapp"></i> Hubungi</a>` : '-'}</td></tr>`;
             });
             html += `</tbody></table></div></div>`;
             document.getElementById('pageContent').innerHTML = html;
@@ -725,10 +296,7 @@
     function filterPeserta() {
         const search = document.getElementById('searchPeserta')?.value.toLowerCase() || '';
         const rows = document.querySelectorAll('#pesertaTableBody tr');
-        rows.forEach(row => {
-            const nama = row.getAttribute('data-nama') || '';
-            row.style.display = nama.includes(search) ? '' : 'none';
-        });
+        rows.forEach(row => { row.style.display = row.getAttribute('data-nama').includes(search) ? '' : 'none'; });
     }
     
     function openSetoranModal(nama) {
@@ -764,9 +332,7 @@
         if (result.success) {
             pesertaList = result.data;
             let html = `<div class="card"><div class="card-title"><i class="fas fa-user-plus"></i> Manajemen Peserta<button class="btn btn-success" style="margin-left:auto" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"><table><thead><tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
-            if (pesertaList.length === 0) {
-                html += `<tr><td colspan="9" style="text-align:center">Belum ada data peserta</td></tr>`;
-            } else {
+            if (pesertaList.length === 0) { html += `<tr><td colspan="9" style="text-align:center">Belum ada data peserta</td></tr>`; } else {
                 pesertaList.forEach(p => {
                     const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
                     html += `<tr><td><code>${p.id_peserta || '-'}</code></td><td>${foto}</td><td><strong>${p.nama || '-'}</strong></td><td>${p.nik || '-'}</td><td>${p.alamat || '-'}</td><td>${p.rt || '-'}</td><td>${p.rw || '-'}</td><td>${p.no_hp || '-'}</td><td><button class="btn btn-warning" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button> <button class="btn btn-danger" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button></td></tr>`;
@@ -814,9 +380,7 @@
                 alert('✅ Peserta berhasil dihapus');
                 loadDaftarPeserta();
                 loadPeserta();
-            } else {
-                alert('❌ Error: ' + result.message);
-            }
+            } else { alert('❌ Error: ' + result.message); }
         }
     }
     
@@ -832,52 +396,36 @@
             no_hp: document.getElementById('pesertaNoHp').value,
             link_foto: document.getElementById('pesertaFoto').value
         };
-        let result;
-        if (editIdPeserta === '') {
-            result = await callAppsScript('tambahPeserta', data);
-        } else {
-            result = await callAppsScript('editPeserta', { ...data, id_peserta: editIdPeserta });
-        }
+        let result = editIdPeserta === '' ? await callAppsScript('tambahPeserta', data) : await callAppsScript('editPeserta', { ...data, id_peserta: editIdPeserta });
         if (result.success) {
             alert(editIdPeserta === '' ? '✅ Peserta berhasil ditambahkan!' : '✅ Peserta berhasil diupdate!');
             closeModal('pesertaModal');
             loadDaftarPeserta();
             loadPeserta();
-        } else {
-            alert('❌ Error: ' + result.message);
-        }
+        } else { alert('❌ Error: ' + result.message); }
     });
     
     async function loadRekap() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data rekap...</div>';
         const result = await callAppsScript('getRekap', {});
         if (result.success) {
-            const totalBulan = result.totalBulan || 0;
-            const estimasiTPA = 22500;
-            const persen = ((totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="stats-grid"><div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${(result.totalHari || 0).toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div><div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${(result.totalMinggu || 0).toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div><div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${totalBulan.toFixed(1)} kg</h3><p>Total Setor Bulan Ini</p></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3 style="color: #1b5e20;">📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background: #fff; border-radius: 10px; margin: 15px 0; height: 20px; overflow: hidden;"><div style="background: linear-gradient(90deg, #2e7d32, #4caf50); width: ${Math.min(persen, 100)}%; height: 100%; border-radius: 10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p><p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p></div></div>`;
+            const totalBulan = result.totalBulan || 0, estimasiTPA = 22500, persen = ((totalBulan / estimasiTPA) * 100).toFixed(1);
+            let html = `<div class="stats-grid"><div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${(result.totalHari || 0).toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div><div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${(result.totalMinggu || 0).toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div><div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${totalBulan.toFixed(1)} kg</h3><p>Total Setor Bulan Ini</p></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3 style="color:#1b5e20;">📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px; overflow:hidden;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p><p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p></div></div>`;
             document.getElementById('pageContent').innerHTML = html;
-        } else {
-            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result.message}</p></div>`;
-        }
+        } else { document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result.message}</p></div>`; }
     }
     
     async function loadGrafik() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data grafik...</div>';
         const result = await callAppsScript('getGrafikData', {});
         if (result.success) {
-            const estimasiTPA = 22500;
-            const persen = ((result.totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="charts-grid"><div class="chart-container"><h3 style="margin-bottom: 15px;"><i class="fas fa-trophy"></i> Top 10 Peserta (Total Setor)</h3><canvas id="top10Chart"></canvas></div><div class="chart-container"><h3 style="margin-bottom: 15px;"><i class="fas fa-chart-pie"></i> Komposisi Sampah Bulan Ini</h3><canvas id="komposisiChart"></canvas></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3 style="color: #1b5e20;">📊 ${result.totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background: #fff; border-radius: 10px; margin: 15px 0; height: 20px; overflow: hidden;"><div style="background: linear-gradient(90deg, #2e7d32, #4caf50); width: ${Math.min(persen, 100)}%; height: 100%; border-radius: 10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${result.totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p><p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${result.totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p></div></div>`;
+            const estimasiTPA = 22500, persen = ((result.totalBulan / estimasiTPA) * 100).toFixed(1);
+            let html = `<div class="charts-grid"><div class="chart-container"><h3 style="margin-bottom:15px;"><i class="fas fa-trophy"></i> Top 10 Peserta (Total Setor)</h3><canvas id="top10Chart"></canvas></div><div class="chart-container"><h3 style="margin-bottom:15px;"><i class="fas fa-chart-pie"></i> Komposisi Sampah Bulan Ini</h3><canvas id="komposisiChart"></canvas></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3 style="color:#1b5e20;">📊 ${result.totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px; overflow:hidden;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${result.totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p><p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${result.totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p></div></div>`;
             document.getElementById('pageContent').innerHTML = html;
             const top10 = result.top10 || [];
-            if (top10.length > 0) {
-                new Chart(document.getElementById('top10Chart'), { type: 'bar', data: { labels: top10.map(t => t.nama.length > 15 ? t.nama.substring(0,15)+'...' : t.nama), datasets: [{ label: 'Total Setor (kg)', data: top10.map(t => t.total), backgroundColor: '#4caf50', borderRadius: 8 }] }, options: { responsive: true } });
-            }
+            if (top10.length) { new Chart(document.getElementById('top10Chart'), { type: 'bar', data: { labels: top10.map(t => t.nama.length > 15 ? t.nama.substring(0,15)+'...' : t.nama), datasets: [{ label: 'Total Setor (kg)', data: top10.map(t => t.total), backgroundColor: '#4caf50', borderRadius: 8 }] }, options: { responsive: true } }); }
             new Chart(document.getElementById('komposisiChart'), { type: 'doughnut', data: { labels: ['Organik', 'An Organik', 'Residu'], datasets: [{ data: [result.totalOrganik || 0, result.totalAnOrganik || 0, result.totalResidu || 0], backgroundColor: ['#4caf50', '#ff9800', '#f44336'], borderWidth: 0 }] }, options: { responsive: true } });
-        } else {
-            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result.message}</p></div>`;
-        }
+        } else { document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result.message}</p></div>`; }
     }
     
     function loadPage(page) {
@@ -906,7 +454,6 @@
         });
     });
     
-    function closeModal(id) { document.getElementById(id).style.display = 'none'; }
     window.onclick = function(event) { if (event.target.classList.contains('modal')) event.target.style.display = 'none'; }
     window.addEventListener('resize', function() { if (window.innerWidth > 768) closeSidebar(); });
     
