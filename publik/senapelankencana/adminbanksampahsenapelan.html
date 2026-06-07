@@ -609,7 +609,7 @@
 
 <script>
     // ==================== KONFIGURASI ====================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxtxA3ZWCFPZTenU3eSLsqbcGpIru-CK45gVgv4ar1vKrtv0cnNacE-yigMlrXjE6wO7g/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwc4zY0ui0ze0KyCgXAfJrXq5VZBOSdot9p-txKj4n_SpIXxv5AwnurS76vr5lQh_mzgw/exec";
     
     // State
     let currentBankCategory = '';
@@ -633,12 +633,47 @@
         currentUser = sessionStorage.getItem('banksampah_username');
         currentUserName = sessionStorage.getItem('banksampah_userFullName') || currentUser;
         
-        document.getElementById('userName').innerHTML = `${currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
         document.getElementById('sidebarBankName').innerHTML = `<i class="fas fa-leaf"></i> ${currentBankName}`;
-        const initial = currentUserName.charAt(0).toUpperCase();
-        document.getElementById('userAvatar').innerText = initial;
+        
+        // Load foto admin
+        loadAdminData();
         
         return true;
+    }
+    
+    // ==================== AMBIL DATA ADMIN ====================
+    async function loadAdminData() {
+        try {
+            const result = await callAppsScript('getAdminInfo', {
+                username: currentUser,
+                category: currentBankCategory
+            });
+            if (result.success) {
+                // Update nama admin
+                if (result.name && result.name !== currentUserName) {
+                    currentUserName = result.name;
+                    sessionStorage.setItem('banksampah_userFullName', result.name);
+                }
+                document.getElementById('userName').innerHTML = `${result.name || currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
+                
+                // Tampilkan foto admin jika ada
+                if (result.photoUrl && result.photoUrl !== '') {
+                    document.getElementById('userAvatar').innerHTML = `<img src="${result.photoUrl}" style="width:45px; height:45px; border-radius:50%; object-fit:cover; background:#fff;">`;
+                } else {
+                    const initial = (result.name || currentUserName).charAt(0).toUpperCase();
+                    document.getElementById('userAvatar').innerHTML = initial;
+                }
+            } else {
+                const initial = currentUserName.charAt(0).toUpperCase();
+                document.getElementById('userAvatar').innerHTML = initial;
+                document.getElementById('userName').innerHTML = `${currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
+            }
+        } catch (error) {
+            console.error('Error loading admin photo:', error);
+            const initial = currentUserName.charAt(0).toUpperCase();
+            document.getElementById('userAvatar').innerHTML = initial;
+            document.getElementById('userName').innerHTML = `${currentUserName} <i class="fas fa-check-circle" style="color:#4caf50"></i>`;
+        }
     }
     
     function logout() {
@@ -850,9 +885,9 @@
                 <button class="btn btn-success" style="margin-left:auto" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button>
             </div>
             <div class="table-container">
-                 <table>
+                <table>
                     <thead>
-                         <tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
+                        <tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
                     </thead>
                     <tbody>`;
         
@@ -864,22 +899,22 @@
                     `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://via.placeholder.com/40?text=User'">` : 
                     `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
                 html += `<tr data-id-peserta="${p.id_peserta}">
-                     <td><code>${p.id_peserta || '-'}</code></td>
-                     <td>${foto}</td>
-                     <td><strong>${p.nama || '-'}</strong></td>
-                     <td>${p.nik || '-'}</td>
-                     <td>${p.alamat || '-'}</td>
-                     <td>${p.no_hp || '-'}</td>
-                     <td>
+                    <td><code>${p.id_peserta || '-'}</code></td>
+                    <td>${foto}</td>
+                    <td><strong>${p.nama || '-'}</strong></td>
+                    <td>${p.nik || '-'}</td>
+                    <td>${p.alamat || '-'}</td>
+                    <td>${p.no_hp || '-'}</td>
+                    <td>
                         <button class="btn btn-warning" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-danger" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button>
-                     </td>
-                 </tr>`;
+                    </td>
+                </tr>`;
             });
         }
         
         html += `</tbody>
-                 </table>
+                </table>
             </div>
         </div>`;
         document.getElementById('pageContent').innerHTML = html;
@@ -897,7 +932,6 @@
     }
     
     function editPeserta(idPeserta) {
-        // Cari data peserta berdasarkan ID
         const p = pesertaList.find(item => item.id_peserta === idPeserta);
         if (!p) {
             alert('Data peserta tidak ditemukan!');
@@ -942,10 +976,8 @@
         
         let result;
         if (editIdPeserta === '') {
-            // Tambah baru
             result = await callAppsScript('tambahPeserta', data);
         } else {
-            // Edit existing
             result = await callAppsScript('editPeserta', { 
                 ...data, 
                 id_peserta: editIdPeserta 
@@ -1028,7 +1060,6 @@
             </div>`;
             document.getElementById('pageContent').innerHTML = html;
             
-            // Top 10 Chart
             const top10 = result.top10 || [];
             if (top10.length > 0) {
                 new Chart(document.getElementById('top10Chart'), {
@@ -1050,7 +1081,6 @@
                 });
             }
             
-            // Komposisi Chart
             new Chart(document.getElementById('komposisiChart'), {
                 type: 'doughnut',
                 data: {
