@@ -409,49 +409,48 @@
         }
     });
     
-   // ==================== RIWAYAT SETORAN ====================
-async function loadRiwayat() {
-    document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat riwayat setoran...</div>';
-    const result = await callAppsScript('getRiwayatSetoran', {});
-    
-    console.log("Riwayat data:", result); // Untuk debugging
-    
-    if (result && result.success && result.data && result.data.length > 0) {
-        let html = `<div class="card">
-            <div class="card-title"><span><i class="fas fa-history"></i> Riwayat Setoran Sampah</span>
-            <div class="search-box"><input type="text" id="searchRiwayat" placeholder="Cari nama..." onkeyup="filterRiwayat()"></div></div>
-            <div class="table-container"><table id="riwayatTable"><thead><tr>
-                <th>Tanggal</th>
-                <th>Foto</th>
-                <th>Nama</th>
-                <th>Organik</th>
-                <th>An Organik</th>
-                <th>Residu</th>
-                <th>Total</th>
-            </tr></thead><tbody id="riwayatTableBody">`;
-        
-        result.data.forEach(r => {
-            const tgl = r.tanggal ? new Date(r.tanggal).toLocaleDateString('id-ID') : '-';
-            // Gunakan foto dari data jika ada, atau buat avatar dari nama
-            const foto = r.foto ? `<img src="${r.foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${r.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
+    // ==================== RIWAYAT SETORAN ====================
+    async function loadRiwayat() {
+        document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat riwayat setoran...</div>';
+        const result = await callAppsScript('getRiwayatSetoran', {});
+        if (result && result.success && result.data && result.data.length > 0) {
+            let html = `<div class="card">
+                <div class="card-title"><span><i class="fas fa-history"></i> Riwayat Setoran Sampah</span>
+                <div class="search-box"><input type="text" id="searchRiwayat" placeholder="Cari nama..." onkeyup="filterRiwayat()"></div></div>
+                <div class="table-container"><table id="riwayatTable"><thead><tr>
+                    <th>Tanggal</th><th>Nama</th><th>Alamat</th><th>RT/RW</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th>
+                </tr></thead><tbody id="riwayatTableBody">`;
             
-            html += `<tr data-nama="${(r.nama || '').toLowerCase()}">
-                <td>${tgl}</td>
-                <td>${foto}</td>
-                <td><strong>${r.nama || '-'}</strong></td>
-                <td class="organic-badge">${(r.organik || 0).toFixed(1)} kg</td>
-                <td class="anorganic-badge">${(r.an_organik || 0).toFixed(1)} kg</td>
-                <td class="residu-badge">${(r.residu || 0).toFixed(1)} kg</td>
-                <td class="total-weight">${(r.total || 0).toFixed(1)} kg</td>
-            </table>`;
-        });
-        
-        html += `</tbody></table></div></div>`;
-        document.getElementById('pageContent').innerHTML = html;
-    } else {
-        document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada riwayat setoran.</p></div>`;
+            result.data.forEach(r => {
+                const tgl = r.tanggal ? new Date(r.tanggal).toLocaleDateString('id-ID') : '-';
+                const rtRw = `RT ${r.rt || '-'} / RW ${r.rw || '-'}`;
+                html += `<tr data-nama="${(r.nama || '').toLowerCase()}">
+                    <td>${tgl}</td>
+                    <td><strong>${r.nama || '-'}</strong></td>
+                    <td>${r.alamat || '-'}</td>
+                    <td><span class="rt-rw-badge">${rtRw}</span></td>
+                    <td class="organic-badge">${(r.organik || 0).toFixed(1)} kg</td>
+                    <td class="anorganic-badge">${(r.an_organik || 0).toFixed(1)} kg</td>
+                    <td class="residu-badge">${(r.residu || 0).toFixed(1)} kg</td>
+                    <td><strong class="total-weight">${(r.total || 0).toFixed(1)} kg</strong></td>
+                </tr>`;
+            });
+            
+            html += `</tbody></table></div></div>`;
+            document.getElementById('pageContent').innerHTML = html;
+        } else {
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada riwayat setoran.</p></div>`;
+        }
     }
-}
+    
+    function filterRiwayat() {
+        const search = document.getElementById('searchRiwayat')?.value.toLowerCase() || '';
+        const rows = document.querySelectorAll('#riwayatTableBody tr');
+        rows.forEach(row => {
+            const nama = row.getAttribute('data-nama') || '';
+            row.style.display = nama.includes(search) ? '' : 'none';
+        });
+    }
     
     // ==================== DAFTAR PESERTA (MANAJEMEN) ====================
     async function loadDaftarPeserta() {
