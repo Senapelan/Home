@@ -7,6 +7,8 @@
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- SweetAlert2 untuk notifikasi modern -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     
@@ -43,12 +45,12 @@
         .logout-btn:hover { background: #c82333; transform: scale(1.02); }
         
         .card { background: white; border-radius: 20px; padding: 25px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); }
-        .card-title { font-size: 1.2rem; font-weight: 600; color: #1b5e20; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .card-title { font-size: 1.2rem; font-weight: 600; color: #1b5e20; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #e0e0e0; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; justify-content: space-between; }
         
         .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; min-width: 800px; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; }
-        th { background: #f5f5f5; font-weight: 600; color: #333; position: sticky; top: 0; }
+        table { width: 100%; border-collapse: collapse; min-width: 900px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #e0e0e0; vertical-align: middle; }
+        th { background: #1b5e20; color: white; font-weight: 600; position: sticky; top: 0; }
         tr:hover { background: #f9f9f9; }
         
         .btn { padding: 6px 12px; border: none; border-radius: 8px; cursor: pointer; font-size: 0.8rem; transition: all 0.3s; }
@@ -79,19 +81,43 @@
         
         .wa-link { color: #25D366; text-decoration: none; font-weight: 600; }
         .wa-link:hover { text-decoration: underline; }
-        .organic { background: #4caf50; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; }
-        .anorganic { background: #ff9800; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; }
-        .residu { background: #f44336; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; }
-        .foto-bullet { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
-        .rt-rw-badge { background: #e8f5e9; color: #2e7d32; padding: 2px 8px; border-radius: 12px; font-size: 0.7rem; display: inline-block; }
+        .organic-badge { background: #4caf50; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; font-size: 0.75rem; }
+        .anorganic-badge { background: #ff9800; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; font-size: 0.75rem; }
+        .residu-badge { background: #f44336; color: white; padding: 4px 8px; border-radius: 6px; display: inline-block; font-size: 0.75rem; }
+        .foto-bullet { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #e8f5e9; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #2e7d32; }
+        .rt-rw-badge { background: #e8f5e9; color: #2e7d32; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; display: inline-block; }
+        .total-weight { font-weight: 700; color: #1b5e20; font-size: 1rem; }
         
         .menu-toggle { display: none; position: fixed; top: 20px; left: 20px; z-index: 1001; background: #2e7d32; color: white; padding: 12px 16px; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.2); font-size: 1rem; align-items: center; gap: 8px; border: none; }
         .menu-toggle:hover { background: #1b5e20; }
         .loading { text-align: center; padding: 50px; font-size: 1.2rem; color: #666; }
-        .search-box { margin-left: auto; display: flex; gap: 10px; }
-        .search-box input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; }
+        .search-box { display: flex; gap: 10px; }
+        .search-box input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 0.9rem; width: 250px; }
         .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; transition: opacity 0.3s ease; }
         .sidebar-overlay.active { display: block; opacity: 1; }
+        
+        /* Toast Notification */
+        .toast-notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2e7d32;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 3000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .toast-notification.error { background: #dc3545; }
+        .toast-notification.success { background: #2e7d32; }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
         
         @media (max-width: 768px) {
             .sidebar { left: -280px; box-shadow: none; }
@@ -105,7 +131,7 @@
             th, td { padding: 8px 6px; }
             .btn { padding: 4px 8px; font-size: 0.7rem; }
             .card-title { flex-direction: column; text-align: center; }
-            .search-box { margin-left: 0; width: 100%; }
+            .search-box { margin-top: 10px; width: 100%; }
             .search-box input { width: 100%; }
             .form-row { grid-template-columns: 1fr; gap: 10px; }
         }
@@ -201,6 +227,16 @@
     
     let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
     let pesertaData = [], pengurusData = [], pesertaList = [];
+    let isProcessing = false;
+
+    // Toast notification
+    function showToast(message, type = 'success') {
+        const toast = document.createElement('div');
+        toast.className = `toast-notification ${type}`;
+        toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle'}"></i> ${message}`;
+        document.body.appendChild(toast);
+        setTimeout(() => { toast.remove(); }, 3000);
+    }
 
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
@@ -235,7 +271,7 @@
     
     async function loadAdminData() {
         try {
-            const result = await callAppsScriptJSONP('getAdminInfo', { username: currentUser, category: currentBankCategory });
+            const result = await callAppsScript('getAdminInfo', { username: currentUser, category: currentBankCategory });
             if (result && result.success) {
                 if (result.name && result.name !== currentUserName) {
                     currentUserName = result.name;
@@ -256,9 +292,9 @@
     
     function logout() { sessionStorage.clear(); window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html'; }
     
-    // ==================== METODE JSONP (CORS-FREE) ====================
-    function callAppsScriptJSONP(action, data = {}) {
-        return new Promise((resolve, reject) => {
+    // ==================== METODE CALL APPS SCRIPT (SATU METHOD, TIDAK DOUBLE) ====================
+    async function callAppsScript(action, data = {}) {
+        return new Promise((resolve) => {
             const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
             const params = new URLSearchParams({
                 action: action,
@@ -279,75 +315,18 @@
             script.onerror = function() {
                 delete window[callbackName];
                 document.body.removeChild(script);
-                reject(new Error('JSONP request failed'));
+                resolve({ success: false, message: 'Request failed' });
             };
+            
+            // Timeout 10 detik
+            setTimeout(() => {
+                if (window[callbackName]) {
+                    window[callbackName]({ success: false, message: 'Timeout' });
+                }
+            }, 10000);
+            
             document.body.appendChild(script);
         });
-    }
-    
-    // Untuk operasi yang tidak perlu response (tambah/edit/hapus) - pakai iframe
-    function submitToGoogleScript(params, callback) {
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        const form = document.createElement('form');
-        form.method = 'GET';
-        form.action = APPS_SCRIPT_URL;
-        form.target = 'hidden_iframe';
-        
-        for (const key in params) {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = params[key];
-            form.appendChild(input);
-        }
-        
-        const iframeName = 'hidden_iframe_' + Date.now();
-        iframe.name = iframeName;
-        form.target = iframeName;
-        
-        iframe.onload = function() {
-            setTimeout(() => {
-                document.body.removeChild(iframe);
-                if (callback) callback({ success: true });
-            }, 500);
-        };
-        
-        document.body.appendChild(iframe);
-        document.body.appendChild(form);
-        form.submit();
-        setTimeout(() => {
-            document.body.removeChild(form);
-        }, 100);
-    }
-    
-    // Untuk operasi GET yang butuh response (load data)
-    async function callAppsScript(action, data = {}) {
-        try {
-            return await callAppsScriptJSONP(action, data);
-        } catch(e) {
-            console.error('JSONP Error:', e);
-            return { success: false, message: e.message };
-        }
-    }
-    
-    // Untuk operasi POST yang tidak butuh response (tambah/edit/hapus/setoran)
-    function callAppsScriptNoResponse(action, data = {}) {
-        const params = new URLSearchParams({
-            action: action,
-            kategori: currentBankCategory,
-            username: currentUser,
-            ...data
-        });
-        
-        // Kirim via image beacon (tidak perlu response)
-        const img = new Image();
-        img.src = `${APPS_SCRIPT_URL}?${params.toString()}`;
-        
-        // Juga kirim via fetch yang tidak peduli response
-        fetch(`${APPS_SCRIPT_URL}?${params.toString()}`, { method: 'GET', mode: 'no-cors' }).catch(e => console.log);
-        
-        return Promise.resolve({ success: true });
     }
     
     // ==================== PENGURUS ====================
@@ -357,9 +336,13 @@
         const result = await callAppsScript('getPengurus', { sheetName: sheetName });
         if (result && result.success) {
             pengurusData = result.data || [];
-            let html = `<div class="card"><div class="card-title"><i class="fas fa-users"></i> Struktur Pengurus Bank Sampah ${currentBankName}</div><div class="table-container"><table><thead><tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
+            if (pengurusData.length === 0) {
+                document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada data pengurus.</p></div>`;
+                return;
+            }
+            let html = `<div class="card"><div class="card-title"><i class="fas fa-users"></i> Struktur Pengurus Bank Sampah ${currentBankName}</div><div class="table-container"></table><thead><tr><th>Foto</th><th>Nama</th><th>Jabatan</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
             pengurusData.forEach(p => {
-                const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
+                const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
                 const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
                 html += `<tr><td>${foto}</td><td><strong>${p.nama || '-'}</strong></td><td>${p.jabatan || '-'}</td><td>${p.alamat || '-'}</td><td>${p.no_hp || '-'}</td><td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="btn btn-success"><i class="fab fa-whatsapp"></i> Hubungi</a>` : '-'}</td></tr>`;
             });
@@ -370,7 +353,7 @@
         }
     }
     
-    // ==================== PESERTA ====================
+    // ==================== PESERTA (TAMPILAN UTAMA) ====================
     async function loadPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         const result = await callAppsScript('getPeserta', {});
@@ -380,13 +363,54 @@
                 document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada data peserta. Silakan daftarkan peserta melalui menu "Daftarkan Peserta".</p></div>`;
                 return;
             }
-            let html = `<div class="card"><div class="card-title"><i class="fas fa-user-friends"></i> Daftar Peserta Bank Sampah ${currentBankName}<div class="search-box"><input type="text" id="searchPeserta" placeholder="Cari nama..." onkeyup="filterPeserta()"></div></div><div class="table-container"><table><thead><tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>RT/RW</th><th>No HP</th><th>Tanggal Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th><th>Aksi</th></tr></thead><tbody id="pesertaTableBody">`;
+            
+            let html = `<div class="card">
+                <div class="card-title">
+                    <span><i class="fas fa-user-friends"></i> Daftar Peserta Bank Sampah ${currentBankName}</span>
+                    <div class="search-box">
+                        <input type="text" id="searchPeserta" placeholder="Cari nama..." onkeyup="filterPeserta()">
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table id="pesertaTable">
+                        <thead>
+                            <tr>
+                                <th>Foto</th>
+                                <th>Nama</th>
+                                <th>Alamat</th>
+                                <th>RT/RW</th>
+                                <th>No HP</th>
+                                <th>Tanggal Setor</th>
+                                <th>Organik</th>
+                                <th>An Organik</th>
+                                <th>Residu</th>
+                                <th>Total</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pesertaTableBody">`;
+            
             pesertaData.forEach(p => {
-                const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
+                const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
                 const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
-                const tgl = p.tanggal_setor ? new Date(p.tanggal_setor).toLocaleDateString('id-ID') : '-';
-                html += `<tr data-nama="${(p.nama || '').toLowerCase()}"><td>${foto}</td><td><strong>${p.nama || '-'}</strong></td><td>${p.alamat || '-'}</td><td><span class="rt-rw-badge">RT ${p.rt || '-'} / RW ${p.rw || '-'}</span></td><td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td><td>${tgl}</td><td class="organic">${p.organik || 0} kg</td><td class="anorganic">${p.an_organik || 0} kg</td><td class="residu">${p.residu || 0} kg</td><td class="organic">${p.total || 0} kg</td><td><button class="btn btn-primary" onclick="openSetoranModal('${p.nama}')"><i class="fas fa-edit"></i> Setor</button></td></tr>`;
+                const tgl = p.tanggal_setor && p.tanggal_setor !== '' ? new Date(p.tanggal_setor).toLocaleDateString('id-ID') : '-';
+                const rtRw = `RT ${p.rt || '-'} / RW ${p.rw || '-'}`;
+                
+                html += `<tr data-nama="${(p.nama || '').toLowerCase()}">
+                    <td>${foto}</td>
+                    <td><strong>${p.nama || '-'}</strong></td>
+                    <td>${p.alamat || '-'}</td>
+                    <td><span class="rt-rw-badge">${rtRw}</span></td>
+                    <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
+                    <td><small>${tgl}</small></td>
+                    <td class="organic-badge">${(p.organik || 0).toFixed(1)} kg</td>
+                    <td class="anorganic-badge">${(p.an_organik || 0).toFixed(1)} kg</td>
+                    <td class="residu-badge">${(p.residu || 0).toFixed(1)} kg</td>
+                    <td><span class="total-weight">${(p.total || 0).toFixed(1)} kg</span></td>
+                    <td><button class="btn btn-primary" onclick="openSetoranModal('${p.nama.replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Setor</button></td>
+                </tr>`;
             });
+            
             html += `</tbody></table></div></div>`;
             document.getElementById('pageContent').innerHTML = html;
         } else {
@@ -397,7 +421,10 @@
     function filterPeserta() {
         const search = document.getElementById('searchPeserta')?.value.toLowerCase() || '';
         const rows = document.querySelectorAll('#pesertaTableBody tr');
-        rows.forEach(row => { row.style.display = row.getAttribute('data-nama').includes(search) ? '' : 'none'; });
+        rows.forEach(row => {
+            const nama = row.getAttribute('data-nama') || '';
+            row.style.display = nama.includes(search) ? '' : 'none';
+        });
     }
     
     function openSetoranModal(nama) {
@@ -409,12 +436,17 @@
         document.getElementById('setoranModal').style.display = 'flex';
     }
     
+    // SUBMIT SETORAN (TIDAK DOUBLE)
     document.getElementById('setoranForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (isProcessing) return;
+        isProcessing = true;
+        
         const btn = e.target.querySelector('button');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Menyimpan...';
         btn.disabled = true;
+        
         try {
             const nama = document.getElementById('setoranNama').value;
             const organik = parseFloat(document.getElementById('organik').value) || 0;
@@ -423,27 +455,49 @@
             const total = organik + anOrganik + residu;
             const tanggal = new Date().toISOString().split('T')[0];
             
-            // Kirim tanpa menunggu response
-            callAppsScriptNoResponse('updateSetoran', { nama, organik, anOrganik, residu, total, tanggal });
+            const result = await callAppsScript('updateSetoran', { nama, organik, anOrganik, residu, total, tanggal });
             
-            alert('✅ Setoran berhasil disimpan!');
-            closeModal('setoranModal');
-            setTimeout(() => loadPeserta(), 1000);
-        } catch(err) { alert('❌ Error: ' + err.message); }
-        finally { btn.innerHTML = originalText; btn.disabled = false; }
+            if (result && result.success) {
+                closeModal('setoranModal');
+                showToast('✅ Setoran berhasil disimpan!', 'success');
+                await loadPeserta();
+            } else {
+                showToast('❌ Gagal: ' + (result?.message || 'Unknown error'), 'error');
+            }
+        } catch(err) {
+            showToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            isProcessing = false;
+        }
     });
     
-    // ==================== DAFTAR PESERTA ====================
+    // ==================== DAFTAR PESERTA (MANAJEMEN) ====================
     async function loadDaftarPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         const result = await callAppsScript('getDaftarPeserta', {});
         if (result && result.success) {
             pesertaList = result.data || [];
-            let html = `<div class="card"><div class="card-title"><i class="fas fa-user-plus"></i> Manajemen Peserta<button class="btn btn-success" style="margin-left:auto" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"><table><thead><tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
-            if (pesertaList.length === 0) { html += `<tr><td colspan="9" style="text-align:center">Belum ada data peserta</td>`; } else {
+            let html = `<div class="card"><div class="card-title"><span><i class="fas fa-user-plus"></i> Manajemen Peserta</span><button class="btn btn-success" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"></td><thead><tr><th>ID</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
+            if (pesertaList.length === 0) { 
+                html += `<tr><td colspan="9" style="text-align:center">Belum ada data peserta</td></tr>`; 
+            } else {
                 pesertaList.forEach(p => {
-                    const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<i class="fas fa-user-circle fa-2x" style="color:#999"></i>`;
-                    html += `<tr><td><code>${p.id_peserta || '-'}</code></td><td>${foto}</td><td><strong>${p.nama || '-'}</strong></td><td>${p.nik || '-'}</td><td>${p.alamat || '-'}</td><td>${p.rt || '-'}</td><td>${p.rw || '-'}</td><td>${p.no_hp || '-'}</td><td><button class="btn btn-warning" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button> <button class="btn btn-danger" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button></td></tr>`;
+                    const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
+                    html += `<tr>
+                        <td><small>${(p.id_peserta || '').slice(-8)}</small></td>
+                        <td>${foto}</td>
+                        <td><strong>${p.nama || '-'}</strong></td>
+                        <td>${p.nik || '-'}</td>
+                        <td>${p.alamat || '-'}</td>
+                        <td>${p.rt || '-'}</td>
+                        <td>${p.rw || '-'}</td>
+                        <td>${p.no_hp || '-'}</td>
+                        <td>
+                            <button class="btn btn-warning" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button>
+                            <button class="btn btn-danger" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button>
+                        </tr>`;
                 });
             }
             html += `</tbody></table></div></div>`;
@@ -468,7 +522,7 @@
     
     function editPeserta(idPeserta) {
         const p = pesertaList.find(item => item.id_peserta === idPeserta);
-        if (!p) { alert('Data tidak ditemukan!'); return; }
+        if (!p) { showToast('Data tidak ditemukan!', 'error'); return; }
         document.getElementById('pesertaModalTitle').innerHTML = '<i class="fas fa-edit"></i> Edit Peserta';
         document.getElementById('editIdPeserta').value = idPeserta;
         document.getElementById('pesertaNama').value = p.nama || '';
@@ -482,22 +536,39 @@
     }
     
     async function hapusPeserta(nama, idPeserta) {
-        if (confirm(`Yakin ingin menghapus ${nama}?`)) {
-            callAppsScriptNoResponse('hapusPeserta', { id_peserta: idPeserta });
-            alert('✅ Peserta berhasil dihapus');
-            setTimeout(() => {
-                loadDaftarPeserta();
-                loadPeserta();
-            }, 1000);
+        const confirm = await Swal.fire({
+            title: 'Konfirmasi Hapus',
+            text: `Yakin ingin menghapus ${nama}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#dc3545',
+            confirmButtonText: 'Ya, Hapus!',
+            cancelButtonText: 'Batal'
+        });
+        
+        if (confirm.isConfirmed) {
+            const result = await callAppsScript('hapusPeserta', { id_peserta: idPeserta });
+            if (result && result.success) {
+                showToast('✅ Peserta berhasil dihapus', 'success');
+                await loadDaftarPeserta();
+                await loadPeserta();
+            } else {
+                showToast('❌ Gagal menghapus: ' + (result?.message || 'Unknown error'), 'error');
+            }
         }
     }
     
+    // SUBMIT PESERTA (TAMBAH/EDIT) - TIDAK DOUBLE
     document.getElementById('pesertaForm').addEventListener('submit', async (e) => {
         e.preventDefault();
+        if (isProcessing) return;
+        isProcessing = true;
+        
         const btn = e.target.querySelector('button');
         const originalText = btn.innerHTML;
         btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Menyimpan...';
         btn.disabled = true;
+        
         try {
             const editIdPeserta = document.getElementById('editIdPeserta').value;
             const data = {
@@ -513,16 +584,23 @@
             const action = editIdPeserta === '' ? 'tambahPeserta' : 'editPeserta';
             if (editIdPeserta !== '') data.id_peserta = editIdPeserta;
             
-            callAppsScriptNoResponse(action, data);
+            const result = await callAppsScript(action, data);
             
-            alert(editIdPeserta === '' ? '✅ Peserta berhasil ditambahkan!' : '✅ Peserta berhasil diupdate!');
-            closeModal('pesertaModal');
-            setTimeout(() => {
-                loadDaftarPeserta();
-                loadPeserta();
-            }, 1000);
-        } catch(err) { alert('❌ Error: ' + err.message); }
-        finally { btn.innerHTML = originalText; btn.disabled = false; }
+            if (result && result.success) {
+                closeModal('pesertaModal');
+                showToast(editIdPeserta === '' ? '✅ Peserta berhasil ditambahkan!' : '✅ Peserta berhasil diupdate!', 'success');
+                await loadDaftarPeserta();
+                await loadPeserta();
+            } else {
+                showToast('❌ Gagal: ' + (result?.message || 'Unknown error'), 'error');
+            }
+        } catch(err) {
+            showToast('❌ Error: ' + err.message, 'error');
+        } finally {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            isProcessing = false;
+        }
     });
     
     // ==================== REKAP ====================
@@ -531,9 +609,24 @@
         const result = await callAppsScript('getRekap', {});
         if (result && result.success) {
             const totalBulan = result.totalBulan || 0, estimasiTPA = 22500, persen = ((totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="stats-grid"><div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${(result.totalHari || 0).toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div><div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${(result.totalMinggu || 0).toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div><div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${totalBulan.toFixed(1)} kg</h3><p>Total Setor Bulan Ini</p></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3 style="color:#1b5e20;">📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px; overflow:hidden;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p><p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p></div></div>`;
+            let html = `<div class="stats-grid">
+                <div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${(result.totalHari || 0).toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div>
+                <div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${(result.totalMinggu || 0).toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div>
+                <div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${totalBulan.toFixed(1)} kg</h3><p>Total Setor Bulan Ini</p></div>
+            </div>
+            <div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA</div>
+            <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;">
+                <h3 style="color:#1b5e20;">📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3>
+                <div style="background:#fff; border-radius:10px; margin:15px 0; height:20px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div>
+                </div>
+                <p><strong>Capaian Pengurangan TPA:</strong> ${totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p>
+                <p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p>
+            </div></div>`;
             document.getElementById('pageContent').innerHTML = html;
-        } else { document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; }
+        } else { 
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
+        }
     }
     
     // ==================== GRAFIK ====================
@@ -542,18 +635,50 @@
         const result = await callAppsScript('getGrafikData', {});
         if (result && result.success) {
             const estimasiTPA = 22500, persen = ((result.totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="charts-grid"><div class="chart-container"><h3 style="margin-bottom:15px;"><i class="fas fa-trophy"></i> Top 10 Peserta (Total Setor)</h3><canvas id="top10Chart"></canvas></div><div class="chart-container"><h3 style="margin-bottom:15px;"><i class="fas fa-chart-pie"></i> Komposisi Sampah Bulan Ini</h3><canvas id="komposisiChart"></canvas></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3 style="color:#1b5e20;">📊 ${result.totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px; overflow:hidden;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${result.totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p><p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${result.totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p></div></div>`;
+            let html = `<div class="charts-grid">
+                <div class="chart-container"><h3 style="margin-bottom:15px;"><i class="fas fa-trophy"></i> Top 10 Peserta (Total Setor)</h3><canvas id="top10Chart"></canvas></div>
+                <div class="chart-container"><h3 style="margin-bottom:15px;"><i class="fas fa-chart-pie"></i> Komposisi Sampah Bulan Ini</h3><canvas id="komposisiChart"></canvas></div>
+            </div>
+            <div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA</div>
+            <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;">
+                <h3 style="color:#1b5e20;">📊 ${result.totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3>
+                <div style="background:#fff; border-radius:10px; margin:15px 0; height:20px; overflow:hidden;">
+                    <div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div>
+                </div>
+                <p><strong>Capaian Pengurangan TPA:</strong> ${result.totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya</p>
+                <p>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${result.totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong></p>
+            </div></div>`;
             document.getElementById('pageContent').innerHTML = html;
+            
             const top10 = result.top10 || [];
-            if (top10.length) { new Chart(document.getElementById('top10Chart'), { type: 'bar', data: { labels: top10.map(t => t.nama.length > 15 ? t.nama.substring(0,15)+'...' : t.nama), datasets: [{ label: 'Total Setor (kg)', data: top10.map(t => t.total), backgroundColor: '#4caf50', borderRadius: 8 }] }, options: { responsive: true } }); }
-            new Chart(document.getElementById('komposisiChart'), { type: 'doughnut', data: { labels: ['Organik', 'An Organik', 'Residu'], datasets: [{ data: [result.totalOrganik || 0, result.totalAnOrganik || 0, result.totalResidu || 0], backgroundColor: ['#4caf50', '#ff9800', '#f44336'], borderWidth: 0 }] }, options: { responsive: true } });
-        } else { document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; }
+            if (top10.length) { 
+                new Chart(document.getElementById('top10Chart'), { 
+                    type: 'bar', 
+                    data: { 
+                        labels: top10.map(t => t.nama.length > 15 ? t.nama.substring(0,15)+'...' : t.nama), 
+                        datasets: [{ label: 'Total Setor (kg)', data: top10.map(t => t.total), backgroundColor: '#4caf50', borderRadius: 8 }] 
+                    }, 
+                    options: { responsive: true } 
+                }); 
+            }
+            new Chart(document.getElementById('komposisiChart'), { 
+                type: 'doughnut', 
+                data: { 
+                    labels: ['Organik', 'An Organik', 'Residu'], 
+                    datasets: [{ data: [result.totalOrganik || 0, result.totalAnOrganik || 0, result.totalResidu || 0], backgroundColor: ['#4caf50', '#ff9800', '#f44336'], borderWidth: 0 }] 
+                }, 
+                options: { responsive: true } 
+            });
+        } else { 
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
+        }
     }
     
     function loadPage(page) {
         const titles = { profile: 'Profile Bank Sampah', pengurus: 'Pengurus Bank Sampah', peserta: 'Data Peserta', daftar: 'Daftarkan Peserta Baru', rekap: 'Rekap Bulanan', grafik: 'Grafik Analisis' };
         document.getElementById('pageTitle').innerHTML = titles[page] || 'Dashboard';
         document.getElementById('pageSubtitle').innerHTML = `Bank Sampah ${currentBankName} | ${currentUserName}`;
+        
         if (page === 'profile') {
             document.getElementById('pageContent').innerHTML = `<div class="card"><div class="card-title"><i class="fas fa-building"></i> Profile Bank Sampah ${currentBankName}</div><div style="text-align:center;padding:20px"><img src="https://senapelan.github.io/Home/data/foto/logobaksampahsenapelan.png" style="width:150px;border-radius:20px;margin-bottom:20px"><h3>Bank Sampah ${currentBankName}</h3><p style="margin-top:10px;color:#666">📍 Kecamatan Senapelan, Kota Pekanbaru</p><p style="margin-top:10px">Bank Sampah ${currentBankName} adalah program pengelolaan sampah berbasis masyarakat yang bertujuan untuk mengurangi volume sampah ke TPA dan meningkatkan kesadaran masyarakat dalam memilah sampah.</p><hr style="margin:20px 0"><p><i class="fas fa-tag"></i> Kode Bank: ${currentBankCategory}</p><p><i class="fas fa-calendar"></i> Bergabung: 2024</p></div></div>`;
         } else if (page === 'pengurus') loadPengurus();
