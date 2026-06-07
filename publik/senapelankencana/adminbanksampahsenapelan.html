@@ -242,7 +242,7 @@
         table {
             width: 100%;
             border-collapse: collapse;
-            min-width: 600px;
+            min-width: 700px;
         }
 
         th, td {
@@ -327,6 +327,12 @@
             border: 1px solid #ddd;
             border-radius: 10px;
             font-size: 0.9rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
         }
 
         /* Modal */
@@ -494,6 +500,17 @@
             opacity: 1;
         }
 
+        /* Badge RT RW */
+        .rt-rw-badge {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            display: inline-block;
+            margin: 0 2px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .sidebar {
@@ -564,6 +581,11 @@
             
             .user-info {
                 justify-content: center;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 10px;
             }
         }
 
@@ -706,7 +728,7 @@
     </div>
 </div>
 
-<!-- Modal untuk Tambah/Edit Peserta -->
+<!-- Modal untuk Tambah/Edit Peserta (DENGAN RT & RW) -->
 <div id="pesertaModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -727,6 +749,16 @@
                 <label>Alamat</label>
                 <input type="text" id="pesertaAlamat" required>
             </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>RT</label>
+                    <input type="text" id="pesertaRt" placeholder="001" required>
+                </div>
+                <div class="form-group">
+                    <label>RW</label>
+                    <input type="text" id="pesertaRw" placeholder="001" required>
+                </div>
+            </div>
             <div class="form-group">
                 <label>No HP (aktif WhatsApp)</label>
                 <input type="text" id="pesertaNoHp" required placeholder="08123456789">
@@ -742,7 +774,7 @@
 
 <script>
     // ==================== KONFIGURASI ====================
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwc4zY0ui0ze0KyCgXAfJrXq5VZBOSdot9p-txKj4n_SpIXxv5AwnurS76vr5lQh_mzgw/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyNtjSqn_XmrY98zUfpVgbLXgcrDTmCEgy6-x_mRJt2sOHvBwv-viFOsCSE9zgVGT71VA/exec";
     
     // State
     let currentBankCategory = '';
@@ -761,7 +793,6 @@
         sidebar.classList.toggle('active');
         overlay.classList.toggle('active');
         
-        // Cegah scroll pada body saat sidebar terbuka di mobile
         if (sidebar.classList.contains('active') && window.innerWidth <= 768) {
             document.body.style.overflow = 'hidden';
         } else {
@@ -791,7 +822,6 @@
         
         document.getElementById('sidebarBankName').innerHTML = `<i class="fas fa-leaf"></i> ${currentBankName}`;
         
-        // Load foto admin
         loadAdminData();
         
         return true;
@@ -908,7 +938,7 @@
         document.getElementById('pageContent').innerHTML = html;
     }
     
-    // ==================== PESERTA ====================
+    // ==================== PESERTA (DENGAN RT & RW) ====================
     async function loadPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         
@@ -937,7 +967,19 @@
             <div class="table-container">
                 <table id="pesertaTable">
                     <thead>
-                        <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>No HP</th><th>Tanggal Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th><th>Aksi</th></tr>
+                        <tr>
+                            <th>Foto</th>
+                            <th>Nama</th>
+                            <th>Alamat</th>
+                            <th>RT/RW</th>
+                            <th>No HP</th>
+                            <th>Tanggal Setor</th>
+                            <th>Organik</th>
+                            <th>An Organik</th>
+                            <th>Residu</th>
+                            <th>Total</th>
+                            <th>Aksi</th>
+                        </tr>
                     </thead>
                     <tbody id="pesertaTableBody">`;
         
@@ -948,11 +990,13 @@
             const waLink = `https://wa.me/${p.no_hp ? p.no_hp.replace(/[^0-9]/g, '') : ''}`;
             const tgl = p.tanggal_setor && p.tanggal_setor !== '' ? 
                 new Date(p.tanggal_setor).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-';
+            const rtRw = `${p.rt || '-'}/${p.rw || '-'}`;
             
             html += `<tr data-id="${p.id_peserta}" data-nama="${(p.nama || '').toLowerCase()}">
                 <td>${foto}</td>
                 <td><strong>${p.nama || '-'}</strong></td>
                 <td>${p.alamat || '-'}</td>
+                <td><span class="rt-rw-badge">RT ${p.rt || '-'} / RW ${p.rw || '-'}</span></td>
                 <td>${p.no_hp ? `<a href="${waLink}" target="_blank" class="wa-link"><i class="fab fa-whatsapp"></i> ${p.no_hp}</a>` : '-'}</td>
                 <td><small>${tgl}</small></td>
                 <td class="organic">${p.organik || 0} kg</td>
@@ -1015,7 +1059,7 @@
         }
     });
     
-    // ==================== DAFTAR PESERTA ====================
+    // ==================== DAFTAR PESERTA (DENGAN RT & RW) ====================
     async function loadDaftarPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         
@@ -1037,12 +1081,22 @@
             <div class="table-container">
                 <table>
                     <thead>
-                        <tr><th>ID Peserta</th><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>No HP</th><th>Aksi</th></tr>
+                        <tr>
+                            <th>ID Peserta</th>
+                            <th>Foto</th>
+                            <th>Nama</th>
+                            <th>NIK</th>
+                            <th>Alamat</th>
+                            <th>RT</th>
+                            <th>RW</th>
+                            <th>No HP</th>
+                            <th>Aksi</th>
+                        </tr>
                     </thead>
                     <tbody>`;
         
         if (pesertaList.length === 0) {
-            html += `<tr><td colspan="7" style="text-align:center">Belum ada data peserta</td></tr>`;
+            html += `<tr><td colspan="9" style="text-align:center">Belum ada data peserta</td></tr>`;
         } else {
             pesertaList.forEach((p, idx) => {
                 const foto = p.link_foto && p.link_foto !== '' ? 
@@ -1054,6 +1108,8 @@
                     <td><strong>${p.nama || '-'}</strong></td>
                     <td>${p.nik || '-'}</td>
                     <td>${p.alamat || '-'}</td>
+                    <td>${p.rt || '-'}</td>
+                    <td>${p.rw || '-'}</td>
                     <td>${p.no_hp || '-'}</td>
                     <td>
                         <button class="btn btn-warning" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button>
@@ -1076,6 +1132,8 @@
         document.getElementById('pesertaNama').value = '';
         document.getElementById('pesertaNik').value = '';
         document.getElementById('pesertaAlamat').value = '';
+        document.getElementById('pesertaRt').value = '';
+        document.getElementById('pesertaRw').value = '';
         document.getElementById('pesertaNoHp').value = '';
         document.getElementById('pesertaFoto').value = '';
         document.getElementById('pesertaModal').style.display = 'flex';
@@ -1093,6 +1151,8 @@
         document.getElementById('pesertaNama').value = p.nama || '';
         document.getElementById('pesertaNik').value = p.nik || '';
         document.getElementById('pesertaAlamat').value = p.alamat || '';
+        document.getElementById('pesertaRt').value = p.rt || '';
+        document.getElementById('pesertaRw').value = p.rw || '';
         document.getElementById('pesertaNoHp').value = p.no_hp || '';
         document.getElementById('pesertaFoto').value = p.link_foto || '';
         document.getElementById('pesertaModal').style.display = 'flex';
@@ -1120,6 +1180,8 @@
             nama: document.getElementById('pesertaNama').value,
             nik: document.getElementById('pesertaNik').value,
             alamat: document.getElementById('pesertaAlamat').value,
+            rt: document.getElementById('pesertaRt').value,
+            rw: document.getElementById('pesertaRw').value,
             no_hp: document.getElementById('pesertaNoHp').value,
             link_foto: document.getElementById('pesertaFoto').value
         };
@@ -1267,7 +1329,6 @@
         document.getElementById('pageSubtitle').innerHTML = `Bank Sampah ${currentBankName} | ${currentUserName}`;
         
         if (page === 'profile') {
-            // Tampilkan profile bank sampah
             document.getElementById('pageContent').innerHTML = `<div class="card">
                 <div class="card-title"><i class="fas fa-building"></i> Profile Bank Sampah ${currentBankName}</div>
                 <div style="text-align: center; padding: 20px;">
@@ -1287,7 +1348,6 @@
         else if (page === 'grafik') loadGrafik();
         else loadPeserta();
         
-        // Tutup sidebar setelah memilih menu (untuk mobile)
         if (window.innerWidth <= 768) {
             closeSidebar();
         }
@@ -1315,7 +1375,6 @@
         }
     }
     
-    // Reset sidebar saat resize ke desktop
     window.addEventListener('resize', function() {
         if (window.innerWidth > 768) {
             closeSidebar();
