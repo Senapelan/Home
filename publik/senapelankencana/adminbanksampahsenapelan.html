@@ -865,23 +865,48 @@
         window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html';
     }
     
-    // ==================== APPS SCRIPT CALL ====================
-    async function callAppsScript(action, data = {}) {
-        try {
-            const params = new URLSearchParams({
-                action: action,
-                kategori: currentBankCategory,
-                username: currentUser,
-                ...data
-            });
-            const response = await fetch(`${APPS_SCRIPT_URL}?${params}`);
-            const result = await response.json();
-            return result;
-        } catch (error) {
-            console.error('Error:', error);
-            return { success: false, message: error.message };
+    // ==================== APPS SCRIPT CALL (Method GET) ====================
+async function callAppsScript(action, data = {}) {
+    try {
+        // Bangun URL parameter
+        const params = new URLSearchParams();
+        params.append('action', action);
+        params.append('kategori', currentBankCategory);
+        params.append('username', currentUser);
+        
+        // Tambahkan data lainnya
+        for (const key in data) {
+            if (data.hasOwnProperty(key) && data[key] !== undefined && data[key] !== null) {
+                params.append(key, data[key]);
+            }
         }
+        
+        const url = `${APPS_SCRIPT_URL}?${params.toString()}`;
+        console.log("Request URL:", url);
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            }
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const result = await response.json();
+        console.log("Response:", result);
+        return result;
+    } catch (error) {
+        console.error('Fetch Error:', error);
+        return { 
+            success: false, 
+            message: `Error: ${error.message}. Pastikan Apps Script sudah di-deploy dengan akses "Anyone".` 
+        };
     }
+}
     
     // ==================== PENGURUS ====================
     async function loadPengurus() {
