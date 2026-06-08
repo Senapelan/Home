@@ -99,6 +99,47 @@
         .toast-notification.success { background: #2e7d32; }
         @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
         
+        /* Filter bar style */
+        .filter-bar {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: flex-end;
+            border: 1px solid #e0e0e0;
+        }
+        .filter-group {
+            flex: 1;
+            min-width: 150px;
+        }
+        .filter-group label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #555;
+            margin-bottom: 4px;
+        }
+        .filter-group input, .filter-group select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+        .btn-filter {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            height: 38px;
+        }
+        
         @media (max-width: 768px) {
             .sidebar { left: -280px; box-shadow: none; }
             .sidebar.active { left: 0; box-shadow: 4px 0 20px rgba(0,0,0,0.3); }
@@ -114,6 +155,8 @@
             .search-box { margin-top: 10px; width: 100%; }
             .search-box input { width: 100%; }
             .form-row { grid-template-columns: 1fr; gap: 10px; }
+            .filter-bar { flex-direction: column; }
+            .btn-filter { width: 100%; }
         }
     </style>
 </head>
@@ -207,6 +250,8 @@
     let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
     let pesertaData = [], pengurusData = [], pesertaList = [];
     let isProcessing = false;
+    let rawRiwayatData = []; // Store raw data for filtering
+    let currentChart1 = null, currentChart2 = null;
 
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
@@ -270,7 +315,6 @@
     
     function logout() { sessionStorage.clear(); window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html'; }
     
-    // Fire and Forget untuk operasi yang tidak perlu response
     function callAppsScriptFireAndForget(action, data = {}) {
         const params = new URLSearchParams({ action, kategori: currentBankCategory, username: currentUser, ...data });
         const img = new Image();
@@ -278,7 +322,6 @@
         return { success: true };
     }
     
-    // JSONP untuk operasi yang butuh response
     async function callAppsScript(action, data = {}) {
         return new Promise((resolve) => {
             const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -377,7 +420,6 @@
         document.getElementById('setoranModal').style.display = 'flex';
     }
     
-    // SUBMIT SETORAN
     document.getElementById('setoranForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
@@ -409,20 +451,36 @@
         }
     });
     
-    // ==================== RIWAYAT SETORAN ====================
+    // ==================== RIWAYAT SETORAN (DENGAN FILTER) ====================
     async function loadRiwayat() {
-    document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat riwayat setoran...</div>';
-    const result = await callAppsScript('getRiwayatSetoran', {});
+        document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat riwayat setoran...</div>';
+        const result = await callAppsScript('getRiwayatSetoran', {});
+        
+        if (result && result.success && result.data && result.data.length > 0) {
+            rawRiwayatData = result.data;
+            renderRiwayatTable(rawRiwayatData);
+        } else {
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada riwayat setoran.</p></div>`;
+            rawRiwayatData = [];
+        }
+    }
     
-    if (result && result.success && result.data && result.data.length > 0) {
+    function renderRiwayatTable(data) {
         let html = `<div class="card">
-            <div class="card-title"><span><i class="fas fa-history"></i> Riwayat Setoran Sampah (${result.data.length} data)</span>
-            <div class="search-box"><input type="text" id="searchRiwayat" placeholder="Cari nama..." onkeyup="filterRiwayat()"></div></div>
+            <div class="card-title"><span><i class="fas fa-history"></i> Riwayat Setoran Sampah (${data.length} data)</span></div>
+            <div class="filter-bar">
+                <div class="filter-group"><label>Filter Tanggal</label><input type="date" id="filterRiwayatDate" value=""></div>
+                <div class="filter-group"><label>Filter Bulan</label><input type="month" id="filterRiwayatMonth" value=""></div>
+                <div class="filter-group"><label>Filter Tahun</label><input type="number" id="filterRiwayatYear" placeholder="Tahun" step="1"></div>
+                <button class="btn-filter" onclick="applyRiwayatFilter()"><i class="fas fa-filter"></i> Terapkan Filter</button>
+                <button class="btn-filter" style="background:#6c757d;" onclick="resetRiwayatFilter()"><i class="fas fa-undo-alt"></i> Reset</button>
+            </div>
+            <div class="search-box" style="margin-bottom:15px;"><input type="text" id="searchRiwayat" placeholder="Cari nama..." onkeyup="filterRiwayatText()"></div>
             <div class="table-container"><table id="riwayatTable"><thead><tr>
                 <th>Tanggal</th><th>Foto</th><th>Nama</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th>
             </tr></thead><tbody id="riwayatTableBody">`;
         
-        result.data.forEach(r => {
+        data.forEach(r => {
             const tgl = r.tanggal ? new Date(r.tanggal).toLocaleDateString('id-ID') : '-';
             const foto = r.foto && r.foto !== '' ? `<img src="${r.foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${r.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
             
@@ -437,23 +495,44 @@
             </tr>`;
         });
         
-        html += `</tbody></table></div></div>`;
+        html += `</tbody><table></div></div>`;
         document.getElementById('pageContent').innerHTML = html;
-    } else {
-        document.getElementById('pageContent').innerHTML = `<div class="card"><p>Belum ada riwayat setoran.</p></div>`;
+        document.getElementById('searchRiwayat').addEventListener('keyup', filterRiwayatText);
     }
-}
     
-    function filterRiwayat() {
-    const search = document.getElementById('searchRiwayat')?.value.toLowerCase() || '';
-    const rows = document.querySelectorAll('#riwayatTableBody tr');
-    rows.forEach(row => {
-        const nama = row.getAttribute('data-nama') || '';
-        row.style.display = nama.includes(search) ? '' : 'none';
-    });
-}
+    function applyRiwayatFilter() {
+        let filtered = [...rawRiwayatData];
+        const dateVal = document.getElementById('filterRiwayatDate')?.value;
+        const monthVal = document.getElementById('filterRiwayatMonth')?.value;
+        const yearVal = document.getElementById('filterRiwayatYear')?.value;
+        
+        if (dateVal) {
+            filtered = filtered.filter(r => r.tanggal === dateVal);
+        } else if (monthVal) {
+            filtered = filtered.filter(r => r.tanggal && r.tanggal.startsWith(monthVal));
+        } else if (yearVal) {
+            filtered = filtered.filter(r => r.tanggal && r.tanggal.startsWith(yearVal.toString()));
+        }
+        renderRiwayatTable(filtered);
+    }
     
-    // ==================== DAFTAR PESERTA (MANAJEMEN) ====================
+    function resetRiwayatFilter() {
+        if(document.getElementById('filterRiwayatDate')) document.getElementById('filterRiwayatDate').value = '';
+        if(document.getElementById('filterRiwayatMonth')) document.getElementById('filterRiwayatMonth').value = '';
+        if(document.getElementById('filterRiwayatYear')) document.getElementById('filterRiwayatYear').value = '';
+        renderRiwayatTable(rawRiwayatData);
+    }
+    
+    function filterRiwayatText() {
+        const search = document.getElementById('searchRiwayat')?.value.toLowerCase() || '';
+        const rows = document.querySelectorAll('#riwayatTableBody tr');
+        rows.forEach(row => {
+            const nama = row.getAttribute('data-nama') || '';
+            row.style.display = nama.includes(search) ? '' : 'none';
+        });
+    }
+    
+    // ==================== DAFTAR PESERTA ====================
     async function loadDaftarPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         const result = await callAppsScript('getDaftarPeserta', {});
@@ -533,7 +612,6 @@
         }
     }
     
-    // SUBMIT PESERTA
     document.getElementById('pesertaForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
@@ -575,33 +653,162 @@
         }
     });
     
-    // ==================== REKAP ====================
+    // ==================== REKAP BULANAN DENGAN FILTER ====================
+    let allSetoranData = [];
     async function loadRekap() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data rekap...</div>';
-        const result = await callAppsScript('getRekap', {});
-        if (result && result.success) {
-            const totalBulan = result.totalBulan || 0, estimasiTPA = 22500, persen = ((totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="stats-grid"><div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${(result.totalHari || 0).toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div><div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${(result.totalMinggu || 0).toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div><div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${totalBulan.toFixed(1)} kg</h3><p>Total Setor Bulan Ini</p></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3>📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya (${persen}%)</p></div></div>`;
-            document.getElementById('pageContent').innerHTML = html;
-        } else { 
-            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
+        const result = await callAppsScript('getAllSetoranForFilter', {});
+        if (result && result.success && result.data) {
+            allSetoranData = result.data;
+            renderRekap(allSetoranData);
+        } else {
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`;
         }
     }
     
-    // ==================== GRAFIK ====================
+    function renderRekap(data) {
+        const today = new Date();
+        let filtered = [...data];
+        let totalHari = 0, totalMinggu = 0, totalBulan = 0;
+        const todayStr = today.toISOString().split('T')[0];
+        const weekAgo = new Date(); weekAgo.setDate(today.getDate() - 7);
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        filtered.forEach(item => {
+            const tgl = item.tanggal;
+            if(tgl === todayStr) totalHari += item.total;
+            if(new Date(tgl) >= weekAgo) totalMinggu += item.total;
+            if(new Date(tgl) >= monthStart) totalBulan += item.total;
+        });
+        
+        const estimasiTPA = 22500, persen = ((totalBulan / estimasiTPA) * 100).toFixed(1);
+        let html = `<div class="card">
+            <div class="card-title"><i class="fas fa-chart-line"></i> Rekap & Filter Data Setoran</div>
+            <div class="filter-bar">
+                <div class="filter-group"><label>Filter Tanggal</label><input type="date" id="filterRekapDate"></div>
+                <div class="filter-group"><label>Filter Bulan</label><input type="month" id="filterRekapMonth"></div>
+                <div class="filter-group"><label>Filter Tahun</label><input type="number" id="filterRekapYear" placeholder="Tahun"></div>
+                <button class="btn-filter" onclick="applyRekapFilter()"><i class="fas fa-filter"></i> Terapkan</button>
+                <button class="btn-filter" style="background:#6c757d;" onclick="resetRekapFilter()"><i class="fas fa-undo-alt"></i> Reset</button>
+            </div>
+        </div>`;
+        
+        html += `<div class="stats-grid">
+            <div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${totalHari.toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div>
+            <div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${totalMinggu.toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div>
+            <div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${totalBulan.toFixed(1)} kg</h3><p>Total Setor Bulan Ini</p></div>
+        </div>
+        <div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA</div>
+        <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;">
+            <h3>📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3>
+            <div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div>
+            <p><strong>Capaian Pengurangan TPA:</strong> ${totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya (${persen}%)</p>
+        </div></div>`;
+        document.getElementById('pageContent').innerHTML = html;
+    }
+    
+    function applyRekapFilter() {
+        let filtered = [...allSetoranData];
+        const dateVal = document.getElementById('filterRekapDate')?.value;
+        const monthVal = document.getElementById('filterRekapMonth')?.value;
+        const yearVal = document.getElementById('filterRekapYear')?.value;
+        
+        if (dateVal) filtered = filtered.filter(r => r.tanggal === dateVal);
+        else if (monthVal) filtered = filtered.filter(r => r.tanggal && r.tanggal.startsWith(monthVal));
+        else if (yearVal) filtered = filtered.filter(r => r.tanggal && r.tanggal.startsWith(yearVal.toString()));
+        
+        renderRekap(filtered);
+    }
+    
+    function resetRekapFilter() {
+        if(document.getElementById('filterRekapDate')) document.getElementById('filterRekapDate').value = '';
+        if(document.getElementById('filterRekapMonth')) document.getElementById('filterRekapMonth').value = '';
+        if(document.getElementById('filterRekapYear')) document.getElementById('filterRekapYear').value = '';
+        renderRekap(allSetoranData);
+    }
+    
+    // ==================== GRAFIK ANALISIS DENGAN FILTER ====================
+    let allGrafikData = [];
     async function loadGrafik() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data grafik...</div>';
-        const result = await callAppsScript('getGrafikData', {});
-        if (result && result.success) {
-            const estimasiTPA = 22500, persen = ((result.totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="charts-grid"><div class="chart-container"><h3><i class="fas fa-trophy"></i> Top 10 Peserta</h3><canvas id="top10Chart"></canvas></div><div class="chart-container"><h3><i class="fas fa-chart-pie"></i> Komposisi Sampah</h3><canvas id="komposisiChart"></canvas></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3>📊 ${result.totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p>Bank Sampah berhasil mengelola ${result.totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong> dari estimasi sampah ke TPA</p></div></div>`;
-            document.getElementById('pageContent').innerHTML = html;
-            const top10 = result.top10 || [];
-            if (top10.length) new Chart(document.getElementById('top10Chart'), { type: 'bar', data: { labels: top10.map(t => t.nama.length > 12 ? t.nama.substring(0,12)+'...' : t.nama), datasets: [{ label: 'Total (kg)', data: top10.map(t => t.total), backgroundColor: '#4caf50', borderRadius: 8 }] }, options: { responsive: true } });
-            new Chart(document.getElementById('komposisiChart'), { type: 'doughnut', data: { labels: ['Organik', 'An Organik', 'Residu'], datasets: [{ data: [result.totalOrganik || 0, result.totalAnOrganik || 0, result.totalResidu || 0], backgroundColor: ['#4caf50', '#ff9800', '#f44336'], borderWidth: 0 }] }, options: { responsive: true } });
-        } else { 
-            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
+        const result = await callAppsScript('getAllSetoranForFilter', {});
+        if (result && result.success && result.data) {
+            allGrafikData = result.data;
+            renderGrafik(allGrafikData);
+        } else {
+            document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`;
         }
+    }
+    
+    function renderGrafik(data) {
+        let filtered = [...data];
+        const estimasiTPA = 22500;
+        let totalBulan = 0, totalOrganik = 0, totalAnOrganik = 0, totalResidu = 0;
+        const today = new Date();
+        const monthStart = new Date(today.getFullYear(), today.getMonth(), 1);
+        
+        filtered.forEach(item => {
+            const tgl = item.tanggal;
+            if(new Date(tgl) >= monthStart) totalBulan += item.total;
+            totalOrganik += item.organik || 0;
+            totalAnOrganik += item.an_organik || 0;
+            totalResidu += item.residu || 0;
+        });
+        
+        // Aggregate top 10 participants
+        const participantMap = new Map();
+        filtered.forEach(item => {
+            const nama = item.nama;
+            if(!participantMap.has(nama)) participantMap.set(nama, 0);
+            participantMap.set(nama, participantMap.get(nama) + item.total);
+        });
+        const top10 = Array.from(participantMap.entries()).sort((a,b) => b[1] - a[1]).slice(0,10);
+        
+        const persen = ((totalBulan / estimasiTPA) * 100).toFixed(1);
+        let html = `<div class="card">
+            <div class="card-title"><i class="fas fa-chart-pie"></i> Filter Data Grafik</div>
+            <div class="filter-bar">
+                <div class="filter-group"><label>Filter Bulan</label><input type="month" id="filterGrafikMonth"></div>
+                <div class="filter-group"><label>Filter Tahun</label><input type="number" id="filterGrafikYear" placeholder="Tahun"></div>
+                <button class="btn-filter" onclick="applyGrafikFilter()"><i class="fas fa-filter"></i> Terapkan</button>
+                <button class="btn-filter" style="background:#6c757d;" onclick="resetGrafikFilter()"><i class="fas fa-undo-alt"></i> Reset</button>
+            </div>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-container"><h3><i class="fas fa-trophy"></i> Top 10 Peserta</h3><canvas id="top10Chart"></canvas></div>
+            <div class="chart-container"><h3><i class="fas fa-chart-pie"></i> Komposisi Sampah</h3><canvas id="komposisiChart"></canvas></div>
+        </div>
+        <div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA</div>
+        <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;">
+            <h3>📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3>
+            <div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div>
+            <p>Bank Sampah berhasil mengelola ${totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong> dari estimasi sampah ke TPA</p>
+        </div></div>`;
+        
+        document.getElementById('pageContent').innerHTML = html;
+        
+        if (currentChart1) currentChart1.destroy();
+        if (currentChart2) currentChart2.destroy();
+        
+        if (top10.length) {
+            currentChart1 = new Chart(document.getElementById('top10Chart'), { type: 'bar', data: { labels: top10.map(t => t[0].length > 12 ? t[0].substring(0,12)+'...' : t[0]), datasets: [{ label: 'Total (kg)', data: top10.map(t => t[1]), backgroundColor: '#4caf50', borderRadius: 8 }] }, options: { responsive: true } });
+        }
+        currentChart2 = new Chart(document.getElementById('komposisiChart'), { type: 'doughnut', data: { labels: ['Organik', 'An Organik', 'Residu'], datasets: [{ data: [totalOrganik, totalAnOrganik, totalResidu], backgroundColor: ['#4caf50', '#ff9800', '#f44336'], borderWidth: 0 }] }, options: { responsive: true } });
+    }
+    
+    function applyGrafikFilter() {
+        let filtered = [...allGrafikData];
+        const monthVal = document.getElementById('filterGrafikMonth')?.value;
+        const yearVal = document.getElementById('filterGrafikYear')?.value;
+        if (monthVal) filtered = filtered.filter(r => r.tanggal && r.tanggal.startsWith(monthVal));
+        else if (yearVal) filtered = filtered.filter(r => r.tanggal && r.tanggal.startsWith(yearVal.toString()));
+        renderGrafik(filtered);
+    }
+    
+    function resetGrafikFilter() {
+        if(document.getElementById('filterGrafikMonth')) document.getElementById('filterGrafikMonth').value = '';
+        if(document.getElementById('filterGrafikYear')) document.getElementById('filterGrafikYear').value = '';
+        renderGrafik(allGrafikData);
     }
     
     function loadPage(page) {
