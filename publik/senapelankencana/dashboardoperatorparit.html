@@ -46,7 +46,6 @@
             font-size: 0.8rem;
         }
         
-        /* Toolbar dengan filter tanggal */
         .toolbar {
             display: flex;
             justify-content: space-between;
@@ -73,7 +72,6 @@
             font-family: 'Inter', sans-serif;
         }
         
-        /* Filter tanggal */
         .date-filter {
             display: flex;
             align-items: center;
@@ -134,7 +132,6 @@
             gap: 1.8rem;
         }
         
-        /* ============ WARNA CARD BERDASARKAN STATUS ============ */
         .card.card-selesai {
             background: linear-gradient(145deg, #e8f5e9 0%, #c8e6c9 100%);
             border-left: 6px solid #2e7d32;
@@ -287,6 +284,7 @@
         }
         
         .loader-container { text-align: center; padding: 4rem; }
+        .loader-container i { font-size: 2rem; margin-bottom: 1rem; display: block; }
         .spinner {
             border: 4px solid #e2e8f0;
             border-top: 4px solid #1f6e8c;
@@ -306,6 +304,7 @@
             margin-bottom: 20px;
             font-size: 0.85rem;
             color: #065f46;
+            transition: opacity 0.5s;
         }
         
         .filter-stats {
@@ -337,7 +336,7 @@
     <div class="toolbar">
         <div class="search-box">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari kelurahan, lokasi, penanggung jawab...">
+            <input type="text" id="searchInput" placeholder="Cari kelurahan, lokasi, penanggung jawab..." autocomplete="off">
         </div>
         
         <div class="date-filter">
@@ -352,7 +351,7 @@
     <div id="cardsContainer" class="cards-grid">
         <div class="loader-container">
             <div class="spinner"></div>
-            <p>Menghubungkan ke Google Sheets via Apps Script...</p>
+            <p>Menghubungkan ke Google Sheets...</p>
         </div>
     </div>
 </div>
@@ -363,101 +362,114 @@
 </div>
 
 <script>
-    // =============== APPS SCRIPT URL ===============
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx72lh2F3rKcjItYg4cW4nm_QEsXDma8tqOM-yJh3R1eaFE4f6Wm0q17ct2p9_v6Oc/exec';
+    // =============== KONFIGURASI ===============
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyONGWH-MNCYmmIQVh_PV8V5ZeM4B30rLUUMBLeBkw6S8-0hs--zxh0dX8ObPWjcqkn/exec';
+    
+    // Cache data di localStorage (30 menit)
+    const CACHE_KEY = 'op_drainase_data';
+    const CACHE_DURATION = 30 * 60 * 1000; // 30 menit
     
     let globalData = [];
     let currentSearchTerm = '';
     let currentDateFilter = '';
+    let isLoading = false;
+    let countdownInterval = null;
 
-    // Fungsi mengambil data via JSONP (mengatasi CORS)
-    async function fetchDataWithCORS() {
-        return new Promise((resolve, reject) => {
-            const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-            const script = document.createElement('script');
-            const url = `${APPS_SCRIPT_URL}?callback=${callbackName}&_=${Date.now()}`;
-            script.src = url;
-            
-            window[callbackName] = function(response) {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                resolve(response);
-            };
-            
-            script.onerror = function() {
-                delete window[callbackName];
-                document.body.removeChild(script);
-                reject(new Error('JSONP request failed'));
-            };
-            
-            document.body.appendChild(script);
-        });
-    }
-
-    async function fetchDataWithFetch() {
+    // ============ FUNGSI CACHE ============
+    function saveToCache(data) {
         try {
-            const response = await fetch(APPS_SCRIPT_URL, { 
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-store'
-            });
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            return await response.json();
-        } catch (error) {
-            console.log('Fetch error:', error);
-            return null;
+            const cacheData = {
+                timestamp: Date.now(),
+                data: data
+            };
+            localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
+        } catch(e) {
+            console.warn('Cache gagal:', e);
         }
     }
-
-    async function fetchDataFromAppsScript() {
+    
+    function loadFromCache() {
         try {
-            console.log('Mencoba JSONP...');
-            const jsonpResult = await fetchDataWithCORS();
-            if (jsonpResult && (jsonpResult.success === true || Array.isArray(jsonpResult.data) || Array.isArray(jsonpResult))) {
-                return processResponse(jsonpResult);
+            const cached = localStorage.getItem(CACHE_KEY);
+            if (!cached) return null;
+            
+            const cacheData = JSON.parse(cached);
+            const isExpired = (Date.now() - cacheData.timestamp) > CACHE_DURATION;
+            
+            if (!isExpired && cacheData.data && cacheData.data.length > 0) {
+                console.log('✅ Memuat dari cache, usia:', Math.round((Date.now() - cacheData.timestamp)/1000), 'detik');
+                return cacheData.data;
             }
-        } catch (jsonpError) {
-            console.log('JSONP gagal:', jsonpError);
-        }
-        
-        try {
-            console.log('Mencoba fetch biasa...');
-            const fetchResult = await fetchDataWithFetch();
-            if (fetchResult) return processResponse(fetchResult);
-        } catch (fetchError) {
-            console.log('Fetch gagal:', fetchError);
+        } catch(e) {
+            console.warn('Gagal baca cache:', e);
         }
         return null;
     }
-    
-    function processResponse(result) {
-        let dataArray = null;
-        if (result.success === true && Array.isArray(result.data)) {
-            dataArray = result.data;
-        } 
-        else if (Array.isArray(result)) {
-            dataArray = result;
-        }
-        else if (result.data && Array.isArray(result.data)) {
-            dataArray = result.data;
+
+    // ============ FETCH DATA OPTIMASI ============
+    async function fetchDataFromAppsScript(forceRefresh = false) {
+        // Cek cache dulu
+        if (!forceRefresh) {
+            const cachedData = loadFromCache();
+            if (cachedData) {
+                return cachedData;
+            }
         }
         
-        if (dataArray) {
-            return dataArray.filter(item => item && item["Hari/Tanggal"] && item["Hari/Tanggal"] !== '');
+        if (isLoading) return null;
+        isLoading = true;
+        
+        try {
+            // Gunakan fetch langsung dengan timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 detik timeout
+            
+            const response = await fetch(APPS_SCRIPT_URL, { 
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-store',
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            
+            const result = await response.json();
+            let dataArray = null;
+            
+            if (result.success === true && Array.isArray(result.data)) {
+                dataArray = result.data;
+            } 
+            else if (Array.isArray(result)) {
+                dataArray = result;
+            }
+            else if (result.data && Array.isArray(result.data)) {
+                dataArray = result.data;
+            }
+            
+            if (dataArray) {
+                const filteredData = dataArray.filter(item => item && item["Hari/Tanggal"] && item["Hari/Tanggal"] !== '');
+                saveToCache(filteredData);
+                isLoading = false;
+                return filteredData;
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
         }
+        
+        isLoading = false;
         return null;
     }
 
     // ============ FUNGSI KONVERSI TANGGAL ============
-    // Konversi format "Senin, 12 Mei 2026" ke Date object
     function parseDateFromString(dateString) {
         if (!dateString || dateString === '-') return null;
         
-        // Coba parse format "Senin, 12 Mei 2026" atau "Selasa, 12 Mei 2026"
         const parts = dateString.split(',');
         if (parts.length < 2) return null;
         
-        const datePart = parts[1].trim(); // "12 Mei 2026"
+        const datePart = parts[1].trim();
         const dateParts = datePart.split(' ');
         
         if (dateParts.length < 3) return null;
@@ -466,20 +478,19 @@
         const monthName = dateParts[1];
         const year = parseInt(dateParts[2], 10);
         
-        // Mapping nama bulan ke angka
         const months = {
-            'Januari': 0, 'Jan': 0,
-            'Februari': 1, 'Feb': 1,
-            'Maret': 2, 'Mar': 2,
+            'Januari': 0, 'Jan': 0, 'January': 0,
+            'Februari': 1, 'Feb': 1, 'February': 1,
+            'Maret': 2, 'Mar': 2, 'March': 2,
             'April': 3, 'Apr': 3,
             'Mei': 4, 'May': 4,
-            'Juni': 5, 'Jun': 5,
-            'Juli': 6, 'Jul': 6,
-            'Agustus': 7, 'Agu': 7, 'Aug': 7,
+            'Juni': 5, 'Jun': 5, 'June': 5,
+            'Juli': 6, 'Jul': 6, 'July': 6,
+            'Agustus': 7, 'Agu': 7, 'Aug': 7, 'August': 7,
             'September': 8, 'Sep': 8,
-            'Oktober': 9, 'Okt': 9, 'Oct': 9,
+            'Oktober': 9, 'Okt': 9, 'Oct': 9, 'October': 9,
             'November': 10, 'Nov': 10,
-            'Desember': 11, 'Des': 11, 'Dec': 11
+            'Desember': 11, 'Des': 11, 'Dec': 11, 'December': 11
         };
         
         const month = months[monthName];
@@ -488,30 +499,26 @@
         return new Date(year, month, day);
     }
 
-    // Fungsi filter berdasarkan tanggal
     function filterByDate(item, filterDate) {
         if (!filterDate) return true;
         
         const itemDate = parseDateFromString(item["Hari/Tanggal"]);
         if (!itemDate) return false;
         
-        // Bandingkan tahun, bulan, tanggal (abaikan waktu)
         return itemDate.getFullYear() === filterDate.getFullYear() &&
                itemDate.getMonth() === filterDate.getMonth() &&
                itemDate.getDate() === filterDate.getDate();
     }
 
-    // ============ FUNGSI MENENTUKAN WARNA CARD ============
     function getCardColorClass(item) {
         const status = item["Status"] || '';
         const ketLibur = item["Ket libur"] || '';
         
-        if (status === 'Hari Libur' || ketLibur.toLowerCase().includes('libur') || ketLibur.toLowerCase().includes('merah')) {
+        if (status === 'Hari Libur' || ketLibur.toLowerCase().includes('libur')) {
             return 'card-libur';
         }
         
-        if (status === 'Sudah Bekerja' || status === 'Selesai' || 
-            ketLibur.toLowerCase().includes('sudah dikerjakan')) {
+        if (status === 'Sudah Bekerja' || status === 'Selesai') {
             return 'card-selesai';
         }
         
@@ -519,7 +526,7 @@
     }
 
     function parseTimeToMinutes(timeStr) {
-        if (timeStr === undefined || timeStr === null || timeStr === '' || timeStr === '-') return null;
+        if (!timeStr || timeStr === '' || timeStr === '-') return null;
         if (typeof timeStr === 'number') return timeStr * 60;
         
         let strTime = String(timeStr);
@@ -576,16 +583,16 @@
         });
     }
 
-    // Render cards dengan filter gabungan
+    // ============ RENDER DENGAN REQUESTANIMATIONFRAME ============
     function renderCards(data, searchTerm = '', filterDate = null) {
         const container = document.getElementById('cardsContainer');
         if(!data || data.length === 0) {
-            container.innerHTML = `<div class="loader-container"><p>📭 Tidak ada data jadwal</p></div>`;
+            container.innerHTML = `<div class="loader-container"><i class="fas fa-database"></i><p>📭 Tidak ada data jadwal</p></div>`;
             return;
         }
         
+        // Filter data
         let filtered = data.filter(item => {
-            // Filter teks
             let matchText = true;
             if (searchTerm) {
                 const term = searchTerm.toLowerCase();
@@ -594,7 +601,6 @@
                            item["Penanggung Jawab"]?.toLowerCase().includes(term));
             }
             
-            // Filter tanggal
             let matchDate = true;
             if (filterDate) {
                 matchDate = filterByDate(item, filterDate);
@@ -610,19 +616,16 @@
             return;
         }
         
-        // Update statistik filter
-        const filterStats = document.querySelector('.filter-stats');
-        if (filterStats) filterStats.textContent = `(Menampilkan ${filtered.length} dari ${data.length} data)`;
+        // Gunakan DocumentFragment untuk performa lebih baik
+        const fragment = document.createDocumentFragment();
+        const tempDiv = document.createElement('div');
         
-        container.innerHTML = filtered.map(item => {
+        tempDiv.innerHTML = filtered.map(item => {
             const cardColorClass = getCardColorClass(item);
-            
             const isLibur = (item["Ket libur"] && String(item["Ket libur"]).toLowerCase().includes('libur')) ? true : false;
             const isHariLibur = (item["Status"] === 'Hari Libur');
             const finalLibur = isLibur || isHariLibur;
-            
             let statusText = item["Status"] || 'Menunggu';
-            
             const lokasi = item["Lokasi/Rute Pembersihan"] || '-';
             const rt = item["RT"] || '';
             const rw = item["RW"] || '';
@@ -632,7 +635,7 @@
             return `
                 <div class="card ${cardColorClass}">
                     <div class="card-header">
-                        <span class="date-badge"><i class="far fa-calendar-alt"></i> ${item["Hari/Tanggal"] || '-'}</span>
+                        <span class="date-badge"><i class="far fa-calendar-alt"></i> ${escapeHtml(item["Hari/Tanggal"] || '-')}</span>
                         <span class="status-badge">${finalLibur ? 'Libur' : statusText}</span>
                     </div>
                     <div class="lokasi-box">
@@ -646,8 +649,8 @@
                         <div class="detail-icon"><i class="far fa-clock"></i></div>
                         <div class="detail-content">
                             <div class="label-small">Jam Operasional</div>
-                            <strong>${item["Jam Mulai"] || '--'} - ${item["Jam Selesai"] || '--'}</strong>
-                            <div class="countdown-timer" data-start="${item["Jam Mulai"] || ''}" data-end="${item["Jam Selesai"] || ''}" data-status="${statusText}" data-libur="${finalLibur ? 'libur' : ''}">⏳ menghitung...</div>
+                            <strong>${escapeHtml(item["Jam Mulai"] || '--')} - ${escapeHtml(item["Jam Selesai"] || '--')}</strong>
+                            <div class="countdown-timer" data-start="${escapeHtml(item["Jam Mulai"] || '')}" data-end="${escapeHtml(item["Jam Selesai"] || '')}" data-status="${statusText}" data-libur="${finalLibur ? 'libur' : ''}">⏳ menghitung...</div>
                         </div>
                     </div>
                     <div class="detail-item">
@@ -675,30 +678,44 @@
             `;
         }).join('');
         
-        document.querySelectorAll('.foto-icon').forEach(icon => {
-            icon.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const fotoUrl = icon.getAttribute('data-foto');
-                if(fotoUrl && fotoUrl !== '' && (fotoUrl.startsWith('http') || fotoUrl.startsWith('https'))) {
-                    document.getElementById('modalImg').src = fotoUrl;
-                    document.getElementById('imageModal').style.display = 'flex';
-                } else {
-                    alert('📷 Belum ada foto dokumentasi untuk kegiatan ini');
-                }
-            });
+        // Tambahkan semua card sekaligus
+        while(tempDiv.firstChild) {
+            fragment.appendChild(tempDiv.firstChild);
+        }
+        
+        container.innerHTML = '';
+        container.appendChild(fragment);
+        
+        // Event listener foto (delegation lebih efisien)
+        container.querySelectorAll('.foto-icon').forEach(icon => {
+            icon.removeEventListener('click', fotoClickHandler);
+            icon.addEventListener('click', fotoClickHandler);
         });
         
         updateCountdowns();
-        if(window.countdownInterval) clearInterval(window.countdownInterval);
-        window.countdownInterval = setInterval(updateCountdowns, 60000);
+        
+        if(countdownInterval) clearInterval(countdownInterval);
+        countdownInterval = setInterval(updateCountdowns, 60000);
+    }
+    
+    function fotoClickHandler(e) {
+        e.stopPropagation();
+        const fotoUrl = this.getAttribute('data-foto');
+        if(fotoUrl && fotoUrl !== '' && (fotoUrl.startsWith('http') || fotoUrl.startsWith('https'))) {
+            document.getElementById('modalImg').src = fotoUrl;
+            document.getElementById('imageModal').style.display = 'flex';
+        } else {
+            alert('📷 Belum ada foto dokumentasi untuk kegiatan ini');
+        }
     }
 
     function escapeHtml(str) {
         if(!str) return '';
-        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
     }
 
-    // Fungsi untuk menerapkan semua filter
     function applyFilters() {
         if (!globalData || globalData.length === 0) return;
         
@@ -710,17 +727,20 @@
             filterDate = new Date(dateValue);
         }
         
-        renderCards(globalData, searchTerm, filterDate);
+        // Gunakan requestAnimationFrame untuk render yang smooth
+        requestAnimationFrame(() => {
+            renderCards(globalData, searchTerm, filterDate);
+        });
     }
 
-    async function loadDataAndRender() {
+    async function loadDataAndRender(forceRefresh = false) {
         const container = document.getElementById('cardsContainer');
         container.innerHTML = `<div class="loader-container"><div class="spinner"></div><p>Mengambil data dari Server...</p></div>`;
         
         const oldNotice = document.getElementById('api-notice');
         if(oldNotice) oldNotice.remove();
         
-        const data = await fetchDataFromAppsScript();
+        const data = await fetchDataFromAppsScript(forceRefresh);
         
         if (data && data.length > 0) {
             const notice = document.createElement('div');
@@ -729,25 +749,50 @@
             notice.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Data berhasil dimuat! Menampilkan ' + data.length + ' jadwal operasional drainase.';
             const toolbar = document.querySelector('.toolbar');
             toolbar.parentNode.insertBefore(notice, toolbar.nextSibling);
-            setTimeout(() => { if(notice) notice.style.opacity = '0'; setTimeout(() => notice.remove(), 500); }, 5000);
+            setTimeout(() => { 
+                if(notice) {
+                    notice.style.opacity = '0'; 
+                    setTimeout(() => notice.remove(), 500);
+                }
+            }, 5000);
             
             globalData = data;
             applyFilters();
         } else {
-            container.innerHTML = `
-                <div class="loader-container">
-                    <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#f59e0b;"></i>
-                    <p>Gagal memuat data dari Google Sheets</p>
-                    <button class="btn-refresh" id="retryBtn" style="margin-top:1rem;">Coba Lagi</button>
-                </div>`;
-            document.getElementById('retryBtn')?.addEventListener('click', loadDataAndRender);
+            // Coba lagi dengan cache terakhir
+            const lastCache = loadFromCache();
+            if (lastCache && lastCache.length > 0) {
+                globalData = lastCache;
+                applyFilters();
+                const warning = document.createElement('div');
+                warning.className = 'success-notice';
+                warning.style.background = '#fed7aa';
+                warning.style.borderLeftColor = '#f59e0b';
+                warning.style.color = '#92400e';
+                warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ⚠️ Menggunakan data cache (koneksi bermasalah)';
+                document.querySelector('.toolbar').parentNode.insertBefore(warning, document.querySelector('.toolbar').nextSibling);
+                setTimeout(() => warning.remove(), 4000);
+            } else {
+                container.innerHTML = `
+                    <div class="loader-container">
+                        <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#f59e0b;"></i>
+                        <p>Gagal memuat data dari Google Sheets</p>
+                        <button class="btn-refresh" id="retryBtn" style="margin-top:1rem;">Coba Lagi</button>
+                    </div>`;
+                document.getElementById('retryBtn')?.addEventListener('click', () => loadDataAndRender(true));
+            }
         }
     }
     
-    // Event listeners
-    document.getElementById('refreshBtn')?.addEventListener('click', loadDataAndRender);
-    document.getElementById('searchInput')?.addEventListener('keyup', () => applyFilters());
-    document.getElementById('dateFilterInput')?.addEventListener('change', () => applyFilters());
+    // Event listeners dengan debounce untuk search
+    let searchTimeout;
+    document.getElementById('searchInput')?.addEventListener('input', () => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(applyFilters, 300);
+    });
+    
+    document.getElementById('refreshBtn')?.addEventListener('click', () => loadDataAndRender(true));
+    document.getElementById('dateFilterInput')?.addEventListener('change', applyFilters);
     document.getElementById('clearDateBtn')?.addEventListener('click', () => {
         document.getElementById('dateFilterInput').value = '';
         applyFilters();
@@ -757,6 +802,7 @@
     document.querySelector('.close-modal')?.addEventListener('click', () => modal.style.display = 'none');
     modal.addEventListener('click', (e) => { if(e.target === modal) modal.style.display = 'none'; });
     
+    // Load data
     loadDataAndRender();
 </script>
 </body>
