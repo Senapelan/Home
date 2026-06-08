@@ -110,9 +110,25 @@
             letter-spacing: 0.3px;
         }
 
-        .tab-btn i {
-            font-size: 1rem;
-            opacity: 0.9;
+        /* Gaya icon gambar logo - WARNA ASLI, tanpa efek filter */
+        .tab-icon-img {
+            width: 24px;
+            height: 24px;
+            object-fit: contain;
+            display: block;
+            /* Tidak ada filter sama sekali - warna asli gambar */
+        }
+
+        /* Hover hanya scaling lembut tanpa ubah warna */
+        .tab-btn:hover .tab-icon-img {
+            transform: scale(1.05);
+            transition: transform 0.2s ease;
+        }
+
+        /* Saat tab aktif, icon tetap warna asli (tidak diubah filter) */
+        .tab-btn.active .tab-icon-img {
+            /* Tidak ada filter, warna tetap original */
+            transform: none;
         }
 
         .tab-btn:hover {
@@ -196,7 +212,7 @@
             font-size: 0.9rem;
         }
 
-        /* error fallback style (optional elegant) */
+        /* error fallback style */
         .iframe-error {
             background: #fff5f0;
             display: flex;
@@ -216,6 +232,10 @@
             .tab-btn {
                 padding: 8px 18px;
                 font-size: 0.8rem;
+            }
+            .tab-icon-img {
+                width: 20px;
+                height: 20px;
             }
             .brand h1 {
                 font-size: 1.2rem;
@@ -246,37 +266,42 @@
         </div>
     </div>
     <div class="tab-bar" id="tabBar">
-        <!-- 6 TABS DENGAN NAMA KELURAHAN & URL sesuai permintaan -->
+        <!-- 6 TABS DENGAN LOGO PEMKOT PEKANBARU sebagai icon - WARNA ASLI tanpa filter -->
         <!-- Tab 1 : Kampung Baru -->
         <button class="tab-btn" data-url="https://senapelan.github.io/Home/publik/senapelankencana/maintenance-kencana.html" data-name="Kampung Baru">
-            <i class="fas fa-home"></i> Kel. Kampung Baru
+            <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Pekanbaru" class="tab-icon-img" onerror="this.src='https://via.placeholder.com/24?text=PKU'">
+            Kel. Kampung Baru
         </button>
         <!-- Tab 2 : Kampung Bandar -->
         <button class="tab-btn" data-url="https://senapelan.github.io/Home/publik/senapelankencana/maintenance-kencana.html" data-name="Kampung Bandar">
-            <i class="fas fa-building"></i> Kel. Kampung Bandar
+            <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Pekanbaru" class="tab-icon-img" onerror="this.src='https://via.placeholder.com/24?text=PKU'">
+            Kel. Kampung Bandar
         </button>
         <!-- Tab 3 : Kampung Dalam -->
         <button class="tab-btn" data-url="https://senapelan.github.io/Home/publik/senapelankencana/maintenance-kencana.html" data-name="Kampung Dalam">
-            <i class="fas fa-archway"></i> Kel. Kampung Dalam
+            <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Pekanbaru" class="tab-icon-img" onerror="this.src='https://via.placeholder.com/24?text=PKU'">
+            Kel. Kampung Dalam
         </button>
         <!-- Tab 4 : Padang Bulan -->
         <button class="tab-btn" data-url="https://senapelan.github.io/Home/publik/senapelankencana/maintenance-kencana.html" data-name="Padang Bulan">
-            <i class="fas fa-moon"></i> Kel. Padang Bulan
+            <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Pekanbaru" class="tab-icon-img" onerror="this.src='https://via.placeholder.com/24?text=PKU'">
+            Kel. Padang Bulan
         </button>
         <!-- Tab 5 : Padang Terubuk (URL unik menampilkan data peserta LPS) -->
         <button class="tab-btn" data-url="https://lpspadangterubukasri.github.io/Home/potensi/datapesertalps.html" data-name="Padang Terubuk">
-            <i class="fas fa-chart-pie"></i> Kel. Padang Terubuk
+            <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Pekanbaru" class="tab-icon-img" onerror="this.src='https://via.placeholder.com/24?text=PKU'">
+            Kel. Padang Terubuk
         </button>
         <!-- Tab 6 : Sago -->
         <button class="tab-btn" data-url="https://senapelan.github.io/Home/publik/senapelankencana/maintenance-kencana.html" data-name="Sago">
-            <i class="fas fa-tree"></i> Kel. Sago
+            <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Pekanbaru" class="tab-icon-img" onerror="this.src='https://via.placeholder.com/24?text=PKU'">
+            Kel. Sago
         </button>
     </div>
 </div>
 
 <main class="main-viewport">
     <div class="iframe-container" id="iframeContainer">
-        <!-- iframe akan di inject secara dinamis -->
         <div class="loading-overlay" id="loadingOverlay" style="display: flex;">
             <div class="loader"></div>
             <div class="loading-text">Memuat dashboard kelurahan ...</div>
@@ -287,50 +312,29 @@
 
 <script>
     (function() {
-        // Data kelurahan mapping, plus masing-masing URL sudah ditetapkan di tombol, tapi kita juga simpan untuk referensi 
-        // Best practice: mengambil data dari tombol aktif.
         const tabs = document.querySelectorAll('.tab-btn');
         const iframe = document.getElementById('dynamicFrame');
         const loadingOverlay = document.getElementById('loadingOverlay');
         let currentUrl = '';
-        let isFirstLoad = true;
 
-        // Fungsi untuk mengupdate iframe dengan control loading yang elegan
+        // Fungsi untuk memuat halaman ke iframe
         function loadPage(url, kelurahanName) {
             if (!url) return;
-            if (currentUrl === url && !isFirstLoad) {
-                // jika URL sama tidak perlu reload berat, namun tetap update title
-                // tapi untuk user experience jika sudah tampil tetap aman, tidak reload paksa.
-                // tapi demi konsistensi (tab berbeda mungkin url sama, tetap harus load ulang biar fresh)
-                // Untuk menghindari frame tidak berubah karena URL sama, kita force reload dengan cara reset iframe
-                if(currentUrl === url && !isFirstLoad) {
-                    // tetap reload tapi dengan teknik soft: reload iframe contentWindow?
-                    // agar lebih elegant, panggil iframe.contentWindow.location.reload() jika origin sama, namun beda origin rawan error.
-                    // cara paling aman: set src ulang dengan menambahkan timestamp minor
-                    const urlWithCache = url.includes('?') ? url + '&_t=' + Date.now() : url + '?_t=' + Date.now();
-                    iframe.src = urlWithCache;
-                    showLoading();
-                    return;
-                }
-            }
-            currentUrl = url;
+            
+            // Untuk memaksa refresh meskipun URL sama (pergantian tab yang identik)
+            let finalUrl = url;
+            const separator = url.includes('?') ? '&' : '?';
+            finalUrl = url + separator + '_lps_tab_refresh=' + Date.now();
+            
+            currentUrl = finalUrl;
             showLoading();
             
-            // timeout fallback untuk menghindari infinite loading (jika halaman lama)
             let loadTimeout = setTimeout(() => {
                 if (loadingOverlay && loadingOverlay.style.display !== 'none') {
-                    // jika loading masih tampil setelah 10 detik, sembunyikan & beri notif
-                    if(loadingOverlay.style.display === 'flex') {
-                        hideLoading();
-                        // menampilkan pesan kecil di console atau bisa tampilkan fallback error ringan di iframe
-                        if (iframe.contentDocument) {
-                            // tidak overwrite jika konten sudah tampil
-                        }
-                    }
+                    hideLoading();
                 }
             }, 12000);
             
-            // fungsi selesai loading (iframe onload)
             function onIframeLoaded() {
                 clearTimeout(loadTimeout);
                 hideLoading();
@@ -338,20 +342,6 @@
             }
             iframe.addEventListener('load', onIframeLoaded, { once: true });
             
-            // Set src dengan cache buster untuk memastikan fresh load (optional untuk maintenance page tetap fresh)
-            // namun agar tidak mempengaruhi original url dinamis, kita sisipkan timestamp agar tidak ada cache blank?
-            // Untuk halaman static milik github pages, tidak masalah.
-            let finalUrl = url;
-            // Agar saat berpindah tab meskipun url identik, tetap reload (perbaikan)
-            if (url.includes('maintenance-kencana.html') || url.includes('datapesertalps.html')) {
-                // tambahkan param time untuk memaksa refresh setiap klik tab (tapi tetap mempertahankan fungsi asli)
-                const separator = url.includes('?') ? '&' : '?';
-                finalUrl = url + separator + '_lps_tab=' + Date.now();
-            } else {
-                // jika tidak ada, tetap pakai timestamp untuk kesegaran
-                const separator = url.includes('?') ? '&' : '?';
-                finalUrl = url + separator + '_fresh=' + Date.now();
-            }
             iframe.src = finalUrl;
         }
         
@@ -371,7 +361,6 @@
             }
         }
         
-        // aktifkan tab secara visual
         function setActiveTab(activeBtn) {
             tabs.forEach(btn => {
                 btn.classList.remove('active');
@@ -379,35 +368,33 @@
             activeBtn.classList.add('active');
         }
         
-        // Handler ketika tab diklik
+        // Handler tab click
         function onTabClick(event) {
             const btn = event.currentTarget;
             const url = btn.getAttribute('data-url');
             const kelName = btn.getAttribute('data-name') || 'Kelurahan';
             if (!url) return;
             setActiveTab(btn);
-            // Set title agar lebih dinamis tidak perlu tapi UX mantap
             loadPage(url, kelName);
-            // Update brand/secondary info? opsional bisa ubah deskripsi kelurahan, tidak wajib. tapi premium feel
+            // Update subtext brand
             const subText = document.querySelector('.brand p');
             if (subText) {
                 subText.innerHTML = `<i class="fas fa-location-dot" style="margin-right: 6px;"></i> Menampilkan data & potensi · ${kelName}`;
             }
         }
         
-        // Inisialisasi event listener
+        // Attach event listeners
         tabs.forEach(btn => {
             btn.addEventListener('click', onTabClick);
         });
         
-        // Set default tab aktif pertama (Kampung Baru) dan load halaman pertama dengan full preview
+        // Aktifkan tab pertama secara default (Kampung Baru)
         const defaultTab = tabs[0];
         if (defaultTab) {
             defaultTab.classList.add('active');
             const defaultUrl = defaultTab.getAttribute('data-url');
             const defaultName = defaultTab.getAttribute('data-name');
             if (defaultUrl) {
-                // panggil load page dengan initial loading handling
                 currentUrl = '';
                 loadPage(defaultUrl, defaultName);
                 const subText = document.querySelector('.brand p');
@@ -415,10 +402,9 @@
             }
         }
         
-        // OPSI: jika terjadi error pada iframe karena kebijakan konten, tetapi halaman yang diberikan terbuka untuk diiframe (umumnya github pages mengizinkan X-Frame-Options? beberapa mungkin SAMESITE, namun mayoritas bisa diembed karena tidak ada header pelarangan). Jika ada pemblokiran, tetap tampilkan konten asli. Karena kita pakai sandbox moderate, memungkinkan. Tambahan fallback error handling.
+        // Penanganan error iframe (jika gagal load)
         iframe.addEventListener('error', function() {
             hideLoading();
-            // Buat pesan eleggan di dalam container jika gagal total
             const container = document.querySelector('.iframe-container');
             if (container && !container.querySelector('.iframe-error-msg')) {
                 const errDiv = document.createElement('div');
@@ -437,7 +423,7 @@
                 errDiv.innerHTML = `
                     <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color: #d97706; margin-bottom: 1rem;"></i>
                     <h3 style="color: #7f4e1a;">Gagal memuat halaman</h3>
-                    <p style="max-width: 80%; text-align: center;">Konten eksternal mungkin tidak mendukung embed penuh. <br> Namun data tetap dapat diakses melalui <a href="${currentUrl}" target="_blank" style="color:#1e6f5c;">link terpisah</a>.</p>
+                    <p style="max-width: 80%; text-align: center;">Konten eksternal mungkin tidak mendukung embed penuh. <br> Namun data tetap dapat diakses melalui <a href="${currentUrl.split('?')[0]}" target="_blank" style="color:#1e6f5c;">link terpisah</a>.</p>
                     <button id="reloadFrameBtn" style="margin-top: 20px; background: #144d5e; border:none; padding: 8px 26px; border-radius: 40px; color:white; cursor:pointer;">Coba Muat Ulang</button>
                 `;
                 container.style.position = 'relative';
@@ -447,54 +433,39 @@
                     reloadBtn.addEventListener('click', () => {
                         if (currentUrl) {
                             errDiv.remove();
-                            loadPage(currentUrl, '');
+                            loadPage(currentUrl.split('?')[0], '');
                         }
                     });
                 }
-                // setelah 5 detik jika error muncul dan user tidak melakukan apa2, sembunyikan? tidak perlu
             }
         });
         
-        // Event tambahan untuk mendeteksi kegagalan load karena CORS atau frame options: kita gunakan timeout tambahan
-        // jika sudah 8 detik dan iframe masih kosong dan loading hilang? kita pasang detektor
+        // Interval pemantauan untuk memastikan loading hilang jika konten sudah tampil
         let navigationDetector = setInterval(() => {
-            if (iframe && iframe.contentDocument && iframe.contentDocument.title) {
-                // sudah termuat konten dengan title, maka aman
-                if (loadingOverlay && loadingOverlay.style.display === 'flex') {
-                    hideLoading();
+            try {
+                if (iframe && iframe.contentDocument && iframe.contentDocument.title && iframe.contentDocument.title.length > 0) {
+                    if (loadingOverlay && loadingOverlay.style.display === 'flex') {
+                        hideLoading();
+                    }
                 }
-            } else {
-                // jika setelah loading hilang tetapi tidak ada konten signifikan? hanya proteksi
-                if (loadingOverlay && loadingOverlay.style.display !== 'flex' && iframe.src && !iframe.contentDocument?.body?.innerText?.length) {
-                    // mungkin halaman error namun tidak terdeteksi, tapi tidak usah ditampilkan double error
-                }
+            } catch(e) {
+                // cross-origin error dapat diabaikan, loading akan tetap hilang via onload
             }
-        }, 1500);
+        }, 1000);
         
-        // Bersihkan interval ketika tidak diperlukan (tetap berjalan tidak masalah)
         window.addEventListener('beforeunload', () => {
             if (navigationDetector) clearInterval(navigationDetector);
         });
         
-        // style untuk memastikan tidak ada scroll ganda di body (tetapi jika iframe scroll, ok)
-        // menambah elegan: override scroll body
         document.body.style.overflow = 'hidden';
         
-        // Tambahan : jika user mengklik link di dalam iframe yang mengarah ke luar halaman full, tetap di iframe (sandbox sudah mendukung)
-        // resize window untuk full view
-        window.addEventListener('resize', () => {
-            // nothing additional, purely responsive
-        });
-        
-        // Fix: jika halaman pertama loading terlalu lama, kita siapkan safety ( di atas sudah ada timeout 12s)
-        // namun menambahkan fallback trigger jika jika iframe gagal memuat
+        // fallback loading terlalu lama
         setTimeout(() => {
             if (loadingOverlay && loadingOverlay.style.display === 'flex') {
-                // cek apakah iframe sudah memiliki src dan sudah coba load 
                 if (iframe.src && iframe.src !== 'about:blank') {
-                    // masih loading setelah 14 detik, berasumsi network lambat, tetap sembunyikan loading agar user bisa melihat konten mungkin butuh waktu
-                    if (document.querySelector('.iframe-error')) return;
-                    hideLoading();
+                    if (!document.querySelector('.iframe-error')) {
+                        hideLoading();
+                    }
                 }
             }
         }, 14000);
