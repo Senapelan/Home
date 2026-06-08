@@ -1,1 +1,464 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>LPS Kecamatan Senapelan | Maintenance</title>
+    <!-- Google Fonts + Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #e8eff5 0%, #dce5ed 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Full viewport tanpa scroll */
+        .maintenance-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Card premium dengan glassmorphism */
+        .maintenance-card {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 2rem 3rem;
+            max-width: 750px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.5);
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        /* Icon header */
+        .maintenance-icon {
+            font-size: 4.5rem;
+            color: #f59e0b;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 8px 12px rgba(0,0,0,0.1));
+        }
+
+        h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1f5e6e, #0b2b3f);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.75rem;
+            letter-spacing: -0.3px;
+        }
+
+        .warning-text {
+            background: #fff3e0;
+            display: inline-block;
+            padding: 0.5rem 1.25rem;
+            border-radius: 60px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #b45309;
+            margin-bottom: 1.25rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .message {
+            color: #2c3e4e;
+            font-size: 1rem;
+            font-weight: 500;
+            margin: 1rem 0 1.5rem;
+            line-height: 1.5;
+            background: #f8fafc;
+            padding: 1rem;
+            border-radius: 32px;
+            display: inline-block;
+            width: auto;
+        }
+
+        /* ANIMASI PETUGAS & MOBIL SAMPAH - AREA PREMIUM */
+        .animation-zone {
+            margin: 1.5rem auto 1rem;
+            position: relative;
+            height: 180px;
+            width: 100%;
+            background: linear-gradient(to bottom, #cbdde9 0%, #d9e4ec 30%, #bdcbd8 100%);
+            border-radius: 60px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05), 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        /* Jalan dan rumput tipis */
+        .street {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 45px;
+            background: #4a5b66;
+            background-image: linear-gradient(90deg, #5a6f7a 1px, transparent 1px);
+            background-size: 30px 100%;
+            z-index: 2;
+        }
+
+        .street-line {
+            position: absolute;
+            bottom: 20px;
+            width: 100%;
+            height: 3px;
+            background: #ffda7c;
+            box-shadow: 0 0 3px rgba(255,220,100,0.8);
+            z-index: 3;
+        }
+
+        /* Mobil sampah (truk) */
+        .garbage-truck {
+            position: absolute;
+            bottom: 18px;
+            right: -140px;
+            width: 140px;
+            height: 70px;
+            z-index: 10;
+            animation: truckDrive 6s ease-in-out infinite;
+            filter: drop-shadow(2px 6px 10px rgba(0,0,0,0.2));
+        }
+
+        /* Animasi truk: datang dari kanan ke kiri, lalu berhenti, lalu pergi */
+        @keyframes truckDrive {
+            0% { transform: translateX(0); right: -140px; }
+            15% { transform: translateX(-30px); right: auto; left: auto; }
+            30% { transform: translateX(-140px); }
+            45% { transform: translateX(-220px); }
+            55% { transform: translateX(-220px); } /* berhenti sebentar */
+            70% { transform: translateX(-300px); }
+            85% { transform: translateX(-380px); }
+            100% { transform: translateX(-480px); right: auto; left: -500px; }
+        }
+
+        /* versi lebih smooth: kita buat dengan left agar lebih presisi */
+        @keyframes truckDriveModern {
+            0% { left: 100%; }
+            20% { left: 65%; }
+            40% { left: 45%; }
+            55% { left: 35%; }  /* berhenti sebentar area petugas */
+            70% { left: 20%; }
+            85% { left: 5%; }
+            100% { left: -15%; }
+        }
+
+        .garbage-truck {
+            left: 100%;
+            transform: translateX(0);
+            animation: truckDriveModern 6s cubic-bezier(0.45, 0.05, 0.2, 0.99) infinite;
+        }
+
+        .truck-body {
+            position: relative;
+            width: 140px;
+            height: 60px;
+            background: #2c7a47;
+            border-radius: 20px 12px 8px 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        .truck-cabin {
+            position: absolute;
+            left: -38px;
+            top: -8px;
+            width: 50px;
+            height: 50px;
+            background: #1f5f3a;
+            border-radius: 20px 10px 8px 20px;
+            z-index: 2;
+        }
+        .truck-cabin::before {
+            content: "🚛";
+            position: absolute;
+            font-size: 2.2rem;
+            top: 6px;
+            left: 8px;
+            opacity: 0.9;
+        }
+        .truck-bed {
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            width: 70px;
+            height: 40px;
+            background: #3e8e5e;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+        }
+        .wheel {
+            position: absolute;
+            bottom: -10px;
+            width: 22px;
+            height: 22px;
+            background: #1e1e1e;
+            border-radius: 50%;
+            border: 3px solid #444;
+            box-shadow: inset 0 0 0 2px #aaa;
+        }
+        .wheel-left {
+            left: 20px;
+        }
+        .wheel-right {
+            right: 20px;
+        }
+
+        /* Petugas kebersihan */
+        .officer {
+            position: absolute;
+            bottom: 28px;
+            left: 32%;
+            z-index: 15;
+            font-size: 2.3rem;
+            filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.2));
+            animation: officerAction 6s ease-in-out infinite;
+            transform-origin: bottom;
+        }
+
+        @keyframes officerAction {
+            0% { transform: translateX(0) rotate(0deg); opacity: 1; }
+            10% { transform: translateX(-4px) rotate(-5deg); }
+            25% { transform: translateX(6px) rotate(3deg); }
+            40% { transform: translateX(-2px) rotate(0deg); }
+            55% { transform: translateX(0) scale(1.05); } /* buang sampah */
+            65% { transform: translateX(8px) rotate(4deg); }
+            80% { transform: translateX(-5px) rotate(-3deg); }
+            100% { transform: translateX(0) rotate(0deg); }
+        }
+
+        /* Sampah yang dilempar ke truk */
+        .trash-bag {
+            position: absolute;
+            bottom: 45px;
+            left: 40%;
+            font-size: 1.8rem;
+            z-index: 12;
+            animation: throwTrash 6s ease-in-out infinite;
+            opacity: 0;
+        }
+
+        @keyframes throwTrash {
+            0%, 38% { opacity: 0; transform: translate(0, 0) rotate(0deg); }
+            48% { opacity: 1; transform: translate(40px, -35px) rotate(25deg); }
+            58% { opacity: 0; transform: translate(75px, -50px) rotate(45deg); }
+            100% { opacity: 0; transform: translate(0,0); }
+        }
+
+        /* Progres bar premium satu baris */
+        .progress-section {
+            margin-top: 24px;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        .progress-bar-container {
+            background: #e2e8f0;
+            border-radius: 60px;
+            height: 8px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.05);
+        }
+
+        .progress-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #f5b042, #e67e22);
+            border-radius: 60px;
+            animation: loadingProgress 2.8s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 40px;
+            background: rgba(255,255,255,0.4);
+            animation: shimmer 1.5s infinite;
+            transform: skewX(-20deg);
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) skewX(-20deg);}
+            100% { transform: translateX(400%) skewX(-20deg);}
+        }
+
+        @keyframes loadingProgress {
+            0% { width: 5%; }
+            50% { width: 65%; }
+            100% { width: 95%; }
+        }
+
+        /* animasi ulang tanpa henti setelah 100% bisa reset, tampilkan teks */
+        .status-text {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #f97316;
+            background: rgba(249,115,22,0.1);
+            padding: 6px 12px;
+            border-radius: 40px;
+            display: inline-block;
+            margin-top: 16px;
+            backdrop-filter: blur(2px);
+        }
+
+        .footer-note {
+            margin-top: 1.75rem;
+            font-size: 0.7rem;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            border-top: 1px solid rgba(0,0,0,0.05);
+            padding-top: 1rem;
+        }
+
+        /* responsif */
+        @media (max-width: 640px) {
+            .maintenance-card {
+                padding: 1.5rem;
+            }
+            .officer {
+                font-size: 1.8rem;
+                left: 28%;
+            }
+            .trash-bag {
+                font-size: 1.4rem;
+            }
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+
+        /* tidak ada scroll */
+        body, html {
+            overflow: hidden;
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="maintenance-container">
+    <div class="maintenance-card">
+        <div class="maintenance-icon">
+            <i class="fas fa-database"></i>
+        </div>
+        <h1>LPS dalam Pemeliharaan</h1>
+        <div class="warning-text">
+            <i class="fas fa-tools"></i> Pembaruan Basis Data
+        </div>
+        <div class="message">
+            <i class="fas fa-exclamation-triangle" style="color: #f97316; margin-right: 8px;"></i> 
+            Maaf, sepertinya LPS Kelurahan ini belum update data basenya.<br>
+            Kami segera mengingatkan adminnya. Mohon tunggu.
+        </div>
+
+        <!-- AREA ANIMASI PETUGAS + MOBIL SAMPAH -->
+        <div class="animation-zone">
+            <div class="street"></div>
+            <div class="street-line"></div>
+            
+            <!-- Mobil sampah premium -->
+            <div class="garbage-truck">
+                <div class="truck-body">
+                    <div class="truck-cabin"></div>
+                    <div class="truck-bed">
+                        🗑️
+                    </div>
+                    <div class="wheel wheel-left"></div>
+                    <div class="wheel wheel-right"></div>
+                </div>
+            </div>
+            
+            <!-- Petugas kebersihan dengan ikon -->
+            <div class="officer">
+                🧑‍🔧🧹
+            </div>
+            <!-- Kantong sampah yang dilempar -->
+            <div class="trash-bag">
+                🗑️💨
+            </div>
+        </div>
+
+        <!-- PROGRESS BAR 1 baris Premium -->
+        <div class="progress-section">
+            <div class="progress-label">
+                <span><i class="fas fa-sync-alt fa-fw"></i> Proses pemutakhiran</span>
+                <span><i class="fas fa-clock"></i> Estimasi sebentar lagi</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-fill"></div>
+            </div>
+            <div class="status-text">
+                <i class="fas fa-broom"></i> Sedang membersihkan & memperbarui data...
+            </div>
+        </div>
+        
+        <div class="footer-note">
+            <i class="fas fa-truck-moving"></i> Tim teknis akan segera menyelesaikan 
+            <i class="fas fa-leaf"></i>
+        </div>
+    </div>
+</div>
+
+<!-- efek tambahan: suara tidak perlu, tapi beri sentuhan loop animasi CSS sudah cukup -->
+<script>
+    // optional: hanya untuk memastikan progress bar tetap bergerak dan tidak ada error visual
+    // tidak perlu intervensi besar, animasi CSS sudah berulang otomatis
+    // menambahkan efek dinamis kecil pada teks progres agar lebih hidup
+    const statusEl = document.querySelector('.status-text');
+    const messages = [
+        '🧹 Membersihkan data lama...',
+        '📦 Mengemas ulang database LPS...',
+        '🚛 Mengirim pembaruan ke server...',
+        '⚙️ Sinkronisasi dengan admin kelurahan...',
+        '✨ Hampir selesai, tunggu sebentar...'
+    ];
+    let msgIndex = 0;
+    setInterval(() => {
+        if(statusEl) {
+            msgIndex = (msgIndex + 1) % messages.length;
+            statusEl.innerHTML = `<i class="fas fa-broom"></i> ${messages[msgIndex]}`;
+        }
+    }, 2800);
+</script>
+</body>
+</html>
