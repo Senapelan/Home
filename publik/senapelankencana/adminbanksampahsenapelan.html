@@ -64,6 +64,10 @@
         .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #333; }
         .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 10px; font-size: 0.9rem; }
         .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .filter-row { display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; }
+        .filter-group { min-width: 120px; }
+        .filter-group label { font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 5px; }
+        .filter-group select, .filter-group input { padding: 8px 12px; border-radius: 8px; border: 1px solid #ddd; }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000; justify-content: center; align-items: center; }
         .modal-content { background: white; border-radius: 20px; padding: 25px; width: 90%; max-width: 500px; max-height: 80vh; overflow-y: auto; }
@@ -114,6 +118,7 @@
             .search-box { margin-top: 10px; width: 100%; }
             .search-box input { width: 100%; }
             .form-row { grid-template-columns: 1fr; gap: 10px; }
+            .filter-row { flex-direction: column; }
         }
     </style>
 </head>
@@ -160,14 +165,13 @@
     <div id="pageContent"><div class="loading"><i class="fas fa-spinner fa-pulse"></i> Loading...</div></div>
 </div>
 
-<!-- Modal Setoran - UPDATED dengan input tanggal -->
+<!-- Modal Setoran -->
 <div id="setoranModal" class="modal">
     <div class="modal-content">
         <div class="modal-header"><h3><i class="fas fa-trash-alt"></i> Input Setoran Sampah</h3><span class="close-modal" onclick="closeModal('setoranModal')">&times;</span></div>
         <form id="setoranForm">
             <input type="hidden" id="setoranNama" name="nama">
             <div class="form-group"><label>Nama Peserta</label><input type="text" id="displayNama" readonly style="background:#f5f5f5"></div>
-            <!-- TAMBAHAN: Pilih Tanggal Setor -->
             <div class="form-group"><label><i class="fas fa-calendar-alt"></i> Tanggal Setor</label><input type="date" id="tanggalSetor" required></div>
             <div class="form-group"><label>Organik (kg)</label><input type="number" id="organik" step="0.01" required placeholder="0.00"></div>
             <div class="form-group"><label>An Organik (kg)</label><input type="number" id="anOrganik" step="0.01" required placeholder="0.00"></div>
@@ -204,11 +208,16 @@
         });
     }
     
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-VyFaxIrnBrfhy7gYDJUQabkvOfEK_50Qy5HOJrRobQNvou-NVt3To8IDCFVjN4d0Kw/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyP9U0pgCm9W66w1FL-c9FRZm-Cny_Gn3hWUqNFCY9Qwlxg_s4Px-Dh8KZ6efvaJQeZag/exec";
     
     let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
     let pesertaData = [], pengurusData = [], pesertaList = [];
     let isProcessing = false;
+    let grafikChartTop10 = null, grafikChartKomposisi = null;
+    let currentGrafikBulan = new Date().getMonth() + 1;
+    let currentGrafikTahun = new Date().getFullYear();
+    let currentRekapBulan = new Date().getMonth() + 1;
+    let currentRekapTahun = new Date().getFullYear();
 
     function showToast(message, type = 'success') {
         const toast = document.createElement('div');
@@ -272,7 +281,6 @@
     
     function logout() { sessionStorage.clear(); window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginadminbanksampah.html'; }
     
-    // Fire and Forget untuk operasi yang tidak perlu response
     function callAppsScriptFireAndForget(action, data = {}) {
         const params = new URLSearchParams({ action, kategori: currentBankCategory, username: currentUser, ...data });
         const img = new Image();
@@ -280,7 +288,6 @@
         return { success: true };
     }
     
-    // JSONP untuk operasi yang butuh response
     async function callAppsScript(action, data = {}) {
         return new Promise((resolve) => {
             const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
@@ -323,7 +330,7 @@
         }
     }
     
-    // ==================== PESERTA (TAMPILAN UTAMA) ====================
+    // ==================== PESERTA (TAMPILAN UTAMA) - AKSI DI DEPAN ====================
     async function loadPeserta() {
         document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data peserta...</div>';
         const result = await callAppsScript('getPeserta', {});
@@ -332,7 +339,7 @@
                 <div class="card-title"><span><i class="fas fa-user-friends"></i> Daftar Peserta Bank Sampah ${currentBankName}</span>
                 <div class="search-box"><input type="text" id="searchPeserta" placeholder="Cari nama..." onkeyup="filterPeserta()"></div></div>
                 <div class="table-container"><table id="pesertaTable"><thead><tr>
-                    <th>Foto</th><th>Nama</th><th>Alamat</th><th>RT/RW</th><th>No HP</th><th>Tgl Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th><th>Aksi</th>
+                    <th>Aksi</th><th>Foto</th><th>Nama</th><th>Alamat</th><th>RT/RW</th><th>No HP</th><th>Tgl Setor</th><th>Organik</th><th>An Organik</th><th>Residu</th><th>Total</th>
                 </tr></thead><tbody id="pesertaTableBody">`;
             result.data.forEach(p => {
                 const foto = p.link_foto ? `<img src="${p.link_foto}" class="foto-bullet" onerror="this.src='https://ui-avatars.com/api/?background=4caf50&color=fff&name=${p.nama}'">` : `<div class="foto-bullet"><i class="fas fa-user"></i></div>`;
@@ -341,6 +348,7 @@
                 const rtRw = `RT ${p.rt || '-'} / RW ${p.rw || '-'}`;
                 
                 html += `<tr data-nama="${(p.nama || '').toLowerCase()}">
+                    <td><button class="btn btn-primary btn-sm" onclick="openSetoranModal('${(p.nama || '').replace(/'/g, "\\'")}')"><i class="fas fa-plus-circle"></i> Setor</button></td>
                     <td>${foto}</td>
                     <td><strong>${p.nama || '-'}</strong></td>
                     <td>${p.alamat || '-'}</td>
@@ -351,7 +359,6 @@
                     <td><span class="anorganic-badge">${(p.an_organik || 0).toFixed(1)} kg</span></td>
                     <td><span class="residu-badge">${(p.residu || 0).toFixed(1)} kg</span></td>
                     <td><strong class="total-weight">${(p.total || 0).toFixed(1)} kg</strong></td>
-                    <td><button class="btn btn-primary btn-sm" onclick="openSetoranModal('${(p.nama || '').replace(/'/g, "\\'")}')"><i class="fas fa-edit"></i> Setor</button></td>
                 </tr>`;
             });
             html += `</tbody></table></div></div>`;
@@ -370,11 +377,9 @@
         });
     }
     
-    // UPDATE: Fungsi openSetoranModal sekarang mengisi tanggal dengan hari ini sebagai default, tapi bisa diubah
     function openSetoranModal(nama) {
         document.getElementById('setoranNama').value = nama;
         document.getElementById('displayNama').value = nama;
-        // Set default tanggal ke hari ini dalam format YYYY-MM-DD
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('tanggalSetor').value = today;
         document.getElementById('organik').value = '';
@@ -383,7 +388,6 @@
         document.getElementById('setoranModal').style.display = 'flex';
     }
     
-    // SUBMIT SETORAN - UPDATED dengan mengirim tanggal yang dipilih
     document.getElementById('setoranForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
@@ -399,13 +403,9 @@
             const anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
             const residu = parseFloat(document.getElementById('residu').value) || 0;
             const total = organik + anOrganik + residu;
-            // Menggunakan tanggal yang dipilih oleh user dari input date
             const tanggal = document.getElementById('tanggalSetor').value;
             
-            // Validasi tanggal tidak boleh kosong
-            if (!tanggal) {
-                throw new Error('Tanggal setor harus dipilih!');
-            }
+            if (!tanggal) throw new Error('Tanggal setor harus dipilih!');
             
             callAppsScriptFireAndForget('updateSetoran', { nama, organik, anOrganik, residu, total, tanggal });
             
@@ -471,7 +471,7 @@
         const result = await callAppsScript('getDaftarPeserta', {});
         if (result && result.success && result.data) {
             pesertaList = result.data || [];
-            let html = `<div class="card"><div class="card-title"><span><i class="fas fa-user-plus"></i> Manajemen Peserta</span><button class="btn btn-success" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"><table><thead><tr><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
+            let html = `<div class="card"><div class="card-title"><span><i class="fas fa-user-plus"></i> Manajemen Peserta</span><button class="btn btn-success" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container">\\table<thead><tr><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
             if (pesertaList.length === 0) { 
                 html += `<tr><td colspan="8" style="text-align:center">Belum ada data peserta</td></tr>`; 
             } else {
@@ -488,11 +488,11 @@
                         <td>
                             <button class="btn btn-warning btn-sm" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
+                         </td>
+                     </tr>`;
                 });
             }
-            html += `</tbody></table></div></div>`;
+            html += `</tbody>\\table</div></div>`;
             document.getElementById('pageContent').innerHTML = html;
         } else { 
             document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
@@ -545,7 +545,6 @@
         }
     }
     
-    // SUBMIT PESERTA
     document.getElementById('pesertaForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         if (isProcessing) return;
@@ -587,33 +586,166 @@
         }
     });
     
-    // ==================== REKAP ====================
+    // ==================== REKAP BULANAN DENGAN FILTER ====================
     async function loadRekap() {
-        document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data rekap...</div>';
-        const result = await callAppsScript('getRekap', {});
+        const bulan = currentRekapBulan;
+        const tahun = currentRekapTahun;
+        
+        document.getElementById('pageContent').innerHTML = `<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data rekap ${getNamaBulan(bulan)} ${tahun}...</div>`;
+        
+        const result = await callAppsScript('getRekapWithFilter', { bulan: bulan, tahun: tahun });
+        const resultTahunan = await callAppsScript('getTotalTahunan', { tahun: tahun });
+        
         if (result && result.success) {
-            const totalBulan = result.totalBulan || 0, estimasiTPA = 22500, persen = ((totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="stats-grid"><div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${(result.totalHari || 0).toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div><div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${(result.totalMinggu || 0).toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div><div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${totalBulan.toFixed(1)} kg</h3><p>Total Setor Bulan Ini</p></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3>📊 ${totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p><strong>Capaian Pengurangan TPA:</strong> ${totalBulan.toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya (${persen}%)</p></div></div>`;
+            const estimasiTPA = 22500;
+            const persen = ((result.totalBulan / estimasiTPA) * 100).toFixed(1);
+            const totalTahunan = resultTahunan.success ? resultTahunan.totalTahunan : 0;
+            
+            let html = `
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-chart-line"></i> Filter Rekap Bulanan</div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-alt"></i> Bulan</label>
+                            <select id="rekapBulanFilter" onchange="changeRekapFilter()">
+                                ${generateBulanOptions(currentRekapBulan)}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-alt"></i> Tahun</label>
+                            <select id="rekapTahunFilter" onchange="changeRekapFilter()">
+                                ${generateTahunOptions(currentRekapTahun)}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card"><i class="fas fa-calendar-day fa-2x"></i><h3>${(result.totalHari || 0).toFixed(1)} kg</h3><p>Total Setor Hari Ini</p></div>
+                    <div class="stat-card"><i class="fas fa-calendar-week fa-2x"></i><h3>${(result.totalMinggu || 0).toFixed(1)} kg</h3><p>Total Setor Minggu Ini</p></div>
+                    <div class="stat-card"><i class="fas fa-calendar-alt fa-2x"></i><h3>${(result.totalBulan || 0).toFixed(1)} kg</h3><p>Total Setor Bulan ${getNamaBulan(bulan)} ${tahun}</p></div>
+                    <div class="stat-card"><i class="fas fa-chart-line fa-2x"></i><h3>${totalTahunan.toFixed(1)} kg</h3><p>Total Setor Tahun ${tahun} (Jan-Des)</p></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-chart-line"></i> Capaian Pengurangan TPA - Bulan ${getNamaBulan(bulan)} ${tahun}</div>
+                    <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;">
+                        <h3>📊 ${(result.totalBulan || 0).toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3>
+                        <div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div>
+                        <p><strong>Capaian Pengurangan TPA:</strong> ${(result.totalBulan || 0).toFixed(1)} kg dari estimasi ${estimasiTPA.toLocaleString()} kg sampah yang diangkut LPS tiap bulannya (${persen}%)</p>
+                    </div>
+                </div>
+            `;
             document.getElementById('pageContent').innerHTML = html;
         } else { 
             document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
         }
     }
     
-    // ==================== GRAFIK ====================
+    function changeRekapFilter() {
+        currentRekapBulan = parseInt(document.getElementById('rekapBulanFilter').value);
+        currentRekapTahun = parseInt(document.getElementById('rekapTahunFilter').value);
+        loadRekap();
+    }
+    
+    // ==================== GRAFIK DENGAN FILTER ====================
     async function loadGrafik() {
-        document.getElementById('pageContent').innerHTML = '<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data grafik...</div>';
-        const result = await callAppsScript('getGrafikData', {});
+        const bulan = currentGrafikBulan;
+        const tahun = currentGrafikTahun;
+        
+        document.getElementById('pageContent').innerHTML = `<div class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data grafik ${getNamaBulan(bulan)} ${tahun}...</div>`;
+        
+        const result = await callAppsScript('getGrafikDataWithFilter', { bulan: bulan, tahun: tahun });
+        
         if (result && result.success) {
-            const estimasiTPA = 22500, persen = ((result.totalBulan / estimasiTPA) * 100).toFixed(1);
-            let html = `<div class="charts-grid"><div class="chart-container"><h3><i class="fas fa-trophy"></i> Top 10 Peserta</h3><canvas id="top10Chart"></canvas></div><div class="chart-container"><h3><i class="fas fa-chart-pie"></i> Komposisi Sampah</h3><canvas id="komposisiChart"></canvas></div></div><div class="card"><div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA</div><div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;"><h3>📊 ${result.totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3><div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div><p>Bank Sampah berhasil mengelola ${result.totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong> dari estimasi sampah ke TPA</p></div></div>`;
+            const estimasiTPA = 22500;
+            const persen = ((result.totalBulan / estimasiTPA) * 100).toFixed(1);
+            
+            let html = `
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-chart-pie"></i> Filter Grafik</div>
+                    <div class="filter-row">
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-alt"></i> Bulan</label>
+                            <select id="grafikBulanFilter" onchange="changeGrafikFilter()">
+                                ${generateBulanOptions(currentGrafikBulan)}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label><i class="fas fa-calendar-alt"></i> Tahun</label>
+                            <select id="grafikTahunFilter" onchange="changeGrafikFilter()">
+                                ${generateTahunOptions(currentGrafikTahun)}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="charts-grid">
+                    <div class="chart-container"><h3><i class="fas fa-trophy"></i> Top 10 Peserta - ${getNamaBulan(bulan)} ${tahun}</h3><canvas id="top10Chart"></canvas></div>
+                    <div class="chart-container"><h3><i class="fas fa-chart-pie"></i> Komposisi Sampah - ${getNamaBulan(bulan)} ${tahun}</h3><canvas id="komposisiChart"></canvas></div>
+                </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-chart-pie"></i> Capaian Pengurangan TPA - ${getNamaBulan(bulan)} ${tahun}</div>
+                    <div style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); padding: 20px; border-radius: 15px;">
+                        <h3>📊 ${result.totalBulan.toFixed(1)} kg / ${estimasiTPA.toLocaleString()} kg</h3>
+                        <div style="background:#fff; border-radius:10px; margin:15px 0; height:20px;"><div style="background:linear-gradient(90deg,#2e7d32,#4caf50); width:${Math.min(persen,100)}%; height:100%; border-radius:10px;"></div></div>
+                        <p>Bank Sampah berhasil mengelola ${result.totalBulan.toFixed(1)} kg <strong>(${persen}%)</strong> dari estimasi sampah ke TPA pada ${getNamaBulan(bulan)} ${tahun}</p>
+                    </div>
+                </div>
+            `;
             document.getElementById('pageContent').innerHTML = html;
+            
             const top10 = result.top10 || [];
-            if (top10.length) new Chart(document.getElementById('top10Chart'), { type: 'bar', data: { labels: top10.map(t => t.nama.length > 12 ? t.nama.substring(0,12)+'...' : t.nama), datasets: [{ label: 'Total (kg)', data: top10.map(t => t.total), backgroundColor: '#4caf50', borderRadius: 8 }] }, options: { responsive: true } });
-            new Chart(document.getElementById('komposisiChart'), { type: 'doughnut', data: { labels: ['Organik', 'An Organik', 'Residu'], datasets: [{ data: [result.totalOrganik || 0, result.totalAnOrganik || 0, result.totalResidu || 0], backgroundColor: ['#4caf50', '#ff9800', '#f44336'], borderWidth: 0 }] }, options: { responsive: true } });
+            if (top10.length) {
+                if (grafikChartTop10) grafikChartTop10.destroy();
+                grafikChartTop10 = new Chart(document.getElementById('top10Chart'), { 
+                    type: 'bar', 
+                    data: { 
+                        labels: top10.map(t => t.nama.length > 12 ? t.nama.substring(0,12)+'...' : t.nama), 
+                        datasets: [{ label: 'Total (kg)', data: top10.map(t => t.total), backgroundColor: '#4caf50', borderRadius: 8 }] 
+                    }, 
+                    options: { responsive: true } 
+                });
+            }
+            
+            if (grafikChartKomposisi) grafikChartKomposisi.destroy();
+            grafikChartKomposisi = new Chart(document.getElementById('komposisiChart'), { 
+                type: 'doughnut', 
+                data: { 
+                    labels: ['Organik', 'An Organik', 'Residu'], 
+                    datasets: [{ data: [result.totalOrganik || 0, result.totalAnOrganik || 0, result.totalResidu || 0], backgroundColor: ['#4caf50', '#ff9800', '#f44336'], borderWidth: 0 }] 
+                }, 
+                options: { responsive: true } 
+            });
         } else { 
             document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
         }
+    }
+    
+    function changeGrafikFilter() {
+        currentGrafikBulan = parseInt(document.getElementById('grafikBulanFilter').value);
+        currentGrafikTahun = parseInt(document.getElementById('grafikTahunFilter').value);
+        loadGrafik();
+    }
+    
+    // ==================== HELPER FUNCTIONS ====================
+    function getNamaBulan(bulan) {
+        const nama = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        return nama[bulan - 1] || 'Januari';
+    }
+    
+    function generateBulanOptions(selected) {
+        let html = '';
+        for (let i = 1; i <= 12; i++) {
+            html += `<option value="${i}" ${selected === i ? 'selected' : ''}>${getNamaBulan(i)}</option>`;
+        }
+        return html;
+    }
+    
+    function generateTahunOptions(selected) {
+        const currentYear = new Date().getFullYear();
+        let html = '';
+        for (let i = currentYear - 2; i <= currentYear + 1; i++) {
+            html += `<option value="${i}" ${selected === i ? 'selected' : ''}>${i}</option>`;
+        }
+        return html;
     }
     
     function loadPage(page) {
