@@ -8,371 +8,62 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            background: #f5f7fb;
-            min-height: 100vh;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1440px;
-            margin: 0 auto;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6e 100%);
-            border-radius: 28px;
-            padding: 24px 32px;
-            margin-bottom: 24px;
-            color: white;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 16px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-        }
-        .header-left h1 {
-            font-size: 1.6rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .header-left p {
-            font-size: 0.85rem;
-            opacity: 0.8;
-            margin-top: 6px;
-        }
-        .header-right {
-            background: rgba(255,255,255,0.15);
-            padding: 8px 16px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            backdrop-filter: blur(10px);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 24px;
-            background: white;
-            padding: 6px;
-            border-radius: 60px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            flex-wrap: wrap;
-        }
-        .tab-btn {
-            background: transparent;
-            border: none;
-            padding: 12px 28px;
-            font-weight: 600;
-            cursor: pointer;
-            border-radius: 50px;
-            color: #5b6e8c;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .tab-btn i {
-            font-size: 1rem;
-        }
-        .tab-btn.active {
-            background: #1e4a76;
-            color: white;
-            box-shadow: 0 4px 12px rgba(30,74,118,0.3);
-        }
-        .tab-pane {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
-        .tab-pane.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .filter-bar {
-            background: white;
-            border-radius: 24px;
-            padding: 16px 24px;
-            margin-bottom: 24px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .bank-filters {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-        .filter-chip {
-            background: #f1f5f9;
-            border-radius: 40px;
-            padding: 8px 20px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 500;
-            border: none;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .filter-chip i {
-            font-size: 0.9rem;
-        }
-        .filter-chip.active {
-            background: #1e4a76;
-            color: white;
-            box-shadow: 0 2px 8px rgba(30,74,118,0.3);
-        }
-        .date-filter {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        .date-filter input {
-            border: 1px solid #e2e8f0;
-            border-radius: 40px;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            background: #f8fafc;
-        }
-        .date-filter button {
-            background: #eef2ff;
-            border: none;
-            border-radius: 40px;
-            padding: 8px 18px;
-            cursor: pointer;
-            font-weight: 500;
-            color: #1e4a76;
-        }
-
-        .stats-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 28px;
-        }
-        .stat-card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px 24px;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(0,0,0,0.03);
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-        }
-        .stat-icon {
-            width: 48px;
-            height: 48px;
-            background: #eef2ff;
-            border-radius: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 12px;
-        }
-        .stat-icon i {
-            font-size: 1.5rem;
-            color: #1e4a76;
-        }
-        .stat-title {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #5b6e8c;
-            font-weight: 600;
-        }
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #0f2b3d;
-            margin-top: 6px;
-        }
-        .stat-unit {
-            font-size: 0.85rem;
-            font-weight: 500;
-            color: #5b6e8c;
-        }
-
-        .participant-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0 16px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .participant-header h3 {
-            color: #0f2b3d;
-            font-size: 1.2rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .show-control {
-            display: flex;
-            gap: 10px;
-        }
-        .show-btn {
-            background: white;
-            border: 1px solid #e2e8f0;
-            padding: 6px 20px;
-            border-radius: 40px;
-            cursor: pointer;
-            font-weight: 500;
-            font-size: 0.8rem;
-            transition: all 0.2s;
-        }
-        .show-btn.active {
-            background: #1e4a76;
-            color: white;
-            border-color: #1e4a76;
-        }
-        .table-wrapper {
-            overflow-x: auto;
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .peserta-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.8rem;
-            min-width: 800px;
-        }
-        .peserta-table th {
-            text-align: left;
-            padding: 16px 12px;
-            background: #f8fafc;
-            color: #2c3e66;
-            font-weight: 600;
-            border-bottom: 1px solid #e9edf2;
-        }
-        .peserta-table td {
-            padding: 14px 12px;
-            border-bottom: 1px solid #eff3f8;
-            vertical-align: middle;
-        }
-        .avatar-img {
-            width: 42px;
-            height: 42px;
-            border-radius: 42px;
-            object-fit: cover;
-            background: linear-gradient(135deg, #1e4a76, #2c6e9e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: bold;
-            font-size: 1rem;
-        }
-        .avatar-img img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-        .kg-badge {
-            font-weight: 600;
-            background: #eef2ff;
-            border-radius: 20px;
-            padding: 4px 10px;
-            display: inline-block;
-            font-size: 0.75rem;
-        }
-
-        .summary-boxes {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 16px;
-            margin-top: 24px;
-        }
-        .summary-item {
-            background: white;
-            padding: 20px;
-            text-align: center;
-            border-radius: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-        .summary-item strong {
-            font-size: 0.8rem;
-            color: #5b6e8c;
-        }
-
-        .charts-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 24px;
-            margin-top: 20px;
-        }
-        .chart-card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-            transition: all 0.3s;
-        }
-        .chart-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-        }
-        .chart-card h4 {
-            margin-bottom: 20px;
-            color: #0f2b3d;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        canvas {
-            max-height: 260px;
-            width: 100%;
-        }
-
-        .loading, .error {
-            text-align: center;
-            padding: 50px;
-            color: #2c3e66;
-        }
-        .error {
-            color: #e74c3c;
-        }
-        .info-badge {
-            background: linear-gradient(135deg, #e0f2fe, #d4e6f1);
-            padding: 14px 20px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            margin-top: 20px;
-        }
-        footer {
-            text-align: center;
-            margin-top: 40px;
-            padding: 20px;
-            font-size: 0.7rem;
-            color: #7e8aa2;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', system-ui, sans-serif; background: #f5f7fb; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1440px; margin: 0 auto; }
+        .header { background: linear-gradient(135deg, #0f2b3d 0%, #1a4a6e 100%); border-radius: 28px; padding: 24px 32px; margin-bottom: 24px; color: white; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .header-left h1 { font-size: 1.6rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .header-left p { font-size: 0.85rem; opacity: 0.8; margin-top: 6px; }
+        .header-right { background: rgba(255,255,255,0.15); padding: 8px 16px; border-radius: 40px; font-size: 0.75rem; backdrop-filter: blur(10px); }
+        .tabs { display: flex; gap: 8px; margin-bottom: 24px; background: white; padding: 6px; border-radius: 60px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); flex-wrap: wrap; }
+        .tab-btn { background: transparent; border: none; padding: 12px 28px; font-weight: 600; cursor: pointer; border-radius: 50px; color: #5b6e8c; transition: all 0.3s ease; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+        .tab-btn i { font-size: 1rem; }
+        .tab-btn.active { background: #1e4a76; color: white; box-shadow: 0 4px 12px rgba(30,74,118,0.3); }
+        .tab-pane { display: none; animation: fadeIn 0.3s ease; }
+        .tab-pane.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .filter-bar { background: white; border-radius: 24px; padding: 16px 24px; margin-bottom: 24px; display: flex; flex-wrap: wrap; gap: 16px; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .bank-filters { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-chip { background: #f1f5f9; border-radius: 40px; padding: 8px 20px; cursor: pointer; font-size: 0.85rem; font-weight: 500; border: none; transition: all 0.2s; display: flex; align-items: center; gap: 8px; }
+        .filter-chip i { font-size: 0.9rem; }
+        .filter-chip.active { background: #1e4a76; color: white; box-shadow: 0 2px 8px rgba(30,74,118,0.3); }
+        .filter-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .filter-group select { border: 1px solid #e2e8f0; border-radius: 40px; padding: 8px 14px; font-size: 0.85rem; background: #f8fafc; cursor: pointer; }
+        .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 28px; }
+        .stat-card { background: white; border-radius: 24px; padding: 20px 24px; transition: all 0.3s ease; border: 1px solid rgba(0,0,0,0.03); box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
+        .stat-icon { width: 48px; height: 48px; background: #eef2ff; border-radius: 28px; display: flex; align-items: center; justify-content: center; margin-bottom: 12px; }
+        .stat-icon i { font-size: 1.5rem; color: #1e4a76; }
+        .stat-title { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; color: #5b6e8c; font-weight: 600; }
+        .stat-value { font-size: 2rem; font-weight: 800; color: #0f2b3d; margin-top: 6px; }
+        .stat-unit { font-size: 0.85rem; font-weight: 500; color: #5b6e8c; }
+        .participant-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 16px; flex-wrap: wrap; gap: 12px; }
+        .participant-header h3 { color: #0f2b3d; font-size: 1.2rem; display: flex; align-items: center; gap: 8px; }
+        .show-control { display: flex; gap: 10px; }
+        .show-btn { background: white; border: 1px solid #e2e8f0; padding: 6px 20px; border-radius: 40px; cursor: pointer; font-weight: 500; font-size: 0.8rem; transition: all 0.2s; }
+        .show-btn.active { background: #1e4a76; color: white; border-color: #1e4a76; }
+        .table-wrapper { overflow-x: auto; background: white; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .peserta-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; min-width: 800px; }
+        .peserta-table th { text-align: left; padding: 16px 12px; background: #f8fafc; color: #2c3e66; font-weight: 600; border-bottom: 1px solid #e9edf2; }
+        .peserta-table td { padding: 14px 12px; border-bottom: 1px solid #eff3f8; vertical-align: middle; }
+        .avatar-img { width: 42px; height: 42px; border-radius: 42px; object-fit: cover; background: linear-gradient(135deg, #1e4a76, #2c6e9e); display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 1rem; }
+        .avatar-img img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; }
+        .kg-badge { font-weight: 600; background: #eef2ff; border-radius: 20px; padding: 4px 10px; display: inline-block; font-size: 0.75rem; }
+        .summary-boxes { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-top: 24px; }
+        .summary-item { background: white; padding: 20px; text-align: center; border-radius: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .summary-item strong { font-size: 0.8rem; color: #5b6e8c; }
+        .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 24px; margin-top: 20px; }
+        .chart-card { background: white; border-radius: 24px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); transition: all 0.3s; }
+        .chart-card:hover { transform: translateY(-2px); box-shadow: 0 12px 24px rgba(0,0,0,0.08); }
+        .chart-card h4 { margin-bottom: 20px; color: #0f2b3d; font-size: 1rem; display: flex; align-items: center; gap: 8px; }
+        canvas { max-height: 260px; width: 100%; }
+        .loading, .error { text-align: center; padding: 50px; color: #2c3e66; }
+        .error { color: #e74c3c; }
+        .info-badge { background: linear-gradient(135deg, #e0f2fe, #d4e6f1); padding: 14px 20px; border-radius: 20px; font-size: 0.85rem; margin-top: 20px; }
+        footer { text-align: center; margin-top: 40px; padding: 20px; font-size: 0.7rem; color: #7e8aa2; }
+        .top-ten-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+        .top-ten-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #1e4a76; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; }
+        .custom-tooltip { background: white; border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         @media (max-width: 768px) {
             body { padding: 12px; }
             .header { padding: 18px 20px; }
@@ -380,15 +71,7 @@
             .stat-value { font-size: 1.4rem; }
             .tab-btn { padding: 8px 16px; font-size: 0.8rem; }
             .filter-chip { padding: 6px 14px; font-size: 0.75rem; }
-        }
-
-        @media (max-width: 480px) {
-            .stats-row { grid-template-columns: 1fr; }
-            .summary-boxes { grid-template-columns: 1fr 1fr; }
             .charts-grid { grid-template-columns: 1fr; }
-            .filter-bar { flex-direction: column; align-items: stretch; }
-            .bank-filters { justify-content: center; }
-            .date-filter { justify-content: center; }
         }
     </style>
 </head>
@@ -410,39 +93,73 @@
         <button class="tab-btn" data-tab="tab3"><i class="fas fa-chart-line"></i> Grafik Analisis</button>
     </div>
 
-    <div class="filter-bar">
+    <!-- Filter Bar untuk Tab 1 -->
+    <div class="filter-bar" id="filterBarTab1">
         <div class="bank-filters" id="bankFilters">
             <div class="filter-chip active" data-bank="all"><i class="fas fa-building"></i> Semua Bank</div>
-            <div class="filter-chip" data-bank="ID_BS_MU"><i class="fas fa-recycle"></i> Mawar Utama</div>
-            <div class="filter-chip" data-bank="ID_BS_LU"><i class="fas fa-recycle"></i> Lorong Utama</div>
-            <div class="filter-chip" data-bank="ID_BS_K"><i class="fas fa-recycle"></i> Kemuning</div>
+            <div class="filter-chip" data-bank="BS_MU"><i class="fas fa-recycle"></i> Mawar Utama</div>
+            <div class="filter-chip" data-bank="BS_LU"><i class="fas fa-recycle"></i> Lorong Utama</div>
+            <div class="filter-chip" data-bank="BS_K"><i class="fas fa-recycle"></i> Kemuning</div>
         </div>
-        <div class="date-filter">
-            <i class="fas fa-calendar-day"></i>
-            <input type="date" id="startDate" placeholder="Dari">
-            <span>—</span>
-            <input type="date" id="endDate" placeholder="Sampai">
-            <button id="resetDate"><i class="fas fa-undo-alt"></i> Reset</button>
+        <div class="filter-group">
+            <select id="bulanFilterTab1">
+                <option value="all">Semua Bulan</option>
+                <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+                <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+                <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+                <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+            </select>
+            <select id="tahunFilterTab1">
+                <option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option>
+            </select>
+            <button id="resetFilterTab1" class="filter-chip" style="background:#e2e8f0;"><i class="fas fa-undo-alt"></i> Reset</button>
         </div>
     </div>
 
+    <!-- Filter Bar untuk Tab 2 -->
+    <div class="filter-bar" id="filterBarTab2" style="display:none;">
+        <div class="bank-filters" id="bankFiltersTab2">
+            <div class="filter-chip active" data-bank="all"><i class="fas fa-building"></i> Semua Bank</div>
+            <div class="filter-chip" data-bank="BS_MU"><i class="fas fa-recycle"></i> Mawar Utama</div>
+            <div class="filter-chip" data-bank="BS_LU"><i class="fas fa-recycle"></i> Lorong Utama</div>
+            <div class="filter-chip" data-bank="BS_K"><i class="fas fa-recycle"></i> Kemuning</div>
+        </div>
+        <div class="filter-group">
+            <select id="tahunFilterTab2">
+                <option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option>
+            </select>
+            <button id="resetFilterTab2" class="filter-chip" style="background:#e2e8f0;"><i class="fas fa-undo-alt"></i> Reset</button>
+        </div>
+    </div>
+
+    <!-- Filter Bar untuk Tab 3 -->
+    <div class="filter-bar" id="filterBarTab3" style="display:none;">
+        <div class="bank-filters" id="bankFiltersTab3">
+            <div class="filter-chip active" data-bank="all"><i class="fas fa-building"></i> Semua Bank</div>
+            <div class="filter-chip" data-bank="BS_MU"><i class="fas fa-recycle"></i> Mawar Utama</div>
+            <div class="filter-chip" data-bank="BS_LU"><i class="fas fa-recycle"></i> Lorong Utama</div>
+            <div class="filter-chip" data-bank="BS_K"><i class="fas fa-recycle"></i> Kemuning</div>
+        </div>
+        <div class="filter-group">
+            <select id="bulanFilterTab3">
+                <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+                <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+                <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+                <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+            </select>
+            <select id="tahunFilterTab3">
+                <option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option>
+            </select>
+            <button id="resetFilterTab3" class="filter-chip" style="background:#e2e8f0;"><i class="fas fa-undo-alt"></i> Reset</button>
+        </div>
+    </div>
+
+    <!-- TAB 1: Daftar Setoran -->
     <div id="tab1" class="tab-pane active">
         <div class="stats-row">
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-trash-alt"></i></div>
-                <div class="stat-title">TOTAL HARI INI</div>
-                <div class="stat-value" id="hariIni">0 <span class="stat-unit">kg</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-calendar-week"></i></div>
-                <div class="stat-title">TOTAL MINGGU INI</div>
-                <div class="stat-value" id="mingguIni">0 <span class="stat-unit">kg</span></div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon"><i class="fas fa-calendar-alt"></i></div>
-                <div class="stat-title">TOTAL BULAN INI</div>
-                <div class="stat-value" id="bulanIni">0 <span class="stat-unit">kg</span></div>
-            </div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-trash-alt"></i></div><div class="stat-title">TOTAL HARI INI</div><div class="stat-value" id="hariIni">0 <span class="stat-unit">kg</span></div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-week"></i></div><div class="stat-title">TOTAL MINGGU INI</div><div class="stat-value" id="mingguIni">0 <span class="stat-unit">kg</span></div></div>
+            <div class="stat-card"><div class="stat-icon"><i class="fas fa-calendar-alt"></i></div><div class="stat-title">TOTAL BULAN INI</div><div class="stat-value" id="bulanIni">0 <span class="stat-unit">kg</span></div></div>
         </div>
         <div class="participant-header">
             <h3><i class="fas fa-users"></i> Daftar Setoran Peserta</h3>
@@ -453,285 +170,269 @@
         </div>
         <div class="table-wrapper">
             <table class="peserta-table">
-                <thead>
-                    <tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>Tgl Setor</th><th style="color:#2ecc71;"><i class="fas fa-seedling"></i> Organik</th><th style="color:#f1c40f;"><i class="fas fa-recycle"></i> An-Organik</th><th style="color:#e74c3c;"><i class="fas fa-trash"></i> Residu</th><th style="color:#3498db;"><i class="fas fa-chart-simple"></i> Total</th> </tr>
-                </thead>
-                <tbody id="tableBody"><tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</tr</tbody>
-              </table>
+                <thead><tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>RT/RW</th><th>Tgl Setor</th><th style="color:#2ecc71;">Organik</th><th style="color:#f1c40f;">An-Organik</th><th style="color:#e74c3c;">Residu</th><th style="color:#3498db;">Total</th></tr></thead>
+                <tbody id="tableBody"><tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr></tbody>
+            </table>
         </div>
     </div>
 
+    <!-- TAB 2: Rekap Bulanan -->
     <div id="tab2" class="tab-pane">
         <h3 style="margin-bottom: 16px;"><i class="fas fa-chart-bar"></i> Rekap Bulanan</h3>
         <div class="table-wrapper">
             <table class="peserta-table">
-                <thead><tr><th>Bulan</th><th>Organik</th><th>An-Organik</th><th>Residu</th><th>Total</th><th>Status</th> </tr>
-                </thead>
-                <tbody id="rekapBody"><tr><td colspan="6" class="loading">Memuat...</tr</tbody>
-              </table>
+                <thead><tr><th>Bulan</th><th>Organik</th><th>An-Organik</th><th>Residu</th><th>Total</th><th>Status</th></tr></thead>
+                <tbody id="rekapBody"><tr><td colspan="6" class="loading">Memuat...</td></tr></tbody>
+            </table>
         </div>
         <div class="summary-boxes" id="summaryBoxes"></div>
-        <div class="info-badge" id="penguranganInfo">
-            <i class="fas fa-chart-line"></i> Menghitung rata-rata pengurangan TPA...
-        </div>
+        <div class="info-badge" id="penguranganInfo"><i class="fas fa-chart-line"></i> Menghitung rata-rata pengurangan TPA...</div>
     </div>
 
+    <!-- TAB 3: Grafik Analisis -->
     <div id="tab3" class="tab-pane">
         <div class="charts-grid">
-            <div class="chart-card">
-                <h4><i class="fas fa-trophy" style="color:#f1c40f;"></i> Top 10 Peserta (Total Setor)</h4>
-                <canvas id="barChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h4><i class="fas fa-chart-pie"></i> Komposisi Sampah Bulan Ini</h4>
-                <canvas id="pieChart"></canvas>
-            </div>
-            <div class="chart-card">
-                <h4><i class="fas fa-arrow-trend-down" style="color:#2ecc71;"></i> Capaian Pengurangan TPA</h4>
-                <canvas id="lineChart"></canvas>
-            </div>
+            <div class="chart-card"><h4><i class="fas fa-trophy" style="color:#f1c40f;"></i> Top 10 Peserta (Total Setor)</h4><canvas id="barChart"></canvas></div>
+            <div class="chart-card"><h4><i class="fas fa-chart-pie"></i> Komposisi Sampah</h4><canvas id="pieChart"></canvas></div>
+            <div class="chart-card"><h4><i class="fas fa-arrow-trend-down" style="color:#2ecc71;"></i> Capaian Pengurangan TPA</h4><canvas id="lineChart"></canvas></div>
         </div>
+        <div class="info-badge" id="grafikInfo"></div>
     </div>
-    <footer>
-        <i class="fas fa-database"></i> Data Bank Sampah Kecamatan Senapelan | 
-        <i class="fas fa-chart-line"></i> Dashboard Bank Sampah
-    </footer>
+    <footer><i class="fas fa-database"></i> Data Bank Sampah Kecamatan Senapelan | <i class="fas fa-chart-line"></i> Dashboard Bank Sampah</footer>
 </div>
 
 <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz_mDy6EVtO8iJMgBIjW2qIoVPD_fk9kIjS2LV77m4xgDqXy0U81Gv2ShZzI9ROitYO/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzelGic2uGg96eDS-e9fdGrqR0XvWqmt-vD8Lrn0amWmT0dRh_aa9A_10hRdB5xzcx0/exec';
     
-    let allData = [];
+    // Data stores
+    let allSetoran = [];      // dari sheet RIWAYAT_SETOR_BSPD
+    let allPeserta = [];      // dari sheet PESERTA_BS_PD
     let filteredData = [];
+    
+    // Filter states
     let currentBank = "all";
-    let startDate = null;
-    let endDate = null;
+    let currentBulanTab1 = "all";
+    let currentTahunTab1 = new Date().getFullYear().toString();
+    let currentTahunTab2 = new Date().getFullYear().toString();
+    let currentBulanTab3 = (new Date().getMonth() + 1).toString();
+    let currentTahunTab3 = new Date().getFullYear().toString();
     let currentLimit = 100;
+    
     let charts = {};
 
-    const daysInIndonesian = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
-    const monthsInIndonesian = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const monthsIndo = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
-    function parseDate(str) {
-        if (!str) return null;
-        if (str instanceof Date && !isNaN(str)) return str;
-        
-        let d = new Date(str);
-        if (!isNaN(d.getTime()) && d.getFullYear() > 2000) {
-            return d;
-        }
-        
-        const jsDateMatch = str.match(/(\w{3})\s+(\w{3})\s+(\d{1,2})\s+(\d{4})/);
-        if (jsDateMatch) {
-            const months = {Jan:0, Feb:1, Mar:2, Apr:3, May:4, Jun:5, Jul:6, Aug:7, Sep:8, Oct:9, Nov:10, Dec:11};
-            const month = months[jsDateMatch[2]];
-            const day = parseInt(jsDateMatch[3]);
-            const year = parseInt(jsDateMatch[4]);
-            if (month !== undefined && !isNaN(day) && !isNaN(year)) {
-                return new Date(year, month, day);
-            }
-        }
-        
-        const isoMatch = str.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-        if (isoMatch) {
-            return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]));
-        }
-        
-        const indoMatch = str.match(/(\d{1,2})\s+(\w+)\s+(\d{4})/);
-        if (indoMatch) {
-            const months = {Januari:0, Februari:1, Maret:2, April:3, Mei:4, Juni:5, Juli:6, Agustus:7, September:8, Oktober:9, November:10, Desember:11};
-            const month = months[indoMatch[2]];
-            const day = parseInt(indoMatch[1]);
-            const year = parseInt(indoMatch[3]);
-            if (month !== undefined && !isNaN(day) && !isNaN(year)) {
-                return new Date(year, month, day);
-            }
-        }
-        
-        return null;
-    }
-
-    function formatDateToIndonesian(dateString) {
-        if (!dateString) return '-';
-        let date = parseDate(dateString);
-        if (!date || isNaN(date.getTime())) return dateString;
-        
-        const dayName = daysInIndonesian[date.getDay()];
-        const day = date.getDate();
-        const monthName = monthsInIndonesian[date.getMonth()];
-        const year = date.getFullYear();
-        
-        return `${dayName}, ${day} ${monthName} ${year}`;
-    }
-
-    function getAvatarHtml(linkFoto, nama) {
-        const initial = (nama?.[0] || '?').toUpperCase();
-        if (linkFoto && linkFoto.trim() !== '') {
-            return `<div class="avatar-img"><img src="${linkFoto}" alt="${nama}" onerror="this.onerror=null; this.parentElement.innerHTML='${initial}'; this.parentElement.style.background='linear-gradient(135deg, #1e4a76, #2c6e9e)'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.style.color='white'; this.parentElement.style.fontWeight='bold'; this.parentElement.style.fontSize='1rem';"></div>`;
-        }
-        return `<div class="avatar-img" style="display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1e4a76, #2c6e9e); color:white; font-weight:bold; font-size:1rem;">${initial}</div>`;
-    }
-
-    async function loadData() {
-        const tbody = document.getElementById('tableBody');
-        tbody.innerHTML = '<tr><td colspan="8" class="loading"><i class="fas fa-spinner fa-pulse"></i> Menghubungi server...</td></tr>';
+    // ==================== LOAD DATA ====================
+    async function loadAllData() {
+        document.getElementById('tableBody').innerHTML = '<tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-pulse"></i> Menghubungi server...</td></tr>';
         
         try {
-            const response = await fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, {
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-cache'
-            });
-            
+            // Load dari sheet RIWAYAT_SETOR_BSPD
+            const response = await fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, { method: 'GET', mode: 'cors', cache: 'no-cache' });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
             const result = await response.json();
             
             if (!result.success) throw new Error(result.error);
             
-            allData = result.data;
-            document.getElementById('lastUpdate').innerHTML = `<i class="fas fa-check-circle"></i> ${new Date().toLocaleString('id-ID')} | ${allData.length} record`;
+            // Data dari sheet RIWAYAT_SETOR_BSPD
+            allSetoran = result.data || [];
             
-            if (allData.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" class="error">⚠️ Tidak ada data</td></tr>';
+            // Load data peserta dari sheet PESERTA_BS_PD (untuk foto dan alamat lengkap)
+            await loadPesertaData();
+            
+            // Gabungkan data: tambahkan foto ke setoran
+            allSetoran = allSetoran.map(setoran => {
+                const peserta = allPeserta.find(p => p.id_peserta === setoran.id_peserta || p.nama === setoran.nama);
+                return {
+                    ...setoran,
+                    link_foto: peserta ? peserta.link_foto : '',
+                    rt: peserta ? peserta.rt : setoran.rt,
+                    rw: peserta ? peserta.rw : setoran.rw,
+                    alamat_lengkap: peserta ? peserta.alamat : setoran.alamat
+                };
+            });
+            
+            document.getElementById('lastUpdate').innerHTML = `<i class="fas fa-check-circle"></i> ${new Date().toLocaleString('id-ID')} | ${allSetoran.length} setoran`;
+            
+            if (allSetoran.length === 0) {
+                document.getElementById('tableBody').innerHTML = '<tr><td colspan="9" class="error">⚠️ Tidak ada data setoran</td></tr>';
                 return;
             }
             
-            applyFilters();
+            applyFiltersTab1();
             
         } catch (error) {
             console.error(error);
-            tbody.innerHTML = `<tr><td colspan="8" class="error">
-                <i class="fas fa-exclamation-triangle"></i> Error: ${error.message}<br>
-                <small>Pastikan menjalankan melalui web server (Live Server) atau install ekstensi CORS Unblock</small>
-             </td></tr>`;
+            document.getElementById('tableBody').innerHTML = `<tr><td colspan="9" class="error"><i class="fas fa-exclamation-triangle"></i> Error: ${error.message}</td></tr>`;
+        }
+    }
+    
+    async function loadPesertaData() {
+        try {
+            // Menggunakan endpoint yang sama tapi dengan parameter untuk mengambil data peserta
+            // Karena Apps Script hanya punya 1 endpoint, kita akan parsing dari data setoran saja
+            // Alternatif: buat sheet terpisah, tapi untuk sementara kita ekstrak dari setoran
+            const pesertaMap = new Map();
+            allSetoran.forEach(setoran => {
+                const id = setoran.id_peserta;
+                if (id && !pesertaMap.has(id)) {
+                    pesertaMap.set(id, {
+                        id_peserta: id,
+                        nama: setoran.nama,
+                        alamat: setoran.alamat,
+                        rt: setoran.rt,
+                        rw: setoran.rw,
+                        link_foto: setoran.foto || '',
+                        no_hp: setoran.no_hp
+                    });
+                }
+            });
+            allPeserta = Array.from(pesertaMap.values());
+        } catch(e) {
+            console.warn('Gagal load data peserta', e);
+            allPeserta = [];
         }
     }
 
-    function applyFilters() {
-        let temp = [...allData];
-        
-        if (currentBank !== 'all') {
-            temp = temp.filter(row => (row.id_peserta || '').includes(currentBank));
-        }
-        
-        if (startDate) {
-            const s = new Date(startDate);
-            s.setHours(0,0,0);
-            temp = temp.filter(row => {
-                let d = parseDate(row.tanggal_setor);
-                return d && d >= s;
+    // ==================== FILTER FUNCTIONS ====================
+    function filterByBank(data, bank) {
+        if (bank === 'all') return data;
+        return data.filter(item => {
+            const idPeserta = item.id_peserta || '';
+            return idPeserta.includes(bank);
+        });
+    }
+    
+    function filterByMonthYear(data, bulan, tahun) {
+        if (bulan === 'all') {
+            return data.filter(item => {
+                const d = parseDate(item.tanggal);
+                return d && d.getFullYear() === parseInt(tahun);
             });
         }
-        
-        if (endDate) {
-            const e = new Date(endDate);
-            e.setHours(23,59,59);
-            temp = temp.filter(row => {
-                let d = parseDate(row.tanggal_setor);
-                return d && d <= e;
-            });
+        return data.filter(item => {
+            const d = parseDate(item.tanggal);
+            return d && d.getMonth() + 1 === parseInt(bulan) && d.getFullYear() === parseInt(tahun);
+        });
+    }
+    
+    function filterByYearOnly(data, tahun) {
+        return data.filter(item => {
+            const d = parseDate(item.tanggal);
+            return d && d.getFullYear() === parseInt(tahun);
+        });
+    }
+    
+    function parseDate(str) {
+        if (!str) return null;
+        if (str instanceof Date && !isNaN(str)) return str;
+        let d = new Date(str);
+        if (!isNaN(d.getTime()) && d.getFullYear() > 2000) return d;
+        const isoMatch = str.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+        if (isoMatch) return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]));
+        return null;
+    }
+    
+    function formatDateIndonesian(dateStr) {
+        const d = parseDate(dateStr);
+        if (!d) return dateStr || '-';
+        return `${d.getDate()} ${monthsIndo[d.getMonth()]} ${d.getFullYear()}`;
+    }
+    
+    function getAvatarHtml(linkFoto, nama) {
+        const initial = (nama?.[0] || '?').toUpperCase();
+        if (linkFoto && linkFoto.trim() !== '') {
+            return `<div class="avatar-img"><img src="${linkFoto}" alt="${nama}" onerror="this.onerror=null; this.parentElement.innerHTML='${initial}'; this.parentElement.style.background='linear-gradient(135deg, #1e4a76, #2c6e9e)'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.style.color='white'; this.parentElement.style.fontWeight='bold';"></div>`;
         }
+        return `<div class="avatar-img" style="display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1e4a76, #2c6e9e); color:white; font-weight:bold;">${initial}</div>`;
+    }
+    
+    // ==================== TAB 1: DAFTAR SETORAN ====================
+    function applyFiltersTab1() {
+        let temp = [...allSetoran];
+        temp = filterByBank(temp, currentBank);
+        temp = filterByMonthYear(temp, currentBulanTab1, currentTahunTab1);
         
-        // ============ SORTIR: TANGGAL TERBARU DI ATAS (DESCENDING) ============
+        // Sort by tanggal DESC
         temp.sort((a, b) => {
-            let dateA = parseDate(a.tanggal_setor);
-            let dateB = parseDate(b.tanggal_setor);
-            if (!dateA && !dateB) return 0;
-            if (!dateA) return 1;
-            if (!dateB) return -1;
-            return dateB - dateA; // DESCENDING: terbaru di atas
+            const da = parseDate(a.tanggal);
+            const db = parseDate(b.tanggal);
+            if (!da && !db) return 0;
+            if (!da) return 1;
+            if (!db) return -1;
+            return db - da;
         });
         
         filteredData = temp;
-        updateStats();
-        renderTable();
-        
-        const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
-        if (activeTab === 'tab2') renderRekap();
-        if (activeTab === 'tab3') renderCharts();
+        updateStatsTab1();
+        renderTableTab1();
     }
-
-    function updateStats() {
+    
+    function updateStatsTab1() {
         const now = new Date();
         let hari = 0, minggu = 0, bulan = 0;
-        
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         const startOfWeek = new Date(today);
         startOfWeek.setDate(today.getDate() - today.getDay());
-        startOfWeek.setHours(0, 0, 0, 0);
         
-        filteredData.forEach(row => {
-            let d = parseDate(row.tanggal_setor);
-            if (!d || isNaN(d.getTime())) return;
-            
+        filteredData.forEach(item => {
+            const d = parseDate(item.tanggal);
+            if (!d) return;
+            const total = parseFloat(item.total) || 0;
             const dateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
-            let kg = parseFloat(row.total_kg) || 0;
-            
-            if (dateOnly.getTime() === today.getTime()) {
-                hari += kg;
-            }
-            
-            if (dateOnly >= startOfWeek) {
-                minggu += kg;
-            }
-            
-            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
-                bulan += kg;
-            }
+            if (dateOnly.getTime() === today.getTime()) hari += total;
+            if (dateOnly >= startOfWeek) minggu += total;
+            if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) bulan += total;
         });
         
         document.getElementById('hariIni').innerHTML = hari.toFixed(1) + ' <span class="stat-unit">kg</span>';
         document.getElementById('mingguIni').innerHTML = minggu.toFixed(1) + ' <span class="stat-unit">kg</span>';
         document.getElementById('bulanIni').innerHTML = bulan.toFixed(1) + ' <span class="stat-unit">kg</span>';
     }
-
-    function renderTable() {
+    
+    function renderTableTab1() {
         let display = currentLimit === 'all' ? filteredData : filteredData.slice(0, currentLimit);
         const tbody = document.getElementById('tableBody');
-        
         if (display.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:40px;">📭 Tidak ada data dengan filter ini</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="9" style="text-align:center; padding:40px;">📭 Tidak ada data dengan filter ini</td></tr>';
             return;
         }
-        
-        tbody.innerHTML = display.map(row => {
-            const formattedDate = formatDateToIndonesian(row.tanggal_setor);
-            return `
-                <tr>
-                    <td>${getAvatarHtml(row.link_foto, row.nama_peserta)}</td>
-                    <td><strong>${escapeHtml(row.nama_peserta)}</strong></td>
-                    <td>${escapeHtml(row.alamat_peserta || '-')}<br><small style="color:#7e8aa2;">RT:${row.rt || '-'} RW:${row.rw || '-'}</small></td>
-                    <td style="font-size:0.75rem;">${formattedDate}</td>
-                    <td><span class="kg-badge" style="background:#d5f4e6;">${(row.organik||0).toFixed(1)} kg</span></td>
-                    <td><span class="kg-badge" style="background:#fef5e0;">${(row.an_organik||0).toFixed(1)} kg</span></td>
-                    <td><span class="kg-badge" style="background:#ffe0e0;">${(row.residu||0).toFixed(1)} kg</span></td>
-                    <td><span class="kg-badge" style="background:#d6eaf8; font-weight:700;">${(row.total_kg||0).toFixed(1)} kg</span></td>
-                </tr>
-            `;
-        }).join('');
+        tbody.innerHTML = display.map(item => `
+            <tr>
+                <td>${getAvatarHtml(item.link_foto || item.foto, item.nama)}</td>
+                <td><strong>${escapeHtml(item.nama)}</strong></td>
+                <td>${escapeHtml(item.alamat_lengkap || item.alamat || '-')}</td>
+                <td><small>RT:${item.rt || '-'} RW:${item.rw || '-'}</small></td>
+                <td style="font-size:0.75rem;">${formatDateIndonesian(item.tanggal)}</td>
+                <td><span class="kg-badge" style="background:#d5f4e6;">${(item.organik||0).toFixed(1)} kg</span></td>
+                <td><span class="kg-badge" style="background:#fef5e0;">${(item.an_organik||0).toFixed(1)} kg</span></td>
+                <td><span class="kg-badge" style="background:#ffe0e0;">${(item.residu||0).toFixed(1)} kg</span></td>
+                <td><span class="kg-badge" style="background:#d6eaf8; font-weight:700;">${(item.total||0).toFixed(1)} kg</span></td>
+            </tr>
+        `).join('');
     }
-
-    function renderRekap() {
-        const bulanMap = new Map();
+    
+    // ==================== TAB 2: REKAP BULANAN ====================
+    function applyFiltersTab2() {
+        let temp = [...allSetoran];
+        temp = filterByBank(temp, currentBank);
+        temp = filterByYearOnly(temp, currentTahunTab2);
         
-        filteredData.forEach(row => {
-            let d = parseDate(row.tanggal_setor);
-            if (!d || isNaN(d.getTime())) return;
+        const bulanMap = new Map();
+        temp.forEach(item => {
+            const d = parseDate(item.tanggal);
+            if (!d) return;
             const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-            if (!bulanMap.has(key)) {
-                bulanMap.set(key, {organik:0, an_organik:0, residu:0, total:0});
-            }
-            let agg = bulanMap.get(key);
-            agg.organik += parseFloat(row.organik) || 0;
-            agg.an_organik += parseFloat(row.an_organik) || 0;
-            agg.residu += parseFloat(row.residu) || 0;
-            agg.total += parseFloat(row.total_kg) || 0;
+            if (!bulanMap.has(key)) bulanMap.set(key, {organik:0, an_organik:0, residu:0, total:0});
+            const agg = bulanMap.get(key);
+            agg.organik += parseFloat(item.organik) || 0;
+            agg.an_organik += parseFloat(item.an_organik) || 0;
+            agg.residu += parseFloat(item.residu) || 0;
+            agg.total += parseFloat(item.total) || 0;
         });
         
         const sorted = Array.from(bulanMap.keys()).sort();
         const tbody = document.getElementById('rekapBody');
-        
         if (sorted.length === 0) {
             tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding:40px;">📭 Tidak ada data bulanan</td></tr>';
             return;
@@ -739,40 +440,22 @@
         
         let totalOrg = 0, totalAn = 0, totalRes = 0, totalAll = 0;
         let html = '';
-        
         sorted.forEach(key => {
             const [year, month] = key.split('-');
-            const namaBulan = new Date(parseInt(year), parseInt(month)-1).toLocaleDateString('id-ID', {month:'long', year:'numeric'});
+            const namaBulan = `${monthsIndo[parseInt(month)-1]} ${year}`;
             const val = bulanMap.get(key);
             totalOrg += val.organik;
             totalAn += val.an_organik;
             totalRes += val.residu;
             totalAll += val.total;
-            
             let status = val.total > 1000 ? '🌟 Sangat Baik' : (val.total > 500 ? '✅ Baik' : (val.total > 200 ? '⚠️ Cukup' : '📉 Rendah'));
-            html += `
-                <tr>
-                    <td><strong>${namaBulan}</strong></td>
-                    <td style="color:#2ecc71;">${val.organik.toFixed(1)} kg</td>
-                    <td style="color:#f1c40f;">${val.an_organik.toFixed(1)} kg</td>
-                    <td style="color:#e74c3c;">${val.residu.toFixed(1)} kg</td>
-                    <td style="color:#3498db; font-weight:700;">${val.total.toFixed(1)} kg</td>
-                    <td>${status}</td>
-                </tr>
-            `;
+            html += `<tr><td><strong>${namaBulan}</strong></td><td style="color:#2ecc71;">${val.organik.toFixed(1)} kg</td><td style="color:#f1c40f;">${val.an_organik.toFixed(1)} kg</td><td style="color:#e74c3c;">${val.residu.toFixed(1)} kg</td><td style="color:#3498db; font-weight:700;">${val.total.toFixed(1)} kg</td><td>${status}</td></tr>`;
         });
-        
         tbody.innerHTML = html;
         
         const estimasiBulanan = 22500;
         const persenPengurangan = totalAll > 0 ? (totalAll / estimasiBulanan * 100).toFixed(2) : 0;
-        
-        document.getElementById('penguranganInfo').innerHTML = `
-            <i class="fas fa-chart-line"></i> 
-            <strong>Capaian Pengurangan TPA:</strong> ${persenPengurangan}% 
-            (Total setor <strong>${totalAll.toFixed(1)} kg</strong> dari estimasi <strong>${estimasiBulanan.toLocaleString()} kg</strong> sampah yang diangkut LPS tiap bulannya)
-            <br><small style="display:block; margin-top:8px;">📊 Artinya: Dari ${estimasiBulanan.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalAll.toFixed(1)} kg (${persenPengurangan}%).</small>
-        `;
+        document.getElementById('penguranganInfo').innerHTML = `<i class="fas fa-chart-line"></i> <strong>Capaian Pengurangan TPA:</strong> ${persenPengurangan}% (Total setor <strong>${totalAll.toFixed(1)} kg</strong> dari estimasi <strong>${estimasiBulanan.toLocaleString()} kg</strong> sampah yang diangkut LPS tiap bulannya)<br><small style="display:block; margin-top:8px;">📊 Artinya: Dari ${estimasiBulanan.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalAll.toFixed(1)} kg (${persenPengurangan}%).</small>`;
         
         document.getElementById('summaryBoxes').innerHTML = `
             <div class="summary-item"><i class="fas fa-seedling" style="color:#2ecc71; font-size:1.5rem;"></i><br><strong>Total Organik</strong><br><span style="font-size:1.5rem; color:#2ecc71;">${totalOrg.toFixed(1)} kg</span></div>
@@ -781,15 +464,38 @@
             <div class="summary-item"><i class="fas fa-chart-simple" style="color:#3498db; font-size:1.5rem;"></i><br><strong>Total Keseluruhan</strong><br><span style="font-size:1.5rem; color:#3498db;">${totalAll.toFixed(1)} kg</span></div>
         `;
     }
-
-    function renderCharts() {
-        if (!filteredData.length) return;
+    
+    // ==================== TAB 3: GRAFIK ANALISIS ====================
+    function applyFiltersTab3() {
+        let temp = [...allSetoran];
+        temp = filterByBank(temp, currentBank);
+        temp = temp.filter(item => {
+            const d = parseDate(item.tanggal);
+            return d && d.getMonth() + 1 === parseInt(currentBulanTab3) && d.getFullYear() === parseInt(currentTahunTab3);
+        });
         
+        renderChartsTab3(temp);
+    }
+    
+    function renderChartsTab3(data) {
+        if (!data.length) {
+            document.getElementById('grafikInfo').innerHTML = '<i class="fas fa-info-circle"></i> Tidak ada data untuk periode yang dipilih';
+            if (charts.bar) charts.bar.destroy();
+            if (charts.pie) charts.pie.destroy();
+            if (charts.line) charts.line.destroy();
+            return;
+        }
+        
+        // Top 10 Peserta dengan foto
         const pesertaTotal = new Map();
-        filteredData.forEach(row => {
-            const nama = row.nama_peserta || 'Unknown';
-            const total = parseFloat(row.total_kg) || 0;
+        const pesertaFoto = new Map();
+        data.forEach(item => {
+            const nama = item.nama || 'Unknown';
+            const total = parseFloat(item.total) || 0;
             pesertaTotal.set(nama, (pesertaTotal.get(nama)||0) + total);
+            if (!pesertaFoto.has(nama) && (item.link_foto || item.foto)) {
+                pesertaFoto.set(nama, item.link_foto || item.foto);
+            }
         });
         const top10 = Array.from(pesertaTotal.entries()).sort((a,b)=>b[1]-a[1]).slice(0,10);
         
@@ -797,21 +503,24 @@
         const barCtx = document.getElementById('barChart').getContext('2d');
         charts.bar = new Chart(barCtx, {
             type: 'bar',
-            data: { labels: top10.map(v=>v[0].substring(0,15)), datasets: [{ label: 'Total Setor (kg)', data: top10.map(v=>v[1]), backgroundColor: '#3498db', borderRadius: 8 }] },
-            options: { responsive: true, maintainAspectRatio: true }
-        });
-        
-        const now = new Date();
-        let komposisi = { organik:0, an_organik:0, residu:0 };
-        filteredData.forEach(row => {
-            let d = parseDate(row.tanggal_setor);
-            if (d && !isNaN(d.getTime()) && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
-                komposisi.organik += parseFloat(row.organik) || 0;
-                komposisi.an_organik += parseFloat(row.an_organik) || 0;
-                komposisi.residu += parseFloat(row.residu) || 0;
+            data: { 
+                labels: top10.map(v => v[0].length > 15 ? v[0].substring(0,12)+'...' : v[0]), 
+                datasets: [{ label: 'Total Setor (kg)', data: top10.map(v => v[1]), backgroundColor: '#3498db', borderRadius: 8 }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: true,
+                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(1)} kg` } } }
             }
         });
         
+        // Komposisi sampah
+        let komposisi = { organik:0, an_organik:0, residu:0 };
+        data.forEach(item => {
+            komposisi.organik += parseFloat(item.organik) || 0;
+            komposisi.an_organik += parseFloat(item.an_organik) || 0;
+            komposisi.residu += parseFloat(item.residu) || 0;
+        });
         if (charts.pie) charts.pie.destroy();
         const pieCtx = document.getElementById('pieChart').getContext('2d');
         charts.pie = new Chart(pieCtx, {
@@ -820,104 +529,115 @@
             options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
         });
         
-        const bulanTotal = new Map();
-        filteredData.forEach(row => {
-            let d = parseDate(row.tanggal_setor);
-            if (d && !isNaN(d.getTime())) {
-                const key = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-                bulanTotal.set(key, (bulanTotal.get(key)||0) + (parseFloat(row.total_kg) || 0));
-            }
-        });
-        const months = Array.from(bulanTotal.keys()).sort();
-        const setorValues = months.map(m => bulanTotal.get(m));
-        const baseline = 22500;
-        const persen = setorValues.map(v => ((v / baseline) * 100).toFixed(1));
+        // Capaian pengurangan TPA
+        const totalBulan = data.reduce((sum, item) => sum + (parseFloat(item.total) || 0), 0);
+        const estimasiTPA = 22500;
+        const persen = (totalBulan / estimasiTPA * 100).toFixed(2);
         
         if (charts.line) charts.line.destroy();
         const lineCtx = document.getElementById('lineChart').getContext('2d');
+        
+        // Buat data untuk line chart dengan progress bar style
         charts.line = new Chart(lineCtx, {
-            type: 'line',
-            data: { 
-                labels: months.map(m => { let [y,mo]=m.split('-'); return `${mo}/${y}`; }), 
-                datasets: [{ 
-                    label: 'Capaian Pengurangan TPA (%)', 
-                    data: persen, 
-                    borderColor: '#2ecc71', 
-                    borderWidth: 3, 
-                    fill: true, 
-                    backgroundColor: 'rgba(46,204,113,0.1)', 
-                    tension: 0.3 
-                }] 
+            type: 'doughnut',
+            data: {
+                labels: [`Capaian: ${persen}% (${totalBulan.toFixed(1)} kg)`, `Sisa Target: ${(estimasiTPA - totalBulan).toFixed(1)} kg`],
+                datasets: [{ data: [totalBulan, Math.max(0, estimasiTPA - totalBulan)], backgroundColor: ['#2ecc71', '#e0e0e0'], borderWidth: 0, cutout: '65%' }]
             },
-            options: { 
-                responsive: true, 
-                scales: { 
-                    y: { 
-                        min: 0, 
-                        max: 100, 
-                        title: { display: true, text: 'Persentase Capaian (%)' } 
-                    } 
-                },
+            options: {
+                responsive: true,
                 plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return `Capaian: ${context.raw}% dari target 100%`;
-                            }
-                        }
-                    }
+                    legend: { position: 'bottom' },
+                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw.toFixed(1)} kg` } }
                 }
             }
         });
+        
+        document.getElementById('grafikInfo').innerHTML = `<i class="fas fa-chart-line"></i> <strong>Capaian Pengurangan TPA:</strong> ${persen}% (Total setor <strong>${totalBulan.toFixed(1)} kg</strong> dari estimasi <strong>${estimasiTPA.toLocaleString()} kg</strong> sampah yang diangkut LPS tiap bulannya)<br><small>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalBulan.toFixed(1)} kg (${persen}%).</small>`;
     }
-
-    function escapeHtml(str) {
-        if (!str) return '';
-        return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]);
-    }
-
+    
+    function escapeHtml(str) { if (!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+    
+    // ==================== EVENT BINDINGS & TAB SWITCH ====================
     function bindEvents() {
+        // Tab switching
         document.querySelectorAll('.tab-btn').forEach(btn => {
             btn.onclick = () => {
                 document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
                 document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
                 btn.classList.add('active');
-                document.getElementById(btn.dataset.tab).classList.add('active');
-                if (btn.dataset.tab === 'tab2') renderRekap();
-                if (btn.dataset.tab === 'tab3') renderCharts();
+                const tabId = btn.dataset.tab;
+                document.getElementById(tabId).classList.add('active');
+                
+                // Tampilkan filter bar sesuai tab
+                document.getElementById('filterBarTab1').style.display = tabId === 'tab1' ? 'flex' : 'none';
+                document.getElementById('filterBarTab2').style.display = tabId === 'tab2' ? 'flex' : 'none';
+                document.getElementById('filterBarTab3').style.display = tabId === 'tab3' ? 'flex' : 'none';
+                
+                if (tabId === 'tab2') applyFiltersTab2();
+                if (tabId === 'tab3') applyFiltersTab3();
             };
         });
         
-        document.querySelectorAll('.filter-chip').forEach(chip => {
-            chip.onclick = () => {
-                document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
-                chip.classList.add('active');
-                currentBank = chip.dataset.bank;
-                applyFilters();
-            };
+        // Bank filters untuk semua tab
+        const bankFilterGroups = ['bankFilters', 'bankFiltersTab2', 'bankFiltersTab3'];
+        bankFilterGroups.forEach(groupId => {
+            document.querySelectorAll(`#${groupId} .filter-chip`).forEach(chip => {
+                chip.onclick = () => {
+                    document.querySelectorAll(`#${groupId} .filter-chip`).forEach(c=>c.classList.remove('active'));
+                    chip.classList.add('active');
+                    currentBank = chip.dataset.bank;
+                    const activeTab = document.querySelector('.tab-btn.active').dataset.tab;
+                    if (activeTab === 'tab1') applyFiltersTab1();
+                    else if (activeTab === 'tab2') applyFiltersTab2();
+                    else if (activeTab === 'tab3') applyFiltersTab3();
+                };
+            });
         });
         
-        document.getElementById('startDate').onchange = (e) => { startDate = e.target.value; applyFilters(); };
-        document.getElementById('endDate').onchange = (e) => { endDate = e.target.value; applyFilters(); };
-        document.getElementById('resetDate').onclick = () => {
-            document.getElementById('startDate').value = '';
-            document.getElementById('endDate').value = '';
-            startDate = null;
-            endDate = null;
-            applyFilters();
+        // Filter Tab 1
+        document.getElementById('bulanFilterTab1').onchange = (e) => { currentBulanTab1 = e.target.value; applyFiltersTab1(); };
+        document.getElementById('tahunFilterTab1').onchange = (e) => { currentTahunTab1 = e.target.value; applyFiltersTab1(); };
+        document.getElementById('resetFilterTab1').onclick = () => {
+            document.getElementById('bulanFilterTab1').value = 'all';
+            document.getElementById('tahunFilterTab1').value = new Date().getFullYear().toString();
+            currentBulanTab1 = 'all';
+            currentTahunTab1 = new Date().getFullYear().toString();
+            applyFiltersTab1();
         };
         
+        // Filter Tab 2
+        document.getElementById('tahunFilterTab2').onchange = (e) => { currentTahunTab2 = e.target.value; applyFiltersTab2(); };
+        document.getElementById('resetFilterTab2').onclick = () => {
+            document.getElementById('tahunFilterTab2').value = new Date().getFullYear().toString();
+            currentTahunTab2 = new Date().getFullYear().toString();
+            applyFiltersTab2();
+        };
+        
+        // Filter Tab 3
+        document.getElementById('bulanFilterTab3').onchange = (e) => { currentBulanTab3 = e.target.value; applyFiltersTab3(); };
+        document.getElementById('tahunFilterTab3').onchange = (e) => { currentTahunTab3 = e.target.value; applyFiltersTab3(); };
+        document.getElementById('resetFilterTab3').onclick = () => {
+            document.getElementById('bulanFilterTab3').value = (new Date().getMonth() + 1).toString();
+            document.getElementById('tahunFilterTab3').value = new Date().getFullYear().toString();
+            currentBulanTab3 = (new Date().getMonth() + 1).toString();
+            currentTahunTab3 = new Date().getFullYear().toString();
+            applyFiltersTab3();
+        };
+        
+        // Show limit buttons
         document.querySelectorAll('.show-btn').forEach(btn => {
             btn.onclick = () => {
                 document.querySelectorAll('.show-btn').forEach(b=>b.classList.remove('active'));
                 btn.classList.add('active');
                 currentLimit = btn.dataset.limit === 'all' ? 'all' : 100;
-                renderTable();
+                renderTableTab1();
             };
         });
     }
     
-    loadData();
+    // Initialize
+    loadAllData();
     bindEvents();
 </script>
 </body>
