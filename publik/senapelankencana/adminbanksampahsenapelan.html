@@ -208,7 +208,7 @@
         });
     }
     
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyP9U0pgCm9W66w1FL-c9FRZm-Cny_Gn3hWUqNFCY9Qwlxg_s4Px-Dh8KZ6efvaJQeZag/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx-VyFaxIrnBrfhy7gYDJUQabkvOfEK_50Qy5HOJrRobQNvou-NVt3To8IDCFVjN4d0Kw/exec";
     
     let currentBankCategory = '', currentBankName = '', currentUser = '', currentUserName = '';
     let pesertaData = [], pengurusData = [], pesertaList = [];
@@ -471,7 +471,9 @@
         const result = await callAppsScript('getDaftarPeserta', {});
         if (result && result.success && result.data) {
             pesertaList = result.data || [];
-            let html = `<div class="card"><div class="card-title"><span><i class="fas fa-user-plus"></i> Manajemen Peserta</span><button class="btn btn-success" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container">\\table<thead><tr><th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th></tr></thead><tbody>`;
+            let html = `<div class="card"><div class="card-title"><span><i class="fas fa-user-plus"></i> Manajemen Peserta</span><button class="btn btn-success" onclick="openTambahPeserta()"><i class="fas fa-plus"></i> Tambah Peserta</button></div><div class="table-container"><table><thead><tr>
+                <th>Foto</th><th>Nama</th><th>NIK</th><th>Alamat</th><th>RT</th><th>RW</th><th>No HP</th><th>Aksi</th>
+            </tr></thead><tbody>`;
             if (pesertaList.length === 0) { 
                 html += `<tr><td colspan="8" style="text-align:center">Belum ada data peserta</td></tr>`; 
             } else {
@@ -488,11 +490,11 @@
                         <td>
                             <button class="btn btn-warning btn-sm" onclick="editPeserta('${p.id_peserta}')"><i class="fas fa-edit"></i></button>
                             <button class="btn btn-danger btn-sm" onclick="hapusPeserta('${p.nama}', '${p.id_peserta}')"><i class="fas fa-trash"></i></button>
-                         </td>
-                     </tr>`;
+                        </td>
+                    </tr>`;
                 });
             }
-            html += `</tbody>\\table</div></div>`;
+            html += `</tbody></table></div></div>`;
             document.getElementById('pageContent').innerHTML = html;
         } else { 
             document.getElementById('pageContent').innerHTML = `<div class="card"><p>Error: ${result?.message || 'Gagal memuat data'}</p></div>`; 
@@ -703,6 +705,8 @@
                     }, 
                     options: { responsive: true } 
                 });
+            } else {
+                document.getElementById('top10Chart').innerHTML = '<p style="text-align:center">Belum ada data setoran untuk periode ini</p>';
             }
             
             if (grafikChartKomposisi) grafikChartKomposisi.destroy();
