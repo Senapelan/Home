@@ -2,709 +2,762 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Maintenance | Senapelan Kencana</title>
-    <!-- Favicon -->
-    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png">
-    <!-- Google Fonts -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>OP Drainase | Dashboard Pemeliharaan Saluran Air</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f0f2f5 0%, #e6eef5 100%);
+            color: #1e293b;
+            padding: 2rem 1.5rem;
             min-height: 100vh;
-            background: linear-gradient(135deg, #0a2a3a 0%, #0d3b4f 50%, #1a5f7a 100%);
-            position: relative;
-            overflow-x: hidden;
         }
-
-        /* Animated Background Orbs */
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.4;
-            animation: floatOrb 20s infinite ease-in-out;
-            z-index: 0;
-        }
-
-        .orb-1 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, #2c7ec0, #1a5f9e);
-            top: -200px;
-            right: -200px;
-            animation-delay: 0s;
-        }
-
-        .orb-2 {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, #1a9e7a, #0d6b5a);
-            bottom: -250px;
-            left: -200px;
-            animation-delay: 5s;
-        }
-
-        .orb-3 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, #ff9a3c, #e67e22);
-            top: 50%;
-            right: 20%;
-            animation-delay: 10s;
-            opacity: 0.25;
-        }
-
-        @keyframes floatOrb {
-            0%, 100% {
-                transform: translate(0, 0) scale(1);
-            }
-            33% {
-                transform: translate(50px, -50px) scale(1.1);
-            }
-            66% {
-                transform: translate(-30px, 40px) scale(0.95);
-            }
-        }
-
-        /* Grid pattern */
-        .grid-pattern {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        /* Particle Animation */
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            overflow: hidden;
-            pointer-events: none;
-        }
-
-        .particle {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.15);
-            border-radius: 50%;
-            animation: particleFloat 15s infinite linear;
-        }
-
-        @keyframes particleFloat {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.8;
-            }
-            90% {
-                opacity: 0.5;
-            }
-            100% {
-                transform: translateY(-20vh) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* Main Container */
-        .maintenance-container {
-            position: relative;
-            z-index: 2;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-        }
-
-        /* Glass Card */
-        .maintenance-card {
-            max-width: 700px;
-            width: 100%;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            border-radius: 3rem;
-            padding: 3rem 2.5rem;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
-            animation: fadeInUp 0.8s ease-out;
-            transition: all 0.4s ease;
-        }
-
-        .maintenance-card:hover {
-            transform: translateY(-8px);
-            background: rgba(255, 255, 255, 0.08);
-            border-color: rgba(255, 255, 255, 0.25);
-            box-shadow: 0 35px 60px -15px rgba(0, 0, 0, 0.4);
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Icon Container */
-        .icon-container {
+        .container { max-width: 1600px; margin: 0 auto; }
+        
+        .dashboard-header {
+            background: linear-gradient(135deg, #0a2f44 0%, #1a5d6e 100%);
+            border-radius: 32px;
+            padding: 1.8rem 2rem;
             margin-bottom: 2rem;
-            position: relative;
-            display: inline-block;
-        }
-
-        .icon-ring {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 130px;
-            height: 130px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            animation: pulse 2s infinite;
-        }
-
-        .icon-ring:nth-child(2) {
-            width: 160px;
-            height: 160px;
-            animation-delay: 0.5s;
-        }
-
-        .icon-ring:nth-child(3) {
-            width: 190px;
-            height: 190px;
-            animation-delay: 1s;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: translate(-50%, -50%) scale(0.9);
-                opacity: 0.8;
-            }
-            100% {
-                transform: translate(-50%, -50%) scale(1.2);
-                opacity: 0;
-            }
-        }
-
-        .main-icon {
-            width: 100px;
-            height: 100px;
-            background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
-            border-radius: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            position: relative;
-            z-index: 2;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
-            animation: iconFloat 3s ease-in-out infinite;
-        }
-
-        @keyframes iconFloat {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-10px);
-            }
-        }
-
-        .main-icon i {
-            font-size: 3.5rem;
             color: white;
-        }
-
-        /* Title */
-        .maintenance-card h1 {
-            font-size: 3rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #fff, #a0d4ff);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-
-        .badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.15);
-            padding: 0.4rem 1.2rem;
-            border-radius: 2rem;
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 1.5rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(4px);
-        }
-
-        /* Description */
-        .description {
-            color: rgba(255, 255, 255, 0.8);
-            line-height: 1.7;
-            margin-bottom: 2rem;
-            font-size: 1rem;
-        }
-
-        /* Progress Bar */
-        .progress-section {
-            margin-bottom: 2rem;
-        }
-
-        .progress-label {
+            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
             display: flex;
             justify-content: space-between;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 0.85rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-bar-container {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 1rem;
-            height: 8px;
-            overflow: hidden;
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background: linear-gradient(90deg, #2c7ec0, #ff9a3c);
-            border-radius: 1rem;
-            animation: progressAnimation 2.5s ease-out forwards;
-            position: relative;
-        }
-
-        @keyframes progressAnimation {
-            0% { width: 0%; }
-            100% { width: 68%; }
-        }
-
-        .progress-bar::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 1.5s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        /* Info Grid */
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .info-item {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 1.2rem;
-            padding: 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .info-item:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-3px);
-        }
-
-        .info-item i {
-            font-size: 1.5rem;
-            color: #ff9a3c;
-            margin-bottom: 0.5rem;
-            display: inline-block;
-        }
-
-        .info-item h4 {
-            font-size: 0.85rem;
-            color: rgba(255, 255, 255, 0.9);
-            margin-bottom: 0.25rem;
-        }
-
-        .info-item p {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.5);
-        }
-
-        /* Countdown Timer */
-        .countdown {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .countdown-item {
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 1rem;
-            padding: 0.75rem 1rem;
-            min-width: 70px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .countdown-number {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: white;
-            line-height: 1;
-        }
-
-        .countdown-label {
-            font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.5);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Social / Contact */
-        .contact-section {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .contact-btn {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            padding: 0.7rem 1.2rem;
-            border-radius: 2rem;
-            color: white;
-            text-decoration: none;
-            font-size: 0.85rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            display: inline-flex;
             align-items: center;
-            gap: 0.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
         }
-
-        .contact-btn:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-2px);
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        /* Notify Form */
-        .notify-form {
+        .title-section h1 {
+            font-size: 1.9rem;
+            font-weight: 700;
             display: flex;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
+            align-items: center;
+            gap: 12px;
         }
-
-        .notify-input {
-            flex: 1;
-            padding: 0.8rem 1rem;
-            border-radius: 2rem;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            font-family: 'Inter', sans-serif;
-            outline: none;
-            transition: all 0.3s ease;
+        .title-section p { opacity: 0.9; font-size: 0.85rem; margin-top: 6px; }
+        .badge-update {
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(8px);
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
         }
-
-        .notify-input::placeholder {
-            color: rgba(255, 255, 255, 0.5);
+        
+        /* Toolbar dengan filter tanggal */
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            margin-bottom: 2rem;
+            gap: 1rem;
         }
-
-        .notify-input:focus {
-            border-color: #2c7ec0;
-            background: rgba(255, 255, 255, 0.15);
+        .search-box {
+            background: white;
+            padding: 8px 20px;
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            flex: 2;
+            min-width: 200px;
         }
-
-        .notify-btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: 2rem;
+        .search-box input {
             border: none;
-            background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
+            outline: none;
+            font-size: 0.9rem;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        /* Filter tanggal */
+        .date-filter {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: white;
+            padding: 5px 20px;
+            border-radius: 60px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            flex-wrap: wrap;
+        }
+        .date-filter label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #1e5f6e;
+        }
+        .date-filter input {
+            border: 1px solid #e2e8f0;
+            border-radius: 40px;
+            padding: 6px 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.85rem;
+            outline: none;
+            background: #f8fafc;
+        }
+        .date-filter input:focus {
+            border-color: #1e5f6e;
+        }
+        .btn-clear-date {
+            background: #e2e8f0;
+            border: none;
+            border-radius: 40px;
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: #475569;
+            transition: 0.2s;
+        }
+        .btn-clear-date:hover {
+            background: #cbd5e1;
+        }
+        
+        .btn-refresh {
+            background: #1e5f6e;
+            border: none;
             color: white;
+            padding: 10px 28px;
+            border-radius: 40px;
             font-weight: 600;
             cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-refresh:hover { background: #0e4a58; transform: translateY(-2px); }
+        
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 1.8rem;
+        }
+        
+        /* ============ WARNA CARD BERDASARKAN STATUS ============ */
+        .card.card-selesai {
+            background: linear-gradient(145deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-left: 6px solid #2e7d32;
+        }
+        .card.card-selesai .card-header {
+            background: rgba(46, 125, 50, 0.1);
+        }
+        .card.card-selesai .status-badge {
+            background: #2e7d32;
+            color: white;
+        }
+        
+        .card.card-libur {
+            background: linear-gradient(145deg, #ffebee 0%, #ffcdd2 100%);
+            border-left: 6px solid #c62828;
+        }
+        .card.card-libur .card-header {
+            background: rgba(198, 40, 40, 0.1);
+        }
+        .card.card-libur .status-badge {
+            background: #c62828;
+            color: white;
+        }
+        
+        .card.card-menunggu {
+            background: linear-gradient(145deg, #fff8e1 0%, #ffecb3 100%);
+            border-left: 6px solid #f9a825;
+        }
+        .card.card-menunggu .card-header {
+            background: rgba(249, 168, 37, 0.1);
+        }
+        .card.card-menunggu .status-badge {
+            background: #f9a825;
+            color: #5d2906;
+        }
+        
+        .card {
+            border-radius: 32px;
+            overflow: hidden;
+            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
             transition: all 0.3s ease;
         }
-
-        .notify-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(44, 126, 192, 0.4);
+        .card:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -12px rgba(0, 0, 0, 0.2); }
+        
+        .card-header {
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        /* Footer */
-        .footer-note {
-            margin-top: 1.5rem;
+        .date-badge {
+            font-weight: 700;
+            background: rgba(255,255,255,0.7);
+            padding: 5px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            color: #1e4b6e;
+        }
+        .lokasi-box {
+            background: rgba(255,255,255,0.5);
+            margin: 1rem 1.5rem;
+            padding: 0.8rem 1rem;
+            border-radius: 24px;
+        }
+        .lokasi-title {
+            font-weight: 700;
+            color: #0f2b3d;
+            display: flex;
+            gap: 8px;
+            align-items: baseline;
+            flex-wrap: wrap;
+        }
+        .rt-rw {
             font-size: 0.7rem;
-            color: rgba(255, 255, 255, 0.4);
+            background: rgba(0,0,0,0.05);
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 500;
         }
-
-        /* Responsive */
-        @media (max-width: 600px) {
-            .maintenance-card {
-                padding: 2rem 1.5rem;
-            }
-            .maintenance-card h1 {
-                font-size: 2rem;
-            }
-            .countdown-item {
-                min-width: 55px;
-                padding: 0.5rem 0.8rem;
-            }
-            .countdown-number {
-                font-size: 1.3rem;
-            }
-            .info-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .notify-form {
-                flex-direction: column;
-            }
-            .contact-section {
-                flex-wrap: wrap;
-            }
+        .kelurahan { font-size: 0.8rem; color: #2c5a74; margin-top: 6px; }
+        .detail-item {
+            padding: 0.7rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+        .detail-icon { width: 32px; color: #5b8cae; font-size: 1.1rem; }
+        .detail-content { flex: 1; font-weight: 500; }
+        .label-small {
+            font-size: 0.65rem;
+            color: #6c86a3;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .countdown-timer {
+            font-family: monospace;
+            font-weight: 800;
+            font-size: 0.85rem;
+            background: #1e293b;
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 32px;
+            color: #facc15;
+            margin-top: 6px;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 40px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .foto-icon {
+            cursor: pointer;
+            background: rgba(255,255,255,0.7);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+        }
+        .foto-icon:hover { background: rgba(255,255,255,0.9); transform: scale(1.05); }
+        
+        .modal-img {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+        .modal-img img { max-width: 85%; max-height: 85%; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
+        .close-modal {
+            position: absolute;
+            top: 24px;
+            right: 36px;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+        }
+        
+        .loader-container { text-align: center; padding: 4rem; }
+        .spinner {
+            border: 4px solid #e2e8f0;
+            border-top: 4px solid #1f6e8c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .success-notice {
+            background: #d1fae5;
+            border-left: 4px solid #10b981;
+            padding: 12px 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            font-size: 0.85rem;
+            color: #065f46;
+        }
+        
+        .filter-stats {
+            font-size: 0.75rem;
+            color: #64748b;
+            margin-left: 8px;
+        }
+        
+        @media (max-width: 700px) {
+            .cards-grid { grid-template-columns: 1fr; }
+            body { padding: 1rem; }
+            .date-filter { width: 100%; justify-content: center; }
+            .search-box { width: 100%; }
         }
     </style>
 </head>
 <body>
-    <!-- Animated Orbs -->
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
-    
-    <!-- Grid Pattern -->
-    <div class="grid-pattern"></div>
-    
-    <!-- Particles -->
-    <div class="particles" id="particlesContainer"></div>
-
-    <div class="maintenance-container">
-        <div class="maintenance-card">
-            <div class="icon-container">
-                <div class="icon-ring"></div>
-                <div class="icon-ring"></div>
-                <div class="icon-ring"></div>
-                <div class="main-icon">
-                    <i class="fas fa-tools"></i>
-                </div>
-            </div>
-
-            <h1>Sedang dalam Pemeliharaan</h1>
-            <div class="badge">
-                <i class="fas fa-clock"></i> Maintenance Scheduled
-            </div>
-
-            <p class="description">
-                Kami sedang melakukan peningkatan sistem untuk memberikan layanan terbaik bagi Anda. 
-                Mohon bersabar, dashboard akan segera kembali aktif.
-            </p>
-
-            <!-- Progress Bar -->
-            <div class="progress-section">
-                <div class="progress-label">
-                    <span>Progress Update</span>
-                    <span id="progressPercent">68%</span>
-                </div>
-                <div class="progress-bar-container">
-                    <div class="progress-bar"></div>
-                </div>
-            </div>
-
-            <!-- Info Grid -->
-            <div class="info-grid">
-                <div class="info-item">
-                    <i class="fas fa-microchip"></i>
-                    <h4>System Upgrade</h4>
-                    <p>Server v3.0</p>
-                </div>
-                <div class="info-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <h4>Security Patch</h4>
-                    <p>SSL Encryption</p>
-                </div>
-                <div class="info-item">
-                    <i class="fas fa-database"></i>
-                    <h4>Database</h4>
-                    <p>Optimization</p>
-                </div>
-                <div class="info-item">
-                    <i class="fas fa-rocket"></i>
-                    <h4>Performance</h4>
-                    <p>+40% Faster</p>
-                </div>
-            </div>
-
-            <!-- Countdown Timer -->
-            <div class="countdown" id="countdown">
-                <div class="countdown-item">
-                    <div class="countdown-number" id="days">00</div>
-                    <div class="countdown-label">Hari</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="hours">00</div>
-                    <div class="countdown-label">Jam</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="minutes">00</div>
-                    <div class="countdown-label">Menit</div>
-                </div>
-                <div class="countdown-item">
-                    <div class="countdown-number" id="seconds">00</div>
-                    <div class="countdown-label">Detik</div>
-                </div>
-            </div>
-
-            <!-- Contact Section -->
-            <div class="contact-section">
-                <a href="#" class="contact-btn" id="contactBtn">
-                    <i class="fas fa-envelope"></i> Hubungi Admin
-                </a>
-                <a href="https://senapelan.github.io/Home/publik/senapelankencana/login.html" class="contact-btn">
-                    <i class="fas fa-arrow-left"></i> Kembali ke Login
-                </a>
-            </div>
-
-            <!-- Notify Form -->
-            <div class="notify-form">
-                <input type="email" class="notify-input" id="notifyEmail" placeholder="Masukkan email untuk pemberitahuan">
-                <button class="notify-btn" id="notifyBtn">
-                    <i class="fas fa-bell"></i> Notifikasi
-                </button>
-            </div>
-
-            <div class="footer-note">
-                <i class="fas fa-code-branch"></i> Senapelan Kencana - Inovasi REIN RIZKA KARVY, S.STP., M.Si
-            </div>
+<div class="container">
+    <div class="dashboard-header">
+        <div class="title-section">
+            <h1><i class="fas fa-droplet"></i> OP Drainase Kecamatan Senapelan</h1>
+            <p><i class="fas fa-map-marked-alt"></i> Jadwal Operasi & Pemeliharaan Saluran Air / Drainase</p>
+        </div>
+        <div class="badge-update">
+            <i class="fas fa-sync-alt"></i> Database Senapelan Satu Pintu
         </div>
     </div>
 
-    <script>
-        // Create Particles
-        function createParticles() {
-            const container = document.getElementById('particlesContainer');
-            const particleCount = 50;
-            for (let i = 0; i < particleCount; i++) {
-                const particle = document.createElement('div');
-                particle.classList.add('particle');
-                const size = Math.random() * 8 + 2;
-                particle.style.width = `${size}px`;
-                particle.style.height = `${size}px`;
-                particle.style.left = `${Math.random() * 100}%`;
-                particle.style.animationDuration = `${Math.random() * 20 + 10}s`;
-                particle.style.animationDelay = `${Math.random() * 10}s`;
-                particle.style.background = `rgba(255, 255, 255, ${Math.random() * 0.3 + 0.1})`;
-                container.appendChild(particle);
+    <div class="toolbar">
+        <div class="search-box">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Cari kelurahan, lokasi, penanggung jawab...">
+        </div>
+        
+        <div class="date-filter">
+            <label><i class="fas fa-calendar-alt"></i> Filter Tanggal:</label>
+            <input type="date" id="dateFilterInput" placeholder="Pilih tanggal">
+            <button class="btn-clear-date" id="clearDateBtn"><i class="fas fa-times"></i> Hapus</button>
+        </div>
+        
+        <button class="btn-refresh" id="refreshBtn"><i class="fas fa-cloud-download-alt"></i> Refresh Data</button>
+    </div>
+
+    <div id="cardsContainer" class="cards-grid">
+        <div class="loader-container">
+            <div class="spinner"></div>
+            <p>Menghubungkan ke Google Sheets via Apps Script...</p>
+        </div>
+    </div>
+</div>
+
+<div id="imageModal" class="modal-img">
+    <span class="close-modal">&times;</span>
+    <img id="modalImg" src="" alt="Foto Kegiatan Drainase">
+</div>
+
+<script>
+    // =============== APPS SCRIPT URL ===============
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx72lh2F3rKcjItYg4cW4nm_QEsXDma8tqOM-yJh3R1eaFE4f6Wm0q17ct2p9_v6Oc/exec';
+    
+    let globalData = [];
+    let currentSearchTerm = '';
+    let currentDateFilter = '';
+
+    // Fungsi mengambil data via JSONP (mengatasi CORS)
+    async function fetchDataWithCORS() {
+        return new Promise((resolve, reject) => {
+            const callbackName = 'callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+            const script = document.createElement('script');
+            const url = `${APPS_SCRIPT_URL}?callback=${callbackName}&_=${Date.now()}`;
+            script.src = url;
+            
+            window[callbackName] = function(response) {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                resolve(response);
+            };
+            
+            script.onerror = function() {
+                delete window[callbackName];
+                document.body.removeChild(script);
+                reject(new Error('JSONP request failed'));
+            };
+            
+            document.body.appendChild(script);
+        });
+    }
+
+    async function fetchDataWithFetch() {
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, { 
+                method: 'GET',
+                mode: 'cors',
+                cache: 'no-store'
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.log('Fetch error:', error);
+            return null;
+        }
+    }
+
+    async function fetchDataFromAppsScript() {
+        try {
+            console.log('Mencoba JSONP...');
+            const jsonpResult = await fetchDataWithCORS();
+            if (jsonpResult && (jsonpResult.success === true || Array.isArray(jsonpResult.data) || Array.isArray(jsonpResult))) {
+                return processResponse(jsonpResult);
             }
+        } catch (jsonpError) {
+            console.log('JSONP gagal:', jsonpError);
         }
-        createParticles();
-
-        // Countdown Timer (Contoh: selesai 2 hari dari sekarang)
-        function getTargetDate() {
-            let target = new Date();
-            target.setDate(target.getDate() + 2);
-            target.setHours(8, 0, 0, 0);
-            return target;
+        
+        try {
+            console.log('Mencoba fetch biasa...');
+            const fetchResult = await fetchDataWithFetch();
+            if (fetchResult) return processResponse(fetchResult);
+        } catch (fetchError) {
+            console.log('Fetch gagal:', fetchError);
         }
+        return null;
+    }
+    
+    function processResponse(result) {
+        let dataArray = null;
+        if (result.success === true && Array.isArray(result.data)) {
+            dataArray = result.data;
+        } 
+        else if (Array.isArray(result)) {
+            dataArray = result;
+        }
+        else if (result.data && Array.isArray(result.data)) {
+            dataArray = result.data;
+        }
+        
+        if (dataArray) {
+            return dataArray.filter(item => item && item["Hari/Tanggal"] && item["Hari/Tanggal"] !== '');
+        }
+        return null;
+    }
 
-        function updateCountdown() {
-            const target = getTargetDate();
-            const now = new Date();
-            const diff = target - now;
+    // ============ FUNGSI KONVERSI TANGGAL ============
+    // Konversi format "Senin, 12 Mei 2026" ke Date object
+    function parseDateFromString(dateString) {
+        if (!dateString || dateString === '-') return null;
+        
+        // Coba parse format "Senin, 12 Mei 2026" atau "Selasa, 12 Mei 2026"
+        const parts = dateString.split(',');
+        if (parts.length < 2) return null;
+        
+        const datePart = parts[1].trim(); // "12 Mei 2026"
+        const dateParts = datePart.split(' ');
+        
+        if (dateParts.length < 3) return null;
+        
+        const day = parseInt(dateParts[0], 10);
+        const monthName = dateParts[1];
+        const year = parseInt(dateParts[2], 10);
+        
+        // Mapping nama bulan ke angka
+        const months = {
+            'Januari': 0, 'Jan': 0,
+            'Februari': 1, 'Feb': 1,
+            'Maret': 2, 'Mar': 2,
+            'April': 3, 'Apr': 3,
+            'Mei': 4, 'May': 4,
+            'Juni': 5, 'Jun': 5,
+            'Juli': 6, 'Jul': 6,
+            'Agustus': 7, 'Agu': 7, 'Aug': 7,
+            'September': 8, 'Sep': 8,
+            'Oktober': 9, 'Okt': 9, 'Oct': 9,
+            'November': 10, 'Nov': 10,
+            'Desember': 11, 'Des': 11, 'Dec': 11
+        };
+        
+        const month = months[monthName];
+        if (month === undefined) return null;
+        
+        return new Date(year, month, day);
+    }
 
-            if (diff <= 0) {
-                document.getElementById('days').textContent = '00';
-                document.getElementById('hours').textContent = '00';
-                document.getElementById('minutes').textContent = '00';
-                document.getElementById('seconds').textContent = '00';
+    // Fungsi filter berdasarkan tanggal
+    function filterByDate(item, filterDate) {
+        if (!filterDate) return true;
+        
+        const itemDate = parseDateFromString(item["Hari/Tanggal"]);
+        if (!itemDate) return false;
+        
+        // Bandingkan tahun, bulan, tanggal (abaikan waktu)
+        return itemDate.getFullYear() === filterDate.getFullYear() &&
+               itemDate.getMonth() === filterDate.getMonth() &&
+               itemDate.getDate() === filterDate.getDate();
+    }
+
+    // ============ FUNGSI MENENTUKAN WARNA CARD ============
+    function getCardColorClass(item) {
+        const status = item["Status"] || '';
+        const ketLibur = item["Ket libur"] || '';
+        
+        if (status === 'Hari Libur' || ketLibur.toLowerCase().includes('libur') || ketLibur.toLowerCase().includes('merah')) {
+            return 'card-libur';
+        }
+        
+        if (status === 'Sudah Bekerja' || status === 'Selesai' || 
+            ketLibur.toLowerCase().includes('sudah dikerjakan')) {
+            return 'card-selesai';
+        }
+        
+        return 'card-menunggu';
+    }
+
+    function parseTimeToMinutes(timeStr) {
+        if (timeStr === undefined || timeStr === null || timeStr === '' || timeStr === '-') return null;
+        if (typeof timeStr === 'number') return timeStr * 60;
+        
+        let strTime = String(timeStr);
+        let cleaned = strTime.replace(/\./g, ':');
+        let parts = cleaned.split(':');
+        if(parts.length < 2) return null;
+        let hours = parseInt(parts[0], 10);
+        let minutes = parseInt(parts[1], 10);
+        if(isNaN(hours) || isNaN(minutes)) return null;
+        return hours * 60 + minutes;
+    }
+
+    function updateCountdowns() {
+        const now = new Date();
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        
+        document.querySelectorAll('.countdown-timer').forEach(el => {
+            const startStr = el.getAttribute('data-start');
+            const endStr = el.getAttribute('data-end');
+            const statusRaw = el.getAttribute('data-status');
+            const isLibur = el.getAttribute('data-libur') === 'libur';
+            
+            if(isLibur || statusRaw === 'Hari Libur') {
+                el.innerHTML = '<i class="fas fa-calendar-times"></i> Libur';
                 return;
             }
-
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (86400000)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (3600000)) / (1000 * 60));
-            const seconds = Math.floor((diff % (60000)) / 1000);
-
-            document.getElementById('days').textContent = days.toString().padStart(2, '0');
-            document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
-            document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
-            document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
-        }
-
-        updateCountdown();
-        setInterval(updateCountdown, 1000);
-
-        // Notify Button
-        document.getElementById('notifyBtn').addEventListener('click', function() {
-            const email = document.getElementById('notifyEmail').value;
-            if (email && email.includes('@')) {
-                alert(`✅ Terima kasih ${email}! Kami akan memberitahu saat maintenance selesai.`);
-                document.getElementById('notifyEmail').value = '';
-            } else {
-                alert('⚠️ Silakan masukkan email yang valid.');
+            if(statusRaw === 'Selesai' || statusRaw === 'Sudah Bekerja') {
+                el.innerHTML = '<i class="fas fa-check-circle"></i> Selesai';
+                return;
+            }
+            
+            const startMin = parseTimeToMinutes(startStr);
+            const endMin = parseTimeToMinutes(endStr);
+            if(startMin === null || endMin === null) {
+                el.innerHTML = '⏱️ Jadwal belum tersedia';
+                return;
+            }
+            
+            if(currentMinutes < startMin) {
+                let diff = startMin - currentMinutes;
+                let hours = Math.floor(diff / 60);
+                let mins = diff % 60;
+                el.innerHTML = `⏳ Mulai: ${hours}j ${mins}m`;
+            } 
+            else if(currentMinutes >= startMin && currentMinutes <= endMin) {
+                let diffEnd = endMin - currentMinutes;
+                let hours = Math.floor(diffEnd / 60);
+                let mins = diffEnd % 60;
+                el.innerHTML = `🔄 Berlangsung · sisa ${hours}j ${mins}m`;
+            } 
+            else {
+                el.innerHTML = '✅ Selesai';
             }
         });
+    }
 
-        // Contact Button
-        document.getElementById('contactBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            alert('📧 Hubungi: admin@senapelankencana.id\n📞 Atau WhatsApp: +62 812-3456-7890');
-        });
-
-        // Animate progress number
-        let progress = 0;
-        const progressBar = document.querySelector('.progress-bar');
-        const progressPercent = document.getElementById('progressPercent');
+    // Render cards dengan filter gabungan
+    function renderCards(data, searchTerm = '', filterDate = null) {
+        const container = document.getElementById('cardsContainer');
+        if(!data || data.length === 0) {
+            container.innerHTML = `<div class="loader-container"><p>📭 Tidak ada data jadwal</p></div>`;
+            return;
+        }
         
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    let count = 0;
-                    const interval = setInterval(() => {
-                        if (count >= 68) {
-                            clearInterval(interval);
-                        } else {
-                            count++;
-                            progressPercent.textContent = count + '%';
-                        }
-                    }, 30);
-                    observer.disconnect();
+        let filtered = data.filter(item => {
+            // Filter teks
+            let matchText = true;
+            if (searchTerm) {
+                const term = searchTerm.toLowerCase();
+                matchText = (item["Lokasi/Rute Pembersihan"]?.toLowerCase().includes(term) ||
+                           item["Kelurahan"]?.toLowerCase().includes(term) ||
+                           item["Penanggung Jawab"]?.toLowerCase().includes(term));
+            }
+            
+            // Filter tanggal
+            let matchDate = true;
+            if (filterDate) {
+                matchDate = filterByDate(item, filterDate);
+            }
+            
+            return matchText && matchDate;
+        });
+        
+        if(filtered.length === 0) {
+            let message = 'Tidak ada jadwal sesuai pencarian';
+            if (filterDate) message = `Tidak ada jadwal untuk tanggal ${filterDate.toLocaleDateString('id-ID')}`;
+            container.innerHTML = `<div class="loader-container"><i class="fas fa-search"></i><p>${message}</p></div>`;
+            return;
+        }
+        
+        // Update statistik filter
+        const filterStats = document.querySelector('.filter-stats');
+        if (filterStats) filterStats.textContent = `(Menampilkan ${filtered.length} dari ${data.length} data)`;
+        
+        container.innerHTML = filtered.map(item => {
+            const cardColorClass = getCardColorClass(item);
+            
+            const isLibur = (item["Ket libur"] && String(item["Ket libur"]).toLowerCase().includes('libur')) ? true : false;
+            const isHariLibur = (item["Status"] === 'Hari Libur');
+            const finalLibur = isLibur || isHariLibur;
+            
+            let statusText = item["Status"] || 'Menunggu';
+            
+            const lokasi = item["Lokasi/Rute Pembersihan"] || '-';
+            const rt = item["RT"] || '';
+            const rw = item["RW"] || '';
+            const rtRwText = (rt || rw) ? `RT ${rt} / RW ${rw}` : '';
+            const fotoUrl = item["Link_Foto"] || item["Link Foto"] || '';
+            
+            return `
+                <div class="card ${cardColorClass}">
+                    <div class="card-header">
+                        <span class="date-badge"><i class="far fa-calendar-alt"></i> ${item["Hari/Tanggal"] || '-'}</span>
+                        <span class="status-badge">${finalLibur ? 'Libur' : statusText}</span>
+                    </div>
+                    <div class="lokasi-box">
+                        <div class="lokasi-title">
+                            <i class="fas fa-map-pin"></i> ${escapeHtml(lokasi)}
+                            ${rtRwText ? `<span class="rt-rw">${escapeHtml(rtRwText)}</span>` : ''}
+                        </div>
+                        <div class="kelurahan"><i class="fas fa-building"></i> Kelurahan ${escapeHtml(item["Kelurahan"] || '-')}</div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="far fa-clock"></i></div>
+                        <div class="detail-content">
+                            <div class="label-small">Jam Operasional</div>
+                            <strong>${item["Jam Mulai"] || '--'} - ${item["Jam Selesai"] || '--'}</strong>
+                            <div class="countdown-timer" data-start="${item["Jam Mulai"] || ''}" data-end="${item["Jam Selesai"] || ''}" data-status="${statusText}" data-libur="${finalLibur ? 'libur' : ''}">⏳ menghitung...</div>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-user-hard-hat"></i></div>
+                        <div class="detail-content">
+                            <div class="label-small">Penanggung Jawab</div>
+                            ${escapeHtml(item["Penanggung Jawab"] || '-')} ${item["Jumlah Personil"] ? `(👥 ${item["Jumlah Personil"]} personil)` : ''}
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-icon"><i class="fas fa-info-circle"></i></div>
+                        <div class="detail-content">
+                            <div class="label-small">Keterangan</div>
+                            ${escapeHtml(item["Keterangan"] || '-')}
+                        </div>
+                    </div>
+                    <div class="detail-item" style="justify-content: space-between;">
+                        <div><i class="fas fa-camera"></i> Dokumentasi Foto</div>
+                        <div class="foto-icon" data-foto="${escapeHtml(fotoUrl)}">
+                            <i class="fas fa-image"></i>
+                        </div>
+                    </div>
+                    ${item["Ket libur"] ? `<div class="detail-item" style="background:rgba(0,0,0,0.03);"><i class="fas fa-ban"></i> ${escapeHtml(item["Ket libur"])}</div>` : ''}
+                </div>
+            `;
+        }).join('');
+        
+        document.querySelectorAll('.foto-icon').forEach(icon => {
+            icon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const fotoUrl = icon.getAttribute('data-foto');
+                if(fotoUrl && fotoUrl !== '' && (fotoUrl.startsWith('http') || fotoUrl.startsWith('https'))) {
+                    document.getElementById('modalImg').src = fotoUrl;
+                    document.getElementById('imageModal').style.display = 'flex';
+                } else {
+                    alert('📷 Belum ada foto dokumentasi untuk kegiatan ini');
                 }
             });
         });
-        observer.observe(progressPercent);
-    </script>
+        
+        updateCountdowns();
+        if(window.countdownInterval) clearInterval(window.countdownInterval);
+        window.countdownInterval = setInterval(updateCountdowns, 60000);
+    }
+
+    function escapeHtml(str) {
+        if(!str) return '';
+        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+    }
+
+    // Fungsi untuk menerapkan semua filter
+    function applyFilters() {
+        if (!globalData || globalData.length === 0) return;
+        
+        const searchTerm = document.getElementById('searchInput')?.value || '';
+        const dateValue = document.getElementById('dateFilterInput')?.value || '';
+        
+        let filterDate = null;
+        if (dateValue) {
+            filterDate = new Date(dateValue);
+        }
+        
+        renderCards(globalData, searchTerm, filterDate);
+    }
+
+    async function loadDataAndRender() {
+        const container = document.getElementById('cardsContainer');
+        container.innerHTML = `<div class="loader-container"><div class="spinner"></div><p>Mengambil data dari Server...</p></div>`;
+        
+        const oldNotice = document.getElementById('api-notice');
+        if(oldNotice) oldNotice.remove();
+        
+        const data = await fetchDataFromAppsScript();
+        
+        if (data && data.length > 0) {
+            const notice = document.createElement('div');
+            notice.id = 'api-notice';
+            notice.className = 'success-notice';
+            notice.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Data berhasil dimuat! Menampilkan ' + data.length + ' jadwal operasional drainase.';
+            const toolbar = document.querySelector('.toolbar');
+            toolbar.parentNode.insertBefore(notice, toolbar.nextSibling);
+            setTimeout(() => { if(notice) notice.style.opacity = '0'; setTimeout(() => notice.remove(), 500); }, 5000);
+            
+            globalData = data;
+            applyFilters();
+        } else {
+            container.innerHTML = `
+                <div class="loader-container">
+                    <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#f59e0b;"></i>
+                    <p>Gagal memuat data dari Google Sheets</p>
+                    <button class="btn-refresh" id="retryBtn" style="margin-top:1rem;">Coba Lagi</button>
+                </div>`;
+            document.getElementById('retryBtn')?.addEventListener('click', loadDataAndRender);
+        }
+    }
+    
+    // Event listeners
+    document.getElementById('refreshBtn')?.addEventListener('click', loadDataAndRender);
+    document.getElementById('searchInput')?.addEventListener('keyup', () => applyFilters());
+    document.getElementById('dateFilterInput')?.addEventListener('change', () => applyFilters());
+    document.getElementById('clearDateBtn')?.addEventListener('click', () => {
+        document.getElementById('dateFilterInput').value = '';
+        applyFilters();
+    });
+    
+    const modal = document.getElementById('imageModal');
+    document.querySelector('.close-modal')?.addEventListener('click', () => modal.style.display = 'none');
+    modal.addEventListener('click', (e) => { if(e.target === modal) modal.style.display = 'none'; });
+    
+    loadDataAndRender();
+</script>
 </body>
 </html>
