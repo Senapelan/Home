@@ -61,9 +61,6 @@
         .error { color: #e74c3c; }
         .info-badge { background: linear-gradient(135deg, #e0f2fe, #d4e6f1); padding: 14px 20px; border-radius: 20px; font-size: 0.85rem; margin-top: 20px; }
         footer { text-align: center; margin-top: 40px; padding: 20px; font-size: 0.7rem; color: #7e8aa2; }
-        .top-ten-item { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
-        .top-ten-avatar { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; background: #1e4a76; display: flex; align-items: center; justify-content: center; color: white; font-size: 0.7rem; }
-        .custom-tooltip { background: white; border-radius: 8px; padding: 8px 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         @media (max-width: 768px) {
             body { padding: 12px; }
             .header { padding: 18px 20px; }
@@ -109,9 +106,7 @@
                 <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
                 <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="tahunFilterTab1">
-                <option value="2023">2023</option><option value="2024">2024</option><option value="2025">2025</option>
-            </select>
+            <select id="tahunFilterTab1"></select>
             <button id="resetFilterTab1" class="filter-chip" style="background:#e2e8f0;"><i class="fas fa-undo-alt"></i> Reset</button>
         </div>
     </div>
@@ -125,9 +120,7 @@
             <div class="filter-chip" data-bank="BS_K"><i class="fas fa-recycle"></i> Kemuning</div>
         </div>
         <div class="filter-group">
-            <select id="tahunFilterTab2">
-                <option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option>
-            </select>
+            <select id="tahunFilterTab2"></select>
             <button id="resetFilterTab2" class="filter-chip" style="background:#e2e8f0;"><i class="fas fa-undo-alt"></i> Reset</button>
         </div>
     </div>
@@ -147,9 +140,7 @@
                 <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
                 <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
             </select>
-            <select id="tahunFilterTab3">
-                <option value="2023">2023</option><option value="2024">2024</option><option value="2025" selected>2025</option>
-            </select>
+            <select id="tahunFilterTab3"></select>
             <button id="resetFilterTab3" class="filter-chip" style="background:#e2e8f0;"><i class="fas fa-undo-alt"></i> Reset</button>
         </div>
     </div>
@@ -171,7 +162,7 @@
         <div class="table-wrapper">
             <table class="peserta-table">
                 <thead><tr><th>Foto</th><th>Nama</th><th>Alamat</th><th>RT/RW</th><th>Tgl Setor</th><th style="color:#2ecc71;">Organik</th><th style="color:#f1c40f;">An-Organik</th><th style="color:#e74c3c;">Residu</th><th style="color:#3498db;">Total</th></tr></thead>
-                <tbody id="tableBody"><tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr></tbody>
+                <tbody id="tableBody"><tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-pulse"></i> Memuat data...</td></tr</tbody>
             </table>
         </div>
     </div>
@@ -182,7 +173,7 @@
         <div class="table-wrapper">
             <table class="peserta-table">
                 <thead><tr><th>Bulan</th><th>Organik</th><th>An-Organik</th><th>Residu</th><th>Total</th><th>Status</th></tr></thead>
-                <tbody id="rekapBody"><tr><td colspan="6" class="loading">Memuat...</td></tr></tbody>
+                <tbody id="rekapBody"><tr><td colspan="6" class="loading">Memuat...</td></tr</tbody>
             </table>
         </div>
         <div class="summary-boxes" id="summaryBoxes"></div>
@@ -205,8 +196,8 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzelGic2uGg96eDS-e9fdGrqR0XvWqmt-vD8Lrn0amWmT0dRh_aa9A_10hRdB5xzcx0/exec';
     
     // Data stores
-    let allSetoran = [];      // dari sheet RIWAYAT_SETOR_BSPD
-    let allPeserta = [];      // dari sheet PESERTA_BS_PD
+    let allSetoran = [];
+    let allPeserta = [];
     let filteredData = [];
     
     // Filter states
@@ -222,30 +213,65 @@
 
     const monthsIndo = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
 
+    // ==================== GENERATE TAHUN DINAMIS (2020 - TAHUN BERJALAN + 5) ====================
+    function generateYearOptions() {
+        const currentYear = new Date().getFullYear();
+        const startYear = 2020;
+        const endYear = currentYear + 5;
+        
+        let options = '';
+        for (let year = startYear; year <= endYear; year++) {
+            options += `<option value="${year}" ${year === currentYear ? 'selected' : ''}>${year}</option>`;
+        }
+        return options;
+    }
+    
+    function populateYearSelectors() {
+        const yearOptions = generateYearOptions();
+        const yearSelectors = ['tahunFilterTab1', 'tahunFilterTab2', 'tahunFilterTab3'];
+        yearSelectors.forEach(id => {
+            const select = document.getElementById(id);
+            if (select) select.innerHTML = yearOptions;
+        });
+    }
+
     // ==================== LOAD DATA ====================
     async function loadAllData() {
         document.getElementById('tableBody').innerHTML = '<tr><td colspan="9" class="loading"><i class="fas fa-spinner fa-pulse"></i> Menghubungi server...</td></tr>';
         
         try {
-            // Load dari sheet RIWAYAT_SETOR_BSPD
             const response = await fetch(`${APPS_SCRIPT_URL}?t=${Date.now()}`, { method: 'GET', mode: 'cors', cache: 'no-cache' });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
             const result = await response.json();
             
             if (!result.success) throw new Error(result.error);
             
-            // Data dari sheet RIWAYAT_SETOR_BSPD
             allSetoran = result.data || [];
             
-            // Load data peserta dari sheet PESERTA_BS_PD (untuk foto dan alamat lengkap)
-            await loadPesertaData();
+            // Ekstrak data peserta dari setoran
+            const pesertaMap = new Map();
+            allSetoran.forEach(setoran => {
+                const id = setoran.id_peserta;
+                if (id && !pesertaMap.has(id)) {
+                    pesertaMap.set(id, {
+                        id_peserta: id,
+                        nama: setoran.nama,
+                        alamat: setoran.alamat,
+                        rt: setoran.rt,
+                        rw: setoran.rw,
+                        link_foto: setoran.foto || '',
+                        no_hp: setoran.no_hp
+                    });
+                }
+            });
+            allPeserta = Array.from(pesertaMap.values());
             
             // Gabungkan data: tambahkan foto ke setoran
             allSetoran = allSetoran.map(setoran => {
-                const peserta = allPeserta.find(p => p.id_peserta === setoran.id_peserta || p.nama === setoran.nama);
+                const peserta = allPeserta.find(p => p.id_peserta === setoran.id_peserta);
                 return {
                     ...setoran,
-                    link_foto: peserta ? peserta.link_foto : '',
+                    link_foto: peserta ? peserta.link_foto : setoran.foto,
                     rt: peserta ? peserta.rt : setoran.rt,
                     rw: peserta ? peserta.rw : setoran.rw,
                     alamat_lengkap: peserta ? peserta.alamat : setoran.alamat
@@ -267,34 +293,30 @@
         }
     }
     
-    async function loadPesertaData() {
-        try {
-            // Menggunakan endpoint yang sama tapi dengan parameter untuk mengambil data peserta
-            // Karena Apps Script hanya punya 1 endpoint, kita akan parsing dari data setoran saja
-            // Alternatif: buat sheet terpisah, tapi untuk sementara kita ekstrak dari setoran
-            const pesertaMap = new Map();
-            allSetoran.forEach(setoran => {
-                const id = setoran.id_peserta;
-                if (id && !pesertaMap.has(id)) {
-                    pesertaMap.set(id, {
-                        id_peserta: id,
-                        nama: setoran.nama,
-                        alamat: setoran.alamat,
-                        rt: setoran.rt,
-                        rw: setoran.rw,
-                        link_foto: setoran.foto || '',
-                        no_hp: setoran.no_hp
-                    });
-                }
-            });
-            allPeserta = Array.from(pesertaMap.values());
-        } catch(e) {
-            console.warn('Gagal load data peserta', e);
-            allPeserta = [];
-        }
+    function parseDate(str) {
+        if (!str) return null;
+        if (str instanceof Date && !isNaN(str)) return str;
+        let d = new Date(str);
+        if (!isNaN(d.getTime()) && d.getFullYear() > 2000) return d;
+        const isoMatch = str.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+        if (isoMatch) return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]));
+        return null;
     }
-
-    // ==================== FILTER FUNCTIONS ====================
+    
+    function formatDateIndonesian(dateStr) {
+        const d = parseDate(dateStr);
+        if (!d) return dateStr || '-';
+        return `${d.getDate()} ${monthsIndo[d.getMonth()]} ${d.getFullYear()}`;
+    }
+    
+    function getAvatarHtml(linkFoto, nama) {
+        const initial = (nama?.[0] || '?').toUpperCase();
+        if (linkFoto && linkFoto.trim() !== '') {
+            return `<div class="avatar-img"><img src="${linkFoto}" alt="${nama}" onerror="this.onerror=null; this.parentElement.innerHTML='${initial}'; this.parentElement.style.background='linear-gradient(135deg, #1e4a76, #2c6e9e)'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.style.color='white'; this.parentElement.style.fontWeight='bold';"></div>`;
+        }
+        return `<div class="avatar-img" style="display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1e4a76, #2c6e9e); color:white; font-weight:bold;">${initial}</div>`;
+    }
+    
     function filterByBank(data, bank) {
         if (bank === 'all') return data;
         return data.filter(item => {
@@ -323,37 +345,12 @@
         });
     }
     
-    function parseDate(str) {
-        if (!str) return null;
-        if (str instanceof Date && !isNaN(str)) return str;
-        let d = new Date(str);
-        if (!isNaN(d.getTime()) && d.getFullYear() > 2000) return d;
-        const isoMatch = str.match(/(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
-        if (isoMatch) return new Date(parseInt(isoMatch[1]), parseInt(isoMatch[2])-1, parseInt(isoMatch[3]));
-        return null;
-    }
-    
-    function formatDateIndonesian(dateStr) {
-        const d = parseDate(dateStr);
-        if (!d) return dateStr || '-';
-        return `${d.getDate()} ${monthsIndo[d.getMonth()]} ${d.getFullYear()}`;
-    }
-    
-    function getAvatarHtml(linkFoto, nama) {
-        const initial = (nama?.[0] || '?').toUpperCase();
-        if (linkFoto && linkFoto.trim() !== '') {
-            return `<div class="avatar-img"><img src="${linkFoto}" alt="${nama}" onerror="this.onerror=null; this.parentElement.innerHTML='${initial}'; this.parentElement.style.background='linear-gradient(135deg, #1e4a76, #2c6e9e)'; this.parentElement.style.display='flex'; this.parentElement.style.alignItems='center'; this.parentElement.style.justifyContent='center'; this.parentElement.style.color='white'; this.parentElement.style.fontWeight='bold';"></div>`;
-        }
-        return `<div class="avatar-img" style="display:flex; align-items:center; justify-content:center; background:linear-gradient(135deg, #1e4a76, #2c6e9e); color:white; font-weight:bold;">${initial}</div>`;
-    }
-    
     // ==================== TAB 1: DAFTAR SETORAN ====================
     function applyFiltersTab1() {
         let temp = [...allSetoran];
         temp = filterByBank(temp, currentBank);
         temp = filterByMonthYear(temp, currentBulanTab1, currentTahunTab1);
         
-        // Sort by tanggal DESC
         temp.sort((a, b) => {
             const da = parseDate(a.tanggal);
             const db = parseDate(b.tanggal);
@@ -486,16 +483,12 @@
             return;
         }
         
-        // Top 10 Peserta dengan foto
+        // Top 10 Peserta
         const pesertaTotal = new Map();
-        const pesertaFoto = new Map();
         data.forEach(item => {
             const nama = item.nama || 'Unknown';
             const total = parseFloat(item.total) || 0;
             pesertaTotal.set(nama, (pesertaTotal.get(nama)||0) + total);
-            if (!pesertaFoto.has(nama) && (item.link_foto || item.foto)) {
-                pesertaFoto.set(nama, item.link_foto || item.foto);
-            }
         });
         const top10 = Array.from(pesertaTotal.entries()).sort((a,b)=>b[1]-a[1]).slice(0,10);
         
@@ -507,11 +500,7 @@
                 labels: top10.map(v => v[0].length > 15 ? v[0].substring(0,12)+'...' : v[0]), 
                 datasets: [{ label: 'Total Setor (kg)', data: top10.map(v => v[1]), backgroundColor: '#3498db', borderRadius: 8 }] 
             },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: true,
-                plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(1)} kg` } } }
-            }
+            options: { responsive: true, maintainAspectRatio: true, plugins: { tooltip: { callbacks: { label: (ctx) => `${ctx.raw.toFixed(1)} kg` } } } }
         });
         
         // Komposisi sampah
@@ -536,21 +525,13 @@
         
         if (charts.line) charts.line.destroy();
         const lineCtx = document.getElementById('lineChart').getContext('2d');
-        
-        // Buat data untuk line chart dengan progress bar style
         charts.line = new Chart(lineCtx, {
             type: 'doughnut',
             data: {
                 labels: [`Capaian: ${persen}% (${totalBulan.toFixed(1)} kg)`, `Sisa Target: ${(estimasiTPA - totalBulan).toFixed(1)} kg`],
                 datasets: [{ data: [totalBulan, Math.max(0, estimasiTPA - totalBulan)], backgroundColor: ['#2ecc71', '#e0e0e0'], borderWidth: 0, cutout: '65%' }]
             },
-            options: {
-                responsive: true,
-                plugins: {
-                    legend: { position: 'bottom' },
-                    tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw.toFixed(1)} kg` } }
-                }
-            }
+            options: { responsive: true, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (ctx) => `${ctx.label}: ${ctx.raw.toFixed(1)} kg` } } } }
         });
         
         document.getElementById('grafikInfo').innerHTML = `<i class="fas fa-chart-line"></i> <strong>Capaian Pengurangan TPA:</strong> ${persen}% (Total setor <strong>${totalBulan.toFixed(1)} kg</strong> dari estimasi <strong>${estimasiTPA.toLocaleString()} kg</strong> sampah yang diangkut LPS tiap bulannya)<br><small>📊 Artinya: Dari ${estimasiTPA.toLocaleString()} kg sampah yang seharusnya ke TPA, Bank Sampah berhasil mengelola ${totalBulan.toFixed(1)} kg (${persen}%).</small>`;
@@ -569,7 +550,6 @@
                 const tabId = btn.dataset.tab;
                 document.getElementById(tabId).classList.add('active');
                 
-                // Tampilkan filter bar sesuai tab
                 document.getElementById('filterBarTab1').style.display = tabId === 'tab1' ? 'flex' : 'none';
                 document.getElementById('filterBarTab2').style.display = tabId === 'tab2' ? 'flex' : 'none';
                 document.getElementById('filterBarTab3').style.display = tabId === 'tab3' ? 'flex' : 'none';
@@ -638,6 +618,7 @@
     
     // Initialize
     loadAllData();
+    populateYearSelectors();
     bindEvents();
 </script>
 </body>
