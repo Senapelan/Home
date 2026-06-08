@@ -135,11 +135,20 @@
         </div>
         <div class="filter-group">
             <select id="bulanFilterTab3">
-                <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
-                <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
-                <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
-                <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
-            </select>
+    <option value="all">Semua Bulan</option>
+    <option value="1">Januari</option>
+    <option value="2">Februari</option>
+    <option value="3">Maret</option>
+    <option value="4">April</option>
+    <option value="5">Mei</option>
+    <option value="6">Juni</option>
+    <option value="7">Juli</option>
+    <option value="8">Agustus</option>
+    <option value="9">September</option>
+    <option value="10">Oktober</option>
+    <option value="11">November</option>
+    <option value="12">Desember</option>
+</select>
             <select id="tahunFilterTab3"></select>
             <button id="resetFilterTab3" class="filter-chip" style="background:#e2e8f0;"><i class="fas fa-undo-alt"></i> Reset</button>
         </div>
@@ -466,10 +475,21 @@
     function applyFiltersTab3() {
         let temp = [...allSetoran];
         temp = filterByBank(temp, currentBank);
-        temp = temp.filter(item => {
-            const d = parseDate(item.tanggal);
-            return d && d.getMonth() + 1 === parseInt(currentBulanTab3) && d.getFullYear() === parseInt(currentTahunTab3);
-        });
+        
+        // Filter berdasarkan bulan dan tahun
+        if (currentBulanTab3 === 'all') {
+            // Jika pilih "Semua Bulan", filter hanya berdasarkan tahun
+            temp = temp.filter(item => {
+                const d = parseDate(item.tanggal);
+                return d && d.getFullYear() === parseInt(currentTahunTab3);
+            });
+        } else {
+            // Filter berdasarkan bulan dan tahun tertentu
+            temp = temp.filter(item => {
+                const d = parseDate(item.tanggal);
+                return d && d.getMonth() + 1 === parseInt(currentBulanTab3) && d.getFullYear() === parseInt(currentTahunTab3);
+            });
+        }
         
         renderChartsTab3(temp);
     }
@@ -598,9 +618,9 @@
         document.getElementById('bulanFilterTab3').onchange = (e) => { currentBulanTab3 = e.target.value; applyFiltersTab3(); };
         document.getElementById('tahunFilterTab3').onchange = (e) => { currentTahunTab3 = e.target.value; applyFiltersTab3(); };
         document.getElementById('resetFilterTab3').onclick = () => {
-            document.getElementById('bulanFilterTab3').value = (new Date().getMonth() + 1).toString();
+            document.getElementById('bulanFilterTab3').value = 'all';  // <-- ubah jadi 'all'
             document.getElementById('tahunFilterTab3').value = new Date().getFullYear().toString();
-            currentBulanTab3 = (new Date().getMonth() + 1).toString();
+            currentBulanTab3 = 'all';  // <-- ubah jadi 'all'
             currentTahunTab3 = new Date().getFullYear().toString();
             applyFiltersTab3();
         };
