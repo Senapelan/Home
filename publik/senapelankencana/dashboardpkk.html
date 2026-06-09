@@ -23,7 +23,6 @@
             min-height: 100vh;
         }
 
-        /* SIDEBAR */
         .sidebar {
             position: fixed;
             left: 0;
@@ -104,14 +103,12 @@
             border-left: 4px solid #ffd700;
         }
 
-        /* MAIN CONTENT */
         .main-content {
             margin-left: 280px;
             padding: 1.5rem;
             min-height: 100vh;
         }
 
-        /* Top Bar */
         .top-bar {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -153,7 +150,6 @@
             background: rgba(255,100,100,1);
         }
 
-        /* Card Container */
         .card {
             background: rgba(255,255,255,0.1);
             backdrop-filter: blur(10px);
@@ -171,7 +167,6 @@
             gap: 10px;
         }
 
-        /* Form */
         .form-group {
             margin-bottom: 1rem;
         }
@@ -227,12 +222,6 @@
             color: white;
         }
 
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-
-        /* Table */
         .table-container {
             overflow-x: auto;
         }
@@ -252,54 +241,6 @@
         th {
             background: rgba(0,0,0,0.3);
             font-weight: 600;
-        }
-
-        .item-img {
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            border-radius: 10px;
-        }
-
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .modal-content {
-            background: linear-gradient(135deg, #0d4a3a, #1a5a6a);
-            border-radius: 1.5rem;
-            padding: 2rem;
-            width: 90%;
-            max-width: 500px;
-            max-height: 85vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            color: white;
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            color: white;
-            font-size: 1.5rem;
-            cursor: pointer;
         }
 
         .alert {
@@ -436,81 +377,15 @@
     <div id="pageContent"></div>
 </div>
 
-<!-- Modal untuk Input Item -->
-<div id="modalItem" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3><i class="fas fa-plus-circle"></i> Tambah Item Kebun</h3>
-            <button class="close-modal" onclick="closeModal()">&times;</button>
-        </div>
-        <form id="formAddItem">
-            <div class="form-group">
-                <label>Nama Barang *</label>
-                <input type="text" id="itemName" required placeholder="Contoh: Mangga Harum Manis">
-            </div>
-            <div class="form-group">
-                <label>Harga Jual (Rp) *</label>
-                <input type="number" id="itemPrice" required placeholder="15000">
-            </div>
-            <div class="form-group">
-                <label>Satuan Harga *</label>
-                <select id="itemUnitPrice" required>
-                    <option value="kg">kg</option>
-                    <option value="ikat">ikat</option>
-                    <option value="pcs">pcs</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Stok *</label>
-                <input type="number" id="itemStock" required placeholder="50">
-            </div>
-            <div class="form-group">
-                <label>Satuan Stok *</label>
-                <select id="itemUnitStock" required>
-                    <option value="kg">kg</option>
-                    <option value="ikat">ikat</option>
-                    <option value="pcs">pcs</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Harga Modal (Rp) *</label>
-                <input type="number" id="itemModal" required placeholder="10000">
-            </div>
-            <div class="form-group">
-                <label>Link Gambar (Opsional)</label>
-                <input type="url" id="itemImage" placeholder="https://...">
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%">SIMPAN</button>
-        </form>
-    </div>
-</div>
-
-<!-- Modal untuk Kode Pembayaran -->
-<div id="modalPayment" class="modal">
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3><i class="fas fa-qrcode"></i> Konfirmasi Pembayaran</h3>
-            <button class="close-modal" onclick="closePaymentModal()">&times;</button>
-        </div>
-        <div id="paymentResult"></div>
-        <form id="formPayment">
-            <div class="form-group">
-                <label>Masukkan Kode Bayar *</label>
-                <input type="text" id="paymentKode" required placeholder="Contoh: PKK-20241215-001">
-            </div>
-            <button type="submit" class="btn btn-primary" style="width:100%">CARI</button>
-        </form>
-    </div>
-</div>
-
 <script>
-    // Konfigurasi
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyWzrhKqrwSdlbx6rB_cRCHiQ_GYTsUu6mDUVmYuJW5S4v3Ul-7BKg8UNDLFGb5hTwF/exec';
+    // ==================== KONFIGURASI ====================
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxFM9lGW7stleZMKrsWYv26JqISEFFpFI9HZaIXXVIZ14dgScfwFr6OaEJ56w72LIa/exec';
     const SPREADSHEET_ID = '1OsPl_S9aiODQW0t-IDcFNiDKPTklPGCeC9mj5kmk0xU';
     
     let currentUser = null;
+    let currentItemData = null;
 
-    // Cek session
+    // ==================== SESSION ====================
     function checkSession() {
         const loggedIn = sessionStorage.getItem('pkk_loggedIn');
         const userName = sessionStorage.getItem('pkk_userFullName');
@@ -530,7 +405,37 @@
         window.location.href = 'login.html';
     }
 
-    // Load halaman
+    // ==================== JSONP REQUEST (GET) ====================
+    function jsonpRequest(url, callback) {
+        const callbackName = 'jsonp_callback_' + Math.random().toString(36).substr(2, 8);
+        window[callbackName] = function(data) {
+            delete window[callbackName];
+            document.body.removeChild(script);
+            callback(data);
+        };
+        
+        const script = document.createElement('script');
+        script.src = url + '&callback=' + callbackName;
+        document.body.appendChild(script);
+    }
+
+    // ==================== POST REQUEST (No-CORS) ====================
+    async function postRequest(data) {
+        try {
+            const response = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(data),
+                headers: { 'Content-Type': 'application/json' }
+            });
+            return { success: true, message: 'Berhasil diproses' };
+        } catch (err) {
+            console.error('POST Error:', err);
+            return { success: false, message: err.message };
+        }
+    }
+
+    // ==================== NAVIGASI ====================
     let currentPage = 'payment';
     
     function loadPage(page) {
@@ -555,8 +460,8 @@
         else if (page === 'item-list') renderItemListPage();
         else if (page === 'history') renderHistoryPage();
     }
-    
-    // Halaman KODE PEMBAYARAN
+
+    // ==================== HALAMAN KODE PEMBAYARAN ====================
     function renderPaymentPage() {
         document.getElementById('pageContent').innerHTML = `
             <div class="card">
@@ -564,7 +469,7 @@
                 <p style="color:rgba(255,255,255,0.7); margin-bottom:1rem;">Masukkan kode bayar dari pembeli untuk mengurangi stok dan mencatat transaksi.</p>
                 <div class="form-group">
                     <label>Kode Bayar</label>
-                    <input type="text" id="kodeInput" class="form-control" placeholder="PKK-20241215-001" style="width:100%; padding:0.8rem; border-radius:0.8rem; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.3); color:white;">
+                    <input type="text" id="kodeInput" placeholder="PKK-20241215-001" style="width:100%; padding:0.8rem; border-radius:0.8rem; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.3); color:white;">
                 </div>
                 <button class="btn btn-primary" onclick="searchKode()" style="margin-top:1rem;"><i class="fas fa-search"></i> Cari & Proses</button>
             </div>
@@ -573,7 +478,7 @@
                 <div id="detailContent"></div>
                 <div class="form-group" style="margin-top:1rem;">
                     <label>Jumlah Dibeli *</label>
-                    <input type="number" id="jumlahBeli" class="form-control" style="width:100%; padding:0.8rem; border-radius:0.8rem;">
+                    <input type="number" id="jumlahBeli" style="width:100%; padding:0.8rem; border-radius:0.8rem;">
                 </div>
                 <button class="btn btn-success" onclick="confirmPayment()" style="margin-top:1rem; width:100%;"><i class="fas fa-check"></i> Konfirmasi Pembayaran</button>
             </div>
@@ -581,9 +486,7 @@
         `;
     }
     
-    let currentItemData = null;
-    
-    async function searchKode() {
+    function searchKode() {
         const kode = document.getElementById('kodeInput').value.trim();
         if (!kode) {
             showMessage('paymentMessage', 'Masukkan kode bayar!', 'error');
@@ -592,10 +495,9 @@
         
         showMessage('paymentMessage', 'Mencari data...', 'info');
         
-        try {
-            const response = await fetch(`${APPS_SCRIPT_URL}?action=getItemByKode&spreadsheetId=${SPREADSHEET_ID}&kode=${encodeURIComponent(kode)}`);
-            const result = await response.json();
-            
+        const url = `${APPS_SCRIPT_URL}?action=getItemByKode&spreadsheetId=${SPREADSHEET_ID}&kode=${encodeURIComponent(kode)}`;
+        
+        jsonpRequest(url, function(result) {
             if (result.success && result.data) {
                 currentItemData = result.data;
                 document.getElementById('paymentDetail').style.display = 'block';
@@ -613,9 +515,7 @@
                 document.getElementById('paymentDetail').style.display = 'none';
                 currentItemData = null;
             }
-        } catch (err) {
-            showMessage('paymentMessage', 'Error: ' + err.message, 'error');
-        }
+        });
     }
     
     async function confirmPayment() {
@@ -637,35 +537,28 @@
         
         showMessage('paymentMessage', 'Memproses...', 'info');
         
-        try {
-            const response = await fetch(`${APPS_SCRIPT_URL}`, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'confirmPayment',
-                    spreadsheetId: SPREADSHEET_ID,
-                    kode_bayar: document.getElementById('kodeInput').value.trim(),
-                    jumlah_terjual: jumlahBeli,
-                    admin: currentUser
-                }),
-                headers: {'Content-Type': 'application/json'}
-            });
-            const result = await response.json();
-            
-            if (result.success) {
-                showMessage('paymentMessage', result.message, 'success');
-                document.getElementById('paymentDetail').style.display = 'none';
-                document.getElementById('kodeInput').value = '';
-                document.getElementById('jumlahBeli').value = '';
-                currentItemData = null;
-            } else {
-                showMessage('paymentMessage', result.message, 'error');
-            }
-        } catch (err) {
-            showMessage('paymentMessage', 'Error: ' + err.message, 'error');
+        const data = {
+            action: 'confirmPayment',
+            spreadsheetId: SPREADSHEET_ID,
+            kode_bayar: document.getElementById('kodeInput').value.trim(),
+            jumlah_terjual: jumlahBeli,
+            admin: currentUser
+        };
+        
+        const result = await postRequest(data);
+        
+        if (result.success) {
+            showMessage('paymentMessage', 'Pembayaran berhasil dikonfirmasi!', 'success');
+            document.getElementById('paymentDetail').style.display = 'none';
+            document.getElementById('kodeInput').value = '';
+            document.getElementById('jumlahBeli').value = '';
+            currentItemData = null;
+        } else {
+            showMessage('paymentMessage', result.message, 'error');
         }
     }
-    
-    // Halaman INPUT ITEM KEBUN
+
+    // ==================== HALAMAN INPUT ITEM ====================
     function renderAddItemPage() {
         document.getElementById('pageContent').innerHTML = `
             <div class="card">
@@ -741,33 +634,23 @@
         
         showMessage('addMessage', 'Menyimpan data...', 'info');
         
-        try {
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify(data),
-                headers: {'Content-Type': 'application/json'}
-            });
-            const result = await response.json();
-            
-            if (result.success) {
-                showMessage('addMessage', result.message, 'success');
-                document.getElementById('addItemForm').reset();
-            } else {
-                showMessage('addMessage', result.message, 'error');
-            }
-        } catch (err) {
-            showMessage('addMessage', 'Error: ' + err.message, 'error');
+        const result = await postRequest(data);
+        
+        if (result.success) {
+            showMessage('addMessage', 'Item berhasil ditambahkan!', 'success');
+            document.getElementById('addItemForm').reset();
+        } else {
+            showMessage('addMessage', result.message, 'error');
         }
     }
-    
-    // Halaman DAFTAR ITEM KEBUN
-    async function renderItemListPage() {
+
+    // ==================== HALAMAN DAFTAR ITEM ====================
+    function renderItemListPage() {
         document.getElementById('pageContent').innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>`;
         
-        try {
-            const response = await fetch(`${APPS_SCRIPT_URL}?action=getAllItems&spreadsheetId=${SPREADSHEET_ID}`);
-            const result = await response.json();
-            
+        const url = `${APPS_SCRIPT_URL}?action=getAllItems&spreadsheetId=${SPREADSHEET_ID}`;
+        
+        jsonpRequest(url, function(result) {
             if (result.success && result.data && result.data.length > 0) {
                 let html = `<div class="card"><h3><i class="fas fa-list"></i> Daftar Item Kebun</h3><div class="grid-items">`;
                 for (const item of result.data) {
@@ -786,19 +669,16 @@
             } else {
                 document.getElementById('pageContent').innerHTML = `<div class="card"><h3><i class="fas fa-list"></i> Daftar Item Kebun</h3><p style="color:white;">Belum ada data. Silakan tambah item terlebih dahulu.</p></div>`;
             }
-        } catch (err) {
-            document.getElementById('pageContent').innerHTML = `<div class="card"><p style="color:white;">Error: ${err.message}</p></div>`;
-        }
+        });
     }
-    
-    // Halaman RIWAYAT TRANSAKSI
-    async function renderHistoryPage() {
+
+    // ==================== HALAMAN RIWAYAT ====================
+    function renderHistoryPage() {
         document.getElementById('pageContent').innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>`;
         
-        try {
-            const response = await fetch(`${APPS_SCRIPT_URL}?action=getRiwayat&spreadsheetId=${SPREADSHEET_ID}`);
-            const result = await response.json();
-            
+        const url = `${APPS_SCRIPT_URL}?action=getRiwayat&spreadsheetId=${SPREADSHEET_ID}`;
+        
+        jsonpRequest(url, function(result) {
             if (result.success && result.data && result.data.length > 0) {
                 let html = `<div class="card"><h3><i class="fas fa-history"></i> Riwayat Transaksi</h3><div class="table-container"><table>`;
                 html += `<tr><th>Tanggal</th><th>Nama Barang</th><th>Jumlah</th><th>Satuan</th><th>Status</th></tr>`;
@@ -818,11 +698,10 @@
             } else {
                 document.getElementById('pageContent').innerHTML = `<div class="card"><h3><i class="fas fa-history"></i> Riwayat Transaksi</h3><p style="color:white;">Belum ada transaksi.</p></div>`;
             }
-        } catch (err) {
-            document.getElementById('pageContent').innerHTML = `<div class="card"><p style="color:white;">Error: ${err.message}</p></div>`;
-        }
+        });
     }
-    
+
+    // ==================== UTILITY ====================
     function showMessage(containerId, msg, type) {
         const container = document.getElementById(containerId);
         if (!container) return;
@@ -838,23 +717,14 @@
     function formatNumber(num) {
         return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
     }
-    
-    function closeModal() {
-        document.getElementById('modalItem').style.display = 'none';
-    }
-    
-    function closePaymentModal() {
-        document.getElementById('modalPayment').style.display = 'none';
-    }
-    
-    // Event Listener Nav
+
+    // ==================== INIT ====================
     document.querySelectorAll('.nav-item').forEach(item => {
         item.addEventListener('click', () => {
             loadPage(item.dataset.page);
         });
     });
     
-    // Init
     if (checkSession()) {
         loadPage('payment');
     }
