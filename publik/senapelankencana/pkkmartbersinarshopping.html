@@ -3,9 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>PKK MART BERSINAR | Toko Online</title>
+    <title>PKK MART BERSINAR | Toko Online PKK Kecamatan Senapelan</title>
     
+    <!-- ========== META TAG UNTUK SHARE WHATSAPP & SOSMED ========== -->
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://senapelan.github.io/Home/publik/pkkmart/index.html">
+    <meta property="og:title" content="PKK MART BERSINAR - Toko Online PKK Kecamatan Senapelan">
+    <meta property="og:description" content="Belanja hasil kebun segar langsung dari petani. Dukung UMKM dan Pemberdayaan Perempuan di Kecamatan Senapelan, Pekanbaru.">
+    <meta property="og:site_name" content="PKK MART BERSINAR">
+    
+    <!-- Gambar preview untuk share (Logo PKK MART) -->
+    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
+    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Logo PKK MART BERSINAR">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PKK MART BERSINAR">
+    <meta name="twitter:description" content="Toko Online PKK Kecamatan Senapelan - Belanja segar dari petani">
+    <meta name="twitter:image" content="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
+    <meta name="twitter:image:alt" content="Logo PKK MART BERSINAR">
+    
+    <!-- WhatsApp Specific (ukuran besar) -->
+    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    
+    <!-- ========== META UNTUK ADD TO HOME SCREEN (PINTASAN) ========== -->
     <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
+    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="PKK MART">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0d4a3a">
+    <meta name="msapplication-TileImage" content="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
+    <meta name="msapplication-TileColor" content="#0d4a3a">
     
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -648,17 +685,32 @@
     let cart = [];
     let quantities = {};
     
-    // Sound function
-    function playSound() {
-        const audio = new Audio('https://senapelan.github.io/Home/data/sound/open-card.mp3');
-        audio.play().catch(e => console.log('Audio error:', e));
+    // ==================== SOUND UPDATES ====================
+    // Fungsi untuk memutar suara checkout (open PKK MART.mp3)
+    function playCheckoutSound() {
+        try {
+            const checkoutAudio = new Audio('https://senapelan.github.io/Home/data/sound/open%20PKK%20MART.mp3');
+            checkoutAudio.play().catch(e => console.log('Checkout sound error:', e));
+        } catch(e) {
+            console.log('Audio playback failed:', e);
+        }
     }
     
-    function playSoundWithDelay(callback) {
-        playSound();
-        setTimeout(() => {
+    // Fungsi untuk memutar suara notifikasi 8 detik lalu jalankan callback
+    function playNotificationSoundAndWait(callback) {
+        try {
+            const notificationAudio = new Audio('https://senapelan.github.io/Home/data/sound/endpkk%20mart.mp3');
+            notificationAudio.play().catch(e => console.log('Notification sound error:', e));
+            
+            // Durasi suara 8 detik (8000 ms) baru lanjut ke WA
+            setTimeout(() => {
+                if (callback) callback();
+            }, 8000);
+        } catch(e) {
+            console.log('Audio notification failed, fallback langsung WA');
+            // Fallback jika ada error: tetap lanjut tanpa delay 8 detik
             if (callback) callback();
-        }, 3000);
+        }
     }
     
     // ==================== JSONP REQUEST ====================
@@ -716,7 +768,7 @@
                 <div class="product-card" data-id="${i}">
                     ${item.link_gambar ? `<img class="product-image" src="${item.link_gambar}" onerror="this.src='https://placehold.co/300x200?text=No+Image'">` : `<img class="product-image" src="https://placehold.co/300x200?text=PKK+MART">`}
                     <div class="product-info">
-                        <div class="product-title">${item.daftar_barang}</div>
+                        <div class="product-title">${escapeHtml(item.daftar_barang)}</div>
                         <div class="product-price">Rp ${formatNumber(item.harga_jual)}</div>
                         <div class="product-stock ${stokClass}">${stokText}</div>
                         <div class="qty-selector">
@@ -732,6 +784,16 @@
             `;
         }
         container.innerHTML = html;
+    }
+    
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
     }
     
     function changeQty(index, delta) {
@@ -807,9 +869,9 @@
             html += `
                 <div class="cart-item">
                     <div class="cart-item-info">
-                        <h4>${item.daftar_barang}</h4>
+                        <h4>${escapeHtml(item.daftar_barang)}</h4>
                         <p>Rp ${formatNumber(item.harga_jual)}</p>
-                        <small style="color:rgba(255,255,255,0.5); font-size:0.6rem;">${item.kode_bayar || '-'}</small>
+                        <small style="color:rgba(255,255,255,0.5); font-size:0.6rem;">${escapeHtml(item.kode_bayar || '-')}</small>
                     </div>
                     <div class="cart-item-qty">
                         <button onclick="updateCartQty(${i}, -1)">-</button>
@@ -879,7 +941,10 @@
             return;
         }
         
-        playSound();
+        // 🔈 Mainkan suara checkout (open PKK MART.mp3)
+        playCheckoutSound();
+        
+        // Tampilkan modal data pembeli
         document.getElementById('modalData').classList.add('active');
     }
     
@@ -925,8 +990,11 @@
     });
     
     function selectMethod(method) {
-        playSoundWithDelay(() => {
-            document.getElementById('modalMethod').classList.remove('active');
+        // Tutup modal metode pembayaran
+        document.getElementById('modalMethod').classList.remove('active');
+        
+        // 🔈 Mainkan suara notifikasi endpkk mart.mp3 dan delay 8 detik sebelum ke WA
+        playNotificationSoundAndWait(() => {
             sendToWA(method);
         });
     }
@@ -968,11 +1036,15 @@ Terima kasih.`;
         
         window.open(waUrl, '_blank');
         
+        // Reset keranjang setelah berhasil
         cart = [];
         updateCartUI();
         checkoutData = null;
         
-        alert('Pesanan berhasil! Silakan kirim pesan WhatsApp ke admin.');
+        // Notifikasi kecil setelah redirect WA
+        setTimeout(() => {
+            alert('Pesanan berhasil! Silakan kirim pesan WhatsApp ke admin.');
+        }, 200);
     }
     
     function formatNumber(num) {
