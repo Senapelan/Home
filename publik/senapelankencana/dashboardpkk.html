@@ -6,330 +6,59 @@
     <title>Dashboard | PKK MART BERSINAR</title>
     
     <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/data/foto/PKK%20MART%20LOGO.png">
-    
-    <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #0d4a3a, #1a5a6a);
-            min-height: 100vh;
-        }
-
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 280px;
-            height: 100%;
-            background: rgba(10, 40, 35, 0.95);
-            backdrop-filter: blur(10px);
-            border-right: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
-            z-index: 100;
-            overflow-y: auto;
-        }
-
-        .sidebar-header {
-            padding: 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .logo-pair {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 1rem;
-        }
-
-        .logo-pair img {
-            width: 55px;
-            height: 55px;
-            object-fit: contain;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 8px;
-        }
-
-        .sidebar-header h2 {
-            font-size: 1.1rem;
-            color: white;
-            margin-top: 0.5rem;
-        }
-
-        .sidebar-header p {
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .nav-menu {
-            padding: 1rem 0;
-        }
-
-        .nav-item {
-            padding: 0.8rem 1.5rem;
-            margin: 0.3rem 0;
-            cursor: pointer;
-            transition: all 0.2s;
-            color: rgba(255,255,255,0.8);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 0.95rem;
-        }
-
-        .nav-item i {
-            width: 24px;
-            font-size: 1.2rem;
-        }
-
-        .nav-item:hover {
-            background: rgba(255,255,255,0.1);
-            color: white;
-        }
-
-        .nav-item.active {
-            background: linear-gradient(90deg, #2d8a6a, #2a7a8a);
-            color: white;
-            border-left: 4px solid #ffd700;
-        }
-
-        .main-content {
-            margin-left: 280px;
-            padding: 1.5rem;
-            min-height: 100vh;
-        }
-
-        .top-bar {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 1rem;
-            padding: 0.8rem 1.5rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .page-title {
-            color: white;
-            font-size: 1.3rem;
-            font-weight: 600;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            color: white;
-        }
-
-        .logout-btn {
-            background: rgba(255,100,100,0.8);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 2rem;
-            color: white;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: 0.2s;
-        }
-
-        .logout-btn:hover {
-            background: rgba(255,100,100,1);
-        }
-
-        .card {
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 1.5rem;
-            padding: 1.5rem;
-            border: 1px solid rgba(255,255,255,0.2);
-            margin-bottom: 1.5rem;
-        }
-
-        .card h3 {
-            color: white;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        .form-group label {
-            display: block;
-            color: rgba(255,255,255,0.9);
-            font-size: 0.8rem;
-            margin-bottom: 0.3rem;
-            font-weight: 600;
-        }
-
-        .form-group input, .form-group select {
-            width: 100%;
-            padding: 0.8rem;
-            border-radius: 0.8rem;
-            border: 1px solid rgba(255,255,255,0.3);
-            background: rgba(0,0,0,0.3);
-            color: white;
-            font-size: 0.9rem;
-            outline: none;
-        }
-
-        .form-group input:focus, .form-group select:focus {
-            border-color: #ffd700;
-        }
-
-        .form-group input::placeholder {
-            color: rgba(255,255,255,0.5);
-        }
-
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border: none;
-            border-radius: 2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.9rem;
-        }
-
-        .btn-primary {
-            background: linear-gradient(105deg, #2d8a6a, #2a7a8a);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            transform: scale(1.02);
-        }
-
-        .btn-success {
-            background: #2d6a4f;
-            color: white;
-        }
-
-        .table-container {
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            color: white;
-        }
-
-        th, td {
-            padding: 0.8rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        th {
-            background: rgba(0,0,0,0.3);
-            font-weight: 600;
-        }
-
-        .alert {
-            padding: 0.8rem;
-            border-radius: 0.8rem;
-            margin-bottom: 1rem;
-        }
-
-        .alert-success {
-            background: rgba(40,167,69,0.9);
-            color: white;
-        }
-
-        .alert-error {
-            background: rgba(220,53,69,0.9);
-            color: white;
-        }
-
-        .alert-info {
-            background: rgba(23,162,184,0.9);
-            color: white;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 2rem;
-            color: white;
-        }
-
-        .grid-items {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 1rem;
-        }
-
-        .item-card {
-            background: rgba(0,0,0,0.3);
-            border-radius: 1rem;
-            padding: 1rem;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .item-card img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 0.8rem;
-        }
-
-        .item-card h4 {
-            color: white;
-            margin: 0.5rem 0;
-        }
-
-        .item-card p {
-            color: rgba(255,255,255,0.8);
-            font-size: 0.85rem;
-        }
-
-        .badge {
-            background: #ffd700;
-            color: #1a5a6a;
-            padding: 0.2rem 0.5rem;
-            border-radius: 1rem;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
+        /* (SILAKAN COPY STYLE DARI KODE ANDA YANG LAMA, SAMA PERSIS) */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #0d4a3a, #1a5a6a); min-height: 100vh; }
+        .sidebar { position: fixed; left: 0; top: 0; width: 280px; height: 100%; background: rgba(10, 40, 35, 0.95); backdrop-filter: blur(10px); border-right: 1px solid rgba(255,255,255,0.2); transition: all 0.3s ease; z-index: 100; overflow-y: auto; }
+        .sidebar-header { padding: 1.5rem; text-align: center; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .logo-pair { display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 1rem; }
+        .logo-pair img { width: 55px; height: 55px; object-fit: contain; background: rgba(255,255,255,0.1); border-radius: 15px; padding: 8px; }
+        .sidebar-header h2 { font-size: 1.1rem; color: white; margin-top: 0.5rem; }
+        .sidebar-header p { font-size: 0.7rem; color: rgba(255,255,255,0.7); }
+        .nav-menu { padding: 1rem 0; }
+        .nav-item { padding: 0.8rem 1.5rem; margin: 0.3rem 0; cursor: pointer; transition: all 0.2s; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 12px; font-size: 0.95rem; }
+        .nav-item i { width: 24px; font-size: 1.2rem; }
+        .nav-item:hover { background: rgba(255,255,255,0.1); color: white; }
+        .nav-item.active { background: linear-gradient(90deg, #2d8a6a, #2a7a8a); color: white; border-left: 4px solid #ffd700; }
+        .main-content { margin-left: 280px; padding: 1.5rem; min-height: 100vh; }
+        .top-bar { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 1rem; padding: 0.8rem 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
+        .page-title { color: white; font-size: 1.3rem; font-weight: 600; }
+        .user-info { display: flex; align-items: center; gap: 15px; color: white; }
+        .logout-btn { background: rgba(255,100,100,0.8); border: none; padding: 0.5rem 1rem; border-radius: 2rem; color: white; cursor: pointer; font-size: 0.8rem; transition: 0.2s; }
+        .logout-btn:hover { background: rgba(255,100,100,1); }
+        .card { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 1.5rem; padding: 1.5rem; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 1.5rem; }
+        .card h3 { color: white; margin-bottom: 1rem; display: flex; align-items: center; gap: 10px; }
+        .form-group { margin-bottom: 1rem; }
+        .form-group label { display: block; color: rgba(255,255,255,0.9); font-size: 0.8rem; margin-bottom: 0.3rem; font-weight: 600; }
+        .form-group input, .form-group select { width: 100%; padding: 0.8rem; border-radius: 0.8rem; border: 1px solid rgba(255,255,255,0.3); background: rgba(0,0,0,0.3); color: white; font-size: 0.9rem; outline: none; }
+        .form-group input:focus, .form-group select:focus { border-color: #ffd700; }
+        .btn { padding: 0.8rem 1.5rem; border: none; border-radius: 2rem; font-weight: bold; cursor: pointer; transition: 0.2s; font-size: 0.9rem; }
+        .btn-primary { background: linear-gradient(105deg, #2d8a6a, #2a7a8a); color: white; }
+        .btn-success { background: #2d6a4f; color: white; }
+        .table-container { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; color: white; }
+        th, td { padding: 0.8rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        th { background: rgba(0,0,0,0.3); font-weight: 600; }
+        .alert { padding: 0.8rem; border-radius: 0.8rem; margin-bottom: 1rem; }
+        .alert-success { background: rgba(40,167,69,0.9); color: white; }
+        .alert-error { background: rgba(220,53,69,0.9); color: white; }
+        .alert-info { background: rgba(23,162,184,0.9); color: white; }
+        .loading { text-align: center; padding: 2rem; color: white; }
+        .grid-items { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1rem; }
+        .item-card { background: rgba(0,0,0,0.3); border-radius: 1rem; padding: 1rem; border: 1px solid rgba(255,255,255,0.1); }
+        .item-card img { width: 100%; height: 150px; object-fit: cover; border-radius: 0.8rem; }
+        .item-card h4 { color: white; margin: 0.5rem 0; }
+        .item-card p { color: rgba(255,255,255,0.8); font-size: 0.85rem; }
+        .badge { background: #ffd700; color: #1a5a6a; padding: 0.2rem 0.5rem; border-radius: 1rem; font-size: 0.7rem; font-weight: bold; }
         @media (max-width: 768px) {
-            .sidebar {
-                width: 70px;
-            }
-            .sidebar-header h2, .sidebar-header p, .nav-item span {
-                display: none;
-            }
-            .sidebar-header .logo-pair img {
-                width: 40px;
-                height: 40px;
-            }
-            .nav-item {
-                justify-content: center;
-                padding: 0.8rem;
-            }
-            .nav-item i {
-                margin: 0;
-            }
-            .main-content {
-                margin-left: 70px;
-            }
+            .sidebar { width: 70px; }
+            .sidebar-header h2, .sidebar-header p, .nav-item span { display: none; }
+            .sidebar-header .logo-pair img { width: 40px; height: 40px; }
+            .nav-item { justify-content: center; padding: 0.8rem; }
+            .main-content { margin-left: 70px; }
         }
     </style>
 </head>
@@ -345,22 +74,10 @@
         <p>Sistem Informasi & Pengelolaan</p>
     </div>
     <div class="nav-menu">
-        <div class="nav-item" data-page="payment">
-            <i class="fas fa-qrcode"></i>
-            <span>KODE PEMBAYARAN</span>
-        </div>
-        <div class="nav-item" data-page="add-item">
-            <i class="fas fa-plus-circle"></i>
-            <span>INPUT ITEM KEBUN</span>
-        </div>
-        <div class="nav-item" data-page="item-list">
-            <i class="fas fa-list"></i>
-            <span>DAFTAR ITEM KEBUN</span>
-        </div>
-        <div class="nav-item" data-page="history">
-            <i class="fas fa-history"></i>
-            <span>RIWAYAT TRANSAKSI</span>
-        </div>
+        <div class="nav-item" data-page="payment"><i class="fas fa-qrcode"></i><span>KODE PEMBAYARAN</span></div>
+        <div class="nav-item" data-page="add-item"><i class="fas fa-plus-circle"></i><span>INPUT ITEM KEBUN</span></div>
+        <div class="nav-item" data-page="item-list"><i class="fas fa-list"></i><span>DAFTAR ITEM KEBUN</span></div>
+        <div class="nav-item" data-page="history"><i class="fas fa-history"></i><span>RIWAYAT TRANSAKSI</span></div>
     </div>
 </div>
 
@@ -370,10 +87,9 @@
         <div class="user-info">
             <i class="fas fa-user-circle"></i>
             <span id="userName">Admin</span>
-            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
         </div>
     </div>
-
     <div id="pageContent"></div>
 </div>
 
@@ -385,42 +101,56 @@
     let currentUser = null;
     let currentItemData = null;
 
-    // ==================== SESSION ====================
+    // ==================== SESSION (DIPERBAIKI) ====================
     function checkSession() {
         const loggedIn = sessionStorage.getItem('pkk_loggedIn');
         const userName = sessionStorage.getItem('pkk_userFullName');
+        const selectedKelurahan = sessionStorage.getItem('pkk_selectedKelurahan');
+        
+        console.log('Session check:', { loggedIn, userName, selectedKelurahan });
+        
         if (!loggedIn || loggedIn !== 'true') {
-            window.location.href = 'loginpkksenapelan.html';
+            console.log('Redirect ke login...');
+            window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginpkksenapelan.html';
             return false;
         }
+        
         if (userName) {
-            document.getElementById('userName').innerText = userName;
+            document.getElementById('userName').innerText = userName + (selectedKelurahan ? ` (${selectedKelurahan})` : '');
             currentUser = userName;
         }
         return true;
     }
 
+    // ==================== LOGOUT (DIPERBAIKI) ====================
     function logout() {
+        console.log('Logout dipanggil');
         sessionStorage.clear();
-        window.location.href = 'loginpkksenapelan.html
-';
+        window.location.href = 'https://senapelan.github.io/Home/publik/senapelankencana/loginpkksenapelan.html';
     }
 
-    // ==================== JSONP REQUEST (GET) ====================
+    // ==================== JSONP (DIPERBAIKI) ====================
     function jsonpRequest(url, callback) {
         const callbackName = 'jsonp_callback_' + Math.random().toString(36).substr(2, 8);
         window[callbackName] = function(data) {
             delete window[callbackName];
-            document.body.removeChild(script);
+            if (script && script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
             callback(data);
         };
         
         const script = document.createElement('script');
         script.src = url + '&callback=' + callbackName;
+        script.onerror = function() {
+            delete window[callbackName];
+            if (script.parentNode) script.parentNode.removeChild(script);
+            callback({ success: false, message: 'Network error' });
+        };
         document.body.appendChild(script);
     }
 
-    // ==================== POST REQUEST (No-CORS) ====================
+    // ==================== POST REQUEST ====================
     async function postRequest(data) {
         try {
             const response = await fetch(APPS_SCRIPT_URL, {
@@ -443,9 +173,7 @@
         currentPage = page;
         document.querySelectorAll('.nav-item').forEach(item => {
             item.classList.remove('active');
-            if (item.dataset.page === page) {
-                item.classList.add('active');
-            }
+            if (item.dataset.page === page) item.classList.add('active');
         });
         
         const titles = {
@@ -467,21 +195,21 @@
         document.getElementById('pageContent').innerHTML = `
             <div class="card">
                 <h3><i class="fas fa-qrcode"></i> Konfirmasi Pembayaran</h3>
-                <p style="color:rgba(255,255,255,0.7); margin-bottom:1rem;">Masukkan kode bayar dari pembeli untuk mengurangi stok dan mencatat transaksi.</p>
+                <p style="color:rgba(255,255,255,0.7); margin-bottom:1rem;">Masukkan kode bayar dari pembeli</p>
                 <div class="form-group">
                     <label>Kode Bayar</label>
-                    <input type="text" id="kodeInput" placeholder="PKK-20241215-001" style="width:100%; padding:0.8rem; border-radius:0.8rem; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.3); color:white;">
+                    <input type="text" id="kodeInput" placeholder="PKK-20241215-001">
                 </div>
-                <button class="btn btn-primary" onclick="searchKode()" style="margin-top:1rem;"><i class="fas fa-search"></i> Cari & Proses</button>
+                <button class="btn btn-primary" onclick="searchKode()"><i class="fas fa-search"></i> Cari & Proses</button>
             </div>
             <div id="paymentDetail" style="display:none;" class="card">
                 <h3><i class="fas fa-receipt"></i> Detail Transaksi</h3>
                 <div id="detailContent"></div>
-                <div class="form-group" style="margin-top:1rem;">
+                <div class="form-group">
                     <label>Jumlah Dibeli *</label>
-                    <input type="number" id="jumlahBeli" style="width:100%; padding:0.8rem; border-radius:0.8rem;">
+                    <input type="number" id="jumlahBeli">
                 </div>
-                <button class="btn btn-success" onclick="confirmPayment()" style="margin-top:1rem; width:100%;"><i class="fas fa-check"></i> Konfirmasi Pembayaran</button>
+                <button class="btn btn-success" onclick="confirmPayment()">Konfirmasi Pembayaran</button>
             </div>
             <div id="paymentMessage"></div>
         `;
@@ -499,20 +227,18 @@
         const url = `${APPS_SCRIPT_URL}?action=getItemByKode&spreadsheetId=${SPREADSHEET_ID}&kode=${encodeURIComponent(kode)}`;
         
         jsonpRequest(url, function(result) {
-            if (result.success && result.data) {
+            console.log('Hasil search:', result);
+            if (result && result.success && result.data) {
                 currentItemData = result.data;
                 document.getElementById('paymentDetail').style.display = 'block';
                 document.getElementById('detailContent').innerHTML = `
-                    <table style="width:100%">
-                        <tr><td><strong>Nama Barang</strong></td><td>${currentItemData.daftar_barang}</td></tr>
-                        <tr><td><strong>Harga Jual</strong></td><td>Rp ${formatNumber(currentItemData.harga_jual)} / ${currentItemData.satuan_harga}</td></tr>
-                        <tr><td><strong>Stok Tersedia</strong></td><td>${currentItemData.stok} ${currentItemData.satuan_stok}</td></tr>
-                        <tr><td><strong>Harga Modal</strong></td><td>Rp ${formatNumber(currentItemData.harga_modal)} / ${currentItemData.satuan_harga}</td></tr>
-                    </table>
+                    <p><strong>Nama Barang:</strong> ${currentItemData.daftar_barang || '-'}</p>
+                    <p><strong>Harga Jual:</strong> Rp ${formatNumber(currentItemData.harga_jual)} / ${currentItemData.satuan_harga}</p>
+                    <p><strong>Stok Tersedia:</strong> ${currentItemData.stok} ${currentItemData.satuan_stok}</p>
                 `;
                 showMessage('paymentMessage', `Item ditemukan: ${currentItemData.daftar_barang}`, 'success');
             } else {
-                showMessage('paymentMessage', result.message || 'Kode tidak ditemukan!', 'error');
+                showMessage('paymentMessage', (result && result.message) || 'Kode tidak ditemukan!', 'error');
                 document.getElementById('paymentDetail').style.display = 'none';
                 currentItemData = null;
             }
@@ -532,7 +258,7 @@
         }
         
         if (jumlahBeli > currentItemData.stok) {
-            showMessage('paymentMessage', `Stok tidak mencukupi! Tersisa: ${currentItemData.stok} ${currentItemData.satuan_stok}`, 'error');
+            showMessage('paymentMessage', `Stok tidak cukup! Tersisa: ${currentItemData.stok}`, 'error');
             return;
         }
         
@@ -549,7 +275,7 @@
         const result = await postRequest(data);
         
         if (result.success) {
-            showMessage('paymentMessage', 'Pembayaran berhasil dikonfirmasi!', 'success');
+            showMessage('paymentMessage', 'Pembayaran berhasil!', 'success');
             document.getElementById('paymentDetail').style.display = 'none';
             document.getElementById('kodeInput').value = '';
             document.getElementById('jumlahBeli').value = '';
@@ -563,51 +289,20 @@
     function renderAddItemPage() {
         document.getElementById('pageContent').innerHTML = `
             <div class="card">
-                <h3><i class="fas fa-plus-circle"></i> Tambah Item Kebun Baru</h3>
-                <p style="color:rgba(255,255,255,0.7); margin-bottom:1rem;">Kode Bayar akan otomatis dibuat oleh sistem.</p>
+                <h3><i class="fas fa-plus-circle"></i> Tambah Item Baru</h3>
                 <form id="addItemForm">
-                    <div class="form-group">
-                        <label>Nama Barang *</label>
-                        <input type="text" id="namaBarang" required placeholder="Contoh: Mangga Harum Manis">
-                    </div>
-                    <div class="form-group">
-                        <label>Harga Jual (Rp) *</label>
-                        <input type="number" id="hargaJual" required placeholder="15000">
-                    </div>
-                    <div class="form-group">
-                        <label>Satuan Harga *</label>
-                        <select id="satuanHarga" required>
-                            <option value="kg">kg</option>
-                            <option value="ikat">ikat</option>
-                            <option value="pcs">pcs</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Stok *</label>
-                        <input type="number" id="stok" required placeholder="50">
-                    </div>
-                    <div class="form-group">
-                        <label>Satuan Stok *</label>
-                        <select id="satuanStok" required>
-                            <option value="kg">kg</option>
-                            <option value="ikat">ikat</option>
-                            <option value="pcs">pcs</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Harga Modal (Rp) *</label>
-                        <input type="number" id="hargaModal" required placeholder="10000">
-                    </div>
-                    <div class="form-group">
-                        <label>Link Gambar (Opsional)</label>
-                        <input type="url" id="linkGambar" placeholder="https://...">
-                    </div>
-                    <button type="submit" class="btn btn-primary" style="width:100%"><i class="fas fa-save"></i> SIMPAN</button>
+                    <div class="form-group"><label>Nama Barang *</label><input type="text" id="namaBarang" required></div>
+                    <div class="form-group"><label>Harga Jual (Rp) *</label><input type="number" id="hargaJual" required></div>
+                    <div class="form-group"><label>Satuan Harga</label><select id="satuanHarga"><option value="kg">kg</option><option value="ikat">ikat</option><option value="pcs">pcs</option></select></div>
+                    <div class="form-group"><label>Stok *</label><input type="number" id="stok" required></div>
+                    <div class="form-group"><label>Satuan Stok</label><select id="satuanStok"><option value="kg">kg</option><option value="ikat">ikat</option><option value="pcs">pcs</option></select></div>
+                    <div class="form-group"><label>Harga Modal (Rp) *</label><input type="number" id="hargaModal" required></div>
+                    <div class="form-group"><label>Link Gambar</label><input type="url" id="linkGambar"></div>
+                    <button type="submit" class="btn btn-primary">SIMPAN</button>
                 </form>
             </div>
             <div id="addMessage"></div>
         `;
-        
         document.getElementById('addItemForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             await addNewItem();
@@ -633,8 +328,7 @@
             return;
         }
         
-        showMessage('addMessage', 'Menyimpan data...', 'info');
-        
+        showMessage('addMessage', 'Menyimpan...', 'info');
         const result = await postRequest(data);
         
         if (result.success) {
@@ -648,27 +342,24 @@
     // ==================== HALAMAN DAFTAR ITEM ====================
     function renderItemListPage() {
         document.getElementById('pageContent').innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>`;
-        
         const url = `${APPS_SCRIPT_URL}?action=getAllItems&spreadsheetId=${SPREADSHEET_ID}`;
         
         jsonpRequest(url, function(result) {
-            if (result.success && result.data && result.data.length > 0) {
-                let html = `<div class="card"><h3><i class="fas fa-list"></i> Daftar Item Kebun</h3><div class="grid-items">`;
+            if (result && result.success && result.data && result.data.length > 0) {
+                let html = `<div class="card"><h3><i class="fas fa-list"></i> Daftar Item</h3><div class="grid-items">`;
                 for (const item of result.data) {
-                    html += `
-                        <div class="item-card">
-                            ${item.link_gambar ? `<img src="${item.link_gambar}" onerror="this.src='https://placehold.co/300x200?text=No+Image'">` : `<img src="https://placehold.co/300x200?text=No+Image">`}
-                            <h4>${item.daftar_barang}</h4>
-                            <p><i class="fas fa-tag"></i> Rp ${formatNumber(item.harga_jual)} / ${item.satuan_harga}</p>
-                            <p><i class="fas fa-boxes"></i> Stok: ${item.stok} ${item.satuan_stok}</p>
-                            <p><span class="badge"><i class="fas fa-qrcode"></i> ${item.kode_bayar || '-'}</span></p>
-                        </div>
-                    `;
+                    html += `<div class="item-card">
+                        <img src="${item.link_gambar || 'https://placehold.co/300x200?text=No+Image'}" onerror="this.src='https://placehold.co/300x200?text=No+Image'">
+                        <h4>${item.daftar_barang}</h4>
+                        <p>Rp ${formatNumber(item.harga_jual)} / ${item.satuan_harga}</p>
+                        <p>Stok: ${item.stok} ${item.satuan_stok}</p>
+                        <p><span class="badge">${item.kode_bayar || '-'}</span></p>
+                    </div>`;
                 }
                 html += `</div></div>`;
                 document.getElementById('pageContent').innerHTML = html;
             } else {
-                document.getElementById('pageContent').innerHTML = `<div class="card"><h3><i class="fas fa-list"></i> Daftar Item Kebun</h3><p style="color:white;">Belum ada data. Silakan tambah item terlebih dahulu.</p></div>`;
+                document.getElementById('pageContent').innerHTML = `<div class="card"><h3>Daftar Item</h3><p style="color:white;">Belum ada data.</p></div>`;
             }
         });
     }
@@ -676,28 +367,18 @@
     // ==================== HALAMAN RIWAYAT ====================
     function renderHistoryPage() {
         document.getElementById('pageContent').innerHTML = `<div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat data...</div>`;
-        
         const url = `${APPS_SCRIPT_URL}?action=getRiwayat&spreadsheetId=${SPREADSHEET_ID}`;
         
         jsonpRequest(url, function(result) {
-            if (result.success && result.data && result.data.length > 0) {
-                let html = `<div class="card"><h3><i class="fas fa-history"></i> Riwayat Transaksi</h3><div class="table-container"><table>`;
-                html += `<tr><th>Tanggal</th><th>Nama Barang</th><th>Jumlah</th><th>Satuan</th><th>Status</th></tr>`;
+            if (result && result.success && result.data && result.data.length > 0) {
+                let html = `<div class="card"><h3><i class="fas fa-history"></i> Riwayat Transaksi</h3><div class="table-container"><table><tr><th>Tanggal</th><th>Nama Barang</th><th>Jumlah</th><th>Status</th></tr>`;
                 for (const item of result.data) {
-                    html += `
-                        <tr>
-                            <td>${item.tanggal || '-'}</td>
-                            <td>${item.daftar_barang}</td>
-                            <td>${item.stok}</td>
-                            <td>${item.satuan_stok}</td>
-                            <td><span class="badge" style="background:${item.status === 'terjual' ? '#dc3545' : '#2d6a4f'}">${item.status || '-'}</span></td>
-                        </tr>
-                    `;
+                    html += `<tr><td>${item.tanggal || '-'}</td><td>${item.daftar_barang}</td><td>${item.stok} ${item.satuan_stok}</td><td><span class="badge">${item.status || '-'}</span></td></tr>`;
                 }
                 html += `</table></div></div>`;
                 document.getElementById('pageContent').innerHTML = html;
             } else {
-                document.getElementById('pageContent').innerHTML = `<div class="card"><h3><i class="fas fa-history"></i> Riwayat Transaksi</h3><p style="color:white;">Belum ada transaksi.</p></div>`;
+                document.getElementById('pageContent').innerHTML = `<div class="card"><h3>Riwayat Transaksi</h3><p style="color:white;">Belum ada transaksi.</p></div>`;
             }
         });
     }
@@ -707,25 +388,21 @@
         const container = document.getElementById(containerId);
         if (!container) return;
         const bgColor = type === 'success' ? '#2d6a4f' : (type === 'error' ? '#dc3545' : '#17a2b8');
-        container.innerHTML = `<div class="alert alert-${type}" style="background:${bgColor}; padding:0.8rem; border-radius:0.8rem; margin-top:1rem;">${msg}</div>`;
-        setTimeout(() => {
-            if (container.innerHTML === `<div class="alert alert-${type}" style="background:${bgColor}; padding:0.8rem; border-radius:0.8rem; margin-top:1rem;">${msg}</div>`) {
-                container.innerHTML = '';
-            }
-        }, 5000);
+        container.innerHTML = `<div class="alert alert-${type}" style="background:${bgColor};">${msg}</div>`;
+        setTimeout(() => { if (container.innerHTML.includes(msg)) container.innerHTML = ''; }, 4000);
     }
     
-    function formatNumber(num) {
-        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+    function formatNumber(num) { return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."); }
 
     // ==================== INIT ====================
     document.querySelectorAll('.nav-item').forEach(item => {
-        item.addEventListener('click', () => {
-            loadPage(item.dataset.page);
-        });
+        item.addEventListener('click', () => loadPage(item.dataset.page));
     });
     
+    // Pasang event listener untuk tombol logout
+    document.getElementById('logoutBtn').addEventListener('click', logout);
+    
+    // Jalankan check session dan load halaman
     if (checkSession()) {
         loadPage('payment');
     }
