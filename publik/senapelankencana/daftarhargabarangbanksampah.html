@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Bank Sampah Senapelan - Daftar Harga</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f0f2f5;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            padding: 16px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .logo-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            flex: 1;
+            text-align: center;
+        }
+
+        .logo img {
+            height: 50px;
+            width: auto;
+            max-width: 160px;
+            object-fit: contain;
+        }
+
+        .title {
+            text-align: center;
+            margin-top: 12px;
+        }
+
+        .title h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d5a2d;
+        }
+
+        .update-time {
+            font-size: 0.7rem;
+            color: #7a8a7a;
+            margin-top: 6px;
+        }
+
+        /* Filter */
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            background: white;
+            border: 1px solid #dce5dc;
+            border-radius: 30px;
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #4a5a4a;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-btn:hover {
+            background: #eef2ee;
+            border-color: #bcd0bc;
+        }
+
+        .filter-btn.active {
+            background: #2d5a2d;
+            color: white;
+            border-color: #2d5a2d;
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 14px;
+        }
+
+        /* Card */
+        .card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            transition: all 0.2s;
+            border: 1px solid #e8ede8;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+        }
+
+        /* Banner Kelompok */
+        .group-banner {
+            height: 65px;
+            background: #eef3ee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .group-banner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .group-label {
+            position: absolute;
+            bottom: 6px;
+            left: 8px;
+            background: rgba(45, 90, 45, 0.85);
+            backdrop-filter: blur(3px);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 500;
+        }
+
+        /* Foto Item */
+        .item-photo {
+            display: flex;
+            justify-content: center;
+            margin-top: -22px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .item-photo img {
+            width: 55px;
+            height: 55px;
+            object-fit: cover;
+            border-radius: 50%;
+            background: white;
+            border: 2px solid white;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        /* Info */
+        .item-name {
+            font-weight: 600;
+            font-size: 0.75rem;
+            color: #2a3a2a;
+            text-align: center;
+            margin: 10px 8px 4px;
+            line-height: 1.35;
+            min-height: 48px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .unit {
+            font-size: 0.6rem;
+            background: #f5f7f3;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            color: #6a806a;
+            margin: 4px auto;
+            width: fit-content;
+        }
+
+        .price {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #2d5a2d;
+            text-align: center;
+            padding: 8px 8px 12px;
+            border-top: 1px solid #eff3ef;
+            margin-top: 6px;
+        }
+
+        /* Status */
+        .loading, .error, .empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 50px 20px;
+            background: white;
+            border-radius: 20px;
+            color: #6a7a6a;
+        }
+
+        .error {
+            color: #c66a4a;
+        }
+
+        /* Refresh */
+        .refresh {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border: 1px solid #dce5dc;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .refresh:hover {
+            transform: rotate(180deg);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 0.65rem;
+            color: #8a9a8a;
+        }
+
+        /* Responsive */
+        @media (max-width: 1300px) { .grid { grid-template-columns: repeat(8, 1fr); } }
+        @media (max-width: 1100px) { .grid { grid-template-columns: repeat(6, 1fr); } }
+        @media (max-width: 800px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 500px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="logo-wrapper">
+            <div class="logo"><img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Kota" onerror="this.style.display='none'"></div>
+            <div class="logo"><img src="https://senapelan.github.io/Home/data/foto/logobaksampahsenapelan.png" alt="Logo Bank Sampah" onerror="this.style.display='none'"></div>
+        </div>
+        <div class="title">
+            <h1>Bank Sampah Senapelan</h1>
+            <div class="update-time" id="updateTime">Memuat...</div>
+        </div>
+    </div>
+
+    <div class="filter-bar" id="filterBar">
+        <button class="filter-btn active" data-group="all">Semua</button>
+    </div>
+
+    <div class="grid" id="grid">
+        <div class="loading">Mengambil data dari spreadsheet...</div>
+    </div>
+
+    <footer>Update realtime dari Google Spreadsheet | Harga dapat berubah</footer>
+</div>
+
+<button class="refresh" onclick="refresh()" title="Refresh">⟳</button>
+
+<script>
+    // ⚠️ GANTI DENGAN URL APPS SCRIPT ANDA ⚠️
+    const APP_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwSR9byxnLf0XKaxVkZmAtRDQ6RccO3PjXZAuTCLn64tUHl4Ya1r0tfvkX_FKWhvs6J/exec";
+    
+    let allItems = [];
+    let groups = [];
+
+    async function fetchData() {
+        const res = await fetch(APP_SCRIPT_URL, { cache: 'no-store' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        if (json.status === 'error') throw new Error(json.message);
+        return json.data;
+    }
+
+    function formatRupiah(val) {
+        let num = parseInt(String(val).replace(/\./g, '').replace(/,/g, ''));
+        if (isNaN(num)) num = 0;
+        return new Intl.NumberFormat('id-ID').format(num);
+    }
+
+    function getDefaultImage(type) {
+        if (type === 'group') {
+            return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect fill="%23eef3ee" width="100" height="100"/%3E%3Ctext x="50" y="55" text-anchor="middle" fill="%238aaa8a" font-size="32"%3E♻️%3C/text%3E%3C/svg%3E';
+        }
+        return 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"%3E%3Crect fill="%23f5f7f3" width="100" height="100"/%3E%3Ctext x="50" y="55" text-anchor="middle" fill="%238aaa8a" font-size="34"%3E📦%3C/text%3E%3C/svg%3E';
+    }
+
+    function renderFilters(active = 'all') {
+        const container = document.getElementById('filterBar');
+        container.innerHTML = `<button class="filter-btn ${active === 'all' ? 'active' : ''}" data-group="all">📋 Semua (${allItems.length})</button>`;
+        
+        groups.forEach(g => {
+            const count = allItems.filter(i => i.kelompok === g).length;
+            container.innerHTML += `<button class="filter-btn ${active === g ? 'active' : ''}" data-group="${g}">${g} (${count})</button>`;
+        });
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.onclick = () => {
+                const group = btn.dataset.group;
+                renderItems(group);
+                renderFilters(group);
+            };
+        });
+    }
+
+    function renderItems(groupFilter) {
+        const grid = document.getElementById('grid');
+        let filtered = groupFilter === 'all' ? [...allItems] : allItems.filter(i => i.kelompok === groupFilter);
+        
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div class="empty">Tidak ada data untuk ${groupFilter}</div>`;
+            return;
+        }
+        
+        grid.innerHTML = '';
+        filtered.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            
+            const groupPhoto = item.fotoKelompok && item.fotoKelompok !== '' ? item.fotoKelompok : getDefaultImage('group');
+            const itemPhoto = item.fotoItem && item.fotoItem !== '' ? item.fotoItem : getDefaultImage('item');
+            
+            card.innerHTML = `
+                <div class="group-banner">
+                    <img src="${escapeHtml(groupPhoto)}" alt="${escapeHtml(item.kelompok)}" onerror="this.src='${getDefaultImage('group')}'">
+                    <div class="group-label">${escapeHtml(item.kelompok)}</div>
+                </div>
+                <div class="item-photo">
+                    <img src="${escapeHtml(itemPhoto)}" alt="${escapeHtml(item.jenis)}" onerror="this.src='${getDefaultImage('item')}'">
+                </div>
+                <div class="item-name">${escapeHtml(item.jenis)}</div>
+                <div class="unit">📏 ${escapeHtml(item.satuan)}</div>
+                <div class="price">Rp ${formatRupiah(item.harga)}</div>
+            `;
+            grid.appendChild(card);
+        });
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
+
+    async function load() {
+        const grid = document.getElementById('grid');
+        grid.innerHTML = '<div class="loading">📡 Mengambil data dari spreadsheet...</div>';
+        
+        try {
+            const raw = await fetchData();
+            
+            // Proses data dengan mempertahankan kelompok
+            let currentGroup = '';
+            const processed = [];
+            
+            for (const item of raw) {
+                if (item.Kelompok && item.Kelompok.trim() !== '') {
+                    currentGroup = item.Kelompok.trim();
+                }
+                
+                processed.push({
+                    kelompok: currentGroup,
+                    jenis: item.JenisSampah || '',
+                    satuan: item.Satuan || 'Kg',
+                    harga: item.Harga || '0',
+                    fotoKelompok: item.link_foto_kelompok || '',
+                    fotoItem: item.link_foto_item || ''
+                });
+            }
+            
+            allItems = processed.filter(i => i.jenis && i.jenis !== '');
+            groups = [...new Set(allItems.map(i => i.kelompok))].sort();
+            
+            if (allItems.length === 0) throw new Error('Data kosong');
+            
+            renderFilters('all');
+            renderItems('all');
+            
+            document.getElementById('updateTime').innerHTML = `🕒 Update: ${new Date().toLocaleString('id-ID')}`;
+            console.log(`✅ Loaded ${allItems.length} items, ${groups.length} groups`);
+            
+        } catch (err) {
+            console.error(err);
+            grid.innerHTML = `<div class="error">❌ Gagal memuat data<br><small>${escapeHtml(err.message)}</small><br><br><small>Pastikan Apps Script sudah dideploy dan URL benar</small></div>`;
+        }
+    }
+
+    async function refresh() {
+        const btn = document.querySelector('.refresh');
+        btn.style.transform = 'rotate(180deg)';
+        await load();
+        setTimeout(() => btn.style.transform = '', 300);
+    }
+
+    load();
+    setInterval(() => { if (document.visibilityState === 'visible') load(); }, 300000);
+</script>
+</body>
+</html>
