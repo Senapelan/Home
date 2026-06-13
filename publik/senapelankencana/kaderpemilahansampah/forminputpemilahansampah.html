@@ -21,6 +21,7 @@
     <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/senapelankencana/image/kaderpemilahsampah.png">
     
     <style>
+        /* (style sama seperti sebelumnya, tidak berubah) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif;
@@ -124,8 +125,6 @@
         .weight-input-group { display: flex; gap: 10px; align-items: center; }
         .weight-input-group input { flex: 1; }
         .weight-unit { color: #718096; font-weight: 500; min-width: 50px; }
-        
-        /* Style untuk Daftar Warga */
         .daftar-warga-container {
             max-height: 300px;
             overflow-y: auto;
@@ -183,7 +182,6 @@
             max-width: 400px;
             width: 90%;
         }
-        
         .toast-notif {
             position: fixed;
             bottom: 30px;
@@ -214,7 +212,6 @@
             color: #742a2a;
             background: #fff5f5;
         }
-        
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -228,8 +225,6 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        
-        /* Status upload */
         .upload-status {
             font-size: 0.75rem;
             margin-top: 5px;
@@ -240,7 +235,6 @@
         .upload-status.success { color: #38a169; }
         .upload-status.error { color: #e53e3e; }
         .upload-status.uploading { color: #3182ce; }
-        
         @media (max-width: 768px) {
             body { padding: 10px; }
             .card { padding: 20px; }
@@ -288,16 +282,12 @@
             <div class="card">
                 <div class="card-title"><span class="icon">📋</span> Daftar Warga Binaan</div>
                 <div class="card-subtitle">Pilih warga dari daftar (hanya menampilkan warga sesuai kelurahan Anda)</div>
-                
-                <!-- Daftar Warga Binaan -->
                 <div id="daftarWargaContainer" style="margin-bottom: 20px;">
                     <div class="daftar-warga-container" id="daftarWargaList">
                         <div style="padding: 20px; text-align: center; color: #718096;">Memuat daftar warga...</div>
                     </div>
                 </div>
-                
                 <button class="btn btn-secondary" onclick="showTambahWargaModal()" style="width: 100%; margin-top: 10px;">➕ Tambah Warga Baru</button>
-                
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
                     <div class="form-group">
                         <label>Nama Warga Binaan Terpilih <span class="required">*</span></label>
@@ -313,12 +303,10 @@
             <div class="card">
                 <div class="card-title"><span class="icon">🗑️</span> Laporan Pemilahan Sampah</div>
                 <div class="card-subtitle">Isi data pemilahan sampah hari ini</div>
-                
                 <div class="form-group">
                     <label>Tanggal Laporan <span class="required">*</span></label>
                     <input type="date" id="tanggalLaporan">
                 </div>
-                
                 <div class="form-group">
                     <label>Sampah Organik (Kg)</label>
                     <div class="weight-input-group">
@@ -326,7 +314,6 @@
                         <span class="weight-unit">Kilogram</span>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label>Foto Bukti Organik</label>
                     <div class="upload-area" onclick="document.getElementById('fotoOrganik').click()">
@@ -336,7 +323,6 @@
                     <div class="preview-container"><img id="previewOrganik" class="preview-image" alt="Preview"></div>
                     <div id="statusOrganik" class="upload-status"></div>
                 </div>
-                
                 <div class="form-group">
                     <label>Sampah An Organik (Kg)</label>
                     <div class="weight-input-group">
@@ -344,7 +330,6 @@
                         <span class="weight-unit">Kilogram</span>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label>Foto Bukti An Organik</label>
                     <div class="upload-area" onclick="document.getElementById('fotoAnOrganik').click()">
@@ -354,7 +339,6 @@
                     <div class="preview-container"><img id="previewAnOrganik" class="preview-image" alt="Preview"></div>
                     <div id="statusAnOrganik" class="upload-status"></div>
                 </div>
-                
                 <div class="form-group">
                     <label>Sampah Residu (Kg)</label>
                     <div class="weight-input-group">
@@ -362,7 +346,6 @@
                         <span class="weight-unit">Kilogram</span>
                     </div>
                 </div>
-                
                 <div class="form-group">
                     <label>Foto Bukti Residu</label>
                     <div class="upload-area" onclick="document.getElementById('fotoResidu').click()">
@@ -372,12 +355,10 @@
                     <div class="preview-container"><img id="previewResidu" class="preview-image" alt="Preview"></div>
                     <div id="statusResidu" class="upload-status"></div>
                 </div>
-                
                 <div class="form-group" style="background: #f7fafc; padding: 15px; border-radius: 12px;">
                     <label>Total Sampah (Kg)</label>
                     <h3 id="totalSampah" style="color: #667eea;">0 Kg</h3>
                 </div>
-                
                 <button class="btn btn-primary" onclick="submitLaporan()" style="width: 100%; margin-top: 20px;" id="btnSubmit" disabled>📤 Kirim Laporan ke Lurah & Camat</button>
             </div>
         </div>
@@ -411,27 +392,22 @@
 
     <script>
         // ============ KONFIGURASI ============
-        // GANTI DENGAN URL APPS SCRIPT ANDA YANG SUDAH DI-DEPLOY!
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylIDMtnCqOyrq4J0kuMTnjquEOX3HGgAsW9L2V9Z2q_Lf0fwNSEQsGlngRWCZYzIzh/exec';
         
         let sessionKader = { id_kader: '', nama_kader: '', jabatan: '', kelurahan: '' };
         let selectedWarga = null;
         let daftarWarga = [];
-        
-        // State untuk upload foto
         let uploadState = {
             organik: { uploaded: false, url: '', status: 'pending' },
             anorganik: { uploaded: false, url: '', status: 'pending' },
             residu: { uploaded: false, url: '', status: 'pending' }
         };
+        let currentIdLaporan = null;
         
-        let currentIdLaporan = null; // Akan digenerate saat verifikasi kader berhasil
-        
-        // ============ UTILITY FUNCTIONS ============
+        // ============ UTILITY ============
         function showToast(type, message) {
             const existingToast = document.querySelector('.toast-notif');
             if(existingToast) existingToast.remove();
-            
             const toast = document.createElement('div');
             toast.className = `toast-notif ${type}`;
             toast.innerHTML = type === 'success' ? `✅ ${message}` : `❌ ${message}`;
@@ -490,34 +466,25 @@
             return div.innerHTML;
         }
         
-        // Generate ID laporan unik
         function generateIdLaporan() {
             return 'LAP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
         }
         
-        // Update status tombol submit berdasarkan berat sampah dan status upload
         function updateSubmitButtonState() {
             const btnSubmit = document.getElementById('btnSubmit');
             const organik = parseFloat(document.getElementById('organik').value) || 0;
             const anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
             const residu = parseFloat(document.getElementById('residu').value) || 0;
-            
-            // Tentukan jenis sampah yang perlu upload foto (berat > 0)
             let needUpload = [];
             if (organik > 0) needUpload.push('organik');
             if (anOrganik > 0) needUpload.push('anorganik');
             if (residu > 0) needUpload.push('residu');
-            
-            // Jika tidak ada sampah sama sekali
             if (needUpload.length === 0) {
                 btnSubmit.disabled = true;
                 btnSubmit.title = 'Minimal satu jenis sampah harus > 0 Kg';
                 return;
             }
-            
-            // Cek apakah semua yang perlu upload sudah terupload
             let allUploaded = needUpload.every(jenis => uploadState[jenis].uploaded === true);
-            
             if (allUploaded) {
                 btnSubmit.disabled = false;
                 btnSubmit.title = '';
@@ -527,99 +494,76 @@
             }
         }
         
-        // ============ UPLOAD FOTO KE SERVER ============
+        // ============ UPLOAD FOTO DENGAN URLSearchParams ============
         function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result.split(',')[1]); // ambil base64 tanpa header
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-    });
-}
-
-async function uploadFoto(file, jenis, idLaporan, namaWarga) {
-    // Konversi file ke base64
-    const base64Data = await fileToBase64(file);
-    
-    const formData = new FormData();
-    formData.append('action', 'uploadFoto');
-    formData.append('jenis', jenis);
-    formData.append('id_laporan', idLaporan);
-    formData.append('id_kader', sessionKader.id_kader);
-    formData.append('nama_warga', namaWarga);
-    formData.append('foto_base64', base64Data);
-    formData.append('content_type', file.type);
-    
-    const response = await fetch(SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-    });
-    const result = await response.json();
-    if (!result.success) throw new Error(result.error);
-    return result.url;
-}
-
-async function handleFotoUpload(input, jenis) {
-    const file = input.files[0];
-    if (!file) return;
-    
-    if (file.size > 2 * 1024 * 1024) {
-        showToast('error', 'Ukuran foto maksimal 2MB');
-        input.value = '';
-        return;
-    }
-    
-    // Preview
-    const previewId = `preview${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`;
-    previewImage(input, previewId);
-    
-    // Update status UI
-    const statusDiv = document.getElementById(`status${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`);
-    statusDiv.innerHTML = '<span class="loading-spinner" style="width: 14px; height: 14px;"></span> Mengupload...';
-    statusDiv.className = 'upload-status uploading';
-    
-    try {
-        if (!currentIdLaporan) {
-            currentIdLaporan = generateIdLaporan();
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result.split(',')[1]);
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
         }
-        const namaWargaSanitasi = selectedWarga ? selectedWarga.nama_warga_binaan.replace(/[^a-z0-9]/gi, '_').substring(0, 30) : 'unknown';
-        const url = await uploadFoto(file, jenis, currentIdLaporan, namaWargaSanitasi);
         
-        uploadState[jenis] = {
-            uploaded: true,
-            url: url,
-            status: 'success'
-        };
+        async function uploadFoto(file, jenis, idLaporan, namaWarga) {
+            const base64Data = await fileToBase64(file);
+            const params = new URLSearchParams();
+            params.append('action', 'uploadFoto');
+            params.append('jenis', jenis);
+            params.append('id_laporan', idLaporan);
+            params.append('id_kader', sessionKader.id_kader);
+            params.append('nama_warga', namaWarga);
+            params.append('foto_base64', base64Data);
+            params.append('content_type', file.type);
+            
+            const response = await fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: params
+            });
+            const result = await response.json();
+            if (!result.success) throw new Error(result.error);
+            return result.url;
+        }
         
-        statusDiv.innerHTML = '✅ Foto berhasil diupload';
-        statusDiv.className = 'upload-status success';
-        showToast('success', `Foto ${jenis} berhasil diupload`);
-        updateSubmitButtonState();
+        async function handleFotoUpload(input, jenis) {
+            const file = input.files[0];
+            if (!file) return;
+            if (file.size > 2 * 1024 * 1024) {
+                showToast('error', 'Ukuran foto maksimal 2MB');
+                input.value = '';
+                return;
+            }
+            const previewId = `preview${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`;
+            previewImage(input, previewId);
+            const statusDiv = document.getElementById(`status${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`);
+            statusDiv.innerHTML = '<span class="loading-spinner" style="width: 14px; height: 14px;"></span> Mengupload...';
+            statusDiv.className = 'upload-status uploading';
+            try {
+                if (!currentIdLaporan) currentIdLaporan = generateIdLaporan();
+                const namaWargaSanitasi = selectedWarga ? selectedWarga.nama_warga_binaan.replace(/[^a-z0-9]/gi, '_').substring(0, 30) : 'unknown';
+                const url = await uploadFoto(file, jenis, currentIdLaporan, namaWargaSanitasi);
+                uploadState[jenis] = { uploaded: true, url: url, status: 'success' };
+                statusDiv.innerHTML = '✅ Foto berhasil diupload';
+                statusDiv.className = 'upload-status success';
+                showToast('success', `Foto ${jenis} berhasil diupload`);
+                updateSubmitButtonState();
+            } catch (error) {
+                console.error('Upload error:', error);
+                uploadState[jenis] = { uploaded: false, url: '', status: 'error' };
+                statusDiv.innerHTML = '❌ Gagal upload: ' + error.message;
+                statusDiv.className = 'upload-status error';
+                showToast('error', `Gagal upload foto ${jenis}: ${error.message}`);
+                input.value = '';
+                updateSubmitButtonState();
+            }
+        }
         
-    } catch (error) {
-        console.error('Upload error:', error);
-        uploadState[jenis] = {
-            uploaded: false,
-            url: '',
-            status: 'error'
-        };
-        statusDiv.innerHTML = '❌ Gagal upload: ' + error.message;
-        statusDiv.className = 'upload-status error';
-        showToast('error', `Gagal upload foto ${jenis}: ${error.message}`);
-        input.value = '';
-        updateSubmitButtonState();
-    }
-}
-        
-        // Reset semua state upload
         function resetUploadState() {
             uploadState = {
                 organik: { uploaded: false, url: '', status: 'pending' },
                 anorganik: { uploaded: false, url: '', status: 'pending' },
                 residu: { uploaded: false, url: '', status: 'pending' }
             };
-            
-            // Reset status text
             ['Organik', 'AnOrganik', 'Residu'].forEach(jenis => {
                 const statusDiv = document.getElementById(`status${jenis}`);
                 if (statusDiv) {
@@ -627,13 +571,9 @@ async function handleFotoUpload(input, jenis) {
                     statusDiv.className = 'upload-status';
                 }
             });
-            
-            // Reset input file
             document.getElementById('fotoOrganik').value = '';
             document.getElementById('fotoAnOrganik').value = '';
             document.getElementById('fotoResidu').value = '';
-            
-            // Reset preview
             ['previewOrganik', 'previewAnOrganik', 'previewResidu'].forEach(id => {
                 const preview = document.getElementById(id);
                 if(preview) {
@@ -641,14 +581,10 @@ async function handleFotoUpload(input, jenis) {
                     preview.src = '';
                 }
             });
-            
-            // Reset input berat
             document.getElementById('organik').value = '0';
             document.getElementById('anOrganik').value = '0';
             document.getElementById('residu').value = '0';
             calculateTotal();
-            
-            // Generate ID laporan baru untuk transaksi berikutnya
             currentIdLaporan = generateIdLaporan();
         }
         
@@ -665,16 +601,13 @@ async function handleFotoUpload(input, jenis) {
         async function cekIdKader() {
             const idKader = document.getElementById('idKader').value.trim();
             if (!idKader) { showToast('error', 'Masukkan ID Kader!'); return; }
-            
             const btn = document.getElementById('btnVerifikasi');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="loading-spinner"></span> Memeriksa...';
             btn.disabled = true;
-            
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=cekKader&id_kader=${encodeURIComponent(idKader)}`);
                 const result = await response.json();
-                
                 if (result.success && result.data) {
                     sessionKader = {
                         id_kader: idKader,
@@ -687,11 +620,8 @@ async function handleFotoUpload(input, jenis) {
                     document.getElementById('displayKelurahan').innerText = result.data.kelurahan;
                     document.getElementById('infoKader').style.display = 'block';
                     document.getElementById('formWarga').style.display = 'block';
-                    
-                    // Generate ID laporan untuk sesi ini
                     currentIdLaporan = generateIdLaporan();
                     resetUploadState();
-                    
                     await loadDaftarWarga();
                     showToast('success', `Selamat datang, ${result.data.nama_kader}!`);
                 } else {
@@ -710,14 +640,11 @@ async function handleFotoUpload(input, jenis) {
         // ============ LOAD & RENDER DAFTAR WARGA ============
         async function loadDaftarWarga() {
             if (!sessionKader.id_kader) return;
-            
             const container = document.getElementById('daftarWargaList');
             container.innerHTML = '<div style="padding: 20px; text-align: center; color: #718096;"><span class="loading-spinner"></span> Memuat daftar warga...</div>';
-            
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getAllWarga&id_kader=${encodeURIComponent(sessionKader.id_kader)}&kelurahan=${encodeURIComponent(sessionKader.kelurahan)}`);
                 const result = await response.json();
-                
                 if (result.success && result.data) {
                     daftarWarga = result.data;
                     renderDaftarWarga();
@@ -736,19 +663,16 @@ async function handleFotoUpload(input, jenis) {
                 container.innerHTML = '<div style="padding: 20px; text-align: center; color: #718096;">Belum ada data warga. Klik "Tambah Warga Baru"</div>';
                 return;
             }
-            
             container.innerHTML = '';
-            daftarWarga.forEach((warga, index) => {
+            daftarWarga.forEach((warga) => {
                 const div = document.createElement('div');
                 div.className = 'warga-item';
                 if (selectedWarga && selectedWarga.nama_warga_binaan === warga.nama_warga_binaan && selectedWarga.alamat_binaan === warga.alamat_binaan) {
                     div.classList.add('selected');
                 }
-                
                 const createdByBadge = warga.dibuat_oleh_id === sessionKader.id_kader 
                     ? '<span class="badge badge-own">Saya</span>' 
                     : `<span class="badge badge-other">${escapeHtml(warga.dibuat_oleh_nama || 'Kader Lain')}</span>`;
-                
                 div.innerHTML = `
                     <div style="flex: 1;">
                         <div class="warga-nama">${escapeHtml(warga.nama_warga_binaan)}</div>
@@ -756,19 +680,15 @@ async function handleFotoUpload(input, jenis) {
                         <div class="warga-dibuat-oleh">Dibuat oleh: ${createdByBadge}</div>
                     </div>
                 `;
-                div.onclick = (function(w) {
-                    return function() { selectWarga(w); };
-                })(warga);
+                div.onclick = (function(w) { return function() { selectWarga(w); }; })(warga);
                 container.appendChild(div);
             });
         }
         
-        // ============ SELECT WARGA ============
         function selectWarga(warga) {
             selectedWarga = warga;
             document.getElementById('namaWarga').value = warga.nama_warga_binaan;
             document.getElementById('alamatWarga').value = warga.alamat_binaan;
-            
             const items = document.querySelectorAll('.warga-item');
             items.forEach(item => {
                 const namaDiv = item.querySelector('.warga-nama');
@@ -778,14 +698,10 @@ async function handleFotoUpload(input, jenis) {
                     item.classList.remove('selected');
                 }
             });
-            
             showToast('success', `Warga "${warga.nama_warga_binaan}" dipilih`);
-            
-            // Reset upload state karena warga berubah (nama untuk naming file)
             resetUploadState();
         }
         
-        // ============ TAMBAH WARGA MODAL ============
         function showTambahWargaModal() {
             document.getElementById('modalNamaWarga').value = '';
             document.getElementById('modalAlamatWarga').value = '';
@@ -796,49 +712,42 @@ async function handleFotoUpload(input, jenis) {
             document.getElementById('tambahWargaModal').classList.remove('active');
         }
         
-        // ============ TAMBAH WARGA BARU ============
+        // ============ TAMBAH WARGA DENGAN URLSearchParams ============
         async function tambahWargaBaru() {
             const namaWarga = document.getElementById('modalNamaWarga').value.trim();
             const alamatWarga = document.getElementById('modalAlamatWarga').value.trim();
-            
             if (!namaWarga) { showToast('error', 'Nama warga harus diisi!'); return; }
             if (!alamatWarga) { showToast('error', 'Alamat harus diisi!'); return; }
-            
             closeTambahWargaModal();
             showLoading(true, 'Menyimpan data warga...');
-            
             try {
-                const formData = new FormData();
-                formData.append('action', 'tambahWarga');
-                formData.append('id_kader', sessionKader.id_kader);
-                formData.append('nama_kader', sessionKader.nama_kader);
-                formData.append('jabatan', sessionKader.jabatan);
-                formData.append('kelurahan', sessionKader.kelurahan);
-                formData.append('nama_warga_binaan', namaWarga);
-                formData.append('alamat_binaan', alamatWarga);
+                const params = new URLSearchParams();
+                params.append('action', 'tambahWarga');
+                params.append('id_kader', sessionKader.id_kader);
+                params.append('nama_kader', sessionKader.nama_kader);
+                params.append('jabatan', sessionKader.jabatan);
+                params.append('kelurahan', sessionKader.kelurahan);
+                params.append('nama_warga_binaan', namaWarga);
+                params.append('alamat_binaan', alamatWarga);
                 
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
                 });
-                
                 const result = await response.json();
                 showLoading(false);
-                
                 if (result.success) {
                     showToast('success', 'Warga berhasil ditambahkan!');
-                    
                     const wargaBaru = {
                         nama_warga_binaan: namaWarga,
                         alamat_binaan: alamatWarga,
                         dibuat_oleh_id: sessionKader.id_kader,
                         dibuat_oleh_nama: sessionKader.nama_kader
                     };
-                    
                     daftarWarga.unshift(wargaBaru);
                     renderDaftarWarga();
                     selectWarga(wargaBaru);
-                    
                 } else {
                     showToast('error', 'Gagal: ' + (result.error || 'Terjadi kesalahan'));
                 }
@@ -849,79 +758,57 @@ async function handleFotoUpload(input, jenis) {
             }
         }
         
-        // ============ SUBMIT LAPORAN ============
+        // ============ SUBMIT LAPORAN DENGAN URLSearchParams ============
         async function submitLaporan() {
             if (!selectedWarga) {
                 showToast('error', 'Silakan pilih warga dari daftar terlebih dahulu!');
                 return;
             }
-            
             const tanggal = document.getElementById('tanggalLaporan').value;
             const organik = parseFloat(document.getElementById('organik').value) || 0;
             const anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
             const residu = parseFloat(document.getElementById('residu').value) || 0;
-            
             if (organik === 0 && anOrganik === 0 && residu === 0) { 
                 showToast('error', 'Minimal satu jenis sampah > 0 Kg'); 
                 return; 
             }
-            
-            // Siapkan data URL foto sesuai dengan jenis yang memiliki berat > 0
             const fotoOrganikUrl = organik > 0 ? uploadState.organik.url : '';
             const fotoAnOrganikUrl = anOrganik > 0 ? uploadState.anorganik.url : '';
             const fotoResiduUrl = residu > 0 ? uploadState.residu.url : '';
-            
-            // Validasi: pastikan URL foto ada untuk jenis yang beratnya > 0
-            if (organik > 0 && !fotoOrganikUrl) {
-                showToast('error', 'Foto organik belum diupload!');
-                return;
-            }
-            if (anOrganik > 0 && !fotoAnOrganikUrl) {
-                showToast('error', 'Foto an organik belum diupload!');
-                return;
-            }
-            if (residu > 0 && !fotoResiduUrl) {
-                showToast('error', 'Foto residu belum diupload!');
-                return;
-            }
+            if (organik > 0 && !fotoOrganikUrl) { showToast('error', 'Foto organik belum diupload!'); return; }
+            if (anOrganik > 0 && !fotoAnOrganikUrl) { showToast('error', 'Foto an organik belum diupload!'); return; }
+            if (residu > 0 && !fotoResiduUrl) { showToast('error', 'Foto residu belum diupload!'); return; }
             
             showLoading(true, 'Mengirim laporan...');
-            
-            const formData = new FormData();
-            formData.append('action', 'submitLaporan');
-            formData.append('id_laporan', currentIdLaporan);
-            formData.append('id_kader', sessionKader.id_kader);
-            formData.append('nama_kader', sessionKader.nama_kader);
-            formData.append('jabatan', sessionKader.jabatan);
-            formData.append('kelurahan', sessionKader.kelurahan);
-            formData.append('tanggal_input', tanggal);
-            formData.append('nama_warga_binaan', selectedWarga.nama_warga_binaan);
-            formData.append('alamat_binaan', selectedWarga.alamat_binaan);
-            formData.append('organik', organik);
-            formData.append('an_organik', anOrganik);
-            formData.append('residu', residu);
-            formData.append('foto_organik_url', fotoOrganikUrl);
-            formData.append('foto_anorganik_url', fotoAnOrganikUrl);
-            formData.append('foto_residu_url', fotoResiduUrl);
+            const params = new URLSearchParams();
+            params.append('action', 'submitLaporan');
+            params.append('id_laporan', currentIdLaporan);
+            params.append('id_kader', sessionKader.id_kader);
+            params.append('nama_kader', sessionKader.nama_kader);
+            params.append('jabatan', sessionKader.jabatan);
+            params.append('kelurahan', sessionKader.kelurahan);
+            params.append('tanggal_input', tanggal);
+            params.append('nama_warga_binaan', selectedWarga.nama_warga_binaan);
+            params.append('alamat_binaan', selectedWarga.alamat_binaan);
+            params.append('organik', organik);
+            params.append('an_organik', anOrganik);
+            params.append('residu', residu);
+            params.append('foto_organik_url', fotoOrganikUrl);
+            params.append('foto_anorganik_url', fotoAnOrganikUrl);
+            params.append('foto_residu_url', fotoResiduUrl);
             
             try {
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: params
                 });
-                
                 const result = await response.json();
                 showLoading(false);
-                
                 if (result.success) {
                     showToast('success', '✅ Laporan berhasil dikirim ke Lurah & Camat!');
-                    
-                    // Reset semua form dan state untuk laporan berikutnya
                     resetUploadState();
-                    
-                    // Generate ID laporan baru untuk transaksi berikutnya
                     currentIdLaporan = generateIdLaporan();
-                    
                 } else {
                     showToast('error', 'Gagal: ' + (result.error || 'Terjadi kesalahan server'));
                 }
