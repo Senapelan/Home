@@ -2,245 +2,519 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>Kader Pemilahan Sampah | Bank Sampah Senapelan</title>
-    <!-- CSS SAMA SEPERTI YANG ANDA PUNYA, TIDAK SAYA TULIS ULANG UNTUK HEMAT RUANG -->
-    <!-- Salin CSS dari kode Anda sebelumnya, atau gunakan style yang sama -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bank Sampah Senapelan - Kader Pemilahan</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', 'Poppins', system-ui, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
+        body { font-family: 'Segoe UI', system-ui; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding: 20px; }
         .container { max-width: 900px; margin: 0 auto; }
-        .header { background: white; border-radius: 20px; padding: 20px 30px; margin-bottom: 30px; box-shadow: 0 20px 35px -10px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; }
-        .logo-left img, .logo-right img { height: 70px; width: auto; }
+        .header { background: white; border-radius: 20px; padding: 20px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; }
+        .logo-left img, .logo-right img { height: 70px; }
         .header-title { text-align: center; flex: 1; }
         .card { background: white; border-radius: 24px; padding: 30px; margin-bottom: 25px; box-shadow: 0 20px 35px -10px rgba(0,0,0,0.15); }
-        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn { padding: 12px 24px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-secondary { background: #e2e8f0; color: #4a5568; }
-        .upload-area { border: 2px dashed #cbd5e0; border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; background: #f7fafc; }
-        .preview-image { width: 100%; max-width: 150px; display: none; }
+        .upload-area { border: 2px dashed #cbd5e0; border-radius: 16px; padding: 20px; text-align: center; cursor: pointer; background: #f7fafc; margin-bottom: 10px; }
+        .preview-image { max-width: 150px; border-radius: 8px; display: none; margin-top: 10px; }
         .preview-image.active { display: block; }
-        .daftar-warga-container { max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px; }
+        .upload-status { font-size: 0.8rem; margin-top: 5px; color: #718096; }
+        .upload-status.success { color: #2b6e3b; }
+        .upload-status.error { color: #c53030; }
+        .daftar-warga-container { max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; }
         .warga-item { padding: 12px; border-bottom: 1px solid #e2e8f0; cursor: pointer; }
         .warga-item.selected { background: #c7d2fe; }
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; visibility:hidden; opacity:0; transition:0.3s; }
-        .modal.active { visibility:visible; opacity:1; }
-        .modal-content { background:white; padding:20px; border-radius:20px; max-width:400px; width:90%; }
-        .toast-notif { position:fixed; bottom:20px; left:50%; transform:translateX(-50%) translateY(100px); background:white; padding:12px 24px; border-radius:40px; transition:0.3s; z-index:10000; }
-        .toast-notif.show { transform:translateX(-50%) translateY(0); }
-        .loading-spinner { display:inline-block; width:20px; height:20px; border:2px solid #ccc; border-top-color:#667eea; border-radius:50%; animation:spin 0.6s linear infinite; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        @media (max-width:768px){ .btn{width:100%;} }
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; visibility: hidden; opacity: 0; transition: 0.2s; z-index: 1000; }
+        .modal.active { visibility: visible; opacity: 1; }
+        .modal-content { background: white; padding: 25px; border-radius: 24px; width: 90%; max-width: 400px; }
+        .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: white; padding: 12px 24px; border-radius: 40px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: 0.3s; z-index: 1100; }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+        .loading-spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid #e2e8f0; border-top-color: #667eea; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        input, textarea, select { width: 100%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 12px; margin-bottom: 15px; font-family: inherit; }
+        label { font-weight: 600; display: block; margin-bottom: 5px; }
+        .info-grid { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 10px; }
+        .info-item { background: #f0f4ff; padding: 8px 12px; border-radius: 12px; flex: 1; }
+        @media (max-width: 640px) { .btn { width: 100%; } }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <!-- Header sama seperti sebelumnya -->
     <div class="header">
         <div class="logo-left"><img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo"></div>
-        <div class="header-title"><h1>BANK SAMPAH SENAPELAN</h1><p>Sistem Informasi Kader Pemilahan Sampah Dari Rumah</p></div>
+        <div class="header-title"><h1>BANK SAMPAH SENAPELAN</h1><p>Sistem Informasi Kader Pemilahan</p></div>
         <div class="logo-right"><img src="https://senapelan.github.io/Home/publik/senapelankencana/image/kaderpemilahsampah.png" alt="Kader"></div>
     </div>
+
     <!-- Verifikasi Kader -->
     <div class="card">
-        <div class="card-title">🔑 Verifikasi Kader</div>
-        <input type="text" id="idKader" placeholder="ID Kader">
-        <button class="btn btn-primary" id="btnVerifikasi" onclick="cekIdKader()">Verifikasi</button>
-        <div id="infoKader" style="display:none; margin-top:15px; background:#f0f4ff; padding:15px; border-radius:12px;">
-            <div>Nama: <span id="displayNamaKader">-</span></div>
-            <div>Jabatan: <span id="displayJabatan">-</span></div>
-            <div>Kelurahan: <span id="displayKelurahan">-</span></div>
-        </div>
-    </div>
-    <!-- Form Warga & Laporan (awalnya tersembunyi) -->
-    <div id="formWarga" style="display:none;">
-        <div class="card">
-            <div class="card-title">📋 Daftar Warga Binaan</div>
-            <div id="daftarWargaList" class="daftar-warga-container">Memuat...</div>
-            <button class="btn btn-secondary" onclick="showTambahWargaModal()" style="margin-top:10px;">Tambah Warga</button>
-            <div style="margin-top:20px;">
-                <label>Nama Warga Terpilih</label>
-                <input type="text" id="namaWarga" readonly>
-                <label>Alamat</label>
-                <textarea id="alamatWarga" rows="2" readonly></textarea>
+        <h3>🔑 Verifikasi Kader</h3>
+        <input type="text" id="idKader" placeholder="ID Kader (contoh: kb@001)">
+        <button class="btn btn-primary" id="btnVerif" onclick="verifikasiKader()">Verifikasi</button>
+        <div id="infoKader" style="display: none; margin-top: 15px;">
+            <div class="info-grid">
+                <div class="info-item"><strong>Nama</strong><br><span id="displayNama">-</span></div>
+                <div class="info-item"><strong>Jabatan</strong><br><span id="displayJabatan">-</span></div>
+                <div class="info-item"><strong>Kelurahan</strong><br><span id="displayKelurahan">-</span></div>
             </div>
         </div>
+    </div>
+
+    <!-- Form utama (sembunyi sampai verifikasi berhasil) -->
+    <div id="mainForm" style="display: none;">
+        <!-- Daftar warga -->
         <div class="card">
-            <div class="card-title">🗑️ Laporan Pemilahan Sampah</div>
+            <h3>📋 Daftar Warga Binaan</h3>
+            <div id="daftarWarga" class="daftar-warga-container">Memuat...</div>
+            <button class="btn btn-secondary" onclick="showTambahWarga()">+ Tambah Warga Baru</button>
+            <div style="margin-top: 20px;">
+                <label>Warga terpilih</label>
+                <input type="text" id="selectedNamaWarga" readonly placeholder="Pilih warga dari daftar">
+                <label>Alamat</label>
+                <textarea id="selectedAlamatWarga" rows="2" readonly></textarea>
+            </div>
+        </div>
+
+        <!-- Form laporan -->
+        <div class="card">
+            <h3>🗑️ Laporan Pemilahan Sampah</h3>
+            <label>Tanggal</label>
             <input type="date" id="tanggalLaporan">
-            <div class="form-group"><label>Sampah Organik (Kg)</label><input type="number" id="organik" step="0.1" value="0"></div>
-            <div class="form-group"><label>Foto Organik</label><div class="upload-area" onclick="document.getElementById('fotoOrganik').click()">Upload</div><input type="file" id="fotoOrganik" accept="image/*" style="display:none" onchange="previewImage(this,'previewOrganik')"><img id="previewOrganik" class="preview-image"></div>
-            <div class="form-group"><label>Sampah An Organik (Kg)</label><input type="number" id="anOrganik" step="0.1" value="0"></div>
-            <div class="form-group"><label>Foto An Organik</label><div class="upload-area" onclick="document.getElementById('fotoAnOrganik').click()">Upload</div><input type="file" id="fotoAnOrganik" accept="image/*" style="display:none" onchange="previewImage(this,'previewAnOrganik')"><img id="previewAnOrganik" class="preview-image"></div>
-            <div class="form-group"><label>Sampah Residu (Kg)</label><input type="number" id="residu" step="0.1" value="0"></div>
-            <div class="form-group"><label>Foto Residu</label><div class="upload-area" onclick="document.getElementById('fotoResidu').click()">Upload</div><input type="file" id="fotoResidu" accept="image/*" style="display:none" onchange="previewImage(this,'previewResidu')"><img id="previewResidu" class="preview-image"></div>
-            <div class="form-group"><strong>Total: <span id="totalSampah">0 Kg</span></strong></div>
-            <button class="btn btn-primary" onclick="submitLaporan()">Kirim Laporan</button>
+
+            <label>Sampah Organik (Kg)</label>
+            <input type="number" id="organik" step="0.1" value="0">
+
+            <label>Foto Bukti Organik</label>
+            <div class="upload-area" onclick="document.getElementById('fileOrganik').click()">📸 Klik untuk upload foto</div>
+            <input type="file" id="fileOrganik" accept="image/*" style="display: none">
+            <img id="previewOrganik" class="preview-image">
+            <div id="statusOrganik" class="upload-status"></div>
+            <input type="hidden" id="urlOrganik" value="">
+
+            <label>Sampah An Organik (Kg)</label>
+            <input type="number" id="anOrganik" step="0.1" value="0">
+
+            <label>Foto Bukti An Organik</label>
+            <div class="upload-area" onclick="document.getElementById('fileAnOrganik').click()">📸 Klik untuk upload foto</div>
+            <input type="file" id="fileAnOrganik" accept="image/*" style="display: none">
+            <img id="previewAnOrganik" class="preview-image">
+            <div id="statusAnOrganik" class="upload-status"></div>
+            <input type="hidden" id="urlAnOrganik" value="">
+
+            <label>Sampah Residu (Kg)</label>
+            <input type="number" id="residu" step="0.1" value="0">
+
+            <label>Foto Bukti Residu</label>
+            <div class="upload-area" onclick="document.getElementById('fileResidu').click()">📸 Klik untuk upload foto</div>
+            <input type="file" id="fileResidu" accept="image/*" style="display: none">
+            <img id="previewResidu" class="preview-image">
+            <div id="statusResidu" class="upload-status"></div>
+            <input type="hidden" id="urlResidu" value="">
+
+            <div style="background: #f7fafc; padding: 15px; border-radius: 12px; margin: 15px 0;">
+                <strong>Total Sampah: <span id="totalSampah">0 Kg</span></strong>
+            </div>
+
+            <button class="btn btn-primary" id="btnKirimLaporan" disabled onclick="kirimLaporan()">📤 Kirim Laporan (tunggu upload foto selesai)</button>
         </div>
     </div>
 </div>
-<!-- Modal Tambah Warga -->
-<div id="tambahWargaModal" class="modal"><div class="modal-content"><h3>Tambah Warga</h3><input type="text" id="modalNamaWarga" placeholder="Nama"><textarea id="modalAlamatWarga" placeholder="Alamat"></textarea><div style="margin-top:15px;"><button class="btn btn-secondary" onclick="closeTambahWargaModal()">Batal</button><button class="btn btn-primary" onclick="tambahWargaBaru()">Simpan</button></div></div></div>
-<div id="loadingModal" class="modal"><div class="modal-content" style="text-align:center;"><div class="loading-spinner"></div><p id="loadingText">Memproses...</p></div></div>
+
+<!-- Modal tambah warga -->
+<div id="modalTambahWarga" class="modal">
+    <div class="modal-content">
+        <h3>Tambah Warga Baru</h3>
+        <input type="text" id="modalNama" placeholder="Nama warga">
+        <textarea id="modalAlamat" placeholder="Alamat lengkap" rows="2"></textarea>
+        <div style="display: flex; gap: 10px; margin-top: 15px;">
+            <button class="btn btn-secondary" onclick="closeModal()">Batal</button>
+            <button class="btn btn-primary" onclick="tambahWarga()">Simpan</button>
+        </div>
+    </div>
+</div>
+
+<!-- Iframe tersembunyi untuk komunikasi tanpa CORS -->
+<iframe name="hiddenFrameUpload" style="display:none"></iframe>
+<iframe name="hiddenFrameSubmit" style="display:none"></iframe>
 
 <script>
-    // Konfigurasi - GANTI DENGAN URL APPS SCRIPT HASIL DEPLOY TERBARU
-    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyJ027eCEs2m9wtFrInauzjlWD29Jw2alh2KBZs-znIlWQGqqVzfkhAX531bhegSpVB/exec';
+    // ==================== KONFIGURASI ====================
+    // GANTI DENGAN URL APPS SCRIPT ANDA (HASIL DEPLOY)
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyP9vg28M0dbpb0YJAEsO0Zdq9zSokjYJjTZ5F2fzY7kNeZsSV_kBa--QzZgfZB0r1K/exec';
     
     let sessionKader = {};
-    let selectedWarga = null;
     let daftarWarga = [];
+    let selectedWarga = null;
 
-    function showToast(type, msg) { let t=document.createElement('div'); t.className=`toast-notif ${type}`; t.innerHTML=type==='success'?`✅ ${msg}`:`❌ ${msg}`; document.body.appendChild(t); setTimeout(()=>t.classList.add('show'),10); setTimeout(()=>{t.classList.remove('show');setTimeout(()=>t.remove(),400);},4000); }
-    function showLoading(show,text='Memproses...'){ let m=document.getElementById('loadingModal'); if(show){ document.getElementById('loadingText').innerText=text; m.classList.add('active'); }else{ m.classList.remove('active'); } }
-    function previewImage(input, previewId){ if(input.files[0]){ let file=input.files[0]; if(file.size>2*1024*1024){ showToast('error','Maksimal 2MB'); input.value=''; return; } let reader=new FileReader(); reader.onload=e=>{ let img=document.getElementById(previewId); img.src=e.target.result; img.classList.add('active'); }; reader.readAsDataURL(file); } }
-    function calculateTotal(){ let o=parseFloat(document.getElementById('organik').value)||0; let a=parseFloat(document.getElementById('anOrganik').value)||0; let r=parseFloat(document.getElementById('residu').value)||0; document.getElementById('totalSampah').innerText=(o+a+r).toFixed(2)+' Kg'; }
-    document.addEventListener('DOMContentLoaded',()=>{ document.getElementById('tanggalLaporan').value=new Date().toISOString().slice(0,10); document.getElementById('organik').addEventListener('input',calculateTotal); document.getElementById('anOrganik').addEventListener('input',calculateTotal); document.getElementById('residu').addEventListener('input',calculateTotal); });
+    // Status upload foto (untuk mengaktifkan tombol kirim)
+    let uploadStatus = {
+        organik: { uploading: false, url: '', required: false },
+        anorganik: { uploading: false, url: '', required: false },
+        residu: { uploading: false, url: '', required: false }
+    };
 
-    async function cekIdKader(){
-        let id=document.getElementById('idKader').value.trim();
-        if(!id){ showToast('error','Masukkan ID Kader'); return; }
-        let btn=document.getElementById('btnVerifikasi');
-        let orig=btn.innerHTML;
-        btn.innerHTML='<span class="loading-spinner"></span> Cek...'; btn.disabled=true;
-        try{
-            let res=await fetch(`${SCRIPT_URL}?action=cekKader&id_kader=${encodeURIComponent(id)}`);
-            let data=await res.json();
-            if(data.success && data.data){
-                sessionKader=data.data;
-                sessionKader.id_kader=id;
-                document.getElementById('displayNamaKader').innerText=data.data.nama_kader;
-                document.getElementById('displayJabatan').innerText=data.data.jabatan;
-                document.getElementById('displayKelurahan').innerText=data.data.kelurahan;
-                document.getElementById('infoKader').style.display='block';
-                document.getElementById('formWarga').style.display='block';
-                await loadDaftarWarga();
-                showToast('success','Selamat datang '+data.data.nama_kader);
-            } else { showToast('error',data.error||'ID tidak ditemukan'); document.getElementById('infoKader').style.display='none'; document.getElementById('formWarga').style.display='none'; }
-        }catch(e){ showToast('error','Gagal koneksi'); }finally{ btn.innerHTML=orig; btn.disabled=false; }
+    // ==================== UTILITY ====================
+    function showToast(msg, isError = false) {
+        let toast = document.createElement('div');
+        toast.className = 'toast';
+        toast.innerHTML = isError ? `❌ ${msg}` : `✅ ${msg}`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.classList.add('show'), 10);
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, 4000);
     }
 
-    async function loadDaftarWarga(){
-        if(!sessionKader.id_kader) return;
-        let container=document.getElementById('daftarWargaList');
-        container.innerHTML='<div style="padding:20px;text-align:center;">Memuat...</div>';
-        try{
-            let res=await fetch(`${SCRIPT_URL}?action=getAllWarga&id_kader=${encodeURIComponent(sessionKader.id_kader)}&kelurahan=${encodeURIComponent(sessionKader.kelurahan)}`);
-            let result=await res.json();
-            if(result.success && result.data){ daftarWarga=result.data; renderDaftarWarga(); }
-            else{ container.innerHTML='<div style="padding:20px;text-align:center;">Belum ada warga</div>'; }
-        }catch(e){ container.innerHTML='<div style="padding:20px;text-align:center;color:red;">Gagal memuat</div>'; }
+    function updateKirimButton() {
+        let allDone = true;
+        // Cek apakah setidaknya satu foto sudah diupload (karena minimal 1 foto wajib)
+        let anyUploaded = uploadStatus.organik.url !== '' || uploadStatus.anorganik.url !== '' || uploadStatus.residu.url !== '';
+        // Dan tidak ada yang sedang upload
+        let noUploading = !uploadStatus.organik.uploading && !uploadStatus.anorganik.uploading && !uploadStatus.residu.uploading;
+        allDone = anyUploaded && noUploading;
+        document.getElementById('btnKirimLaporan').disabled = !allDone;
+        if (!allDone) {
+            if (!anyUploaded) document.getElementById('btnKirimLaporan').innerText = '📤 Upload minimal 1 foto terlebih dahulu';
+            else if (!noUploading) document.getElementById('btnKirimLaporan').innerText = '⏳ Masih ada foto yang diupload...';
+        } else {
+            document.getElementById('btnKirimLaporan').innerText = '📤 Kirim Laporan ke Lurah & Camat';
+        }
     }
-    function renderDaftarWarga(){
-        let container=document.getElementById('daftarWargaList');
-        if(!daftarWarga.length){ container.innerHTML='<div style="padding:20px;text-align:center;">Belum ada warga</div>'; return; }
-        container.innerHTML='';
-        daftarWarga.forEach(w=>{
-            let div=document.createElement('div');
-            div.className='warga-item';
-            if(selectedWarga && selectedWarga.nama_warga_binaan===w.nama_warga_binaan) div.classList.add('selected');
-            div.innerHTML=`<div><strong>${escapeHtml(w.nama_warga_binaan)}</strong><br><small>${escapeHtml(w.alamat_binaan)}</small><br><small>Dibuat oleh: ${w.dibuat_oleh_id===sessionKader.id_kader?'Saya':w.dibuat_oleh_nama}</small></div>`;
-            div.onclick=()=>selectWarga(w);
+
+    // Upload file ke Google Drive via iframe (tanpa CORS)
+    function uploadFile(file, jenis, hiddenUrlId, previewId, statusId) {
+        if (!file) return;
+        if (file.size > 2 * 1024 * 1024) {
+            showToast('Ukuran foto maksimal 2MB', true);
+            return;
+        }
+        // Tandai sedang upload
+        uploadStatus[jenis].uploading = true;
+        uploadStatus[jenis].url = '';
+        document.getElementById(hiddenUrlId).value = '';
+        document.getElementById(statusId).innerHTML = '<span class="loading-spinner"></span> Mengupload...';
+        updateKirimButton();
+
+        // Buat form data dan submit ke iframe
+        let form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL + '?action=uploadFoto';
+        form.target = 'hiddenFrameUpload';
+        form.enctype = 'multipart/form-data';
+        
+        let fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        fileInput.name = 'foto';
+        let fileList = new DataTransfer();
+        fileList.items.add(file);
+        fileInput.files = fileList.files;
+        
+        let jenisInput = document.createElement('input');
+        jenisInput.type = 'hidden';
+        jenisInput.name = 'jenis';
+        jenisInput.value = jenis;
+        
+        let kaderInput = document.createElement('input');
+        kaderInput.type = 'hidden';
+        kaderInput.name = 'id_kader';
+        kaderInput.value = sessionKader.id_kader || '';
+        
+        let namaInput = document.createElement('input');
+        namaInput.type = 'hidden';
+        namaInput.name = 'nama_kader';
+        namaInput.value = sessionKader.nama_kader || '';
+        
+        form.appendChild(fileInput);
+        form.appendChild(jenisInput);
+        form.appendChild(kaderInput);
+        form.appendChild(namaInput);
+        document.body.appendChild(form);
+        
+        // Event listener untuk iframe response (postMessage)
+        window.addEventListener('message', function onMessage(e) {
+            if (e.data && e.data.action === 'uploadComplete' && e.data.jenis === jenis) {
+                window.removeEventListener('message', onMessage);
+                if (e.data.success) {
+                    uploadStatus[jenis].url = e.data.url;
+                    uploadStatus[jenis].uploading = false;
+                    document.getElementById(hiddenUrlId).value = e.data.url;
+                    document.getElementById(statusId).innerHTML = '<span style="color:#2b6e3b;">✓ Upload berhasil</span>';
+                    document.getElementById(previewId).src = URL.createObjectURL(file);
+                    document.getElementById(previewId).classList.add('active');
+                    showToast(`Foto ${jenis} berhasil diupload`);
+                } else {
+                    uploadStatus[jenis].uploading = false;
+                    document.getElementById(statusId).innerHTML = `<span style="color:#c53030;">✗ Gagal: ${e.data.error}</span>`;
+                    showToast(`Gagal upload foto ${jenis}`, true);
+                }
+                updateKirimButton();
+            }
+        });
+        
+        form.submit();
+        document.body.removeChild(form);
+    }
+
+    // Event listener untuk input file
+    function initFileUpload() {
+        const fileOrg = document.getElementById('fileOrganik');
+        const fileAn = document.getElementById('fileAnOrganik');
+        const fileRes = document.getElementById('fileResidu');
+        
+        fileOrg.onchange = (e) => {
+            if (e.target.files.length) uploadFile(e.target.files[0], 'organik', 'urlOrganik', 'previewOrganik', 'statusOrganik');
+        };
+        fileAn.onchange = (e) => {
+            if (e.target.files.length) uploadFile(e.target.files[0], 'anorganik', 'urlAnOrganik', 'previewAnOrganik', 'statusAnOrganik');
+        };
+        fileRes.onchange = (e) => {
+            if (e.target.files.length) uploadFile(e.target.files[0], 'residu', 'urlResidu', 'previewResidu', 'statusResidu');
+        };
+    }
+
+    // ==================== VERIFIKASI KADER (via iframe) ====================
+    function verifikasiKader() {
+        let id = document.getElementById('idKader').value.trim();
+        if (!id) { showToast('Masukkan ID Kader', true); return; }
+        let iframe = document.createElement('iframe');
+        iframe.name = 'hiddenFrameGet';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        let form = document.createElement('form');
+        form.method = 'GET';
+        form.action = SCRIPT_URL + '?action=cekKader&id_kader=' + encodeURIComponent(id);
+        form.target = 'hiddenFrameGet';
+        document.body.appendChild(form);
+        
+        iframe.onload = () => {
+            try {
+                let responseText = iframe.contentDocument.body.innerText;
+                let result = JSON.parse(responseText);
+                if (result.success && result.data) {
+                    sessionKader = result.data;
+                    sessionKader.id_kader = id;
+                    document.getElementById('displayNama').innerText = result.data.nama_kader;
+                    document.getElementById('displayJabatan').innerText = result.data.jabatan;
+                    document.getElementById('displayKelurahan').innerText = result.data.kelurahan;
+                    document.getElementById('infoKader').style.display = 'block';
+                    document.getElementById('mainForm').style.display = 'block';
+                    loadDaftarWarga();
+                    showToast(`Selamat datang, ${result.data.nama_kader}`);
+                } else {
+                    showToast(result.error || 'ID Kader tidak ditemukan', true);
+                }
+            } catch(e) { showToast('Gagal verifikasi', true); }
+            iframe.remove();
+            form.remove();
+        };
+        form.submit();
+    }
+
+    // Load daftar warga via iframe
+    function loadDaftarWarga() {
+        if (!sessionKader.kelurahan) return;
+        let iframe = document.createElement('iframe');
+        iframe.name = 'hiddenFrameWarga';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        let form = document.createElement('form');
+        form.method = 'GET';
+        form.action = `${SCRIPT_URL}?action=getAllWarga&id_kader=${encodeURIComponent(sessionKader.id_kader || '')}&kelurahan=${encodeURIComponent(sessionKader.kelurahan)}`;
+        form.target = 'hiddenFrameWarga';
+        document.body.appendChild(form);
+        
+        iframe.onload = () => {
+            try {
+                let resp = JSON.parse(iframe.contentDocument.body.innerText);
+                if (resp.success && resp.data) {
+                    daftarWarga = resp.data;
+                    renderDaftarWarga();
+                } else {
+                    document.getElementById('daftarWarga').innerHTML = '<div style="padding:20px;text-align:center;">Belum ada warga</div>';
+                }
+            } catch(e) { console.error(e); }
+            iframe.remove();
+            form.remove();
+        };
+        form.submit();
+    }
+
+    function renderDaftarWarga() {
+        let container = document.getElementById('daftarWarga');
+        if (!daftarWarga.length) { container.innerHTML = '<div style="padding:20px;text-align:center;">Belum ada warga</div>'; return; }
+        container.innerHTML = '';
+        daftarWarga.forEach(w => {
+            let div = document.createElement('div');
+            div.className = 'warga-item';
+            div.innerHTML = `<strong>${escapeHtml(w.nama_warga_binaan)}</strong><br><small>${escapeHtml(w.alamat_binaan)}</small><br><small>Dibuat oleh: ${w.dibuat_oleh_id === sessionKader.id_kader ? 'Saya' : w.dibuat_oleh_nama}</small>`;
+            div.onclick = () => selectWarga(w);
             container.appendChild(div);
         });
     }
-    function selectWarga(w){
-        selectedWarga=w;
-        document.getElementById('namaWarga').value=w.nama_warga_binaan;
-        document.getElementById('alamatWarga').value=w.alamat_binaan;
-        document.querySelectorAll('.warga-item').forEach(el=>el.classList.remove('selected'));
+
+    function selectWarga(w) {
+        selectedWarga = w;
+        document.getElementById('selectedNamaWarga').value = w.nama_warga_binaan;
+        document.getElementById('selectedAlamatWarga').value = w.alamat_binaan;
+        document.querySelectorAll('.warga-item').forEach(el => el.classList.remove('selected'));
         event.currentTarget.classList.add('selected');
-        showToast('success',`Warga ${w.nama_warga_binaan} dipilih`);
-    }
-    function escapeHtml(s){ if(!s) return ''; return s.replace(/[&<>]/g,function(m){if(m==='&') return '&amp;'; if(m==='<') return '&lt;'; if(m==='>') return '&gt;'; return m;}); }
-    function showTambahWargaModal(){ document.getElementById('modalNamaWarga').value=''; document.getElementById('modalAlamatWarga').value=''; document.getElementById('tambahWargaModal').classList.add('active'); }
-    function closeTambahWargaModal(){ document.getElementById('tambahWargaModal').classList.remove('active'); }
-
-    async function tambahWargaBaru(){
-        let nama=document.getElementById('modalNamaWarga').value.trim();
-        let alamat=document.getElementById('modalAlamatWarga').value.trim();
-        if(!nama){ showToast('error','Nama wajib'); return; }
-        closeTambahWargaModal();
-        showLoading(true,'Menyimpan warga...');
-        try{
-            let payload={ action:'tambahWarga', id_kader:sessionKader.id_kader, nama_kader:sessionKader.nama_kader, jabatan:sessionKader.jabatan, kelurahan:sessionKader.kelurahan, nama_warga_binaan:nama, alamat_binaan:alamat };
-            let res=await fetch(SCRIPT_URL,{ method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(payload) });
-            let result=await res.json();
-            if(result.success){
-                let wargaBaru={ nama_warga_binaan:nama, alamat_binaan:alamat, dibuat_oleh_id:sessionKader.id_kader, dibuat_oleh_nama:sessionKader.nama_kader };
-                daftarWarga.unshift(wargaBaru);
-                renderDaftarWarga();
-                selectWarga(wargaBaru);
-                showToast('success','Warga ditambahkan');
-            } else { showToast('error',result.error||'Gagal'); }
-        }catch(e){ showToast('error','Gagal koneksi'); }finally{ showLoading(false); }
+        showToast(`Warga ${w.nama_warga_binaan} dipilih`);
     }
 
-    // Fungsi konversi file ke base64
-    function fileToBase64(file){
-        return new Promise((resolve,reject)=>{
-            let reader=new FileReader();
-            reader.onload=()=>{ let base64=reader.result.split(',')[1]; resolve({ base64:base64, type:file.type, name:file.name }); };
-            reader.onerror=reject;
-            reader.readAsDataURL(file);
+    function escapeHtml(s) { return s.replace(/[&<>]/g, function(m){if(m==='&')return '&amp;';if(m==='<')return '&lt;';if(m==='>')return '&gt;';return m;}); }
+
+    // Tambah warga via iframe
+    function showTambahWarga() { document.getElementById('modalTambahWarga').classList.add('active'); }
+    function closeModal() { document.getElementById('modalTambahWarga').classList.remove('active'); }
+    function tambahWarga() {
+        let nama = document.getElementById('modalNama').value.trim();
+        let alamat = document.getElementById('modalAlamat').value.trim();
+        if (!nama) { showToast('Nama wajib diisi', true); return; }
+        closeModal();
+        
+        let iframe = document.createElement('iframe');
+        iframe.name = 'hiddenFrameAddWarga';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        let form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = 'hiddenFrameAddWarga';
+        form.enctype = 'application/x-www-form-urlencoded';
+        let params = new URLSearchParams({
+            action: 'tambahWarga',
+            id_kader: sessionKader.id_kader,
+            nama_kader: sessionKader.nama_kader,
+            jabatan: sessionKader.jabatan,
+            kelurahan: sessionKader.kelurahan,
+            nama_warga_binaan: nama,
+            alamat_binaan: alamat
         });
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'payload';
+        input.value = params.toString();
+        form.appendChild(input);
+        document.body.appendChild(form);
+        
+        iframe.onload = () => {
+            try {
+                let resp = JSON.parse(iframe.contentDocument.body.innerText);
+                if (resp.success) {
+                    showToast('Warga berhasil ditambahkan');
+                    loadDaftarWarga();
+                } else { showToast(resp.error || 'Gagal', true); }
+            } catch(e) { showToast('Gagal menambah warga', true); }
+            iframe.remove();
+            form.remove();
+        };
+        form.submit();
     }
 
-    // SUBMIT LAPORAN dengan fetch + CORS (tambahkan mode cors & credentials)
-    async function submitLaporan(){
-        if(!selectedWarga){ showToast('error','Pilih warga dulu'); return; }
-        let tanggal=document.getElementById('tanggalLaporan').value;
-        let organik=parseFloat(document.getElementById('organik').value)||0;
-        let anOrganik=parseFloat(document.getElementById('anOrganik').value)||0;
-        let residu=parseFloat(document.getElementById('residu').value)||0;
-        if(organik===0 && anOrganik===0 && residu===0){ showToast('error','Minimal satu sampah >0'); return; }
-        let fileOrg=document.getElementById('fotoOrganik').files[0];
-        let fileAn=document.getElementById('fotoAnOrganik').files[0];
-        let fileRes=document.getElementById('fotoResidu').files[0];
-        if(!fileOrg && !fileAn && !fileRes){ showToast('error','Upload minimal 1 foto'); return; }
-        showLoading(true,'Mengirim laporan...');
-        try{
-            let fotoOrgData=fileOrg ? await fileToBase64(fileOrg) : null;
-            let fotoAnData=fileAn ? await fileToBase64(fileAn) : null;
-            let fotoResData=fileRes ? await fileToBase64(fileRes) : null;
-            let payload={
-                action:'submitLaporan',
-                id_kader:sessionKader.id_kader,
-                nama_kader:sessionKader.nama_kader,
-                jabatan:sessionKader.jabatan,
-                kelurahan:sessionKader.kelurahan,
-                tanggal_input:tanggal,
-                nama_warga_binaan:selectedWarga.nama_warga_binaan,
-                alamat_binaan:selectedWarga.alamat_binaan,
-                organik:organik,
-                an_organik:anOrganik,
-                residu:residu,
-                foto_organik:fotoOrgData,
-                foto_anorganik:fotoAnData,
-                foto_residu:fotoResData
-            };
-            let response=await fetch(SCRIPT_URL,{
-                method:'POST',
-                mode:'cors',
-                credentials:'omit',
-                headers:{'Content-Type':'application/json'},
-                body:JSON.stringify(payload)
-            });
-            let result=await response.json();
-            showLoading(false);
-            if(result.success){
-                showToast('success','Laporan terkirim!');
-                // reset form
-                document.getElementById('organik').value='0';
-                document.getElementById('anOrganik').value='0';
-                document.getElementById('residu').value='0';
-                document.getElementById('fotoOrganik').value='';
-                document.getElementById('fotoAnOrganik').value='';
-                document.getElementById('fotoResidu').value='';
-                ['previewOrganik','previewAnOrganik','previewResidu'].forEach(id=>{ let img=document.getElementById(id); if(img){ img.classList.remove('active'); img.src=''; } });
-                calculateTotal();
-            } else { showToast('error',result.error||'Gagal kirim'); }
-        }catch(e){ showLoading(false); showToast('error','Gagal kirim: '+e.message); console.error(e); }
+    // Kirim laporan final (hanya data teks + URL foto)
+    function kirimLaporan() {
+        if (!selectedWarga) { showToast('Pilih warga terlebih dahulu', true); return; }
+        let tanggal = document.getElementById('tanggalLaporan').value;
+        let organik = parseFloat(document.getElementById('organik').value) || 0;
+        let anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
+        let residu = parseFloat(document.getElementById('residu').value) || 0;
+        let total = organik + anOrganik + residu;
+        if (total === 0) { showToast('Minimal satu jenis sampah > 0 Kg', true); return; }
+        
+        let urlOrganik = document.getElementById('urlOrganik').value;
+        let urlAnOrganik = document.getElementById('urlAnOrganik').value;
+        let urlResidu = document.getElementById('urlResidu').value;
+        if (!urlOrganik && !urlAnOrganik && !urlResidu) { showToast('Harap upload minimal 1 foto', true); return; }
+        
+        let payload = {
+            action: 'submitLaporan',
+            id_kader: sessionKader.id_kader,
+            nama_kader: sessionKader.nama_kader,
+            jabatan: sessionKader.jabatan,
+            kelurahan: sessionKader.kelurahan,
+            tanggal_input: tanggal,
+            nama_warga_binaan: selectedWarga.nama_warga_binaan,
+            alamat_binaan: selectedWarga.alamat_binaan,
+            organik: organik,
+            an_organik: anOrganik,
+            residu: residu,
+            foto_organik_url: urlOrganik,
+            foto_anorganik_url: urlAnOrganik,
+            foto_residu_url: urlResidu
+        };
+        
+        let iframe = document.createElement('iframe');
+        iframe.name = 'hiddenFrameSubmitLaporan';
+        iframe.style.display = 'none';
+        document.body.appendChild(iframe);
+        
+        let form = document.createElement('form');
+        form.method = 'POST';
+        form.action = SCRIPT_URL;
+        form.target = 'hiddenFrameSubmitLaporan';
+        form.enctype = 'application/x-www-form-urlencoded';
+        let input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'payload';
+        input.value = JSON.stringify(payload);
+        form.appendChild(input);
+        document.body.appendChild(form);
+        
+        iframe.onload = () => {
+            try {
+                let resp = JSON.parse(iframe.contentDocument.body.innerText);
+                if (resp.success) {
+                    showToast('Laporan berhasil dikirim!');
+                    // Reset form setelah sukses
+                    document.getElementById('organik').value = '0';
+                    document.getElementById('anOrganik').value = '0';
+                    document.getElementById('residu').value = '0';
+                    document.getElementById('fileOrganik').value = '';
+                    document.getElementById('fileAnOrganik').value = '';
+                    document.getElementById('fileResidu').value = '';
+                    document.getElementById('urlOrganik').value = '';
+                    document.getElementById('urlAnOrganik').value = '';
+                    document.getElementById('urlResidu').value = '';
+                    document.getElementById('previewOrganik').classList.remove('active');
+                    document.getElementById('previewAnOrganik').classList.remove('active');
+                    document.getElementById('previewResidu').classList.remove('active');
+                    document.getElementById('statusOrganik').innerHTML = '';
+                    document.getElementById('statusAnOrganik').innerHTML = '';
+                    document.getElementById('statusResidu').innerHTML = '';
+                    uploadStatus = { organik: { uploading: false, url: '' }, anorganik: { uploading: false, url: '' }, residu: { uploading: false, url: '' } };
+                    updateKirimButton();
+                    calculateTotal();
+                } else {
+                    showToast(resp.error || 'Gagal kirim laporan', true);
+                }
+            } catch(e) { showToast('Gagal mengirim laporan', true); }
+            iframe.remove();
+            form.remove();
+        };
+        form.submit();
     }
+
+    function calculateTotal() {
+        let o = parseFloat(document.getElementById('organik').value) || 0;
+        let a = parseFloat(document.getElementById('anOrganik').value) || 0;
+        let r = parseFloat(document.getElementById('residu').value) || 0;
+        document.getElementById('totalSampah').innerText = (o + a + r).toFixed(2) + ' Kg';
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('tanggalLaporan').value = new Date().toISOString().slice(0,10);
+        document.getElementById('organik').addEventListener('input', calculateTotal);
+        document.getElementById('anOrganik').addEventListener('input', calculateTotal);
+        document.getElementById('residu').addEventListener('input', calculateTotal);
+        initFileUpload();
+        updateKirimButton();
+    });
 </script>
 </body>
 </html>
