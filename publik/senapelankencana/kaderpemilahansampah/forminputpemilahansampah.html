@@ -412,7 +412,7 @@
     <script>
         // ============ KONFIGURASI ============
         // GANTI DENGAN URL APPS SCRIPT ANDA YANG SUDAH DI-DEPLOY!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbybHdrzefaK5OrAXkgDMWMc-uAT5eDLlIcwpgp53yA53xQMhRSitQAbBhIu5niZsEDk/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwDoxnLKJnldiR4YvkLasxDYaykgMScuy6H0BKwBX3JDoDYTUDZUxWeN_ZDq6dZMW0Y/exec';
         
         let sessionKader = { id_kader: '', nama_kader: '', jabatan: '', kelurahan: '' };
         let selectedWarga = null;
@@ -528,93 +528,88 @@
         }
         
         // ============ UPLOAD FOTO KE SERVER ============
-        async function uploadFoto(file, jenis, idLaporan, namaWarga) {
-            return new Promise((resolve, reject) => {
-                const formData = new FormData();
-                formData.append('action', 'uploadFoto');
-                formData.append('jenis', jenis);
-                formData.append('id_laporan', idLaporan);
-                formData.append('id_kader', sessionKader.id_kader);
-                formData.append('nama_warga', namaWarga);
-                formData.append('foto', file);
-                
-                fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        resolve(result.url);
-                    } else {
-                        reject(new Error(result.error || 'Upload gagal'));
-                    }
-                })
-                .catch(error => reject(error));
-            });
+        function fileToBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result.split(',')[1]); // ambil base64 tanpa header
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+    });
+}
+
+async function uploadFoto(file, jenis, idLaporan, namaWarga) {
+    // Konversi file ke base64
+    const base64Data = await fileToBase64(file);
+    
+    const formData = new FormData();
+    formData.append('action', 'uploadFoto');
+    formData.append('jenis', jenis);
+    formData.append('id_laporan', idLaporan);
+    formData.append('id_kader', sessionKader.id_kader);
+    formData.append('nama_warga', namaWarga);
+    formData.append('foto_base64', base64Data);
+    formData.append('content_type', file.type);
+    
+    const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        body: formData
+    });
+    const result = await response.json();
+    if (!result.success) throw new Error(result.error);
+    return result.url;
+}
+
+async function handleFotoUpload(input, jenis) {
+    const file = input.files[0];
+    if (!file) return;
+    
+    if (file.size > 2 * 1024 * 1024) {
+        showToast('error', 'Ukuran foto maksimal 2MB');
+        input.value = '';
+        return;
+    }
+    
+    // Preview
+    const previewId = `preview${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`;
+    previewImage(input, previewId);
+    
+    // Update status UI
+    const statusDiv = document.getElementById(`status${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`);
+    statusDiv.innerHTML = '<span class="loading-spinner" style="width: 14px; height: 14px;"></span> Mengupload...';
+    statusDiv.className = 'upload-status uploading';
+    
+    try {
+        if (!currentIdLaporan) {
+            currentIdLaporan = generateIdLaporan();
         }
+        const namaWargaSanitasi = selectedWarga ? selectedWarga.nama_warga_binaan.replace(/[^a-z0-9]/gi, '_').substring(0, 30) : 'unknown';
+        const url = await uploadFoto(file, jenis, currentIdLaporan, namaWargaSanitasi);
         
-        async function handleFotoUpload(input, jenis) {
-            const file = input.files[0];
-            if (!file) return;
-            
-            // Validasi ukuran
-            if (file.size > 2 * 1024 * 1024) {
-                showToast('error', 'Ukuran foto maksimal 2MB');
-                input.value = '';
-                return;
-            }
-            
-            // Preview
-            const previewId = `preview${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`;
-            previewImage(input, previewId);
-            
-            // Update status UI
-            const statusDiv = document.getElementById(`status${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`);
-            statusDiv.innerHTML = '<span class="loading-spinner" style="width: 14px; height: 14px;"></span> Mengupload...';
-            statusDiv.className = 'upload-status uploading';
-            
-            try {
-                // Pastikan ada ID laporan
-                if (!currentIdLaporan) {
-                    currentIdLaporan = generateIdLaporan();
-                }
-                
-                const namaWargaSanitasi = selectedWarga ? selectedWarga.nama_warga_binaan.replace(/[^a-z0-9]/gi, '_').substring(0, 30) : 'unknown';
-                const url = await uploadFoto(file, jenis, currentIdLaporan, namaWargaSanitasi);
-                
-                // Update state
-                uploadState[jenis] = {
-                    uploaded: true,
-                    url: url,
-                    status: 'success'
-                };
-                
-                statusDiv.innerHTML = '✅ Foto berhasil diupload';
-                statusDiv.className = 'upload-status success';
-                showToast('success', `Foto ${jenis} berhasil diupload`);
-                
-                // Update tombol submit
-                updateSubmitButtonState();
-                
-            } catch (error) {
-                console.error('Upload error:', error);
-                uploadState[jenis] = {
-                    uploaded: false,
-                    url: '',
-                    status: 'error'
-                };
-                statusDiv.innerHTML = '❌ Gagal upload: ' + error.message;
-                statusDiv.className = 'upload-status error';
-                showToast('error', `Gagal upload foto ${jenis}: ${error.message}`);
-                
-                // Reset input file agar bisa diupload ulang
-                input.value = '';
-                
-                // Update tombol submit
-                updateSubmitButtonState();
-            }
-        }
+        uploadState[jenis] = {
+            uploaded: true,
+            url: url,
+            status: 'success'
+        };
+        
+        statusDiv.innerHTML = '✅ Foto berhasil diupload';
+        statusDiv.className = 'upload-status success';
+        showToast('success', `Foto ${jenis} berhasil diupload`);
+        updateSubmitButtonState();
+        
+    } catch (error) {
+        console.error('Upload error:', error);
+        uploadState[jenis] = {
+            uploaded: false,
+            url: '',
+            status: 'error'
+        };
+        statusDiv.innerHTML = '❌ Gagal upload: ' + error.message;
+        statusDiv.className = 'upload-status error';
+        showToast('error', `Gagal upload foto ${jenis}: ${error.message}`);
+        input.value = '';
+        updateSubmitButtonState();
+    }
+}
         
         // Reset semua state upload
         function resetUploadState() {
