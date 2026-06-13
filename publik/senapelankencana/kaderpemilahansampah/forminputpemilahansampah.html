@@ -125,7 +125,6 @@
         .weight-input-group input { flex: 1; }
         .weight-unit { color: #718096; font-weight: 500; min-width: 50px; }
         
-        /* Style untuk Daftar Warga */
         .daftar-warga-container {
             max-height: 300px;
             overflow-y: auto;
@@ -277,7 +276,6 @@
                 <div class="card-title"><span class="icon">📋</span> Daftar Warga Binaan</div>
                 <div class="card-subtitle">Pilih warga dari daftar (hanya menampilkan warga sesuai kelurahan Anda)</div>
                 
-                <!-- Daftar Warga Binaan -->
                 <div id="daftarWargaContainer" style="margin-bottom: 20px;">
                     <div class="daftar-warga-container" id="daftarWargaList">
                         <div style="padding: 20px; text-align: center; color: #718096;">Memuat daftar warga...</div>
@@ -397,7 +395,7 @@
     <script>
         // ============ KONFIGURASI ============
         // GANTI DENGAN URL APPS SCRIPT ANDA YANG SUDAH DI-DEPLOY!
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz9T2qymsEJzoS8kLvDeSR0G78IKx2Ic9STc_YvuxUowSmEr6rVsB4vrjoQMgHupVEi/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby-NeJh3O_axjtLrhNuNKEmRJCMe_YaUSayLBWW2ROzcUzH6-d9rGDF7Q0j9F9Q5J0C/exec';
         
         let sessionKader = { id_kader: '', nama_kader: '', jabatan: '', kelurahan: '' };
         let selectedWarga = null;
@@ -572,7 +570,6 @@
             });
         }
         
-        // ============ SELECT WARGA ============
         function selectWarga(warga) {
             selectedWarga = warga;
             document.getElementById('namaWarga').value = warga.nama_warga_binaan;
@@ -602,163 +599,163 @@
             document.getElementById('tambahWargaModal').classList.remove('active');
         }
         
- // ============ TAMBAH WARGA BARU (DIREVISI dengan FormData) ============
-async function tambahWargaBaru() {
-    const namaWarga = document.getElementById('modalNamaWarga').value.trim();
-    const alamatWarga = document.getElementById('modalAlamatWarga').value.trim();
-    
-    if (!namaWarga) { showToast('error', 'Nama warga harus diisi!'); return; }
-    if (!alamatWarga) { showToast('error', 'Alamat harus diisi!'); return; }
-    
-    closeTambahWargaModal();
-    showLoading(true, 'Menyimpan data warga...');
-    
-    try {
-        // Gunakan FormData, bukan JSON
-        const formData = new FormData();
-        formData.append('action', 'tambahWarga');
-        formData.append('id_kader', sessionKader.id_kader);
-        formData.append('nama_kader', sessionKader.nama_kader);
-        formData.append('jabatan', sessionKader.jabatan);
-        formData.append('kelurahan', sessionKader.kelurahan);
-        formData.append('nama_warga_binaan', namaWarga);
-        formData.append('alamat_binaan', alamatWarga);
-        
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: formData  // Kirim sebagai FormData, bukan JSON
-        });
-        
-        const result = await response.json();
-        showLoading(false);
-        
-        if (result.success) {
-            showToast('success', 'Warga berhasil ditambahkan!');
+        // ============ TAMBAH WARGA BARU (JSON) ============
+        async function tambahWargaBaru() {
+            const namaWarga = document.getElementById('modalNamaWarga').value.trim();
+            const alamatWarga = document.getElementById('modalAlamatWarga').value.trim();
             
-            // Buat objek warga baru dan tambahkan ke array
-            const wargaBaru = {
-                nama_warga_binaan: namaWarga,
-                alamat_binaan: alamatWarga,
-                dibuat_oleh_id: sessionKader.id_kader,
-                dibuat_oleh_nama: sessionKader.nama_kader
-            };
+            if (!namaWarga) { showToast('error', 'Nama warga harus diisi!'); return; }
+            if (!alamatWarga) { showToast('error', 'Alamat harus diisi!'); return; }
             
-            // Tambahkan ke awal array
-            daftarWarga.unshift(wargaBaru);
-            renderDaftarWarga();
-            selectWarga(wargaBaru);
+            closeTambahWargaModal();
+            showLoading(true, 'Menyimpan data warga...');
             
-        } else {
-            showToast('error', 'Gagal: ' + (result.error || 'Terjadi kesalahan'));
-        }
-    } catch (error) {
-        showLoading(false);
-        showToast('error', 'Gagal terhubung ke server: ' + error.message);
-        console.error('Tambah warga error:', error);
-    }
-}
-        
-        // ============ SUBMIT LAPORAN ============
-        async function submitLaporan() {
-    if (!selectedWarga) {
-        showToast('error', 'Silakan pilih warga dari daftar terlebih dahulu!');
-        return;
-    }
-    
-    const tanggal = document.getElementById('tanggalLaporan').value;
-    const organik = parseFloat(document.getElementById('organik').value) || 0;
-    const anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
-    const residu = parseFloat(document.getElementById('residu').value) || 0;
-    
-    if (organik === 0 && anOrganik === 0 && residu === 0) { 
-        showToast('error', 'Minimal satu jenis sampah > 0 Kg'); 
-        return; 
-    }
-    
-    // AMBIL FILE DARI INPUT
-    const fotoOrganikFile = document.getElementById('fotoOrganik').files[0];
-    const fotoAnOrganikFile = document.getElementById('fotoAnOrganik').files[0];
-    const fotoResiduFile = document.getElementById('fotoResidu').files[0];
-    
-    // VALIDASI: Minimal 1 foto wajib diupload
-    if (!fotoOrganikFile && !fotoAnOrganikFile && !fotoResiduFile) {
-        showToast('error', 'Minimal upload 1 foto bukti!');
-        return;
-    }
-    
-    showLoading(true, 'Mengirim laporan...');
-    
-    // BUAT FormData dengan BENAR
-    const formData = new FormData();
-    formData.append('action', 'submitLaporan');
-    formData.append('id_kader', sessionKader.id_kader);
-    formData.append('nama_kader', sessionKader.nama_kader);
-    formData.append('jabatan', sessionKader.jabatan);
-    formData.append('kelurahan', sessionKader.kelurahan);
-    formData.append('tanggal_input', tanggal);
-    formData.append('nama_warga_binaan', selectedWarga.nama_warga_binaan);
-    formData.append('alamat_binaan', selectedWarga.alamat_binaan);
-    formData.append('organik', organik.toString());
-    formData.append('an_organik', anOrganik.toString());
-    formData.append('residu', residu.toString());
-    
-    // APPEND FILE - PASTIKAN FILE ADA
-    if (fotoOrganikFile) {
-        formData.append('foto_organik', fotoOrganikFile, fotoOrganikFile.name);
-        console.log('Append foto organik:', fotoOrganikFile.name, fotoOrganikFile.size);
-    }
-    if (fotoAnOrganikFile) {
-        formData.append('foto_anorganik', fotoAnOrganikFile, fotoAnOrganikFile.name);
-        console.log('Append foto anorganik:', fotoAnOrganikFile.name, fotoAnOrganikFile.size);
-    }
-    if (fotoResiduFile) {
-        formData.append('foto_residu', fotoResiduFile, fotoResiduFile.name);
-        console.log('Append foto residu:', fotoResiduFile.name, fotoResiduFile.size);
-    }
-    
-    // DEBUG: Log semua key di FormData
-    console.log('FormData entries:');
-    for (let pair of formData.entries()) {
-        console.log(pair[0], pair[1] instanceof File ? `[FILE] ${pair[1].name}` : pair[1]);
-    }
-    
-    try {
-        // PENTING: JANGAN set Content-Type, biar browser yang set otomatis dengan boundary
-        const response = await fetch(SCRIPT_URL, {
-            method: 'POST',
-            body: formData  // TIDAK pakai headers Content-Type!
-        });
-        
-        console.log('Response status:', response.status);
-        const result = await response.json();
-        showLoading(false);
-        
-        if (result.success) {
-            showToast('success', '✅ Laporan berhasil dikirim!');
-            // Reset form
-            document.getElementById('organik').value = '0';
-            document.getElementById('anOrganik').value = '0';
-            document.getElementById('residu').value = '0';
-            document.getElementById('fotoOrganik').value = '';
-            document.getElementById('fotoAnOrganik').value = '';
-            document.getElementById('fotoResidu').value = '';
-            ['previewOrganik', 'previewAnOrganik', 'previewResidu'].forEach(id => {
-                const preview = document.getElementById(id);
-                if(preview) {
-                    preview.classList.remove('active');
-                    preview.src = '';
+            try {
+                const payload = {
+                    action: 'tambahWarga',
+                    id_kader: sessionKader.id_kader,
+                    nama_kader: sessionKader.nama_kader,
+                    jabatan: sessionKader.jabatan,
+                    kelurahan: sessionKader.kelurahan,
+                    nama_warga_binaan: namaWarga,
+                    alamat_binaan: alamatWarga
+                };
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                showLoading(false);
+                
+                if (result.success) {
+                    showToast('success', 'Warga berhasil ditambahkan!');
+                    const wargaBaru = {
+                        nama_warga_binaan: namaWarga,
+                        alamat_binaan: alamatWarga,
+                        dibuat_oleh_id: sessionKader.id_kader,
+                        dibuat_oleh_nama: sessionKader.nama_kader
+                    };
+                    daftarWarga.unshift(wargaBaru);
+                    renderDaftarWarga();
+                    selectWarga(wargaBaru);
+                } else {
+                    showToast('error', 'Gagal: ' + (result.error || 'Terjadi kesalahan'));
                 }
-            });
-            calculateTotal();
-        } else {
-            showToast('error', 'Gagal: ' + (result.error || 'Terjadi kesalahan server'));
+            } catch (error) {
+                showLoading(false);
+                showToast('error', 'Gagal terhubung ke server: ' + error.message);
+                console.error('Tambah warga error:', error);
+            }
         }
-    } catch (error) {
-        showLoading(false);
-        showToast('error', 'Gagal terhubung ke server: ' + error.message);
-        console.error('Submit error:', error);
-    }
-}
+        
+        // ============ KONVERSI FILE KE BASE64 ============
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64String = reader.result.split(',')[1];
+                    resolve({
+                        base64: base64String,
+                        type: file.type,
+                        name: file.name
+                    });
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+        
+        // ============ SUBMIT LAPORAN (JSON + BASE64) ============
+        async function submitLaporan() {
+            if (!selectedWarga) {
+                showToast('error', 'Silakan pilih warga dari daftar terlebih dahulu!');
+                return;
+            }
+            
+            const tanggal = document.getElementById('tanggalLaporan').value;
+            const organik = parseFloat(document.getElementById('organik').value) || 0;
+            const anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
+            const residu = parseFloat(document.getElementById('residu').value) || 0;
+            
+            if (organik === 0 && anOrganik === 0 && residu === 0) { 
+                showToast('error', 'Minimal satu jenis sampah > 0 Kg'); 
+                return; 
+            }
+            
+            const fotoOrganikFile = document.getElementById('fotoOrganik').files[0];
+            const fotoAnOrganikFile = document.getElementById('fotoAnOrganik').files[0];
+            const fotoResiduFile = document.getElementById('fotoResidu').files[0];
+            
+            if (!fotoOrganikFile && !fotoAnOrganikFile && !fotoResiduFile) {
+                showToast('error', 'Minimal upload 1 foto bukti!');
+                return;
+            }
+            
+            showLoading(true, 'Mengirim laporan...');
+            
+            try {
+                // Konversi file ke base64 secara paralel
+                const [fotoOrganikData, fotoAnOrganikData, fotoResiduData] = await Promise.all([
+                    fotoOrganikFile ? fileToBase64(fotoOrganikFile) : null,
+                    fotoAnOrganikFile ? fileToBase64(fotoAnOrganikFile) : null,
+                    fotoResiduFile ? fileToBase64(fotoResiduFile) : null
+                ]);
+                
+                const payload = {
+                    action: 'submitLaporan',
+                    id_kader: sessionKader.id_kader,
+                    nama_kader: sessionKader.nama_kader,
+                    jabatan: sessionKader.jabatan,
+                    kelurahan: sessionKader.kelurahan,
+                    tanggal_input: tanggal,
+                    nama_warga_binaan: selectedWarga.nama_warga_binaan,
+                    alamat_binaan: selectedWarga.alamat_binaan,
+                    organik: organik,
+                    an_organik: anOrganik,
+                    residu: residu,
+                    foto_organik: fotoOrganikData,
+                    foto_anorganik: fotoAnOrganikData,
+                    foto_residu: fotoResiduData
+                };
+                
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await response.json();
+                showLoading(false);
+                
+                if (result.success) {
+                    showToast('success', '✅ Laporan berhasil dikirim!');
+                    // Reset form
+                    document.getElementById('organik').value = '0';
+                    document.getElementById('anOrganik').value = '0';
+                    document.getElementById('residu').value = '0';
+                    document.getElementById('fotoOrganik').value = '';
+                    document.getElementById('fotoAnOrganik').value = '';
+                    document.getElementById('fotoResidu').value = '';
+                    ['previewOrganik', 'previewAnOrganik', 'previewResidu'].forEach(id => {
+                        const preview = document.getElementById(id);
+                        if(preview) {
+                            preview.classList.remove('active');
+                            preview.src = '';
+                        }
+                    });
+                    calculateTotal();
+                } else {
+                    showToast('error', 'Gagal: ' + (result.error || 'Terjadi kesalahan server'));
+                }
+            } catch (error) {
+                showLoading(false);
+                showToast('error', 'Gagal terhubung ke server: ' + error.message);
+                console.error('Submit error:', error);
+            }
+        }
     </script>
 </body>
 </html>
