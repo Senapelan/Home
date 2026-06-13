@@ -11,17 +11,10 @@
     <meta property="og:description" content="Sistem informasi dan pengelolaan Bank Sampah Kecamatan Senapelan">
     <meta property="og:site_name" content="Bank Sampah Senapelan">
     <meta property="og:image" content="https://senapelan.github.io/Home/publik/senapelankencana/image/kaderpemilahsampah.png">
-    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/publik/senapelankencana/image/kaderpemilahsampah.png">
-    
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Bank Sampah Senapelan">
-    <meta name="twitter:description" content="Sistem informasi Bank Sampah Senapelan">
-    <meta name="twitter:image" content="https://senapelan.github.io/Home/publik/senapelankencana/image/kaderpemilahsampah.png">
     
     <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/senapelankencana/image/kaderpemilahsampah.png">
     
     <style>
-        /* (style sama seperti sebelumnya, tidak berubah) */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Inter', sans-serif;
@@ -100,7 +93,11 @@
         .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
         .btn-secondary { background: #e2e8f0; color: #4a5568; }
         .btn-secondary:hover { background: #cbd5e0; }
+        .btn-success { background: #48bb78; color: white; }
+        .btn-success:hover { background: #38a169; }
         .btn-sm { padding: 8px 16px; font-size: 0.85rem; }
+        
+        /* Upload Area Styles */
         .upload-area {
             border: 2px dashed #cbd5e0;
             border-radius: 16px;
@@ -111,10 +108,16 @@
             background: #f7fafc;
         }
         .upload-area:hover { border-color: #667eea; background: #edf2f7; }
-        .preview-container { position: relative; width: 100%; max-width: 150px; margin-top: 10px; }
+        .preview-container { 
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
         .preview-image {
-            width: 100%;
-            aspect-ratio: 4 / 6;
+            width: 80px;
+            height: 80px;
             object-fit: cover;
             border-radius: 8px;
             display: none;
@@ -122,9 +125,76 @@
             border: 1px solid #e2e8f0;
         }
         .preview-image.active { display: block; }
-        .weight-input-group { display: flex; gap: 10px; align-items: center; }
-        .weight-input-group input { flex: 1; }
-        .weight-unit { color: #718096; font-weight: 500; min-width: 50px; }
+        
+        .upload-progress {
+            flex: 1;
+            min-width: 150px;
+        }
+        .progress-bar-container {
+            background: #e2e8f0;
+            border-radius: 20px;
+            height: 8px;
+            overflow: hidden;
+            margin: 5px 0;
+        }
+        .progress-bar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            height: 100%;
+            transition: width 0.3s;
+            border-radius: 20px;
+        }
+        .upload-status {
+            font-size: 0.75rem;
+            color: #718096;
+            margin-top: 4px;
+        }
+        .upload-status.success { color: #48bb78; }
+        .upload-status.error { color: #f56565; }
+        
+        /* Camera Modal */
+        .camera-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+        .camera-modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .camera-container {
+            background: #000;
+            border-radius: 20px;
+            overflow: hidden;
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+        video, #photoCanvas {
+            width: 100%;
+            max-height: 70vh;
+            background: #000;
+        }
+        .camera-controls {
+            display: flex;
+            gap: 15px;
+            padding: 20px;
+            justify-content: center;
+            background: #1a1a2e;
+        }
+        
+        /* Daftar Warga */
         .daftar-warga-container {
             max-height: 300px;
             overflow-y: auto;
@@ -146,7 +216,6 @@
         .warga-item.selected { background: #c7d2fe; border-left: 4px solid #667eea; }
         .warga-nama { font-weight: 600; color: #2d3748; }
         .warga-alamat { font-size: 0.8rem; color: #718096; margin-top: 4px; }
-        .warga-dibuat-oleh { font-size: 0.7rem; color: #a0aec0; margin-top: 2px; }
         .badge {
             display: inline-block;
             padding: 2px 8px;
@@ -156,6 +225,7 @@
         }
         .badge-own { background: #c6f6d5; color: #22543d; }
         .badge-other { background: #fed7d7; color: #742a2a; }
+        
         .modal {
             position: fixed;
             top: 0;
@@ -182,6 +252,7 @@
             max-width: 400px;
             width: 90%;
         }
+        
         .toast-notif {
             position: fixed;
             bottom: 30px;
@@ -202,16 +273,9 @@
         .toast-notif.show {
             transform: translateX(-50%) translateY(0);
         }
-        .toast-notif.success {
-            border-left: 6px solid #48bb78;
-            color: #22543d;
-            background: #f0fff4;
-        }
-        .toast-notif.error {
-            border-left: 6px solid #f56565;
-            color: #742a2a;
-            background: #fff5f5;
-        }
+        .toast-notif.success { border-left: 6px solid #48bb78; color: #22543d; background: #f0fff4; }
+        .toast-notif.error { border-left: 6px solid #f56565; color: #742a2a; background: #fff5f5; }
+        
         .loading-spinner {
             display: inline-block;
             width: 20px;
@@ -225,24 +289,23 @@
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        .upload-status {
-            font-size: 0.75rem;
-            margin-top: 5px;
+        
+        .btn-group {
             display: flex;
-            align-items: center;
-            gap: 5px;
+            gap: 10px;
+            margin-top: 10px;
         }
-        .upload-status.success { color: #38a169; }
-        .upload-status.error { color: #e53e3e; }
-        .upload-status.uploading { color: #3182ce; }
+        .btn-group .btn {
+            flex: 1;
+        }
+        
         @media (max-width: 768px) {
             body { padding: 10px; }
             .card { padding: 20px; }
             .header { padding: 15px; }
             .logo-left img, .logo-right img { height: 45px; }
             .header-title h1 { font-size: 0.9rem; }
-            .btn { width: 100%; }
-            .weight-input-group { flex-direction: column; }
+            .preview-container { flex-direction: column; }
         }
     </style>
 </head>
@@ -282,12 +345,15 @@
             <div class="card">
                 <div class="card-title"><span class="icon">📋</span> Daftar Warga Binaan</div>
                 <div class="card-subtitle">Pilih warga dari daftar (hanya menampilkan warga sesuai kelurahan Anda)</div>
+                
                 <div id="daftarWargaContainer" style="margin-bottom: 20px;">
                     <div class="daftar-warga-container" id="daftarWargaList">
                         <div style="padding: 20px; text-align: center; color: #718096;">Memuat daftar warga...</div>
                     </div>
                 </div>
+                
                 <button class="btn btn-secondary" onclick="showTambahWargaModal()" style="width: 100%; margin-top: 10px;">➕ Tambah Warga Baru</button>
+                
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
                     <div class="form-group">
                         <label>Nama Warga Binaan Terpilih <span class="required">*</span></label>
@@ -303,63 +369,56 @@
             <div class="card">
                 <div class="card-title"><span class="icon">🗑️</span> Laporan Pemilahan Sampah</div>
                 <div class="card-subtitle">Isi data pemilahan sampah hari ini</div>
+                
                 <div class="form-group">
                     <label>Tanggal Laporan <span class="required">*</span></label>
                     <input type="date" id="tanggalLaporan">
                 </div>
+                
+                <!-- Pilihan Jenis Sampah -->
                 <div class="form-group">
+                    <label>Pilih Jenis Sampah <span class="required">*</span></label>
+                    <select id="jenisSampah" onchange="toggleJenisSampah()">
+                        <option value="organik">🌿 Sampah Organik</option>
+                        <option value="anorganik">🥤 Sampah An Organik</option>
+                        <option value="residu">🗑️ Sampah Residu</option>
+                    </select>
+                </div>
+                
+                <!-- Input Berat per Jenis -->
+                <div id="organikGroup" class="form-group">
                     <label>Sampah Organik (Kg)</label>
-                    <div class="weight-input-group">
-                        <input type="number" id="organik" step="0.1" min="0" value="0" placeholder="0" onchange="updateSubmitButtonState()">
-                        <span class="weight-unit">Kilogram</span>
-                    </div>
+                    <input type="number" id="organik" step="0.1" min="0" value="0" placeholder="0" onchange="hitungTotal()">
                 </div>
-                <div class="form-group">
-                    <label>Foto Bukti Organik</label>
-                    <div class="upload-area" onclick="document.getElementById('fotoOrganik').click()">
-                        📸 Klik untuk upload foto
-                        <input type="file" id="fotoOrganik" accept="image/*" style="display: none;" onchange="handleFotoUpload(this, 'organik')">
-                    </div>
-                    <div class="preview-container"><img id="previewOrganik" class="preview-image" alt="Preview"></div>
-                    <div id="statusOrganik" class="upload-status"></div>
-                </div>
-                <div class="form-group">
+                
+                <div id="anorganikGroup" class="form-group" style="display: none;">
                     <label>Sampah An Organik (Kg)</label>
-                    <div class="weight-input-group">
-                        <input type="number" id="anOrganik" step="0.1" min="0" value="0" placeholder="0" onchange="updateSubmitButtonState()">
-                        <span class="weight-unit">Kilogram</span>
-                    </div>
+                    <input type="number" id="anOrganik" step="0.1" min="0" value="0" placeholder="0" onchange="hitungTotal()">
                 </div>
-                <div class="form-group">
-                    <label>Foto Bukti An Organik</label>
-                    <div class="upload-area" onclick="document.getElementById('fotoAnOrganik').click()">
-                        📸 Klik untuk upload foto
-                        <input type="file" id="fotoAnOrganik" accept="image/*" style="display: none;" onchange="handleFotoUpload(this, 'anorganik')">
-                    </div>
-                    <div class="preview-container"><img id="previewAnOrganik" class="preview-image" alt="Preview"></div>
-                    <div id="statusAnOrganik" class="upload-status"></div>
-                </div>
-                <div class="form-group">
+                
+                <div id="residuGroup" class="form-group" style="display: none;">
                     <label>Sampah Residu (Kg)</label>
-                    <div class="weight-input-group">
-                        <input type="number" id="residu" step="0.1" min="0" value="0" placeholder="0" onchange="updateSubmitButtonState()">
-                        <span class="weight-unit">Kilogram</span>
-                    </div>
+                    <input type="number" id="residu" step="0.1" min="0" value="0" placeholder="0" onchange="hitungTotal()">
                 </div>
+                
+                <!-- Upload Foto dengan Kamera/Galeri -->
                 <div class="form-group">
-                    <label>Foto Bukti Residu</label>
-                    <div class="upload-area" onclick="document.getElementById('fotoResidu').click()">
-                        📸 Klik untuk upload foto
-                        <input type="file" id="fotoResidu" accept="image/*" style="display: none;" onchange="handleFotoUpload(this, 'residu')">
+                    <label>Foto Bukti <span class="required">*</span></label>
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-secondary" onclick="bukaKamera()">📷 Ambil Foto</button>
+                        <button type="button" class="btn btn-secondary" onclick="bukaGaleri()">🖼️ Pilih dari Galeri</button>
                     </div>
-                    <div class="preview-container"><img id="previewResidu" class="preview-image" alt="Preview"></div>
-                    <div id="statusResidu" class="upload-status"></div>
+                    <div id="fotoPreviewArea" class="preview-container"></div>
+                    <input type="file" id="fileInput" accept="image/*" style="display: none;" onchange="handleFileSelect(this)">
                 </div>
+                
                 <div class="form-group" style="background: #f7fafc; padding: 15px; border-radius: 12px;">
                     <label>Total Sampah (Kg)</label>
                     <h3 id="totalSampah" style="color: #667eea;">0 Kg</h3>
                 </div>
+                
                 <button class="btn btn-primary" onclick="submitLaporan()" style="width: 100%; margin-top: 20px;" id="btnSubmit" disabled>📤 Kirim Laporan ke Lurah & Camat</button>
+                <p style="font-size: 0.75rem; text-align: center; margin-top: 10px; color: #718096;">* Upload foto selesai baru tombol Kirim aktif</p>
             </div>
         </div>
     </div>
@@ -383,6 +442,18 @@
         </div>
     </div>
 
+    <!-- Modal Camera -->
+    <div id="cameraModal" class="camera-modal">
+        <div class="camera-container">
+            <video id="video" autoplay playsinline></video>
+            <canvas id="photoCanvas" style="display: none;"></canvas>
+            <div class="camera-controls">
+                <button class="btn btn-secondary" onclick="ambilFoto()">📸 Ambil</button>
+                <button class="btn btn-secondary" onclick="tutupKamera()">❌ Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <div id="loadingModal" class="modal">
         <div class="modal-content" style="text-align: center;">
             <div class="loading-spinner" style="width: 40px; height: 40px; margin: 20px auto;"></div>
@@ -392,22 +463,24 @@
 
     <script>
         // ============ KONFIGURASI ============
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbylIDMtnCqOyrq4J0kuMTnjquEOX3HGgAsW9L2V9Z2q_Lf0fwNSEQsGlngRWCZYzIzh/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx5Jpsq_uuG2woM7o6Eoc0excmkCoDJ4NgH0xeFlApEW9JMS9aWid0KJ34lasyCdGcL/exec';
         
         let sessionKader = { id_kader: '', nama_kader: '', jabatan: '', kelurahan: '' };
         let selectedWarga = null;
         let daftarWarga = [];
-        let uploadState = {
-            organik: { uploaded: false, url: '', status: 'pending' },
-            anorganik: { uploaded: false, url: '', status: 'pending' },
-            residu: { uploaded: false, url: '', status: 'pending' }
-        };
-        let currentIdLaporan = null;
         
-        // ============ UTILITY ============
+        // Upload state
+        let uploadStatus = {
+            fotoUrl: null,
+            isUploading: false,
+            isUploaded: false
+        };
+        
+        // ============ UTILITY FUNCTIONS ============
         function showToast(type, message) {
             const existingToast = document.querySelector('.toast-notif');
             if(existingToast) existingToast.remove();
+            
             const toast = document.createElement('div');
             toast.className = `toast-notif ${type}`;
             toast.innerHTML = type === 'success' ? `✅ ${message}` : `❌ ${message}`;
@@ -430,184 +503,212 @@
             }
         }
         
-        function previewImage(input, previewId) {
-            if (input.files && input.files[0]) {
-                const file = input.files[0];
-                if (file.size > 2 * 1024 * 1024) {
-                    showToast('error', 'Ukuran foto maksimal 2MB');
-                    input.value = '';
-                    return;
-                }
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    const preview = document.getElementById(previewId);
-                    if (preview) {
-                        preview.src = e.target.result;
-                        preview.classList.add('active');
-                    }
-                };
-                reader.readAsDataURL(file);
-            }
-        }
-        
-        function calculateTotal() {
+        function hitungTotal() {
             let organik = parseFloat(document.getElementById('organik').value) || 0;
             let anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
             let residu = parseFloat(document.getElementById('residu').value) || 0;
             let total = organik + anOrganik + residu;
             document.getElementById('totalSampah').innerText = total.toFixed(2) + ' Kg';
-            updateSubmitButtonState();
         }
         
-        function escapeHtml(text) { 
-            if(!text) return ''; 
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-        
-        function generateIdLaporan() {
-            return 'LAP_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
-        }
-        
-        function updateSubmitButtonState() {
-            const btnSubmit = document.getElementById('btnSubmit');
-            const organik = parseFloat(document.getElementById('organik').value) || 0;
-            const anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
-            const residu = parseFloat(document.getElementById('residu').value) || 0;
-            let needUpload = [];
-            if (organik > 0) needUpload.push('organik');
-            if (anOrganik > 0) needUpload.push('anorganik');
-            if (residu > 0) needUpload.push('residu');
-            if (needUpload.length === 0) {
-                btnSubmit.disabled = true;
-                btnSubmit.title = 'Minimal satu jenis sampah harus > 0 Kg';
-                return;
-            }
-            let allUploaded = needUpload.every(jenis => uploadState[jenis].uploaded === true);
-            if (allUploaded) {
-                btnSubmit.disabled = false;
-                btnSubmit.title = '';
-            } else {
-                btnSubmit.disabled = true;
-                btnSubmit.title = 'Harap upload foto untuk semua jenis sampah yang memiliki berat > 0 Kg';
-            }
-        }
-        
-        // ============ UPLOAD FOTO DENGAN URLSearchParams ============
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result.split(',')[1]);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-        
-        async function uploadFoto(file, jenis, idLaporan, namaWarga) {
-            const base64Data = await fileToBase64(file);
-            const params = new URLSearchParams();
-            params.append('action', 'uploadFoto');
-            params.append('jenis', jenis);
-            params.append('id_laporan', idLaporan);
-            params.append('id_kader', sessionKader.id_kader);
-            params.append('nama_warga', namaWarga);
-            params.append('foto_base64', base64Data);
-            params.append('content_type', file.type);
+        function toggleJenisSampah() {
+            const jenis = document.getElementById('jenisSampah').value;
+            document.getElementById('organikGroup').style.display = jenis === 'organik' ? 'block' : 'none';
+            document.getElementById('anorganikGroup').style.display = jenis === 'anorganik' ? 'block' : 'none';
+            document.getElementById('residuGroup').style.display = jenis === 'residu' ? 'block' : 'none';
             
-            const response = await fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                body: params
-            });
-            const result = await response.json();
-            if (!result.success) throw new Error(result.error);
-            return result.url;
+            // Reset nilai yang tidak aktif
+            if(jenis !== 'organik') document.getElementById('organik').value = '0';
+            if(jenis !== 'anorganik') document.getElementById('anOrganik').value = '0';
+            if(jenis !== 'residu') document.getElementById('residu').value = '0';
+            hitungTotal();
         }
         
-        async function handleFotoUpload(input, jenis) {
-            const file = input.files[0];
-            if (!file) return;
-            if (file.size > 2 * 1024 * 1024) {
-                showToast('error', 'Ukuran foto maksimal 2MB');
-                input.value = '';
+        function updateKirimButton() {
+            const btn = document.getElementById('btnSubmit');
+            btn.disabled = !uploadStatus.isUploaded;
+            if(!uploadStatus.isUploaded) {
+                btn.title = 'Upload foto terlebih dahulu';
+            } else {
+                btn.title = '';
+            }
+        }
+        
+        // ============ UPLOAD FOTO KE GOOGLE DRIVE ============
+        async function uploadFotoToDrive(file, jenis) {
+            return new Promise((resolve, reject) => {
+                if (!file) {
+                    reject('Tidak ada file');
+                    return;
+                }
+                
+                // Tampilkan progress
+                const previewArea = document.getElementById('fotoPreviewArea');
+                previewArea.innerHTML = `
+                    <div style="flex:1">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="uploadProgressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="upload-status" id="uploadStatusText">Mengupload ${jenis}... 0%</div>
+                    </div>
+                    <img id="previewImg" class="preview-image" style="display: block;">
+                `;
+                
+                const previewImg = document.getElementById('previewImg');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewImg.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+                
+                const formData = new FormData();
+                formData.append('action', 'uploadFoto');
+                formData.append('id_kader', sessionKader.id_kader);
+                formData.append('jenis', jenis);
+                formData.append('foto', file);
+                
+                const xhr = new XMLHttpRequest();
+                xhr.upload.addEventListener('progress', (e) => {
+                    if (e.lengthComputable) {
+                        const percent = Math.round((e.loaded / e.total) * 100);
+                        const progressBar = document.getElementById('uploadProgressBar');
+                        const statusText = document.getElementById('uploadStatusText');
+                        if(progressBar) progressBar.style.width = percent + '%';
+                        if(statusText) statusText.innerHTML = `Mengupload ${jenis}... ${percent}%`;
+                    }
+                });
+                
+                xhr.onload = () => {
+                    if (xhr.status === 200) {
+                        try {
+                            const result = JSON.parse(xhr.responseText);
+                            if (result.success) {
+                                const statusText = document.getElementById('uploadStatusText');
+                                if(statusText) {
+                                    statusText.innerHTML = `✅ Upload selesai!`;
+                                    statusText.className = 'upload-status success';
+                                }
+                                resolve(result.url);
+                            } else {
+                                reject(result.error || 'Upload gagal');
+                            }
+                        } catch(e) {
+                            reject('Gagal parsing response');
+                        }
+                    } else {
+                        reject('Upload gagal: ' + xhr.status);
+                    }
+                };
+                
+                xhr.onerror = () => reject('Network error');
+                xhr.open('POST', SCRIPT_URL);
+                xhr.send(formData);
+            });
+        }
+        
+        // ============ KAMERA ============
+        let stream = null;
+        
+        async function bukaKamera() {
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('video');
+            
+            try {
+                stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+                modal.classList.add('active');
+            } catch(err) {
+                showToast('error', 'Tidak dapat mengakses kamera: ' + err.message);
+            }
+        }
+        
+        function ambilFoto() {
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('photoCanvas');
+            const context = canvas.getContext('2d');
+            
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            
+            canvas.toBlob(async (blob) => {
+                const file = new File([blob], `foto_${Date.now()}.jpg`, { type: 'image/jpeg' });
+                tutupKamera();
+                await prosesUploadFoto(file);
+            }, 'image/jpeg', 0.9);
+        }
+        
+        function tutupKamera() {
+            const modal = document.getElementById('cameraModal');
+            const video = document.getElementById('video');
+            if(stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+            video.srcObject = null;
+            modal.classList.remove('active');
+        }
+        
+        // ============ GALERI ============
+        function bukaGaleri() {
+            document.getElementById('fileInput').click();
+        }
+        
+        async function handleFileSelect(input) {
+            if(input.files && input.files[0]) {
+                await prosesUploadFoto(input.files[0]);
+            }
+            input.value = '';
+        }
+        
+        async function prosesUploadFoto(file) {
+            if(file.size > 5 * 1024 * 1024) {
+                showToast('error', 'Ukuran foto maksimal 5MB');
                 return;
             }
-            const previewId = `preview${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`;
-            previewImage(input, previewId);
-            const statusDiv = document.getElementById(`status${jenis.charAt(0).toUpperCase() + jenis.slice(1)}`);
-            statusDiv.innerHTML = '<span class="loading-spinner" style="width: 14px; height: 14px;"></span> Mengupload...';
-            statusDiv.className = 'upload-status uploading';
+            
+            uploadStatus.isUploading = true;
+            uploadStatus.isUploaded = false;
+            updateKirimButton();
+            
             try {
-                if (!currentIdLaporan) currentIdLaporan = generateIdLaporan();
-                const namaWargaSanitasi = selectedWarga ? selectedWarga.nama_warga_binaan.replace(/[^a-z0-9]/gi, '_').substring(0, 30) : 'unknown';
-                const url = await uploadFoto(file, jenis, currentIdLaporan, namaWargaSanitasi);
-                uploadState[jenis] = { uploaded: true, url: url, status: 'success' };
-                statusDiv.innerHTML = '✅ Foto berhasil diupload';
-                statusDiv.className = 'upload-status success';
-                showToast('success', `Foto ${jenis} berhasil diupload`);
-                updateSubmitButtonState();
-            } catch (error) {
-                console.error('Upload error:', error);
-                uploadState[jenis] = { uploaded: false, url: '', status: 'error' };
-                statusDiv.innerHTML = '❌ Gagal upload: ' + error.message;
-                statusDiv.className = 'upload-status error';
-                showToast('error', `Gagal upload foto ${jenis}: ${error.message}`);
-                input.value = '';
-                updateSubmitButtonState();
+                const jenis = document.getElementById('jenisSampah').value;
+                const jenisText = jenis === 'organik' ? 'Organik' : (jenis === 'anorganik' ? 'An Organik' : 'Residu');
+                const url = await uploadFotoToDrive(file, jenisText);
+                uploadStatus.fotoUrl = url;
+                uploadStatus.isUploaded = true;
+                uploadStatus.isUploading = false;
+                updateKirimButton();
+                showToast('success', 'Foto berhasil diupload!');
+            } catch(error) {
+                uploadStatus.isUploading = false;
+                uploadStatus.isUploaded = false;
+                updateKirimButton();
+                showToast('error', 'Upload gagal: ' + error);
+                
+                // Reset preview
+                document.getElementById('fotoPreviewArea').innerHTML = '<div class="upload-status error">Upload gagal, silakan coba lagi</div>';
+                setTimeout(() => {
+                    document.getElementById('fotoPreviewArea').innerHTML = '';
+                }, 3000);
             }
         }
-        
-        function resetUploadState() {
-            uploadState = {
-                organik: { uploaded: false, url: '', status: 'pending' },
-                anorganik: { uploaded: false, url: '', status: 'pending' },
-                residu: { uploaded: false, url: '', status: 'pending' }
-            };
-            ['Organik', 'AnOrganik', 'Residu'].forEach(jenis => {
-                const statusDiv = document.getElementById(`status${jenis}`);
-                if (statusDiv) {
-                    statusDiv.innerHTML = '';
-                    statusDiv.className = 'upload-status';
-                }
-            });
-            document.getElementById('fotoOrganik').value = '';
-            document.getElementById('fotoAnOrganik').value = '';
-            document.getElementById('fotoResidu').value = '';
-            ['previewOrganik', 'previewAnOrganik', 'previewResidu'].forEach(id => {
-                const preview = document.getElementById(id);
-                if(preview) {
-                    preview.classList.remove('active');
-                    preview.src = '';
-                }
-            });
-            document.getElementById('organik').value = '0';
-            document.getElementById('anOrganik').value = '0';
-            document.getElementById('residu').value = '0';
-            calculateTotal();
-            currentIdLaporan = generateIdLaporan();
-        }
-        
-        // ============ DOM INIT ============
-        document.addEventListener('DOMContentLoaded', function() {
-            const tanggalInput = document.getElementById('tanggalLaporan');
-            if (tanggalInput) tanggalInput.value = new Date().toISOString().split('T')[0];
-            document.getElementById('organik').addEventListener('input', calculateTotal);
-            document.getElementById('anOrganik').addEventListener('input', calculateTotal);
-            document.getElementById('residu').addEventListener('input', calculateTotal);
-        });
         
         // ============ VERIFIKASI KADER ============
         async function cekIdKader() {
             const idKader = document.getElementById('idKader').value.trim();
             if (!idKader) { showToast('error', 'Masukkan ID Kader!'); return; }
+            
             const btn = document.getElementById('btnVerifikasi');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<span class="loading-spinner"></span> Memeriksa...';
             btn.disabled = true;
+            
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=cekKader&id_kader=${encodeURIComponent(idKader)}`);
                 const result = await response.json();
+                
                 if (result.success && result.data) {
                     sessionKader = {
                         id_kader: idKader,
@@ -620,8 +721,7 @@
                     document.getElementById('displayKelurahan').innerText = result.data.kelurahan;
                     document.getElementById('infoKader').style.display = 'block';
                     document.getElementById('formWarga').style.display = 'block';
-                    currentIdLaporan = generateIdLaporan();
-                    resetUploadState();
+                    
                     await loadDaftarWarga();
                     showToast('success', `Selamat datang, ${result.data.nama_kader}!`);
                 } else {
@@ -637,14 +737,17 @@
             }
         }
         
-        // ============ LOAD & RENDER DAFTAR WARGA ============
+        // ============ LOAD WARGA ============
         async function loadDaftarWarga() {
             if (!sessionKader.id_kader) return;
+            
             const container = document.getElementById('daftarWargaList');
             container.innerHTML = '<div style="padding: 20px; text-align: center; color: #718096;"><span class="loading-spinner"></span> Memuat daftar warga...</div>';
+            
             try {
                 const response = await fetch(`${SCRIPT_URL}?action=getAllWarga&id_kader=${encodeURIComponent(sessionKader.id_kader)}&kelurahan=${encodeURIComponent(sessionKader.kelurahan)}`);
                 const result = await response.json();
+                
                 if (result.success && result.data) {
                     daftarWarga = result.data;
                     renderDaftarWarga();
@@ -663,16 +766,19 @@
                 container.innerHTML = '<div style="padding: 20px; text-align: center; color: #718096;">Belum ada data warga. Klik "Tambah Warga Baru"</div>';
                 return;
             }
+            
             container.innerHTML = '';
-            daftarWarga.forEach((warga) => {
+            daftarWarga.forEach((warga, index) => {
                 const div = document.createElement('div');
                 div.className = 'warga-item';
                 if (selectedWarga && selectedWarga.nama_warga_binaan === warga.nama_warga_binaan && selectedWarga.alamat_binaan === warga.alamat_binaan) {
                     div.classList.add('selected');
                 }
+                
                 const createdByBadge = warga.dibuat_oleh_id === sessionKader.id_kader 
                     ? '<span class="badge badge-own">Saya</span>' 
                     : `<span class="badge badge-other">${escapeHtml(warga.dibuat_oleh_nama || 'Kader Lain')}</span>`;
+                
                 div.innerHTML = `
                     <div style="flex: 1;">
                         <div class="warga-nama">${escapeHtml(warga.nama_warga_binaan)}</div>
@@ -680,7 +786,9 @@
                         <div class="warga-dibuat-oleh">Dibuat oleh: ${createdByBadge}</div>
                     </div>
                 `;
-                div.onclick = (function(w) { return function() { selectWarga(w); }; })(warga);
+                div.onclick = (function(w) {
+                    return function() { selectWarga(w); };
+                })(warga);
                 container.appendChild(div);
             });
         }
@@ -689,6 +797,7 @@
             selectedWarga = warga;
             document.getElementById('namaWarga').value = warga.nama_warga_binaan;
             document.getElementById('alamatWarga').value = warga.alamat_binaan;
+            
             const items = document.querySelectorAll('.warga-item');
             items.forEach(item => {
                 const namaDiv = item.querySelector('.warga-nama');
@@ -698,10 +807,18 @@
                     item.classList.remove('selected');
                 }
             });
+            
             showToast('success', `Warga "${warga.nama_warga_binaan}" dipilih`);
-            resetUploadState();
         }
         
+        function escapeHtml(text) { 
+            if(!text) return ''; 
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ============ TAMBAH WARGA ============
         function showTambahWargaModal() {
             document.getElementById('modalNamaWarga').value = '';
             document.getElementById('modalAlamatWarga').value = '';
@@ -712,39 +829,44 @@
             document.getElementById('tambahWargaModal').classList.remove('active');
         }
         
-        // ============ TAMBAH WARGA DENGAN URLSearchParams ============
         async function tambahWargaBaru() {
             const namaWarga = document.getElementById('modalNamaWarga').value.trim();
             const alamatWarga = document.getElementById('modalAlamatWarga').value.trim();
+            
             if (!namaWarga) { showToast('error', 'Nama warga harus diisi!'); return; }
             if (!alamatWarga) { showToast('error', 'Alamat harus diisi!'); return; }
+            
             closeTambahWargaModal();
             showLoading(true, 'Menyimpan data warga...');
+            
             try {
-                const params = new URLSearchParams();
-                params.append('action', 'tambahWarga');
-                params.append('id_kader', sessionKader.id_kader);
-                params.append('nama_kader', sessionKader.nama_kader);
-                params.append('jabatan', sessionKader.jabatan);
-                params.append('kelurahan', sessionKader.kelurahan);
-                params.append('nama_warga_binaan', namaWarga);
-                params.append('alamat_binaan', alamatWarga);
+                const formData = new FormData();
+                formData.append('action', 'tambahWarga');
+                formData.append('id_kader', sessionKader.id_kader);
+                formData.append('nama_kader', sessionKader.nama_kader);
+                formData.append('jabatan', sessionKader.jabatan);
+                formData.append('kelurahan', sessionKader.kelurahan);
+                formData.append('nama_warga_binaan', namaWarga);
+                formData.append('alamat_binaan', alamatWarga);
                 
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params
+                    body: formData
                 });
+                
                 const result = await response.json();
                 showLoading(false);
+                
                 if (result.success) {
                     showToast('success', 'Warga berhasil ditambahkan!');
+                    
                     const wargaBaru = {
                         nama_warga_binaan: namaWarga,
                         alamat_binaan: alamatWarga,
                         dibuat_oleh_id: sessionKader.id_kader,
                         dibuat_oleh_nama: sessionKader.nama_kader
                     };
+                    
                     daftarWarga.unshift(wargaBaru);
                     renderDaftarWarga();
                     selectWarga(wargaBaru);
@@ -754,70 +876,93 @@
             } catch (error) {
                 showLoading(false);
                 showToast('error', 'Gagal terhubung ke server: ' + error.message);
-                console.error('Tambah warga error:', error);
             }
         }
         
-        // ============ SUBMIT LAPORAN DENGAN URLSearchParams ============
+        // ============ SUBMIT LAPORAN ============
         async function submitLaporan() {
             if (!selectedWarga) {
                 showToast('error', 'Silakan pilih warga dari daftar terlebih dahulu!');
                 return;
             }
-            const tanggal = document.getElementById('tanggalLaporan').value;
-            const organik = parseFloat(document.getElementById('organik').value) || 0;
-            const anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
-            const residu = parseFloat(document.getElementById('residu').value) || 0;
-            if (organik === 0 && anOrganik === 0 && residu === 0) { 
-                showToast('error', 'Minimal satu jenis sampah > 0 Kg'); 
-                return; 
+            
+            if (!uploadStatus.isUploaded || !uploadStatus.fotoUrl) {
+                showToast('error', 'Silakan upload foto bukti terlebih dahulu!');
+                return;
             }
-            const fotoOrganikUrl = organik > 0 ? uploadState.organik.url : '';
-            const fotoAnOrganikUrl = anOrganik > 0 ? uploadState.anorganik.url : '';
-            const fotoResiduUrl = residu > 0 ? uploadState.residu.url : '';
-            if (organik > 0 && !fotoOrganikUrl) { showToast('error', 'Foto organik belum diupload!'); return; }
-            if (anOrganik > 0 && !fotoAnOrganikUrl) { showToast('error', 'Foto an organik belum diupload!'); return; }
-            if (residu > 0 && !fotoResiduUrl) { showToast('error', 'Foto residu belum diupload!'); return; }
+            
+            const tanggal = document.getElementById('tanggalLaporan').value;
+            if (!tanggal) {
+                showToast('error', 'Silakan pilih tanggal laporan!');
+                return;
+            }
+            
+            const jenis = document.getElementById('jenisSampah').value;
+            let organik = 0, anOrganik = 0, residu = 0;
+            
+            if (jenis === 'organik') organik = parseFloat(document.getElementById('organik').value) || 0;
+            else if (jenis === 'anorganik') anOrganik = parseFloat(document.getElementById('anOrganik').value) || 0;
+            else if (jenis === 'residu') residu = parseFloat(document.getElementById('residu').value) || 0;
+            
+            const total = organik + anOrganik + residu;
+            if (total === 0) {
+                showToast('error', 'Berat sampah harus lebih dari 0 Kg');
+                return;
+            }
             
             showLoading(true, 'Mengirim laporan...');
-            const params = new URLSearchParams();
-            params.append('action', 'submitLaporan');
-            params.append('id_laporan', currentIdLaporan);
-            params.append('id_kader', sessionKader.id_kader);
-            params.append('nama_kader', sessionKader.nama_kader);
-            params.append('jabatan', sessionKader.jabatan);
-            params.append('kelurahan', sessionKader.kelurahan);
-            params.append('tanggal_input', tanggal);
-            params.append('nama_warga_binaan', selectedWarga.nama_warga_binaan);
-            params.append('alamat_binaan', selectedWarga.alamat_binaan);
-            params.append('organik', organik);
-            params.append('an_organik', anOrganik);
-            params.append('residu', residu);
-            params.append('foto_organik_url', fotoOrganikUrl);
-            params.append('foto_anorganik_url', fotoAnOrganikUrl);
-            params.append('foto_residu_url', fotoResiduUrl);
             
             try {
+                const formData = new FormData();
+                formData.append('action', 'submitLaporan');
+                formData.append('id_kader', sessionKader.id_kader);
+                formData.append('nama_kader', sessionKader.nama_kader);
+                formData.append('jabatan', sessionKader.jabatan);
+                formData.append('kelurahan', sessionKader.kelurahan);
+                formData.append('tanggal_input', tanggal);
+                formData.append('nama_warga_binaan', selectedWarga.nama_warga_binaan);
+                formData.append('alamat_binaan', selectedWarga.alamat_binaan);
+                formData.append('organik', organik);
+                formData.append('an_organik', anOrganik);
+                formData.append('residu', residu);
+                formData.append('foto_url', uploadStatus.fotoUrl);
+                formData.append('jenis_sampah', jenis);
+                
                 const response = await fetch(SCRIPT_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-                    body: params
+                    body: formData
                 });
+                
                 const result = await response.json();
                 showLoading(false);
+                
                 if (result.success) {
                     showToast('success', '✅ Laporan berhasil dikirim ke Lurah & Camat!');
-                    resetUploadState();
-                    currentIdLaporan = generateIdLaporan();
+                    
+                    // Reset form
+                    document.getElementById('organik').value = '0';
+                    document.getElementById('anOrganik').value = '0';
+                    document.getElementById('residu').value = '0';
+                    document.getElementById('fotoPreviewArea').innerHTML = '';
+                    hitungTotal();
+                    
+                    uploadStatus = { fotoUrl: null, isUploading: false, isUploaded: false };
+                    updateKirimButton();
                 } else {
                     showToast('error', 'Gagal: ' + (result.error || 'Terjadi kesalahan server'));
                 }
             } catch (error) {
                 showLoading(false);
                 showToast('error', 'Gagal terhubung ke server: ' + error.message);
-                console.error('Submit error:', error);
             }
         }
+        
+        // ============ INIT ============
+        document.addEventListener('DOMContentLoaded', function() {
+            const tanggalInput = document.getElementById('tanggalLaporan');
+            if (tanggalInput) tanggalInput.value = new Date().toISOString().split('T')[0];
+            hitungTotal();
+        });
     </script>
 </body>
 </html>
