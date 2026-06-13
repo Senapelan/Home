@@ -457,7 +457,7 @@
 
     <script>
         // ============ KONFIGURASI ============
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwP3zuSKeU_RbB1w-ZTlvCv4K-MwTgU9-nPL9GlrGI-lgAFZiJlBB7kgvA0AG0Wux31/exec';
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxRyVhPcgyMMJXgIwWWAgiJdLa2YXCih9q-u_VL1TqYzQP_LcdO4MxjVr9L5B_KUSMj/exec';
         
         let sessionKader = { id_kader: '', nama_kader: '', jabatan: '', kelurahan: '' };
         let selectedWarga = null;
@@ -471,7 +471,7 @@
         
         // ============ VARIABEL KAMERA ============
         let stream = null;
-        let currentFacingMode = 'environment'; // 'environment' = kamera belakang, 'user' = depan
+        let currentFacingMode = 'environment';
         
         // ============ UTILITY ============
         function showToast(type, message) {
@@ -525,123 +525,122 @@
             btn.disabled = !uploadStatus.isUploaded;
         }
         
-        // ============ UPLOAD FOTO KE DRIVE (PERBAIKAN) ============
-        async function uploadFotoToDrive(file, jenis) {
-    return new Promise((resolve, reject) => {
-        if (!file) {
-            reject('Tidak ada file');
-            return;
+        // ============ UPLOAD FOTO KE DRIVE ============
+        async function uploadFotoToDrive(file) {
+            return new Promise((resolve, reject) => {
+                if (!file) {
+                    reject('Tidak ada file');
+                    return;
+                }
+                
+                const previewArea = document.getElementById('fotoPreviewArea');
+                previewArea.innerHTML = `
+                    <div style="flex:1">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" id="uploadProgressBar" style="width: 0%"></div>
+                        </div>
+                        <div class="upload-status" id="uploadStatusText">Mengupload foto... 0%</div>
+                    </div>
+                    <img id="previewImg" class="preview-image" style="display: block;">
+                `;
+                
+                const previewImg = document.getElementById('previewImg');
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    previewImg.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+                
+                const readerForUpload = new FileReader();
+                readerForUpload.onload = async function(e) {
+                    const base64Data = e.target.result.split(',')[1];
+                    
+                    const jenis = document.getElementById('jenisSampah').value;
+                    const jenisText = jenis === 'organik' ? 'Organik' : (jenis === 'anorganik' ? 'An Organik' : 'Residu');
+                    
+                    const formData = new FormData();
+                    formData.append('action', 'uploadFoto');
+                    formData.append('id_kader', sessionKader.id_kader);
+                    formData.append('jenis', jenisText);
+                    formData.append('foto_base64', base64Data);
+                    formData.append('filename', `foto_${Date.now()}.jpg`);
+                    formData.append('mime_type', file.type);
+                    
+                    let progress = 0;
+                    const interval = setInterval(() => {
+                        if (progress < 90) {
+                            progress += 10;
+                            const progressBar = document.getElementById('uploadProgressBar');
+                            if (progressBar) progressBar.style.width = progress + '%';
+                            const statusText = document.getElementById('uploadStatusText');
+                            if (statusText) statusText.innerHTML = `Mengupload foto... ${progress}%`;
+                        }
+                    }, 200);
+                    
+                    try {
+                        const response = await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            mode: 'cors',
+                            body: formData
+                        });
+                        
+                        clearInterval(interval);
+                        
+                        if (!response.ok) {
+                            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                        }
+                        
+                        const result = await response.json();
+                        
+                        if (result.success && result.url) {
+                            const progressBar = document.getElementById('uploadProgressBar');
+                            if (progressBar) progressBar.style.width = '100%';
+                            const statusText = document.getElementById('uploadStatusText');
+                            if (statusText) {
+                                statusText.innerHTML = `✅ Upload selesai!`;
+                                statusText.className = 'upload-status success';
+                            }
+                            
+                            previewImg.src = result.url;
+                            resolve(result.url);
+                        } else {
+                            throw new Error(result.error || 'Upload gagal dari server');
+                        }
+                        
+                    } catch (error) {
+                        clearInterval(interval);
+                        console.error('Upload error:', error);
+                        
+                        const statusText = document.getElementById('uploadStatusText');
+                        if (statusText) {
+                            statusText.innerHTML = `❌ Upload gagal: ${error.message}`;
+                            statusText.className = 'upload-status error';
+                        }
+                        reject(error.message);
+                    }
+                };
+                
+                readerForUpload.readAsDataURL(file);
+            });
         }
         
-        const previewArea = document.getElementById('fotoPreviewArea');
-        previewArea.innerHTML = `
-            <div style="flex:1">
-                <div class="progress-bar-container">
-                    <div class="progress-bar" id="uploadProgressBar" style="width: 0%"></div>
-                </div>
-                <div class="upload-status" id="uploadStatusText">Mengupload ${jenis}... 0%</div>
-            </div>
-            <img id="previewImg" class="preview-image" style="display: block;">
-        `;
-        
-        const previewImg = document.getElementById('previewImg');
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            previewImg.src = e.target.result;
-            previewImg.classList.add('active');
-        };
-        reader.readAsDataURL(file);
-        
-        // Kirim sebagai base64
-        const readerForUpload = new FileReader();
-        readerForUpload.onload = async function(e) {
-            const base64Data = e.target.result.split(',')[1];
-            
-            const formData = new FormData();
-            formData.append('action', 'uploadFoto');
-            formData.append('id_kader', sessionKader.id_kader);
-            formData.append('jenis', jenis);
-            formData.append('foto_base64', base64Data);
-            formData.append('filename', `foto_${Date.now()}.jpg`);
-            formData.append('mime_type', file.type);
-            
-            // Simulasi progress
-            let progress = 0;
-            const interval = setInterval(() => {
-                if (progress < 90) {
-                    progress += 10;
-                    const progressBar = document.getElementById('uploadProgressBar');
-                    if (progressBar) progressBar.style.width = progress + '%';
-                    const statusText = document.getElementById('uploadStatusText');
-                    if (statusText) statusText.innerHTML = `Mengupload ${jenis}... ${progress}%`;
-                }
-            }, 200);
-            
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: 'POST',
-                    mode: 'no-cors', // Ganti dari 'cors' ke 'no-cors'
-                    body: formData
-                });
-                
-                clearInterval(interval);
-                
-                // Karena mode 'no-cors', kita tidak bisa membaca response
-                // Tapi kita tahu upload berhasil karena file masuk ke Drive
-                // Kita akan anggap sukses setelah delay 2 detik
-                setTimeout(() => {
-                    const statusText = document.getElementById('uploadStatusText');
-                    if (statusText) {
-                        statusText.innerHTML = `✅ Upload selesai!`;
-                        statusText.className = 'upload-status success';
-                    }
-                    
-                    // Generate URL dummy (karena tidak bisa mendapatkan response)
-                    const dummyUrl = `https://drive.google.com/file/d/uploaded_${Date.now()}`;
-                    uploadStatus.fotoUrl = dummyUrl;
-                    resolve(dummyUrl);
-                }, 2000);
-                
-            } catch (error) {
-                clearInterval(interval);
-                // Jika error tapi file mungkin tetap terupload
-                console.log('Upload error (mungkin tetap berhasil):', error);
-                setTimeout(() => {
-                    const statusText = document.getElementById('uploadStatusText');
-                    if (statusText) {
-                        statusText.innerHTML = `✅ Upload selesai!`;
-                        statusText.className = 'upload-status success';
-                    }
-                    const dummyUrl = `https://drive.google.com/file/d/uploaded_${Date.now()}`;
-                    uploadStatus.fotoUrl = dummyUrl;
-                    resolve(dummyUrl);
-                }, 2000);
-            }
-        };
-        
-        readerForUpload.readAsDataURL(file);
-    });
-}
-        
-        // ============ KAMERA (DENGAN SWITCH KAMERA BELAKANG/DEPAN) ============
+        // ============ KAMERA ============
         async function bukaKamera() {
             const modal = document.getElementById('cameraModal');
             const video = document.getElementById('video');
             
-            // Matikan stream lama jika ada
             if (stream) {
                 stream.getTracks().forEach(track => track.stop());
             }
             
             try {
-                // Coba dengan facingMode yang diinginkan (default: environment/belakang)
                 stream = await navigator.mediaDevices.getUserMedia({
                     video: { facingMode: { exact: currentFacingMode } }
                 });
                 video.srcObject = stream;
                 modal.classList.add('active');
             } catch(err) {
-                // Fallback jika facingMode tidak tersedia
                 console.log('Facing mode not supported, using default camera');
                 try {
                     stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -654,13 +653,11 @@
         }
         
         async function switchCamera() {
-            // Toggle antara depan (user) dan belakang (environment)
             currentFacingMode = currentFacingMode === 'environment' ? 'user' : 'environment';
             
             const video = document.getElementById('video');
             const modal = document.getElementById('cameraModal');
             
-            // Jika modal sedang aktif, refresh stream
             if (modal.classList.contains('active') && stream) {
                 stream.getTracks().forEach(track => track.stop());
                 
@@ -730,9 +727,7 @@
             updateKirimButton();
             
             try {
-                const jenis = document.getElementById('jenisSampah').value;
-                const jenisText = jenis === 'organik' ? 'Organik' : (jenis === 'anorganik' ? 'An Organik' : 'Residu');
-                const fotoUrl = await uploadFotoToDrive(file, jenisText);
+                const fotoUrl = await uploadFotoToDrive(file);
                 uploadStatus.fotoUrl = fotoUrl;
                 uploadStatus.isUploaded = true;
                 uploadStatus.isUploading = false;
@@ -744,10 +739,10 @@
                 updateKirimButton();
                 showToast('error', 'Upload gagal: ' + error);
                 
-                document.getElementById('fotoPreviewArea').innerHTML = '<div class="upload-status error">Upload gagal, silakan coba lagi</div>';
                 setTimeout(() => {
-                    if(document.getElementById('fotoPreviewArea').innerHTML.includes('Upload gagal')) {
-                        document.getElementById('fotoPreviewArea').innerHTML = '';
+                    const previewArea = document.getElementById('fotoPreviewArea');
+                    if(previewArea.innerHTML.includes('Upload gagal')) {
+                        previewArea.innerHTML = '';
                     }
                 }, 3000);
             }
