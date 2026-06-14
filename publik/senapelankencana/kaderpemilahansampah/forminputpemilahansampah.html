@@ -621,6 +621,161 @@ body {
         ::-webkit-scrollbar-thumb:hover {
             background: #5a67d8;
         }
+
+        /* ===== TAMBAHAN: TOMBOL LIHAT LAPORAN & MODAL ===== */
+        .btn-report {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 12px;
+            font-family: inherit;
+            font-size: 13px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-report:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+            padding: 20px;
+        }
+
+        .modal-container {
+            background: white;
+            border-radius: 24px;
+            max-width: 900px;
+            width: 100%;
+            max-height: 80vh;
+            overflow: hidden;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .modal-header i {
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-header i:hover {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 24px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .laporan-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .laporan-table th {
+            background: #f8f9fa;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #e9ecef;
+            position: sticky;
+            top: 0;
+        }
+
+        .laporan-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+            color: #555;
+            font-size: 14px;
+        }
+
+        .laporan-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .laporan-empty {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+
+        .laporan-empty i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn-close-modal {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: inherit;
+            font-weight: 500;
+        }
+
+        .btn-close-modal:hover {
+            background: #5a6268;
+        }
+
+        @media (max-width: 768px) {
+            .modal-container {
+                max-width: 95%;
+            }
+            
+            .laporan-table th,
+            .laporan-table td {
+                padding: 8px;
+                font-size: 12px;
+            }
+            
+            .modal-header h3 {
+                font-size: 16px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -803,9 +958,31 @@ body {
         </div>
     </div>
 
+    <!-- Modal Lihat Laporan -->
+    <div id="laporanModal" class="modal-overlay">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><i class="fas fa-history"></i> Riwayat Laporan Pemilahan Sampah</h3>
+                <i class="fas fa-times" onclick="closeLaporanModal()"></i>
+            </div>
+            <div class="modal-body" id="laporanModalBody">
+                <div style="text-align: center; padding: 40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #667eea;"></i>
+                    <p>Memuat data laporan...</p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close-modal" onclick="closeLaporanModal()">Tutup</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Konfigurasi
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzYT5CLWHDVEFGQlRNcOjJW38jSWaBPDgYGxD43SNNTyXgicJndoIiS5Qt5UZibPKhkHQ/exec'; // GANTI DENGAN URL DEPLOY ANDA
+        
+        // Konfigurasi untuk mengambil data laporan dari spreadsheet RIWAYAT_LAPORAN_WARGA
+        const REPORT_URL = 'https://script.google.com/macros/s/AKfycbwFI1y9hn3s8lQQZ1dx9UU6Yj4NzUL2qalcmhs5om066kw0c47lQYzXoYiI-rzsl5p7/exec'; // GANTI DENGAN URL DEPLOY APPS SCRIPT ANDA
         
         let fotoBase64 = null;
         let currentKader = null;
@@ -1250,14 +1427,14 @@ body {
                         html += `
                             <div style="background: #f8f9fa; border-radius: 16px; padding: 20px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-    <div>
-        <strong style="font-size: 16px;">${kader.nama}</strong>
-        <div style="font-size: 12px; color: #6c757d;">Kelurahan: ${kader.kelurahan}</div>
-    </div>
-    <div style="background: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
-        ${kader.jumlah_laporan} Laporan
-    </div>
-</div>
+                                    <div>
+                                        <strong style="font-size: 16px;">${kader.nama}</strong>
+                                        <div style="font-size: 12px; color: #6c757d;">Kelurahan: ${kader.kelurahan}</div>
+                                    </div>
+                                    <div style="background: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+                                        ${kader.jumlah_laporan} Laporan
+                                    </div>
+                                </div>
                                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;">
                                     <div style="text-align: center;">
                                         <div style="font-size: 12px; color: #6c757d;">Organik</div>
@@ -1273,11 +1450,14 @@ body {
                                     </div>
                                 </div>
                                 <div style="border-top: 1px solid #e9ecef; padding-top: 10px;">
-                                    <div style="display: flex; justify-content: space-between;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center;">
                                         <span style="font-size: 13px;">Total Setoran</span>
                                         <strong style="font-size: 16px; color: #667eea;">${kader.total_semua} kg</strong>
                                     </div>
                                 </div>
+                                <button class="btn-report" onclick="openLaporanModal('${escapeHtml(kader.nama)}', '${escapeHtml(kader.id_kader)}', '${escapeHtml(kader.kelurahan)}')">
+    <i class="fas fa-file-alt"></i> Lihat Riwayat Laporan
+</button>
                             </div>
                         `;
                     });
@@ -1301,6 +1481,117 @@ body {
                 `;
             }
         }
+
+// ============ FUNGSI LIHAT LAPORAN PER KADER ============
+async function openLaporanModal(namaKader, idKader, kelurahan) {
+    const modal = document.getElementById('laporanModal');
+    const modalBody = document.getElementById('laporanModalBody');
+    
+    modal.style.display = 'flex';
+    modalBody.innerHTML = `
+        <div style="text-align: center; padding: 40px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 32px; color: #667eea;"></i>
+            <p>Memuat data laporan untuk ${namaKader}...</p>
+        </div>
+    `;
+    
+    try {
+        const response = await fetch(`${REPORT_URL}?action=getLaporanByKader&id_kader=${encodeURIComponent(idKader)}`);
+        const result = await response.json();
+        
+        if (result.success && result.data && result.data.length > 0) {
+            let tableHtml = `
+                <div style="margin-bottom: 20px; padding: 12px; background: #e7f3ff; border-radius: 8px;">
+                    <strong><i class="fas fa-user"></i> Kader:</strong> ${escapeHtml(namaKader)}<br>
+                    <strong><i class="fas fa-map-marker-alt"></i> Kelurahan:</strong> ${escapeHtml(kelurahan)}
+                </div>
+                <table class="laporan-table">
+                    <thead>
+                        <tr>
+                            <th>Nama Warga</th>
+                            <th>Alamat</th>
+                            <th>Jenis Sampah</th>
+                            <th>Berat (kg)</th>
+                            <th>Tanggal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            for (const laporan of result.data) {
+                let styleBg = '';
+                if (laporan.jenis_sampah.toLowerCase() === 'organik') {
+                    styleBg = 'background: #d4edda; color: #155724;';
+                } else if (laporan.jenis_sampah.toLowerCase() === 'an organik') {
+                    styleBg = 'background: #d1ecf1; color: #0c5460;';
+                } else if (laporan.jenis_sampah.toLowerCase() === 'residu') {
+                    styleBg = 'background: #fff3cd; color: #856404;';
+                } else {
+                    styleBg = 'background: #e9ecef; color: #495057;';
+                }
+                
+                tableHtml += `
+                    <tr>
+                        <td><strong>${escapeHtml(laporan.nama_warga)}</strong></td>
+                        <td>${escapeHtml(laporan.alamat)}</td>
+                        <td>
+                            <span style="display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; ${styleBg}">
+                                ${escapeHtml(laporan.jenis_sampah)}
+                            </span>
+                        </td>
+                        <td>${laporan.berat} kg</td>
+                        <td>${escapeHtml(laporan.tanggal)}</td>
+                    </tr>
+                `;
+            }
+            
+            tableHtml += `
+                    </tbody>
+                </table>
+                <div style="margin-top: 16px; padding: 12px; background: #e7f3ff; border-radius: 8px; font-size: 13px;">
+                    <i class="fas fa-chart-line"></i> Total Laporan: <strong>${result.data.length}</strong> laporan
+                </div>
+            `;
+            
+            modalBody.innerHTML = tableHtml;
+        } else {
+            modalBody.innerHTML = `
+                <div class="laporan-empty">
+                    <i class="fas fa-inbox"></i>
+                    <p>Belum ada data laporan untuk ${escapeHtml(namaKader)}</p>
+                    <small style="color: #6c757d;">Laporan akan muncul setelah kader mengirim data</small>
+                </div>
+            `;
+        }
+    } catch (error) {
+        modalBody.innerHTML = `
+            <div class="laporan-empty">
+                <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
+                <p>Gagal memuat data laporan</p>
+                <small>${error.message}</small>
+            </div>
+        `;
+    }
+}
+
+        function closeLaporanModal() {
+            document.getElementById('laporanModal').style.display = 'none';
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '-';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Tutup modal dengan klik di luar modal
+        document.addEventListener('click', function(event) {
+            const modal = document.getElementById('laporanModal');
+            if (event.target === modal) {
+                closeLaporanModal();
+            }
+        });
 
         // Set default tanggal
         document.getElementById('tanggalLaporan').value = new Date().toISOString().split('T')[0];
