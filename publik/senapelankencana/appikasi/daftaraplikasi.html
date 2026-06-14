@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Premium App Dashboard | Blue Dark Theme</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 20%, #0a0f1c, #03050b);
+            min-height: 100vh;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .dashboard {
+            width: 100%;
+            min-height: 100vh;
+            padding: 2rem 2rem 3rem 2rem;
+            position: relative;
+        }
+
+        .apps-grid {
+            max-width: 1440px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 2rem;
+            justify-items: center;
+            align-items: start;
+        }
+
+        /* Premium Card 3D dengan efek mengkilap */
+        .app-card {
+            background: rgba(18, 25, 45, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 300px;
+            padding: 1.8rem 1rem 1.8rem 1rem;
+            transition: all 0.35s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            cursor: pointer;
+            text-align: center;
+            border: 1px solid rgba(66, 153, 225, 0.3);
+            box-shadow: 0 25px 35px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255,255,255,0.02) inset;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efek kilap */
+        .app-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -60%;
+            width: 180%;
+            height: 180%;
+            background: radial-gradient(circle, rgba(255,255,255,0.25) 0%, rgba(255,255,255,0) 70%);
+            transform: rotate(25deg);
+            opacity: 0.5;
+            transition: opacity 0.4s, transform 0.5s;
+            pointer-events: none;
+        }
+
+        .app-card:hover::before {
+            opacity: 0.9;
+            transform: rotate(25deg) translate(10%, 5%);
+        }
+
+        .app-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(0, 212, 255, 0.6);
+            box-shadow: 0 32px 45px -12px rgba(0, 150, 255, 0.3), 0 0 0 1px rgba(100, 200, 255, 0.2) inset;
+            background: rgba(22, 32, 55, 0.8);
+        }
+
+        /* Icon 3D timbul */
+        .icon-wrapper {
+            width: 110px;
+            height: 110px;
+            margin: 0 auto 1.2rem auto;
+            background: linear-gradient(145deg, #1e2a3a, #0f1722);
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 8px 8px 18px rgba(0,0,0,0.5), -5px -5px 12px rgba(80, 150, 255, 0.2), inset 1px 1px 0px rgba(255,255,255,0.1);
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .icon-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 80%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            transform: skewX(-20deg);
+            transition: left 0.7s;
+        }
+
+        .app-card:hover .icon-wrapper::after {
+            left: 130%;
+        }
+
+        .app-icon-img {
+            width: 85%;
+            height: 85%;
+            object-fit: contain;
+            filter: drop-shadow(2px 4px 8px rgba(0,0,0,0.4));
+            transition: transform 0.2s;
+        }
+
+        .app-card:hover .app-icon-img {
+            transform: scale(1.02);
+        }
+
+        .app-name {
+            font-weight: 600;
+            font-size: 1.35rem;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #F0F5FF, #C0E0FF);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 0.75rem 0 0.5rem;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .divider-premium {
+            width: 50px;
+            height: 2px;
+            background: linear-gradient(90deg, #2d6a9f, #6bc5ff, #2d6a9f);
+            margin: 0.7rem auto;
+            border-radius: 4px;
+        }
+
+        .action-hint {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            letter-spacing: 1px;
+            color: #8da9d4;
+            background: rgba(255,255,255,0.02);
+            display: inline-block;
+            padding: 0.2rem 0.8rem;
+            border-radius: 60px;
+            backdrop-filter: blur(4px);
+            margin-top: 0.5rem;
+        }
+
+        .info-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(59,130,246,0.3);
+            backdrop-filter: blur(4px);
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #60a5fa;
+            border: 1px solid rgba(59,130,246,0.5);
+            pointer-events: none;
+        }
+
+        .loading-screen, .error-state, .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 90vh;
+            gap: 1.5rem;
+            text-align: center;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(66, 153, 225, 0.2);
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 12px rgba(59,130,246,0.3);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Modal Premium */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 7, 18, 0.85);
+            backdrop-filter: blur(12px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            transition: visibility 0.2s, opacity 0.25s ease;
+        }
+
+        .modal-overlay.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal-container {
+            background: rgba(12, 20, 35, 0.95);
+            backdrop-filter: blur(20px);
+            border-radius: 2rem;
+            width: 90%;
+            max-width: 420px;
+            padding: 1.8rem 1.5rem 2rem;
+            border: 1px solid rgba(0, 180, 255, 0.4);
+            box-shadow: 0 30px 45px rgba(0,0,0,0.5), 0 0 0 1px rgba(72, 187, 255, 0.2) inset;
+            text-align: center;
+            transform: scale(0.96);
+            transition: transform 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        .active .modal-container {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1rem;
+            background: linear-gradient(145deg, #1f2c41, #0e1628);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-icon img {
+            width: 70%;
+            height: 70%;
+            object-fit: contain;
+        }
+
+        .modal-title {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin: 0.5rem 0 0.75rem;
+            background: linear-gradient(120deg, #fff, #9acdff);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-top: 1.8rem;
+            flex-wrap: wrap;
+        }
+
+        .modal-btn {
+            background: rgba(30, 50, 80, 0.7);
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 3rem;
+            font-weight: 600;
+            font-size: 1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            backdrop-filter: blur(5px);
+            color: white;
+            font-family: inherit;
+        }
+
+        .btn-share {
+            background: linear-gradient(95deg, #075e54, #128c7e);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,240,0.2);
+        }
+
+        .btn-share:hover {
+            background: linear-gradient(95deg, #0a6b5f, #1daa97);
+            transform: scale(1.02);
+        }
+
+        .btn-open {
+            background: linear-gradient(95deg, #1e3a8a, #3b82f6);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .btn-open:hover {
+            background: linear-gradient(95deg, #2563eb, #60a5fa);
+            transform: scale(1.02);
+        }
+
+        .btn-close {
+            background: rgba(70, 80, 110, 0.6);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-close:hover {
+            background: rgba(100, 115, 150, 0.8);
+        }
+
+        @media (max-width: 680px) {
+            .dashboard { padding: 1.5rem; }
+            .apps-grid { gap: 1.2rem; }
+            .app-card { max-width: 100%; padding: 1.2rem 0.8rem; }
+            .icon-wrapper { width: 85px; height: 85px; }
+            .app-name { font-size: 1.15rem; }
+            .info-badge { font-size: 0.6rem; top: 8px; right: 8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <div class="apps-grid" id="appsGridContainer">
+        <div class="loading-screen">
+            <div class="spinner"></div>
+            <div><i class="fas fa-cloud-upload-alt"></i> Menghubungkan ke server...</div>
+        </div>
+    </div>
+</div>
+
+<div id="appModal" class="modal-overlay">
+    <div class="modal-container">
+        <div class="modal-icon">
+            <img id="modalImg" src="" alt="app icon">
+        </div>
+        <div class="modal-title" id="modalAppName">Nama Aplikasi</div>
+        <div class="divider-premium"></div>
+        <p style="margin: 0.8rem 0 0.2rem; color: #bbd4ff;"><i class="fas fa-star-of-life"></i> Premium Access</p>
+        <div class="modal-buttons">
+            <button class="modal-btn btn-share" id="modalShareBtn"><i class="fab fa-whatsapp"></i> Share ke WA</button>
+            <button class="modal-btn btn-open" id="modalOpenBtn"><i class="fas fa-external-link-alt"></i> Buka Browser</button>
+            <button class="modal-btn btn-close" id="modalCloseBtn"><i class="fas fa-times"></i> Tutup</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    
+    const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxYphF4m-i9zkmeKHBZHwBTpFseqaiCxYM-2fQDTfp12MQBcrK9B_i2_OQXY2Z8ea2xeg/exec';
+    
+    let currentApp = null;
+    let appsData = [];
+
+    async function fetchAppsFromBackend() {
+        try {
+            const response = await fetch(WEB_APP_URL);
+            const result = await response.json();
+            
+            if (result.status === 'success' && result.data && result.data.length > 0) {
+                // FILTER: Hanya tampilkan aplikasi yang memiliki URL_LINK valid
+                const validApps = result.data.filter(app => {
+                    // Cek apakah URL_LINK ada dan tidak kosong
+                    const hasValidUrl = app.link && 
+                                       app.link.trim() !== '' && 
+                                       app.link !== '#' &&
+                                       app.link !== 'null' &&
+                                       app.link !== 'undefined';
+                    
+                    if (!hasValidUrl) {
+                        console.log(`Aplikasi "${app.name}" tidak ditampilkan karena tidak memiliki URL_LINK`);
+                    }
+                    return hasValidUrl;
+                });
+                
+                console.log(`Total aplikasi dari server: ${result.data.length}`);
+                console.log(`Aplikasi valid (dengan link): ${validApps.length}`);
+                
+                if (validApps.length === 0) {
+                    throw new Error('Tidak ada aplikasi dengan URL_LINK yang valid');
+                }
+                
+                return validApps;
+            } else {
+                throw new Error(result.message || 'Data kosong dari server');
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error);
+            throw new Error(`Gagal terhubung ke server: ${error.message}`);
+        }
+    }
+
+    function renderApps(apps) {
+        const container = document.getElementById('appsGridContainer');
+        if (!apps || apps.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-info-circle" style="font-size: 3rem; color:#60a5fa; opacity:0.8;"></i>
+                    <h3 style="margin:1rem 0">Tidak Ada Aplikasi Tersedia</h3>
+                    <p>Saat ini tidak ada aplikasi dengan URL Link yang valid.</p>
+                    <p style="font-size:0.85rem; margin-top:10px;">Pastikan spreadsheet memiliki data URL_LINK di kolom C.</p>
+                    <button onclick="location.reload()" style="background:#2d6a9f; border:none; padding:10px 24px; border-radius:60px; margin-top:20px; cursor:pointer; color:white;">
+                        <i class="fas fa-sync-alt"></i> Muat Ulang
+                    </button>
+                </div>`;
+            return;
+        }
+        
+        let cardsHtml = '';
+        apps.forEach((app, idx) => {
+            const safeName = app.name.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+            cardsHtml += `
+                <div class="app-card" data-index="${idx}">
+                    <div class="info-badge">
+                        <i class="fas fa-check-circle"></i> Premium
+                    </div>
+                    <div class="icon-wrapper">
+                        <img class="app-icon-img" src="${app.iconUrl}" alt="${safeName}" 
+                             onerror="this.src='https://placehold.co/400x400/1e293b/3b82f6?text=App'">
+                    </div>
+                    <div class="app-name">${safeName}</div>
+                    <div class="divider-premium"></div>
+                    <div class="action-hint"><i class="fas fa-hand-pointer"></i> ketuk untuk opsi</div>
+                </div>
+            `;
+        });
+        container.innerHTML = cardsHtml;
+        
+        document.querySelectorAll('.app-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const idx = card.getAttribute('data-index');
+                if (idx !== null && apps[idx]) {
+                    openModal(apps[idx]);
+                }
+            });
+        });
+    }
+
+    function openModal(app) {
+        currentApp = app;
+        document.getElementById('modalImg').src = app.iconUrl;
+        document.getElementById('modalAppName').innerText = app.name;
+        document.getElementById('appModal').classList.add('active');
+    }
+
+    function closeModal() {
+        document.getElementById('appModal').classList.remove('active');
+        currentApp = null;
+    }
+
+    function shareToWhatsApp() {
+        if (!currentApp) return;
+        const message = `Halo petugas, saya ingin berbagi aplikasi premium: *${currentApp.name}*.%0A%0ALink: ${currentApp.link}`;
+        window.open(`https://wa.me/?text=${message}`, '_blank');
+        closeModal();
+    }
+
+    function openInBrowser() {
+        if (!currentApp) return;
+        let url = currentApp.link;
+        if (!url || url === '#' || url === 'null' || url === 'undefined') {
+            alert('Maaf, tautan aplikasi tidak tersedia atau tidak valid.');
+            return;
+        }
+        if (!url.startsWith('http')) url = 'https://' + url;
+        window.open(url, '_blank');
+        closeModal();
+    }
+
+    document.getElementById('modalShareBtn').onclick = shareToWhatsApp;
+    document.getElementById('modalOpenBtn').onclick = openInBrowser;
+    document.getElementById('modalCloseBtn').onclick = closeModal;
+    document.getElementById('appModal').onclick = (e) => {
+        if (e.target === document.getElementById('appModal')) closeModal();
+    };
+
+    async function init() {
+        const container = document.getElementById('appsGridContainer');
+        try {
+            appsData = await fetchAppsFromBackend();
+            renderApps(appsData);
+        } catch (err) {
+            container.innerHTML = `
+                <div class="error-state">
+                    <i class="fas fa-exclamation-triangle" style="font-size: 3rem; color:#f59e0b;"></i>
+                    <h3 style="margin:1rem 0">Koneksi Gagal</h3>
+                    <p>${err.message}</p>
+                    <p style="font-size:0.85rem; margin-top:10px;">Pastikan Web App URL sudah benar dan sudah di-deploy.</p>
+                    <button onclick="location.reload()" style="background:#2563eb; border:none; padding:10px 28px; border-radius:40px; margin-top:20px; cursor:pointer; color:white;">
+                        <i class="fas fa-redo-alt"></i> Refresh
+                    </button>
+                </div>`;
+        }
+    }
+    
+    init();
+</script>
+</body>
+</html>
