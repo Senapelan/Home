@@ -71,10 +71,6 @@
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
-        .subtitle {
-            color: #a0aec0;
-            margin-top: 5px;
-        }
         .active-kelurahan-badge {
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
             color: white;
@@ -137,6 +133,52 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            text-align: center;
+        }
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-text {
+            color: #3b82f6;
+            font-size: 1rem;
+            font-weight: 500;
+        }
+        .loading-subtext {
+            color: #666;
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .error i {
+            font-size: 2rem;
+            margin-bottom: 10px;
         }
 
         .card-grid {
@@ -237,8 +279,13 @@
             width: 100%;
             background: white;
             border-radius: 20px;
-            overflow: hidden;
+            overflow-x: auto;
+            display: block;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .ranking-table table {
+            width: 100%;
+            border-collapse: collapse;
         }
         .ranking-table th {
             background: linear-gradient(135deg, #1e3a8a, #3b82f6);
@@ -260,28 +307,42 @@
             object-fit: cover;
         }
 
-        .loading {
-            text-align: center;
-            padding: 50px;
-            font-size: 1.2rem;
-            color: #3b82f6;
-            background: white;
-            border-radius: 20px;
-        }
-        .error {
-            background: #ffebee;
-            color: #c62828;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
         @media (max-width: 768px) {
             body { padding: 10px; }
             .main-title { font-size: 1.5rem; }
             .tab-btn { padding: 10px 12px; font-size: 0.85rem; }
             .card-grid { grid-template-columns: 1fr; }
             .chart-row { grid-template-columns: 1fr; }
+            .ranking-table { font-size: 0.8rem; }
+            .ranking-table th, .ranking-table td { padding: 8px; }
+        }
+
+        .skeleton-card {
+            background: linear-gradient(135deg, #ffffff, #f0f4ff);
+            border-radius: 20px;
+            overflow: hidden;
+            height: 300px;
+        }
+        .skeleton-header {
+            height: 120px;
+            background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+        }
+        .skeleton-body {
+            padding: 20px;
+        }
+        .skeleton-line {
+            height: 15px;
+            background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
     </style>
 </head>
@@ -306,16 +367,34 @@
     </div>
 
     <div id="tab1" class="tab-content active">
-        <div id="kaderList" class="card-grid">Loading...</div>
+        <div id="kaderList" class="card-grid">
+            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+        </div>
     </div>
     <div id="tab2" class="tab-content">
-        <div id="wargaList" class="card-grid">Loading...</div>
+        <div id="wargaList" class="card-grid">
+            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+        </div>
     </div>
     <div id="tab3" class="tab-content">
-        <div id="rekapanContainer">Loading...</div>
+        <div id="rekapanContainer">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Memuat data rekapan...</div>
+                <div class="loading-subtext">Mohon tunggu, sedang memproses data</div>
+            </div>
+        </div>
     </div>
     <div id="tab4" class="tab-content">
-        <div id="rankingContainer">Loading...</div>
+        <div id="rankingContainer">
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <div class="loading-text">Memuat data ranking...</div>
+                <div class="loading-subtext">Mohon tunggu, sedang mengumpulkan data</div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -330,6 +409,7 @@
     let currentKelurahan = '';
     let allKader = [], allWarga = [], allLaporan = [];
     let kaderPhotoMap = {};
+    let charts = {};
 
     // Ambil parameter dari URL
     function getParameterFromURL() {
@@ -337,30 +417,50 @@
         let kelurahan = urlParams.get('kelurahan');
         
         if (kelurahan) {
-            // Decode URL encoding
             kelurahan = decodeURIComponent(kelurahan);
-            // Cari kecocokan (case insensitive)
             const matched = VALID_KELURAHAN.find(k => k.toLowerCase() === kelurahan.toLowerCase());
             if (matched) {
                 return matched;
             }
         }
-        // Default ke Kampung Baru jika tidak ada parameter atau tidak valid
         return 'Kampung Baru';
     }
 
-    // Fetch data dari Google Apps Script
+    // Show loading skeleton
+    function showLoading(containerId, type = 'card') {
+        const container = document.getElementById(containerId);
+        if (type === 'card') {
+            container.innerHTML = `
+                <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+                <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+            `;
+        } else {
+            container.innerHTML = `
+                <div class="loading-container">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Memuat data...</div>
+                    <div class="loading-subtext">Mohon tunggu, sedang memproses data</div>
+                </div>
+            `;
+        }
+    }
+
+    // Fetch data dari Google Apps Script dengan timeout
     async function fetchData() {
         try {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 30000);
+            
             const url = `${APPS_SCRIPT_URL}?action=getData&sheetId=${SPREADSHEET_ID}`;
-            const response = await fetch(url);
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeoutId);
+            
             const data = await response.json();
             if (data.success) {
                 allKader = data.kader || [];
                 allWarga = data.warga || [];
                 allLaporan = data.laporan || [];
                 
-                // Buat map foto kader
                 kaderPhotoMap = {};
                 allKader.forEach(kader => {
                     kaderPhotoMap[kader.ID_KADER] = {
@@ -370,31 +470,37 @@
                 });
                 
                 console.log('Data loaded:', { kader: allKader.length, warga: allWarga.length, laporan: allLaporan.length });
-                console.log('Current kelurahan:', currentKelurahan);
-                
-                // Debug: Cek data warga
-                if (allWarga.length > 0) {
-                    const kelWarga = [...new Set(allWarga.map(w => w.KELURAHAN))];
-                    console.log('Kelurahan di WARGA_BINAAN:', kelWarga);
-                }
-                if (allLaporan.length > 0) {
-                    const kelLaporan = [...new Set(allLaporan.map(l => l.KELURAHAN))];
-                    console.log('Kelurahan di RIWAYAT_LAPORAN:', kelLaporan);
-                }
-                
+                console.log('Sample warga data:', allWarga[0]);
                 return true;
             }
             throw new Error('Gagal mengambil data');
         } catch (error) {
             console.error('Error fetch:', error);
+            if (error.name === 'AbortError') {
+                alert('Timeout: Server terlalu lama merespon. Silakan coba lagi.');
+            } else {
+                alert('Error: ' + error.message);
+            }
             return false;
         }
     }
 
-    // Filter berdasarkan kelurahan (case sensitive, exact match)
+    // Filter berdasarkan kelurahan
     function filterByKelurahan(data, kelurahanField = 'KELURAHAN') {
         if (!data || data.length === 0) return [];
         return data.filter(item => item[kelurahanField] === currentKelurahan);
+    }
+
+    // Escape HTML - FIXED
+    function escapeHtml(str) { 
+        if (str === null || str === undefined) return '';
+        const string = String(str);
+        return string.replace(/[&<>]/g, function(m){
+            if(m==='&') return '&amp;'; 
+            if(m==='<') return '&lt;'; 
+            if(m==='>') return '&gt;'; 
+            return m;
+        }); 
     }
 
     // Render Tab 1: Profile Kader
@@ -403,14 +509,14 @@
         const filtered = filterByKelurahan(allKader, 'KELURAHAN');
         
         if (!filtered.length) {
-            container.innerHTML = `<div class="error"><i class="fas fa-info-circle"></i> Tidak ada data kader untuk kelurahan ${currentKelurahan}</div>`;
+            container.innerHTML = `<div class="error"><i class="fas fa-info-circle fa-2x"></i><p>Tidak ada data kader untuk kelurahan ${currentKelurahan}</p></div>`;
             return;
         }
         
         container.innerHTML = filtered.map(kader => `
             <div class="profile-card">
                 <div class="card-header">
-                    ${kader.LINK_FOTO ? `<img src="${kader.LINK_FOTO}" class="card-img" onerror="this.src='https://via.placeholder.com/100?text=Kader'">` : `<i class="fas fa-user-circle" style="font-size: 80px;"></i>`}
+                    ${kader.LINK_FOTO ? `<img src="${kader.LINK_FOTO}" class="card-img" loading="lazy" onerror="this.src='https://via.placeholder.com/100?text=Kader'">` : `<i class="fas fa-user-circle" style="font-size: 80px;"></i>`}
                     <div class="card-name">${escapeHtml(kader.NAMA_KADER)}</div>
                     <div class="card-role">${escapeHtml(kader.JABATAN || 'Kader')}</div>
                 </div>
@@ -422,13 +528,19 @@
         `).join('');
     }
 
-    // Render Tab 2: Warga Binaan
+    // Render Tab 2: Warga Binaan - FIXED (hanya Nama, Alamat, RT, RW, Kelurahan)
     function renderWarga() {
         const container = document.getElementById('wargaList');
         const filtered = filterByKelurahan(allWarga, 'KELURAHAN');
         
+        console.log('Debug Warga:', {
+            totalWarga: allWarga.length,
+            filteredWarga: filtered.length,
+            currentKelurahan: currentKelurahan
+        });
+        
         if (!filtered.length) {
-            container.innerHTML = `<div class="error"><i class="fas fa-info-circle"></i> Tidak ada data warga binaan untuk kelurahan ${currentKelurahan}</div>`;
+            container.innerHTML = `<div class="error"><i class="fas fa-info-circle fa-2x"></i><p>Tidak ada data warga binaan untuk kelurahan ${currentKelurahan}</p></div>`;
             return;
         }
         
@@ -440,26 +552,41 @@
                     <div class="card-role">Warga Binaan</div>
                 </div>
                 <div class="card-body">
-                    <div class="card-info"><i class="fas fa-user-tie"></i> Kader: ${escapeHtml(warga.NAMA_KADER)} (${escapeHtml(warga.ID_KADER)})</div>
                     <div class="card-info"><i class="fas fa-home"></i> Alamat: ${escapeHtml(warga.ALAMAT)}</div>
                     <div class="card-info"><i class="fas fa-map-pin"></i> RT ${escapeHtml(warga.RT)} / RW ${escapeHtml(warga.RW)}</div>
-                    <div class="card-info"><i class="fas fa-calendar"></i> Input: ${escapeHtml(warga.TANGGAL_INPUT)}</div>
+                    <div class="card-info"><i class="fas fa-building"></i> Kelurahan: ${escapeHtml(warga.KELURAHAN)}</div>
                 </div>
             </div>
         `).join('');
     }
 
+    // Destroy existing charts
+    function destroyCharts() {
+        Object.keys(charts).forEach(key => {
+            if (charts[key]) {
+                charts[key].destroy();
+                charts[key] = null;
+            }
+        });
+        charts = {};
+    }
+
     // Rekapan dan Grafik
-    function renderRekapan() {
+    async function renderRekapan() {
         const container = document.getElementById('rekapanContainer');
+        showLoading('rekapanContainer', 'chart');
+        
+        await new Promise(resolve => setTimeout(resolve, 100));
+        
         const laporanFiltered = filterByKelurahan(allLaporan, 'KELURAHAN');
         
         if (!laporanFiltered.length) {
-            container.innerHTML = `<div class="error"><i class="fas fa-info-circle"></i> Tidak ada data laporan untuk kelurahan ${currentKelurahan}</div>`;
+            container.innerHTML = `<div class="error"><i class="fas fa-info-circle fa-2x"></i><p>Tidak ada data laporan untuk kelurahan ${currentKelurahan}</p></div>`;
             return;
         }
 
-        // Hitung total sampah
+        await new Promise(resolve => setTimeout(resolve, 50));
+
         let totalOrganik = 0, totalAnorganik = 0, totalResidu = 0, totalBerat = 0;
         laporanFiltered.forEach(l => {
             totalOrganik += parseFloat(l.BERAT_ORGANIK) || 0;
@@ -468,7 +595,6 @@
             totalBerat += parseFloat(l.TOTAL_BERAT) || 0;
         });
 
-        // Rekap Harian
         const byDate = {};
         laporanFiltered.forEach(l => {
             const tgl = l.TANGGAL_LAPORAN ? l.TANGGAL_LAPORAN.split('T')[0] : '';
@@ -480,7 +606,6 @@
             }
         });
 
-        // Top Kader
         const kaderStats = {};
         laporanFiltered.forEach(l => {
             const id = l.ID_KADER;
@@ -494,7 +619,6 @@
             .sort((a,b)=>b.total-a.total)
             .slice(0,10);
         
-        // Top Warga
         const wargaStats = {};
         laporanFiltered.forEach(l => {
             const nama = l.NAMA_WARGA;
@@ -506,15 +630,14 @@
             .sort((a,b)=>b.total-a.total)
             .slice(0,10);
 
-        // Grafik data
         const days = Object.keys(byDate).sort();
         const reductionData = days.map(day => {
             const pilah = (byDate[day].organik + byDate[day].anorganik);
             return Math.max(0, 1800 - pilah);
         });
         
-        const totalLaporan = laporanFiltered.length;
-        const targetTotal = totalLaporan * 1800;
+        const totalLaporanCount = laporanFiltered.length;
+        const targetTotal = totalLaporanCount * 1800;
         const totalPilah = totalOrganik + totalAnorganik;
         const persentase = targetTotal > 0 ? (totalPilah / targetTotal) * 100 : 0;
         
@@ -556,30 +679,41 @@
         `;
         container.innerHTML = html;
         
-        // Render Charts
         setTimeout(() => {
             try {
-                new Chart(document.getElementById('reductionChart'), {
-                    type: 'line', 
-                    data: { labels: days, datasets: [{ label: 'Sampah ke TPA (kg)', data: reductionData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }] },
-                    options: { responsive: true, maintainAspectRatio: true }
-                });
+                destroyCharts();
                 
-                new Chart(document.getElementById('compositionChart'), {
-                    type: 'pie', 
-                    data: { labels: ['Organik', 'Anorganik', 'Residu'], datasets: [{ data: komposisi, backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b'] }] },
-                    options: { responsive: true, maintainAspectRatio: true }
-                });
+                const redCtx = document.getElementById('reductionChart');
+                const compCtx = document.getElementById('compositionChart');
+                const achCtx = document.getElementById('achievementChart');
                 
-                const achievements = [20,40,50,60,70,80,90,100];
-                const achieved = achievements.map(a => persentase >= a ? a : 0);
-                new Chart(document.getElementById('achievementChart'), {
-                    type: 'bar', 
-                    data: { labels: achievements.map(a=>a+'%'), datasets: [{ label: 'Pencapaian Target', data: achieved, backgroundColor: '#3b82f6', borderRadius: 10 }] },
-                    options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, max: 100 } } }
-                });
+                if (redCtx) {
+                    charts.reduction = new Chart(redCtx, {
+                        type: 'line', 
+                        data: { labels: days, datasets: [{ label: 'Sampah ke TPA (kg)', data: reductionData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }] },
+                        options: { responsive: true, maintainAspectRatio: true }
+                    });
+                }
+                
+                if (compCtx) {
+                    charts.composition = new Chart(compCtx, {
+                        type: 'pie', 
+                        data: { labels: ['Organik', 'Anorganik', 'Residu'], datasets: [{ data: komposisi, backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b'] }] },
+                        options: { responsive: true, maintainAspectRatio: true }
+                    });
+                }
+                
+                if (achCtx) {
+                    const achievements = [20,40,50,60,70,80,90,100];
+                    const achieved = achievements.map(a => persentase >= a ? a : 0);
+                    charts.achievement = new Chart(achCtx, {
+                        type: 'bar', 
+                        data: { labels: achievements.map(a=>a+'%'), datasets: [{ label: 'Pencapaian Target', data: achieved, backgroundColor: '#3b82f6', borderRadius: 10 }] },
+                        options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, max: 100 } } }
+                    });
+                }
             } catch(e) { console.error('Chart error:', e); }
-        }, 100);
+        }, 150);
     }
 
     // Ranking Global
@@ -608,69 +742,66 @@
         
         container.innerHTML = `
             <h3 style="margin:20px 0 10px; color:white;"><i class="fas fa-crown"></i> Ranking Global Top 100 Kader</h3>
-            <table class="ranking-table">
-                <thead><tr><th>Rank</th><th>Foto</th><th>ID Kader</th><th>Nama</th><th>Kelurahan</th><th>Total Berat (kg)</th></tr></thead>
-                <tbody>
-                    ${topKaderGlobal.map((k,i)=>`
-                        <tr>
-                            <td><strong>${i+1}</strong></td>
-                            <td>${k.foto ? `<img src="${k.foto}" class="ranking-photo" onerror="this.src='https://via.placeholder.com/40?text=K'">` : `<i class="fas fa-user-circle" style="font-size:40px; color:#3b82f6;"></i>`}</td>
-                            <td>${escapeHtml(k.id)}</td>
-                            <td>${escapeHtml(k.nama)}</td>
-                            <td>${escapeHtml(k.kel)}</td>
-                            <td><strong>${k.total.toFixed(1)} kg</strong></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+            <div class="ranking-table">
+                <table>
+                    <thead><tr><th>Rank</th><th>Foto</th><th>ID Kader</th><th>Nama</th><th>Kelurahan</th><th>Total Berat (kg)</th></tr></thead>
+                    <tbody>
+                        ${topKaderGlobal.map((k,i)=>`
+                            <tr>
+                                <td><strong>${i+1}</strong></td>
+                                <td>${k.foto ? `<img src="${k.foto}" class="ranking-photo" loading="lazy" onerror="this.src='https://via.placeholder.com/40?text=K'">` : `<i class="fas fa-user-circle" style="font-size:40px; color:#3b82f6;"></i>`}</td>
+                                <td>${escapeHtml(k.id)}</td>
+                                <td>${escapeHtml(k.nama)}</td>
+                                <td>${escapeHtml(k.kel)}</td>
+                                <td><strong>${k.total.toFixed(1)} kg</strong></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
             
             <h3 style="margin:40px 0 10px; color:white;"><i class="fas fa-medal"></i> Ranking Global Top 100 Warga Binaan</h3>
-            <table class="ranking-table">
-                <thead><tr><th>Rank</th><th>Nama Warga</th><th>Kelurahan</th><th>Kader Pembina</th><th>Total Berat (kg)</th></tr></thead>
-                <tbody>
-                    ${topWargaGlobal.map((w,i)=>`
-                        <tr>
-                            <td><strong>${i+1}</strong></td>
-                            <td>${escapeHtml(w.nama)}</td>
-                            <td>${escapeHtml(w.kel)}</td>
-                            <td>${escapeHtml(w.kader)}</td>
-                            <td><strong>${w.total.toFixed(1)} kg</strong></td>
-                        </tr>
-                    `).join('')}
-                </tbody>
-            </table>
+            <div class="ranking-table">
+                <table>
+                    <thead><tr><th>Rank</th><th>Nama Warga</th><th>Kelurahan</th><th>Kader Pembina</th><th>Total Berat (kg)</th></tr></thead>
+                    <tbody>
+                        ${topWargaGlobal.map((w,i)=>`
+                            <tr>
+                                <td><strong>${i+1}</strong></td>
+                                <td>${escapeHtml(w.nama)}</td>
+                                <td>${escapeHtml(w.kel)}</td>
+                                <td>${escapeHtml(w.kader)}</td>
+                                <td><strong>${w.total.toFixed(1)} kg</strong></td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
         `;
     }
 
     async function refreshAll() {
         document.getElementById('kelurahanName').innerHTML = `<i class="fas fa-building"></i> ${currentKelurahan}`;
-        renderKader();
-        renderWarga();
-        renderRekapan();
-        renderRanking();
+        
+        showLoading('kaderList', 'card');
+        showLoading('wargaList', 'card');
+        showLoading('rekapanContainer', 'chart');
+        showLoading('rankingContainer', 'chart');
+        
+        setTimeout(() => renderKader(), 10);
+        setTimeout(() => renderWarga(), 50);
+        setTimeout(() => renderRekapan(), 100);
+        setTimeout(() => renderRanking(), 200);
     }
 
     async function init() {
-        // Ambil kelurahan dari parameter URL
         currentKelurahan = getParameterFromURL();
         document.getElementById('kelurahanName').innerHTML = `<i class="fas fa-building"></i> ${currentKelurahan}`;
         
         const success = await fetchData();
-        if (!success) {
-            alert('Gagal memuat data, periksa koneksi atau CORS');
-            return;
+        if (success) {
+            await refreshAll();
         }
-        await refreshAll();
-    }
-    
-    function escapeHtml(str) { 
-        if(!str) return ''; 
-        return str.replace(/[&<>]/g, function(m){
-            if(m==='&') return '&amp;'; 
-            if(m==='<') return '&lt;'; 
-            if(m==='>') return '&gt;'; 
-            return m;
-        }); 
     }
     
     // Event listeners untuk tabs
