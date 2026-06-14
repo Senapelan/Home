@@ -13,13 +13,22 @@
             box-sizing: border-box;
         }
 
-        body {
+body {
             font-family: "Plus Jakarta Sans", "Inter", sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
             position: relative;
         }
+
+/* Tambahan untuk memastikan konten tetap proporsional */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+}
 
         /* Animasi background */
         body::before {
@@ -465,6 +474,57 @@
             opacity: 0.95;
         }
 
+/* Header Container */
+.header {
+    width: 100%;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+/* Header Gambar - Super Responsif */
+.header-image {
+    width: 100%;
+    height: auto;
+    max-height: 200px;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+    margin: 0 auto;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #667eea, #764ba2); /* Warna backup */
+    transition: all 0.3s ease;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 1024px) {
+    .header-image {
+        max-height: 180px;
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .header-image {
+        max-height: 150px;
+        border-radius: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .header-image {
+        max-height: 120px;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .header-image {
+        max-height: 100px;
+        border-radius: 10px;
+    }
+}
+
         /* Animations */
         @keyframes fadeIn {
             from { opacity: 0; }
@@ -564,10 +624,15 @@
     </style>
 </head>
 <body>
+
+<div class="header">
+    <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/headerlogo.png" alt="Kader Pemilahan Sampah" class="header-image">
+</div>
+
     <div class="container">
         <div class="header">
             <div class="logo">
-                <i class="fas fa-leaf"></i>
+                <i class="fas fa-recycle"></i>
                 <h1>KADER PEMILAHAN SAMPAH</h1>
             </div>
             <p class="subtitle">Pembinaan Memilah Sampah Dari Rumah<br>(Senapelan Kencana)</p>
@@ -671,7 +736,7 @@
             <div id="panel-warga" class="panel">
                 <div class="info-card">
                     <h3><i class="fas fa-user-plus"></i> Tambah Warga Binaan</h3>
-                    <p>Isi data warga baru yang akan menjadi binaan Anda. Pastikan data yang diisi benar dan lengkap.</p>
+                    <p>Mohon Konfirmasi ID anda terdahulu, Isi data warga baru yang akan menjadi binaan Anda. Pastikan data yang diisi benar dan lengkap.</p>
                 </div>
 
                 <form id="formWarga">
@@ -740,7 +805,7 @@
 
     <script>
         // Konfigurasi
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPh_fTTYD0BbgBNy8_hXk7OHg_TlMA_4ixwb-1tDbh-iVdsR5ZuvfqwKuy4fdq0Y0dmg/exec'; // GANTI DENGAN URL DEPLOY ANDA
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzu__vCSl7hHFMiY5khTMfv2uxF0stzhusBatilsBo_w3moGDkKFqCqfF6Ti-BrGf67sg/exec'; // GANTI DENGAN URL DEPLOY ANDA
         
         let fotoBase64 = null;
         let currentKader = null;
@@ -1011,7 +1076,7 @@
             document.getElementById('photoPreview').style.display = 'none';
             document.getElementById('previewImg').src = '';
             document.getElementById('fotoInput').value = '';
-            showToast('Foto dihapus', 'warning');
+            showToast('Bukti foto terkirim ke Lurah', 'success');
         }
 
         // ============ SUBMIT LAPORAN ============
@@ -1185,14 +1250,14 @@
                         html += `
                             <div style="background: #f8f9fa; border-radius: 16px; padding: 20px;">
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                                    <div>
-                                        <strong style="font-size: 16px;">${kader.nama}</strong>
-                                        <div style="font-size: 12px; color: #6c757d;">ID: ${kader.id_kader}</div>
-                                    </div>
-                                    <div style="background: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
-                                        ${kader.jumlah_laporan} Laporan
-                                    </div>
-                                </div>
+    <div>
+        <strong style="font-size: 16px;">${kader.nama}</strong>
+        <div style="font-size: 12px; color: #6c757d;">Kelurahan: ${kader.kelurahan}</div>
+    </div>
+    <div style="background: #667eea; color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;">
+        ${kader.jumlah_laporan} Laporan
+    </div>
+</div>
                                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 12px;">
                                     <div style="text-align: center;">
                                         <div style="font-size: 12px; color: #6c757d;">Organik</div>
