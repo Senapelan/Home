@@ -153,6 +153,12 @@
             margin-bottom: 6px;
         }
 
+        /* Container untuk input password dengan tombol show/hide */
+        .password-container {
+            position: relative;
+            width: 100%;
+        }
+
         .input-field {
             width: 100%;
             padding: 12px 16px;
@@ -174,6 +180,52 @@
             border-color: rgba(255, 255, 255, 0.8);
             background: rgba(0, 0, 0, 0.4);
             box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Tombol Show/Hide Password */
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            color: rgba(255, 255, 255, 0.7);
+            transition: color 0.2s;
+        }
+
+        .toggle-password:hover {
+            color: rgba(255, 255, 255, 1);
+        }
+
+        /* Container untuk checkbox remember me */
+        .remember-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .checkbox-wrapper input {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #2c7eb6;
+        }
+
+        .checkbox-wrapper span {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .login-btn {
@@ -324,8 +376,20 @@
                         <span>🔒</span>
                         <span>Password</span>
                     </div>
-                    <input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="off" required>
+                    <div class="password-container">
+                        <input type="password" id="password" class="input-field" placeholder="••••••••" autocomplete="off" required>
+                        <button type="button" id="togglePassword" class="toggle-password">👁️</button>
+                    </div>
                 </div>
+
+                <!-- Remember Me Checkbox -->
+                <div class="remember-container">
+                    <label class="checkbox-wrapper">
+                        <input type="checkbox" id="rememberCheckbox">
+                        <span>💾 Ingat Saya</span>
+                    </label>
+                </div>
+
                 <button type="submit" id="loginButton" class="login-btn">
                     <span>🚪</span>
                     <span>LOGIN</span>
@@ -360,6 +424,13 @@
         const loginBtn = document.getElementById('loginButton');
         const errorContainer = document.getElementById('errorBox');
         const forgotBtn = document.getElementById('forgotPasswordBtn');
+        const togglePasswordBtn = document.getElementById('togglePassword');
+        const rememberCheckbox = document.getElementById('rememberCheckbox');
+        
+        // Storage key untuk remember me
+        const STORAGE_USERNAME_KEY = 'saved_username';
+        const STORAGE_PASSWORD_KEY = 'saved_password';
+        const STORAGE_REMEMBER_KEY = 'remember_me';
         
         function showError(msg) {
             errorContainer.innerHTML = `<div class="error-message"><span>⚠️</span> <span>${msg}</span></div>`;
@@ -387,12 +458,49 @@
         
         // Fungsi untuk membuka WhatsApp dengan pesan otomatis
         function openWhatsApp() {
-            // Encode pesan untuk URL
             const encodedMessage = encodeURIComponent(WA_MESSAGE);
-            // Buat URL WhatsApp Web/API
             const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodedMessage}`;
-            // Buka di tab baru
             window.open(waUrl, '_blank');
+        }
+        
+        // Fungsi untuk menyimpan data login (remember me)
+        function saveCredentials(username, password, isChecked) {
+            if (isChecked) {
+                localStorage.setItem(STORAGE_USERNAME_KEY, username);
+                localStorage.setItem(STORAGE_PASSWORD_KEY, password);
+                localStorage.setItem(STORAGE_REMEMBER_KEY, 'true');
+            } else {
+                localStorage.removeItem(STORAGE_USERNAME_KEY);
+                localStorage.removeItem(STORAGE_PASSWORD_KEY);
+                localStorage.setItem(STORAGE_REMEMBER_KEY, 'false');
+            }
+        }
+        
+        // Fungsi untuk memuat data login yang tersimpan
+        function loadSavedCredentials() {
+            const remember = localStorage.getItem(STORAGE_REMEMBER_KEY);
+            if (remember === 'true') {
+                const savedUsername = localStorage.getItem(STORAGE_USERNAME_KEY);
+                const savedPassword = localStorage.getItem(STORAGE_PASSWORD_KEY);
+                
+                if (savedUsername) {
+                    usernameInput.value = savedUsername;
+                    rememberCheckbox.checked = true;
+                }
+                if (savedPassword) {
+                    passwordInput.value = savedPassword;
+                }
+            } else {
+                rememberCheckbox.checked = false;
+            }
+        }
+        
+        // Fungsi toggle show/hide password
+        function togglePasswordVisibility() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            // Ubah icon mata
+            togglePasswordBtn.textContent = type === 'password' ? '👁️' : '🙈';
         }
         
         async function authenticateUser(user, pass) {
@@ -413,6 +521,7 @@
             
             const user = usernameInput.value.trim();
             const pass = passwordInput.value;
+            const remember = rememberCheckbox.checked;
             
             if(!user) return showError("Username tidak boleh kosong!");
             if(!pass) return showError("Password tidak boleh kosong!");
@@ -422,6 +531,9 @@
             setLoading(false);
             
             if(result && result.success === true) {
+                // Simpan credentials jika remember me dicentang
+                saveCredentials(user, pass, remember);
+                
                 sessionStorage.setItem('isLoggedIn', 'true');
                 sessionStorage.setItem('adminUsername', user);
                 sessionStorage.setItem('adminName', result.name || user);
@@ -433,13 +545,21 @@
                 showError(result?.message || "Username atau password salah.");
                 passwordInput.value = '';
                 passwordInput.focus();
+                // Jika login gagal dan remember me tidak dicentang, hapus data
+                if (!remember) {
+                    localStorage.removeItem(STORAGE_USERNAME_KEY);
+                    localStorage.removeItem(STORAGE_PASSWORD_KEY);
+                }
             }
         }
         
-        // Event listener untuk tombol Lupa Password
+        // Event listeners
         forgotBtn.addEventListener('click', openWhatsApp);
-        
         loginForm.addEventListener('submit', handleLogin);
+        togglePasswordBtn.addEventListener('click', togglePasswordVisibility);
+        
+        // Load saved credentials saat halaman dimuat
+        loadSavedCredentials();
         
         // Optional: Auto focus on username
         usernameInput.focus();
