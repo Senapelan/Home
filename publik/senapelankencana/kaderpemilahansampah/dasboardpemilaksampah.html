@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Dashboard Kader Pemilah Sampah dari Rumah</title>
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/senapelankencana/image/kaderpemilahsampah.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            width: 100%;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .header-image {
+            width: 100%;
+            height: auto;
+            max-height: 200px;
+            object-fit: cover;
+            object-position: center;
+            display: block;
+            margin: 0 auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            transition: all 0.3s ease;
+        }
+
+        @media (max-width: 1024px) {
+            .header-image { max-height: 180px; border-radius: 16px; }
+        }
+        @media (max-width: 768px) {
+            .header-image { max-height: 150px; border-radius: 14px; }
+        }
+        @media (max-width: 480px) {
+            .header-image { max-height: 120px; border-radius: 12px; }
+        }
+        @media (max-width: 360px) {
+            .header-image { max-height: 100px; border-radius: 10px; }
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .main-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        .subtitle {
+            color: #a0aec0;
+            margin-top: 5px;
+        }
+        .active-kelurahan-badge {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 10px;
+            border-radius: 50px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .tab-btn {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #e0e0e0;
+            cursor: pointer;
+            border-radius: 40px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .tab-btn i {
+            font-size: 1.2rem;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            box-shadow: 0 4px 12px rgba(59,130,246,0.4);
+        }
+        .tab-btn:hover:not(.active) {
+            background: rgba(59,130,246,0.3);
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        .profile-card {
+            background: linear-gradient(135deg, #ffffff, #f0f4ff);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .profile-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+        .card-header {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            padding: 20px;
+            text-align: center;
+            color: white;
+        }
+        .card-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid white;
+            margin-bottom: 10px;
+        }
+        .card-name {
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin: 10px 0 5px;
+        }
+        .card-role {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        .card-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .card-info i {
+            width: 25px;
+            color: #3b82f6;
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .stat-card {
+            background: linear-gradient(135deg, #ffffff, #f0f4ff);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1e3a8a;
+        }
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+        }
+        canvas {
+            max-height: 300px;
+        }
+
+        .ranking-table {
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .ranking-table th {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+        .ranking-table td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        .ranking-table tr:hover {
+            background: #f0f4ff;
+        }
+        .ranking-photo {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            font-size: 1.2rem;
+            color: #3b82f6;
+            background: white;
+            border-radius: 20px;
+        }
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .main-title { font-size: 1.5rem; }
+            .tab-btn { padding: 10px 12px; font-size: 0.85rem; }
+            .card-grid { grid-template-columns: 1fr; }
+            .chart-row { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard-container">
+    <div class="header">
+        <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/headerlogo.png" alt="Kader Pemilahan Sampah" class="header-image">
+    </div>
+
+    <div class="title-section">
+        <h1 class="main-title"><i class="fas fa-recycle"></i> Dashboard Kader Pemilah Sampah dari Rumah</h1>
+        <div class="active-kelurahan-badge" id="kelurahanBadge">
+            <i class="fas fa-building"></i> <span id="kelurahanName">Memuat...</span>
+        </div>
+    </div>
+
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tab1"><i class="fas fa-id-card"></i> Profile Kader</button>
+        <button class="tab-btn" data-tab="tab2"><i class="fas fa-users"></i> Warga Binaan</button>
+        <button class="tab-btn" data-tab="tab3"><i class="fas fa-chart-line"></i> Rekapan & Grafik</button>
+        <button class="tab-btn" data-tab="tab4"><i class="fas fa-trophy"></i> Ranking Global Top 100</button>
+    </div>
+
+    <div id="tab1" class="tab-content active">
+        <div id="kaderList" class="card-grid">Loading...</div>
+    </div>
+    <div id="tab2" class="tab-content">
+        <div id="wargaList" class="card-grid">Loading...</div>
+    </div>
+    <div id="tab3" class="tab-content">
+        <div id="rekapanContainer">Loading...</div>
+    </div>
+    <div id="tab4" class="tab-content">
+        <div id="rankingContainer">Loading...</div>
+    </div>
+</div>
+
+<script>
+    // Konfigurasi
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8kwRs7ZeyOJIbivEmYjx9ztuFmjndl7W79nmzoL-oj4dJq8_l4EYEG1OCiCKHsvA0/exec';
+    const SPREADSHEET_ID = '1WzQsh0BxuGqDzG2yIc5vYcxhyaDZs_ByePqFSICl0KE';
+    
+    // Daftar kelurahan yang valid
+    const VALID_KELURAHAN = ['Kampung Baru', 'Kampung Bandar', 'Kampung Dalam', 'Padang Bulan', 'Padang Terubuk', 'Sago'];
+
+    let currentKelurahan = '';
+    let allKader = [], allWarga = [], allLaporan = [];
+    let kaderPhotoMap = {};
+
+    // Ambil parameter dari URL
+    function getParameterFromURL() {
+        const urlParams = new URLSearchParams(window.location.search);
+        let kelurahan = urlParams.get('kelurahan');
+        
+        if (kelurahan) {
+            // Decode URL encoding
+            kelurahan = decodeURIComponent(kelurahan);
+            // Cari kecocokan (case insensitive)
+            const matched = VALID_KELURAHAN.find(k => k.toLowerCase() === kelurahan.toLowerCase());
+            if (matched) {
+                return matched;
+            }
+        }
+        // Default ke Kampung Baru jika tidak ada parameter atau tidak valid
+        return 'Kampung Baru';
+    }
+
+    // Fetch data dari Google Apps Script
+    async function fetchData() {
+        try {
+            const url = `${APPS_SCRIPT_URL}?action=getData&sheetId=${SPREADSHEET_ID}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.success) {
+                allKader = data.kader || [];
+                allWarga = data.warga || [];
+                allLaporan = data.laporan || [];
+                
+                // Buat map foto kader
+                kaderPhotoMap = {};
+                allKader.forEach(kader => {
+                    kaderPhotoMap[kader.ID_KADER] = {
+                        foto: kader.LINK_FOTO,
+                        nama: kader.NAMA_KADER
+                    };
+                });
+                
+                console.log('Data loaded:', { kader: allKader.length, warga: allWarga.length, laporan: allLaporan.length });
+                console.log('Current kelurahan:', currentKelurahan);
+                
+                // Debug: Cek data warga
+                if (allWarga.length > 0) {
+                    const kelWarga = [...new Set(allWarga.map(w => w.KELURAHAN))];
+                    console.log('Kelurahan di WARGA_BINAAN:', kelWarga);
+                }
+                if (allLaporan.length > 0) {
+                    const kelLaporan = [...new Set(allLaporan.map(l => l.KELURAHAN))];
+                    console.log('Kelurahan di RIWAYAT_LAPORAN:', kelLaporan);
+                }
+                
+                return true;
+            }
+            throw new Error('Gagal mengambil data');
+        } catch (error) {
+            console.error('Error fetch:', error);
+            return false;
+        }
+    }
+
+    // Filter berdasarkan kelurahan (case sensitive, exact match)
+    function filterByKelurahan(data, kelurahanField = 'KELURAHAN') {
+        if (!data || data.length === 0) return [];
+        return data.filter(item => item[kelurahanField] === currentKelurahan);
+    }
+
+    // Render Tab 1: Profile Kader
+    function renderKader() {
+        const container = document.getElementById('kaderList');
+        const filtered = filterByKelurahan(allKader, 'KELURAHAN');
+        
+        if (!filtered.length) {
+            container.innerHTML = `<div class="error"><i class="fas fa-info-circle"></i> Tidak ada data kader untuk kelurahan ${currentKelurahan}</div>`;
+            return;
+        }
+        
+        container.innerHTML = filtered.map(kader => `
+            <div class="profile-card">
+                <div class="card-header">
+                    ${kader.LINK_FOTO ? `<img src="${kader.LINK_FOTO}" class="card-img" onerror="this.src='https://via.placeholder.com/100?text=Kader'">` : `<i class="fas fa-user-circle" style="font-size: 80px;"></i>`}
+                    <div class="card-name">${escapeHtml(kader.NAMA_KADER)}</div>
+                    <div class="card-role">${escapeHtml(kader.JABATAN || 'Kader')}</div>
+                </div>
+                <div class="card-body">
+                    <div class="card-info"><i class="fas fa-id-badge"></i> ID: ${escapeHtml(kader.ID_KADER)}</div>
+                    <div class="card-info"><i class="fas fa-map-marker-alt"></i> Kelurahan: ${escapeHtml(kader.KELURAHAN)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Render Tab 2: Warga Binaan
+    function renderWarga() {
+        const container = document.getElementById('wargaList');
+        const filtered = filterByKelurahan(allWarga, 'KELURAHAN');
+        
+        if (!filtered.length) {
+            container.innerHTML = `<div class="error"><i class="fas fa-info-circle"></i> Tidak ada data warga binaan untuk kelurahan ${currentKelurahan}</div>`;
+            return;
+        }
+        
+        container.innerHTML = filtered.map(warga => `
+            <div class="profile-card">
+                <div class="card-header" style="background: linear-gradient(135deg, #2563eb, #1e40af);">
+                    <i class="fas fa-user-friends" style="font-size: 60px;"></i>
+                    <div class="card-name">${escapeHtml(warga.NAMA_WARGA)}</div>
+                    <div class="card-role">Warga Binaan</div>
+                </div>
+                <div class="card-body">
+                    <div class="card-info"><i class="fas fa-user-tie"></i> Kader: ${escapeHtml(warga.NAMA_KADER)} (${escapeHtml(warga.ID_KADER)})</div>
+                    <div class="card-info"><i class="fas fa-home"></i> Alamat: ${escapeHtml(warga.ALAMAT)}</div>
+                    <div class="card-info"><i class="fas fa-map-pin"></i> RT ${escapeHtml(warga.RT)} / RW ${escapeHtml(warga.RW)}</div>
+                    <div class="card-info"><i class="fas fa-calendar"></i> Input: ${escapeHtml(warga.TANGGAL_INPUT)}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Rekapan dan Grafik
+    function renderRekapan() {
+        const container = document.getElementById('rekapanContainer');
+        const laporanFiltered = filterByKelurahan(allLaporan, 'KELURAHAN');
+        
+        if (!laporanFiltered.length) {
+            container.innerHTML = `<div class="error"><i class="fas fa-info-circle"></i> Tidak ada data laporan untuk kelurahan ${currentKelurahan}</div>`;
+            return;
+        }
+
+        // Hitung total sampah
+        let totalOrganik = 0, totalAnorganik = 0, totalResidu = 0, totalBerat = 0;
+        laporanFiltered.forEach(l => {
+            totalOrganik += parseFloat(l.BERAT_ORGANIK) || 0;
+            totalAnorganik += parseFloat(l.BERAT_ANORGANIK) || 0;
+            totalResidu += parseFloat(l.BERAT_RESIDU) || 0;
+            totalBerat += parseFloat(l.TOTAL_BERAT) || 0;
+        });
+
+        // Rekap Harian
+        const byDate = {};
+        laporanFiltered.forEach(l => {
+            const tgl = l.TANGGAL_LAPORAN ? l.TANGGAL_LAPORAN.split('T')[0] : '';
+            if (tgl) {
+                if (!byDate[tgl]) byDate[tgl] = { organik:0, anorganik:0, residu:0 };
+                byDate[tgl].organik += parseFloat(l.BERAT_ORGANIK)||0;
+                byDate[tgl].anorganik += parseFloat(l.BERAT_ANORGANIK)||0;
+                byDate[tgl].residu += parseFloat(l.BERAT_RESIDU)||0;
+            }
+        });
+
+        // Top Kader
+        const kaderStats = {};
+        laporanFiltered.forEach(l => {
+            const id = l.ID_KADER;
+            if(!kaderStats[id]) {
+                kaderStats[id] = { nama: l.NAMA_KADER, total: 0 };
+            }
+            kaderStats[id].total += parseFloat(l.TOTAL_BERAT)||0;
+        });
+        const topKader = Object.entries(kaderStats)
+            .map(([id,val]) => ({ id, nama:val.nama, total:val.total }))
+            .sort((a,b)=>b.total-a.total)
+            .slice(0,10);
+        
+        // Top Warga
+        const wargaStats = {};
+        laporanFiltered.forEach(l => {
+            const nama = l.NAMA_WARGA;
+            if(!wargaStats[nama]) wargaStats[nama] = { total:0 };
+            wargaStats[nama].total += parseFloat(l.TOTAL_BERAT)||0;
+        });
+        const topWarga = Object.entries(wargaStats)
+            .map(([nama,val]) => ({ nama, total:val.total }))
+            .sort((a,b)=>b.total-a.total)
+            .slice(0,10);
+
+        // Grafik data
+        const days = Object.keys(byDate).sort();
+        const reductionData = days.map(day => {
+            const pilah = (byDate[day].organik + byDate[day].anorganik);
+            return Math.max(0, 1800 - pilah);
+        });
+        
+        const totalLaporan = laporanFiltered.length;
+        const targetTotal = totalLaporan * 1800;
+        const totalPilah = totalOrganik + totalAnorganik;
+        const persentase = targetTotal > 0 ? (totalPilah / targetTotal) * 100 : 0;
+        
+        const komposisi = [totalOrganik, totalAnorganik, totalResidu];
+        
+        const html = `
+            <div class="stat-grid">
+                <div class="stat-card"><div class="stat-number">${(totalOrganik).toFixed(1)} kg</div><div class="stat-label">Total Sampah Organik</div></div>
+                <div class="stat-card"><div class="stat-number">${(totalAnorganik).toFixed(1)} kg</div><div class="stat-label">Total Sampah Anorganik</div></div>
+                <div class="stat-card"><div class="stat-number">${(totalResidu).toFixed(1)} kg</div><div class="stat-label">Total Residu</div></div>
+                <div class="stat-card"><div class="stat-number">${(totalBerat).toFixed(1)} kg</div><div class="stat-label">Total Keseluruhan</div></div>
+            </div>
+            
+            <div class="chart-row">
+                <div class="chart-container">
+                    <canvas id="reductionChart"></canvas>
+                    <p style="text-align:center; margin-top:10px;">Grafik Pengurangan Tonase ke TPA (kg/hari)</p>
+                </div>
+                <div class="chart-container">
+                    <canvas id="compositionChart"></canvas>
+                    <p style="text-align:center; margin-top:10px;">Komposisi Sampah Terpilah</p>
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="achievementChart"></canvas>
+                <p style="text-align:center; margin-top:10px;">Pencapaian Pemilahan (${persentase.toFixed(1)}%)</p>
+            </div>
+            
+            <div class="stat-grid">
+                <div class="stat-card"><div class="stat-number"><i class="fas fa-trophy"></i> Top 10 Kader</div></div>
+                ${topKader.map((k,i)=>`<div class="stat-card"><strong>${i+1}. ${escapeHtml(k.nama)}</strong><br>${k.total.toFixed(1)} kg</div>`).join('')}
+            </div>
+            
+            <div class="stat-grid">
+                <div class="stat-card"><div class="stat-number"><i class="fas fa-star"></i> Top 10 Warga Binaan</div></div>
+                ${topWarga.map((w,i)=>`<div class="stat-card"><strong>${i+1}. ${escapeHtml(w.nama)}</strong><br>${w.total.toFixed(1)} kg</div>`).join('')}
+            </div>
+        `;
+        container.innerHTML = html;
+        
+        // Render Charts
+        setTimeout(() => {
+            try {
+                new Chart(document.getElementById('reductionChart'), {
+                    type: 'line', 
+                    data: { labels: days, datasets: [{ label: 'Sampah ke TPA (kg)', data: reductionData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }] },
+                    options: { responsive: true, maintainAspectRatio: true }
+                });
+                
+                new Chart(document.getElementById('compositionChart'), {
+                    type: 'pie', 
+                    data: { labels: ['Organik', 'Anorganik', 'Residu'], datasets: [{ data: komposisi, backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b'] }] },
+                    options: { responsive: true, maintainAspectRatio: true }
+                });
+                
+                const achievements = [20,40,50,60,70,80,90,100];
+                const achieved = achievements.map(a => persentase >= a ? a : 0);
+                new Chart(document.getElementById('achievementChart'), {
+                    type: 'bar', 
+                    data: { labels: achievements.map(a=>a+'%'), datasets: [{ label: 'Pencapaian Target', data: achieved, backgroundColor: '#3b82f6', borderRadius: 10 }] },
+                    options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, max: 100 } } }
+                });
+            } catch(e) { console.error('Chart error:', e); }
+        }, 100);
+    }
+
+    // Ranking Global
+    function renderRanking() {
+        const container = document.getElementById('rankingContainer');
+        
+        const kaderGlobal = {};
+        allLaporan.forEach(l => {
+            const id = l.ID_KADER;
+            if(!kaderGlobal[id]) {
+                kaderGlobal[id] = { id, nama: l.NAMA_KADER, total: 0, kel: l.KELURAHAN, foto: kaderPhotoMap[id]?.foto || null };
+            }
+            kaderGlobal[id].total += parseFloat(l.TOTAL_BERAT)||0;
+        });
+        const topKaderGlobal = Object.values(kaderGlobal).sort((a,b)=>b.total-a.total).slice(0,100);
+        
+        const wargaGlobal = {};
+        allLaporan.forEach(l => {
+            const nama = l.NAMA_WARGA;
+            if(!wargaGlobal[nama]) {
+                wargaGlobal[nama] = { nama, total: 0, kel: l.KELURAHAN, kader: l.NAMA_KADER };
+            }
+            wargaGlobal[nama].total += parseFloat(l.TOTAL_BERAT)||0;
+        });
+        const topWargaGlobal = Object.values(wargaGlobal).sort((a,b)=>b.total-a.total).slice(0,100);
+        
+        container.innerHTML = `
+            <h3 style="margin:20px 0 10px; color:white;"><i class="fas fa-crown"></i> Ranking Global Top 100 Kader</h3>
+            <table class="ranking-table">
+                <thead><tr><th>Rank</th><th>Foto</th><th>ID Kader</th><th>Nama</th><th>Kelurahan</th><th>Total Berat (kg)</th></tr></thead>
+                <tbody>
+                    ${topKaderGlobal.map((k,i)=>`
+                        <tr>
+                            <td><strong>${i+1}</strong></td>
+                            <td>${k.foto ? `<img src="${k.foto}" class="ranking-photo" onerror="this.src='https://via.placeholder.com/40?text=K'">` : `<i class="fas fa-user-circle" style="font-size:40px; color:#3b82f6;"></i>`}</td>
+                            <td>${escapeHtml(k.id)}</td>
+                            <td>${escapeHtml(k.nama)}</td>
+                            <td>${escapeHtml(k.kel)}</td>
+                            <td><strong>${k.total.toFixed(1)} kg</strong></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            
+            <h3 style="margin:40px 0 10px; color:white;"><i class="fas fa-medal"></i> Ranking Global Top 100 Warga Binaan</h3>
+            <table class="ranking-table">
+                <thead><tr><th>Rank</th><th>Nama Warga</th><th>Kelurahan</th><th>Kader Pembina</th><th>Total Berat (kg)</th></tr></thead>
+                <tbody>
+                    ${topWargaGlobal.map((w,i)=>`
+                        <tr>
+                            <td><strong>${i+1}</strong></td>
+                            <td>${escapeHtml(w.nama)}</td>
+                            <td>${escapeHtml(w.kel)}</td>
+                            <td>${escapeHtml(w.kader)}</td>
+                            <td><strong>${w.total.toFixed(1)} kg</strong></td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+        `;
+    }
+
+    async function refreshAll() {
+        document.getElementById('kelurahanName').innerHTML = `<i class="fas fa-building"></i> ${currentKelurahan}`;
+        renderKader();
+        renderWarga();
+        renderRekapan();
+        renderRanking();
+    }
+
+    async function init() {
+        // Ambil kelurahan dari parameter URL
+        currentKelurahan = getParameterFromURL();
+        document.getElementById('kelurahanName').innerHTML = `<i class="fas fa-building"></i> ${currentKelurahan}`;
+        
+        const success = await fetchData();
+        if (!success) {
+            alert('Gagal memuat data, periksa koneksi atau CORS');
+            return;
+        }
+        await refreshAll();
+    }
+    
+    function escapeHtml(str) { 
+        if(!str) return ''; 
+        return str.replace(/[&<>]/g, function(m){
+            if(m==='&') return '&amp;'; 
+            if(m==='<') return '&lt;'; 
+            if(m==='>') return '&gt;'; 
+            return m;
+        }); 
+    }
+    
+    // Event listeners untuk tabs
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+            document.getElementById(btn.dataset.tab).classList.add('active');
+        });
+    });
+    
+    // Start
+    init();
+</script>
+</body>
+</html>
