@@ -206,6 +206,33 @@
             transform: none;
         }
 
+        /* Tombol Lupa Password */
+        .forgot-password-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.75rem;
+            backdrop-filter: blur(5px);
+        }
+
+        .forgot-password-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+
         .error-message {
             background: rgba(220, 60, 60, 0.9);
             backdrop-filter: blur(4px);
@@ -304,6 +331,13 @@
                     <span>LOGIN</span>
                 </button>
             </form>
+
+            <!-- Tombol Lupa Password -->
+            <button id="forgotPasswordBtn" class="forgot-password-btn">
+                <span>🔐</span>
+                <span>Lupa Password ?</span>
+            </button>
+
             <div id="errorBox" style="min-height: 65px;"></div>
             <div class="info-footer">
                 <span>🗄️</span> Senapelan Kencana - Inovasi REIN RIZKA KARVY, S.STP., M.Si
@@ -315,11 +349,17 @@
         // Konfigurasi Apps Script
         const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqHrTRt9i-QLUMDzJ7Ce2pFSolfqa-IMBJH5-0a-5fT9Q2q1bEToLOxmt1REdcS_0Rxg/exec";
         
+        // Nomor WhatsApp tujuan (format internasional tanpa +)
+        const WA_NUMBER = "6282170089590";
+        // Pesan otomatis yang akan dikirim via WhatsApp
+        const WA_MESSAGE = "Assalamualaikum admin Senapelan Kencana, saya mau login di Aplikasi Senapelan Kencana. Mohon kirimkan Username dan password, terima kasih.";
+        
         const loginForm = document.getElementById('loginForm');
         const usernameInput = document.getElementById('username');
         const passwordInput = document.getElementById('password');
         const loginBtn = document.getElementById('loginButton');
         const errorContainer = document.getElementById('errorBox');
+        const forgotBtn = document.getElementById('forgotPasswordBtn');
         
         function showError(msg) {
             errorContainer.innerHTML = `<div class="error-message"><span>⚠️</span> <span>${msg}</span></div>`;
@@ -343,6 +383,16 @@
                 loginBtn.disabled = false;
                 loginBtn.innerHTML = `<span>🚪</span> <span>LOGIN</span>`;
             }
+        }
+        
+        // Fungsi untuk membuka WhatsApp dengan pesan otomatis
+        function openWhatsApp() {
+            // Encode pesan untuk URL
+            const encodedMessage = encodeURIComponent(WA_MESSAGE);
+            // Buat URL WhatsApp Web/API
+            const waUrl = `https://wa.me/${WA_NUMBER}?text=${encodedMessage}`;
+            // Buka di tab baru
+            window.open(waUrl, '_blank');
         }
         
         async function authenticateUser(user, pass) {
@@ -385,6 +435,9 @@
                 passwordInput.focus();
             }
         }
+        
+        // Event listener untuk tombol Lupa Password
+        forgotBtn.addEventListener('click', openWhatsApp);
         
         loginForm.addEventListener('submit', handleLogin);
         
