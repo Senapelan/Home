@@ -44,7 +44,6 @@
             box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
         }
 
-        /* Custom scrollbar sidebar */
         .sidebar::-webkit-scrollbar {
             width: 5px;
         }
@@ -57,7 +56,6 @@
             border-radius: 10px;
         }
 
-        /* Mobile: sidebar tersembunyi di kiri */
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -71,7 +69,6 @@
             }
         }
 
-        /* Desktop: sidebar selalu terbuka */
         @media (min-width: 769px) {
             .sidebar {
                 transform: translateX(0) !important;
@@ -84,7 +81,6 @@
             }
         }
 
-        /* Overlay gelap saat sidebar terbuka di mobile */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -173,7 +169,6 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        /* Efek kedip untuk menu baru / interaktif */
         .nav-link.blink-effect {
             animation: blinkBorder 1.5s ease-in-out 3;
             position: relative;
@@ -190,35 +185,65 @@
             }
         }
 
-        /* Animasi loading spin untuk menu yang sedang diproses */
         .nav-link.loading i.fa-spinner {
             animation: spin 0.8s linear infinite;
         }
 
-        /* Submenu */
+        /* Submenu level 1 */
         .submenu {
-            padding-left: 2.5rem;
+            padding-left: 1rem;
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .submenu .nav-link {
-            padding: 0.6rem 1rem;
-            font-size: 0.9rem;
+        .nav-item.open > .submenu {
+            max-height: 800px;
         }
 
-        .nav-item.open .submenu {
+        /* Submenu level 2 (kelurahan) */
+        .submenu-kelurahan {
+            padding-left: 1.5rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .kelembagaan-sub-item.open .submenu-kelurahan {
             max-height: 600px;
         }
 
-        /* Indikator panah berputar saat menu dibuka */
         .nav-link .fa-chevron-down {
             transition: transform 0.3s ease;
         }
 
-        .nav-item.open > .nav-link .fa-chevron-down {
+        .nav-item.open > .nav-link .fa-chevron-down,
+        .kelembagaan-sub-item.open > .sub-accordion .fa-chevron-down {
             transform: rotate(180deg);
+        }
+
+        /* Sub accordion style */
+        .sub-accordion {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 0.7rem 1rem;
+        }
+
+        .kelurahan-link {
+            padding: 0.6rem 1rem !important;
+            font-size: 0.8rem !important;
+            background: rgba(255, 255, 255, 0.05);
+            margin: 0.25rem 0;
+            border-radius: 10px;
+        }
+
+        .kelurahan-link i {
+            font-size: 0.8rem;
+            width: 22px;
+        }
+
+        .kelurahan-link:hover {
+            background: rgba(44, 126, 192, 0.4) !important;
+            transform: translateX(3px);
         }
 
         /* Main Content */
@@ -228,7 +253,6 @@
             transition: margin-left 0.3s ease;
         }
 
-        /* Top Bar */
         .top-bar {
             background: white;
             padding: 1rem 2rem;
@@ -256,7 +280,6 @@
             margin-top: 0.25rem;
         }
 
-        /* Menu Toggle Button */
         .menu-toggle {
             background: none;
             border: none;
@@ -272,7 +295,6 @@
             background: rgba(44, 126, 192, 0.1);
         }
 
-        /* Profile Section */
         .profile-section {
             display: flex;
             align-items: center;
@@ -341,7 +363,6 @@
             box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
         }
 
-        /* Content Area - FULL HEIGHT FIX */
         .content-area {
             padding: 2rem;
             background: #f8fafc;
@@ -363,7 +384,6 @@
             display: block;
         }
 
-        /* Loading Overlay */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -396,56 +416,6 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Responsive Mobile - FULL HEIGHT */
-        @media (max-width: 768px) {
-            .top-bar {
-                padding: 0.8rem 1rem;
-            }
-            .page-title h1 {
-                font-size: 1.1rem;
-            }
-            .page-title p {
-                font-size: 0.65rem;
-            }
-            .profile-info .name {
-                font-size: 0.75rem;
-            }
-            .profile-info .role {
-                font-size: 0.6rem;
-            }
-            .logout-btn span {
-                display: none;
-            }
-            .logout-btn {
-                padding: 0.5rem 0.8rem;
-            }
-            .content-area {
-                padding: 1rem;
-            }
-            .iframe-container {
-                min-height: calc(100vh - 100px);
-            }
-            iframe {
-                height: calc(100vh - 100px);
-            }
-        }
-
-        @media (max-width: 480px) {
-            .profile-info {
-                display: none;
-            }
-            .top-bar {
-                justify-content: space-between;
-            }
-            .iframe-container {
-                min-height: calc(100vh - 80px);
-            }
-            iframe {
-                height: calc(100vh - 80px);
-            }
-        }
-
-        /* Tooltip helper untuk mobile */
         .swipe-hint {
             position: fixed;
             bottom: 20px;
@@ -474,11 +444,52 @@
         .swipe-hint.show {
             display: flex;
         }
+
+        @media (max-width: 768px) {
+            .top-bar {
+                padding: 0.8rem 1rem;
+            }
+            .page-title h1 {
+                font-size: 1.1rem;
+            }
+            .page-title p {
+                font-size: 0.65rem;
+            }
+            .profile-info .name {
+                font-size: 0.75rem;
+            }
+            .profile-info .role {
+                font-size: 0.6rem;
+            }
+            .logout-btn span {
+                display: none;
+            }
+            .logout-btn {
+                padding: 0.5rem 0.8rem;
+            }
+            .content-area {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .profile-info {
+                display: none;
+            }
+        }
+
+        /* Badge kelurahan aktif */
+        .kelurahan-badge {
+            background: #2c7ec0;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.6rem;
+            margin-left: 8px;
+        }
     </style>
 </head>
 <body>
 <div class="dashboard-container">
-    <!-- Sidebar Overlay untuk mobile -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <!-- SIDEBAR -->
@@ -514,48 +525,8 @@
                 </div>
             </div>
 
-            <!-- KELEMBAGAAN (URUTAN BARU) -->
-            <div class="nav-item" id="kelembagaanItem">
-                <div class="nav-link" onclick="toggleSubmenu('kelembagaanSub', this)">
-                    <i class="fas fa-building"></i>
-                    <span>KELEMBAGAAN</span>
-                    <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.7rem;"></i>
-                </div>
-                <div class="submenu" id="kelembagaanSub">
-                    <div class="nav-link" onclick="loadPage('lpm', this)">
-                        <i class="fas fa-handshake"></i>
-                        <span>LPM</span>
-                    </div>
-                    <div class="nav-link" onclick="loadPage('rtrw', this)">
-                        <i class="fas fa-users"></i>
-                        <span>RT RW</span>
-                    </div>
-                    <div class="nav-link" onclick="loadPage('pkk', this)">
-                        <i class="fas fa-female"></i>
-                        <span>PKK</span>
-                    </div>
-                    <div class="nav-link" onclick="loadPage('posyandu', this)">
-                        <i class="fas fa-child"></i>
-                        <span>POS YANDU</span>
-                    </div>
-                    <div class="nav-link" onclick="loadPage('karangtaruna', this)">
-                        <i class="fas fa-users"></i>
-                        <span>KARANG TARUNA</span>
-                    </div>
-                    <div class="nav-link" onclick="loadPage('lps', this)">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>LPS</span>
-                    </div>
-                    <div class="nav-link" onclick="loadPage('banksampah', this)">
-                        <i class="fas fa-recycle"></i>
-                        <span>BANK SAMPAH</span>
-                    </div>
-                    <div class="nav-link" onclick="loadPage('operatorparit', this)">
-                        <i class="fas fa-water"></i>
-                        <span>OPERATOR PARIT</span>
-                    </div>
-                </div>
-            </div>
+            <!-- KELEMBAGAAN akan diisi oleh JavaScript dinamis -->
+            <div id="kelembagaanContainer"></div>
         </div>
     </div>
 
@@ -585,18 +556,16 @@
         </div>
         <div class="content-area">
             <div class="iframe-container">
-                <iframe id="contentFrame" src=""></iframe>
+                <iframe id="contentFrame" src="about:blank"></iframe>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Swipe Hint untuk mobile -->
 <div class="swipe-hint" id="swipeHint">
     <i class="fas fa-arrow-right"></i> Geser ke kanan untuk menu
 </div>
 
-<!-- Loading Overlay -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner">
         <i class="fas fa-spinner"></i>
@@ -605,13 +574,278 @@
 </div>
 
 <script>
-    // Konfigurasi Apps Script
+    // ==================== KONFIGURASI ====================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqHrTRt9i-QLUMDzJ7Ce2pFSolfqa-IMBJH5-0a-5fT9Q2q1bEToLOxmt1REdcS_0Rxg/exec";
     
+    // Daftar 6 Kelurahan
+    const KELURAHAN_LIST = [
+        { name: "Kampung Baru", param: "Kampung Baru", display: "KAMPUNG BARU" },
+        { name: "Kampung Bandar", param: "Kampung Bandar", display: "KAMPUNG BANDAR" },
+        { name: "Kampung Dalam", param: "Kampung Dalam", display: "KAMPUNG DALAM" },
+        { name: "Padang Bulan", param: "Padang Bulan", display: "PADANG BULAN" },
+        { name: "Padang Terubuk", param: "Padang Terubuk", display: "PADANG TERUBUK" },
+        { name: "Sago", param: "Sago", display: "SAGO" }
+    ];
+
+    // Mapping halaman kelembagaan (9 jenis termasuk KADER PEMILAH SAMPAH)
+    const KELEMBAGAAN_PAGES = {
+        lpm: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardlpm.html", icon: "fas fa-handshake", title: "LPM" },
+        rtrw: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardrtrw.html", icon: "fas fa-users-between", title: "RT RW" },
+        pkk: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardpkk.html", icon: "fas fa-female", title: "PKK" },
+        posyandu: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardposyandu.html", icon: "fas fa-child", title: "POS YANDU" },
+        karangtaruna: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardkarangtaruna.html", icon: "fas fa-users", title: "KARANG TARUNA" },
+        lps: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dasboardlps.html", icon: "fas fa-chart-bar", title: "LPS" },
+        banksampah: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardbanksampah.html", icon: "fas fa-recycle", title: "BANK SAMPAH" },
+        // MENU BARU: KADER PEMILAH SAMPAH (di bawah BANK SAMPAH)
+        kaderpemilah: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardkaderpemilah.html", icon: "fas fa-users", title: "KADER PEMILAH SAMPAH" },
+        operatorparit: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardoperatorparit.html", icon: "fas fa-water", title: "OPERATOR PARIT" }
+    };
+
     let currentActiveLink = null;
     let isMobile = window.innerWidth <= 768;
 
-    // Cek apakah sudah login
+    // ==================== GENERATE MENU KELEMBAGAAN DINAMIS ====================
+    function generateKelembagaanMenu() {
+        const container = document.getElementById('kelembagaanContainer');
+        if (!container) return;
+
+        let html = `
+            <div class="nav-header">KELEMBAGAAN</div>
+            <div class="nav-item" id="kelembagaanParent">
+        `;
+
+        // Loop setiap jenis kelembagaan
+        for (const [key, config] of Object.entries(KELEMBAGAAN_PAGES)) {
+            html += `
+                <div class="nav-item kelembagaan-sub-item" data-page="${key}">
+                    <div class="nav-link sub-accordion" onclick="toggleKelurahanSubmenu('${key}_sub', this)">
+                        <i class="${config.icon}"></i>
+                        <span>${config.title}</span>
+                        <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.6rem;"></i>
+                    </div>
+                    <div class="submenu-kelurahan" id="${key}_sub">
+                        ${generateKelurahanList(key, config.url)}
+                    </div>
+                </div>
+            `;
+        }
+
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    // Generate daftar 6 kelurahan untuk setiap halaman
+    function generateKelurahanList(pageKey, baseUrl) {
+        let html = '';
+        for (const kel of KELURAHAN_LIST) {
+            const paramKelurahan = encodeURIComponent(kel.param);
+            const fullUrl = `${baseUrl}?kelurahan=${paramKelurahan}`;
+            html += `
+                <div class="nav-link kelurahan-link" onclick="loadPageWithKelurahan('${fullUrl}', '${pageKey}', '${kel.param}', this)">
+                    <i class="fas fa-location-dot"></i>
+                    <span>KELURAHAN ${kel.display}</span>
+                </div>
+            `;
+        }
+        return html;
+    }
+
+    // Toggle submenu kelurahan (level 2)
+    function toggleKelurahanSubmenu(id, element) {
+        const submenu = document.getElementById(id);
+        if (!submenu) return;
+        const parentItem = submenu.closest('.kelembagaan-sub-item');
+        if (!parentItem) return;
+        
+        const isOpening = !parentItem.classList.contains('open');
+        parentItem.classList.toggle('open');
+        
+        if (isOpening && element) {
+            element.classList.add('blink-effect');
+            setTimeout(() => {
+                element.classList.remove('blink-effect');
+            }, 1500);
+        }
+    }
+
+    // Toggle submenu level 1 (MONOGRAFI)
+    function toggleSubmenu(id, element) {
+        const submenu = document.getElementById(id);
+        const parentItem = submenu.closest('.nav-item');
+        const isOpening = !parentItem.classList.contains('open');
+        
+        parentItem.classList.toggle('open');
+        
+        if (isOpening && element) {
+            element.classList.add('blink-effect');
+            setTimeout(() => {
+                element.classList.remove('blink-effect');
+            }, 1500);
+        }
+    }
+
+    // Load page dengan parameter kelurahan
+    function loadPageWithKelurahan(url, pageKey, kelurahanName, element) {
+        const iframe = document.getElementById('contentFrame');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        
+        // Simpan ke sessionStorage agar dashboard anak bisa baca
+        if (kelurahanName) {
+            sessionStorage.setItem('selectedKelurahan', kelurahanName);
+            sessionStorage.setItem('selectedKelurahanPage', pageKey);
+        } else {
+            sessionStorage.removeItem('selectedKelurahan');
+            sessionStorage.removeItem('selectedKelurahanPage');
+        }
+        
+        // Efek loading pada menu
+        if (element) {
+            element.classList.add('loading');
+            // Simpan icon asli
+            const iconElem = element.querySelector('i');
+            if (iconElem && !iconElem.classList.contains('fa-spinner')) {
+                iconElem.setAttribute('data-original-class', iconElem.className);
+                iconElem.className = 'fas fa-spinner';
+            }
+        }
+        
+        loadingOverlay.style.display = 'flex';
+        iframe.src = url;
+        
+        iframe.onload = () => {
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                if (element) {
+                    element.classList.remove('loading');
+                    const iconElem = element.querySelector('i');
+                    if (iconElem && iconElem.classList.contains('fa-spinner')) {
+                        const originalClass = iconElem.getAttribute('data-original-class');
+                        if (originalClass) {
+                            iconElem.className = originalClass;
+                        } else {
+                            iconElem.className = 'fas fa-location-dot';
+                        }
+                    }
+                }
+            }, 500);
+        };
+        
+        // Timeout fallback
+        setTimeout(() => {
+            if (loadingOverlay.style.display === 'flex') {
+                loadingOverlay.style.display = 'none';
+                if (element) {
+                    element.classList.remove('loading');
+                    const iconElem = element.querySelector('i');
+                    if (iconElem && iconElem.classList.contains('fa-spinner')) {
+                        iconElem.className = 'fas fa-location-dot';
+                    }
+                }
+            }
+        }, 8000);
+        
+        // Update active state
+        if (currentActiveLink) {
+            currentActiveLink.classList.remove('active');
+        }
+        if (element) {
+            element.classList.add('active');
+            currentActiveLink = element;
+        }
+        
+        // Update page title dengan informasi kelurahan
+        const pageTitle = document.querySelector('.page-title p');
+        if (pageTitle && kelurahanName) {
+            pageTitle.innerHTML = `Dashboard Monitoring & Evaluasi | <strong style="color:#2c7ec0;">${kelurahanName}</strong>`;
+        } else if (pageTitle) {
+            pageTitle.innerHTML = `Dashboard Monitoring & Evaluasi`;
+        }
+        
+        // Tutup sidebar di mobile
+        if (window.innerWidth <= 768) {
+            closeSidebar();
+        }
+    }
+
+    // Load page standar (tanpa parameter kelurahan)
+    function loadPage(page, element) {
+        let baseUrl = '';
+        switch(page) {
+            case 'giatkecamatan':
+                baseUrl = 'https://senapelan.github.io/Home/publik/update-informasi/updatev2.0.html';
+                break;
+            case 'penduduk':
+                baseUrl = 'https://senapelan.github.io/Home/publik/datapenduduk/dashboardpendudukkecamatan.html';
+                break;
+            case 'peta':
+                baseUrl = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardpeta.html';
+                break;
+            default:
+                baseUrl = 'https://senapelan.github.io/Home/publik/update-informasi/updatev2.0.html';
+        }
+        
+        // Hapus parameter kelurahan
+        sessionStorage.removeItem('selectedKelurahan');
+        sessionStorage.removeItem('selectedKelurahanPage');
+        
+        // Reset page title
+        const pageTitle = document.querySelector('.page-title p');
+        if (pageTitle) {
+            pageTitle.innerHTML = `Dashboard Monitoring & Evaluasi`;
+        }
+        
+        const iframe = document.getElementById('contentFrame');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        
+        if (element) {
+            element.classList.add('loading');
+            const iconElem = element.querySelector('i');
+            if (iconElem && !iconElem.classList.contains('fa-spinner')) {
+                iconElem.setAttribute('data-original-class', iconElem.className);
+                iconElem.className = 'fas fa-spinner';
+            }
+        }
+        
+        loadingOverlay.style.display = 'flex';
+        iframe.src = baseUrl;
+        
+        iframe.onload = () => {
+            setTimeout(() => {
+                loadingOverlay.style.display = 'none';
+                if (element) {
+                    element.classList.remove('loading');
+                    const iconElem = element.querySelector('i');
+                    if (iconElem && iconElem.classList.contains('fa-spinner')) {
+                        const originalClass = iconElem.getAttribute('data-original-class');
+                        if (originalClass) {
+                            iconElem.className = originalClass;
+                        }
+                    }
+                }
+            }, 500);
+        };
+        
+        setTimeout(() => {
+            if (loadingOverlay.style.display === 'flex') {
+                loadingOverlay.style.display = 'none';
+                if (element) element.classList.remove('loading');
+            }
+        }, 8000);
+        
+        if (currentActiveLink) {
+            currentActiveLink.classList.remove('active');
+        }
+        if (element) {
+            element.classList.add('active');
+            currentActiveLink = element;
+        }
+        
+        if (window.innerWidth <= 768) {
+            closeSidebar();
+        }
+    }
+
+    // ==================== AUTH & PROFILE ====================
     function checkAuth() {
         const isLoggedIn = sessionStorage.getItem('isLoggedIn');
         const username = sessionStorage.getItem('adminUsername');
@@ -623,7 +857,6 @@
         return username;
     }
 
-    // Ambil data user dari Spreadsheet
     async function getUserData(username) {
         try {
             const url = `${APPS_SCRIPT_URL}?action=getUser&username=${encodeURIComponent(username)}`;
@@ -641,7 +874,6 @@
         }
     }
 
-    // Update profil
     function updateProfile(name, photoUrl) {
         const userNameEl = document.getElementById('userName');
         const profileAvatarEl = document.getElementById('profileAvatar');
@@ -655,137 +887,12 @@
         }
     }
 
-    // Toggle submenu dengan efek animasi dan blink
-    function toggleSubmenu(id, element) {
-        const submenu = document.getElementById(id);
-        const parentItem = submenu.closest('.nav-item');
-        const isOpening = !parentItem.classList.contains('open');
-        
-        parentItem.classList.toggle('open');
-        
-        // Efek kedip saat membuka menu
-        if (isOpening && element) {
-            element.classList.add('blink-effect');
-            setTimeout(() => {
-                element.classList.remove('blink-effect');
-            }, 1500);
-        }
-    }
-
-    // Load halaman ke iframe dengan efek loading
-    function loadPage(page, element) {
-        const iframe = document.getElementById('contentFrame');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        
-        // Efek loading pada menu yang diklik
-        if (element) {
-            element.classList.add('loading');
-            const originalIcon = element.querySelector('i').cloneNode(true);
-            element.querySelector('i').className = 'fas fa-spinner';
-        }
-        
-        let url = '';
-        switch(page) {
-            case 'giatkecamatan':
-                url = 'https://senapelan.github.io/Home/publik/update-informasi/updatev2.0.html';
-                break;
-            case 'penduduk':
-                url = 'https://senapelan.github.io/Home/publik/datapenduduk/dashboardpendudukkecamatan.html';
-                break;
-            case 'peta':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardpeta.html';
-                break;
-            case 'lpm':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardlpm.html';
-                break;
-            case 'rtrw':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardrtrw.html';
-                break;
-            case 'pkk':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardpkk.html';
-                break;
-            case 'posyandu':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardposyandu.html';
-                break;
-            case 'karangtaruna':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardkarangtaruna.html';
-                break;
-            case 'lps':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dasboardlps.html';
-                break;
-            case 'banksampah':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardbanksampah.html';
-                break;
-            case 'operatorparit':
-                url = 'https://senapelan.github.io/Home/publik/senapelankencana/dashboardoperatorparit.html';
-                break;
-            default:
-                url = 'https://senapelan.github.io/Home/publik/update-informasi/updatev2.0.html';
-        }
-        
-        // Tampilkan loading
-        loadingOverlay.style.display = 'flex';
-        
-        // Set iframe source
-        iframe.src = url;
-        
-        // Sembunyikan loading setelah iframe load
-        iframe.onload = () => {
-            setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-                // Kembalikan icon menu
-                if (element) {
-                    element.classList.remove('loading');
-                    const icon = element.querySelector('i');
-                    if (icon.classList.contains('fa-spinner')) {
-                        if (page === 'giatkecamatan') icon.className = 'fas fa-tasks';
-                        else if (page === 'penduduk') icon.className = 'fas fa-users';
-                        else if (page === 'peta') icon.className = 'fas fa-map';
-                        else if (page === 'lpm') icon.className = 'fas fa-handshake';
-                        else if (page === 'rtrw') icon.className = 'fas fa-users-between';
-                        else if (page === 'pkk') icon.className = 'fas fa-female';
-                        else if (page === 'posyandu') icon.className = 'fas fa-child';
-                        else if (page === 'karangtaruna') icon.className = 'fas fa-users';
-                        else if (page === 'lps') icon.className = 'fas fa-chart-bar';
-                        else if (page === 'banksampah') icon.className = 'fas fa-recycle';
-                        else if (page === 'operatorparit') icon.className = 'fas fa-water';
-                        else icon.className = 'fas fa-tasks';
-                    }
-                }
-            }, 500);
-        };
-        
-        // Timeout fallback
-        setTimeout(() => {
-            if (loadingOverlay.style.display === 'flex') {
-                loadingOverlay.style.display = 'none';
-                if (element) element.classList.remove('loading');
-            }
-        }, 8000);
-        
-        // Update active state
-        if (currentActiveLink) {
-            currentActiveLink.classList.remove('active');
-        }
-        if (element) {
-            element.classList.add('active');
-            currentActiveLink = element;
-        }
-        
-        // Tutup sidebar di mobile setelah memilih menu
-        if (window.innerWidth <= 768) {
-            closeSidebar();
-        }
-    }
-
-    // Logout
     function logout() {
         sessionStorage.removeItem('isLoggedIn');
         sessionStorage.removeItem('adminUsername');
         window.location.href = "https://senapelan.github.io/Home/publik/senapelankencana/login.html";
     }
 
-    // Toggle sidebar untuk mobile
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebarOverlay');
@@ -800,14 +907,26 @@
         overlay.classList.remove('active');
     }
 
-    // Inisialisasi dashboard
+    // ==================== INITIALIZATION ====================
     async function initDashboard() {
         const username = checkAuth();
         if (!username) return;
         
+        // Generate menu kelembagaan dinamis
+        generateKelembagaanMenu();
+        
+        // Buka default submenu MONOGRAFI dan KELEMBAGAAN parent
+        setTimeout(() => {
+            const monografiItem = document.getElementById('monografiItem');
+            if (monografiItem) monografiItem.classList.add('open');
+            
+            const kelembagaanParent = document.getElementById('kelembagaanParent');
+            if (kelembagaanParent) kelembagaanParent.classList.add('open');
+        }, 100);
+        
         // Load default page (GIAT KECAMATAN)
         setTimeout(() => {
-            const giatLink = document.querySelector('.nav-link[onclick*="giatkecamatan"]');
+            const giatLink = document.querySelector('#monografiSub .nav-link');
             if (giatLink) {
                 giatLink.click();
             } else {
@@ -815,7 +934,7 @@
             }
         }, 500);
         
-        // Ambil data user dari spreadsheet
+        // Ambil data user
         const userData = await getUserData(username);
         if (userData.success) {
             updateProfile(userData.name, userData.photo);
@@ -823,7 +942,7 @@
             updateProfile(username, null);
         }
         
-        // Tampilkan swipe hint untuk mobile
+        // Tampilkan hint untuk mobile
         if (window.innerWidth <= 768) {
             const hint = document.getElementById('swipeHint');
             hint.classList.add('show');
@@ -833,29 +952,14 @@
         }
     }
 
-    // Deteksi resize untuk menyesuaikan layout
     window.addEventListener('resize', () => {
         isMobile = window.innerWidth <= 768;
         if (!isMobile) {
             closeSidebar();
-            document.getElementById('sidebar').style.transform = '';
         }
     });
 
-    // Buka submenu default
-    document.addEventListener('DOMContentLoaded', () => {
-        initDashboard();
-        setTimeout(() => {
-            const monografiItem = document.getElementById('monografiItem');
-            if (monografiItem) {
-                monografiItem.classList.add('open');
-            }
-            const kelembagaanItem = document.getElementById('kelembagaanItem');
-            if (kelembagaanItem) {
-                kelembagaanItem.classList.add('open');
-            }
-        }, 300);
-    });
+    document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
 </body>
 </html>
