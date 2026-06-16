@@ -3,827 +3,1225 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-    <title>OP Drainase | Dashboard Pemeliharaan Saluran Air</title>
+    <title>OP Drainase Senapelan - Dashboard Pemeliharaan Saluran Air</title>
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://senapelan.github.io/Home/publik/senapelankencana/operatorparit/dashboardopdrainase.html">
+    <meta property="og:title" content="OP Drainase Senapelan - Dashboard Pemeliharaan Saluran Air">
+    <meta property="og:description" content="Dashboard monitoring jadwal operasi dan pemeliharaan saluran air/drainase se-Kecamatan Senapelan. Inovasi Camat Senapelan REIN RIZKA KARVY, S.STP., M.Si. Senapelan Hebat - Pekanbaru Bersih dan Aman">
+    <meta property="og:site_name" content="OP Drainase Senapelan - Senapelan Kencana">
+    <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/operatorparit/opthumnail512px.png">
+    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/assets/metatag/operatorparit/opthumnail512px.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="OP Drainase Senapelan - Pemeliharaan Saluran Air">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="OP Drainase Senapelan - Dashboard Pemeliharaan Saluran Air">
+    <meta name="twitter:description" content="Dashboard monitoring jadwal operasi dan pemeliharaan saluran air/drainase se-Kecamatan Senapelan.">
+    <meta name="twitter:image" content="https://senapelan.github.io/Home/assets/metatag/operatorparit/opthumnail512px.png">
+    <meta name="twitter:image:alt" content="OP Drainase Senapelan - Pemeliharaan Saluran Air">
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/operatorparit/opparitsenapelan512.png">
+    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/operatorparit/opparitsenapelan512.png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        :root { --default-image: 'https://senapelan.github.io/Home/assets/metatag/operatorparit/defaultop800x800.png'; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif; 
-            background: linear-gradient(135deg, #f0f2f5 0%, #e6eef5 100%);
-            color: #1e293b;
-            padding: 2rem 1.5rem;
-            min-height: 100vh;
-        }
+        body { font-family: 'Inter', sans-serif; background: #f0f2f5; padding: 16px; min-height: 100vh; }
         .container { max-width: 1600px; margin: 0 auto; }
-        
-        .dashboard-header {
-            background: linear-gradient(135deg, #0a2f44 0%, #1a5d6e 100%);
-            border-radius: 32px;
-            padding: 1.8rem 2rem;
-            margin-bottom: 2rem;
+
+        .header {
+            background: linear-gradient(135deg, #0a2f44, #1a5d6e);
+            border-radius: 20px;
+            padding: 1.2rem 1.8rem;
+            margin-bottom: 20px;
             color: white;
-            box-shadow: 0 20px 35px -12px rgba(0,0,0,0.2);
             display: flex;
             justify-content: space-between;
             align-items: center;
             flex-wrap: wrap;
-            gap: 1rem;
-        }
-        .title-section h1 {
-            font-size: 1.9rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
             gap: 12px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.12);
         }
-        .title-section p { opacity: 0.9; font-size: 0.85rem; margin-top: 6px; }
-        .badge-update {
-            background: rgba(255,255,255,0.2);
-            backdrop-filter: blur(8px);
-            padding: 8px 20px;
-            border-radius: 50px;
-            font-size: 0.8rem;
-        }
-        
+        .header h1 { font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
+        .header h1 i { color: #60b0d4; }
+        .header p { opacity: 0.8; font-size: 0.75rem; margin-top: 2px; }
+        .header .badge { background: rgba(255,255,255,0.12); padding: 6px 16px; border-radius: 50px; font-size: 0.7rem; }
+
         .toolbar {
             display: flex;
             justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
-            margin-bottom: 2rem;
-            gap: 1rem;
-        }
-        .search-box {
+            gap: 10px;
             background: white;
-            padding: 8px 20px;
-            border-radius: 60px;
+            padding: 10px 16px;
+            border-radius: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+        .toolbar-left { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; flex: 1; }
+        .search-box {
             display: flex;
             align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            flex: 2;
-            min-width: 200px;
+            gap: 8px;
+            background: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 40px;
+            flex: 1;
+            max-width: 280px;
+            min-width: 160px;
         }
-        .search-box input {
-            border: none;
-            outline: none;
-            font-size: 0.9rem;
-            width: 100%;
-            font-family: 'Inter', sans-serif;
-        }
-        
+        .search-box input { border: none; outline: none; background: transparent; font-size: 0.8rem; width: 100%; font-family: 'Inter', sans-serif; }
+        .search-box i { color: #94a3b8; font-size: 0.8rem; }
         .date-filter {
             display: flex;
             align-items: center;
-            gap: 12px;
-            background: white;
-            padding: 5px 20px;
-            border-radius: 60px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            flex-wrap: wrap;
-        }
-        .date-filter label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: #1e5f6e;
-        }
-        .date-filter input {
-            border: 1px solid #e2e8f0;
+            gap: 6px;
+            background: #f1f5f9;
+            padding: 4px 10px 4px 14px;
             border-radius: 40px;
-            padding: 6px 12px;
-            font-family: 'Inter', sans-serif;
-            font-size: 0.85rem;
-            outline: none;
-            background: #f8fafc;
         }
-        .date-filter input:focus {
-            border-color: #1e5f6e;
-        }
-        .btn-clear-date {
+        .date-filter label { font-size: 0.7rem; font-weight: 600; color: #475569; display: flex; align-items: center; gap: 4px; white-space: nowrap; }
+        .date-filter input { border: none; outline: none; background: transparent; font-size: 0.75rem; font-family: 'Inter', sans-serif; padding: 4px 0; color: #1e293b; min-width: 120px; }
+        .date-filter input::-webkit-calendar-picker-indicator { opacity: 0.4; cursor: pointer; }
+        .btn-clear {
             background: #e2e8f0;
             border: none;
-            border-radius: 40px;
-            padding: 6px 12px;
-            font-size: 0.7rem;
+            border-radius: 30px;
+            padding: 3px 10px;
+            font-size: 0.65rem;
             cursor: pointer;
             font-weight: 600;
             color: #475569;
             transition: 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
         }
-        .btn-clear-date:hover {
-            background: #cbd5e1;
-        }
-        
+        .btn-clear:hover { background: #cbd5e1; }
+        .toolbar-right { display: flex; align-items: center; gap: 8px; }
         .btn-refresh {
-            background: #1e5f6e;
+            background: #1a5d6e;
             border: none;
             color: white;
-            padding: 10px 28px;
+            padding: 6px 16px;
             border-radius: 40px;
             font-weight: 600;
+            font-size: 0.75rem;
             cursor: pointer;
             transition: 0.2s;
-        }
-        .btn-refresh:hover { background: #0e4a58; transform: translateY(-2px); }
-        
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-            gap: 1.8rem;
-        }
-        
-        .card.card-selesai {
-            background: linear-gradient(145deg, #e8f5e9 0%, #c8e6c9 100%);
-            border-left: 6px solid #2e7d32;
-        }
-        .card.card-selesai .card-header {
-            background: rgba(46, 125, 50, 0.1);
-        }
-        .card.card-selesai .status-badge {
-            background: #2e7d32;
-            color: white;
-        }
-        
-        .card.card-libur {
-            background: linear-gradient(145deg, #ffebee 0%, #ffcdd2 100%);
-            border-left: 6px solid #c62828;
-        }
-        .card.card-libur .card-header {
-            background: rgba(198, 40, 40, 0.1);
-        }
-        .card.card-libur .status-badge {
-            background: #c62828;
-            color: white;
-        }
-        
-        .card.card-menunggu {
-            background: linear-gradient(145deg, #fff8e1 0%, #ffecb3 100%);
-            border-left: 6px solid #f9a825;
-        }
-        .card.card-menunggu .card-header {
-            background: rgba(249, 168, 37, 0.1);
-        }
-        .card.card-menunggu .status-badge {
-            background: #f9a825;
-            color: #5d2906;
-        }
-        
-        .card {
-            border-radius: 32px;
-            overflow: hidden;
-            box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
-        }
-        .card:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -12px rgba(0, 0, 0, 0.2); }
-        
-        .card-header {
-            padding: 1rem 1.5rem;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 6px;
+            font-family: 'Inter', sans-serif;
+            white-space: nowrap;
         }
-        .date-badge {
-            font-weight: 700;
-            background: rgba(255,255,255,0.7);
-            padding: 5px 14px;
-            border-radius: 40px;
-            font-size: 0.75rem;
-            color: #1e4b6e;
-        }
-        .lokasi-box {
-            background: rgba(255,255,255,0.5);
-            margin: 1rem 1.5rem;
-            padding: 0.8rem 1rem;
-            border-radius: 24px;
-        }
-        .lokasi-title {
-            font-weight: 700;
-            color: #0f2b3d;
-            display: flex;
-            gap: 8px;
-            align-items: baseline;
-            flex-wrap: wrap;
-        }
-        .rt-rw {
-            font-size: 0.7rem;
-            background: rgba(0,0,0,0.05);
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-weight: 500;
-        }
-        .kelurahan { font-size: 0.8rem; color: #2c5a74; margin-top: 6px; }
-        .detail-item {
-            padding: 0.7rem 1.5rem;
+        .btn-refresh:hover { background: #0e4a58; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,93,110,0.3); }
+        .stats { font-size: 0.7rem; color: #94a3b8; padding: 2px 10px; background: #f1f5f9; border-radius: 20px; white-space: nowrap; }
+
+        .upcoming-section { margin-bottom: 28px; position: relative; }
+        .upcoming-section .section-title {
             display: flex;
             align-items: center;
             gap: 12px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            position: relative;
         }
-        .detail-icon { width: 32px; color: #5b8cae; font-size: 1.1rem; }
-        .detail-content { flex: 1; font-weight: 500; }
-        .label-small {
-            font-size: 0.65rem;
-            color: #6c86a3;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+        .upcoming-section .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, #1a5d6e, #60b0d4);
+            border-radius: 2px;
         }
-        .countdown-timer {
-            font-family: monospace;
-            font-weight: 800;
-            font-size: 0.85rem;
-            background: #1e293b;
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 32px;
-            color: #facc15;
-            margin-top: 6px;
+        .upcoming-section .section-title h2 { font-size: 1.1rem; font-weight: 700; color: #0a2f44; display: flex; align-items: center; gap: 10px; }
+        .upcoming-section .section-title h2 i { color: #1a5d6e; font-size: 1.2rem; }
+        .upcoming-section .section-title .count-badge { background: #1a5d6e; color: white; padding: 2px 12px; border-radius: 20px; font-size: 0.7rem; font-weight: 600; }
+        .upcoming-section .section-title .subtitle { font-size: 0.75rem; color: #94a3b8; margin-left: auto; }
+        .upcoming-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+
+        .upcoming-card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            border-left: 4px solid #1a5d6e;
+            position: relative;
         }
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 40px;
-            font-size: 0.7rem;
-            font-weight: 700;
+        .upcoming-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.10); }
+        .upcoming-card .upcoming-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(26, 93, 110, 0.9);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.55rem;
+            font-weight: 600;
+            z-index: 2;
         }
-        .foto-icon {
+        .upcoming-card .upcoming-badge i { margin-right: 4px; }
+        .upcoming-card .upcoming-img {
+            width: 100%;
+            aspect-ratio: 16/9;
+            overflow: hidden;
+            background: #0f172a;
+            flex-shrink: 0;
+        }
+        .upcoming-card .upcoming-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .upcoming-card:hover .upcoming-img img { transform: scale(1.03); }
+        .upcoming-card .upcoming-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .upcoming-card .upcoming-body .u-title { font-weight: 600; font-size: 0.8rem; color: #1e293b; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+        .upcoming-card .upcoming-body .u-location { font-size: 0.65rem; color: #64748b; display: flex; align-items: center; gap: 4px; }
+        .upcoming-card .upcoming-body .u-location i { font-size: 0.5rem; color: #94a3b8; }
+        .upcoming-card .upcoming-body .u-meta { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.55rem; color: #94a3b8; margin-top: 2px; padding-top: 6px; border-top: 1px solid #f1f5f9; }
+        .upcoming-card .upcoming-body .u-meta span { display: flex; align-items: center; gap: 3px; }
+        .upcoming-card .upcoming-body .u-meta i { font-size: 0.5rem; }
+        .upcoming-empty { grid-column: 1 / -1; text-align: center; padding: 40px 20px; background: white; border-radius: 14px; color: #94a3b8; }
+        .upcoming-empty i { font-size: 2rem; display: block; margin-bottom: 8px; color: #cbd5e1; }
+
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
+
+        .card {
+            background: white;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: flex;
+            flex-direction: column;
+            min-width: 0;
+            height: 100%;
+        }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+
+        .card-header {
+            padding: 10px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 6px;
+            border-bottom: 1px solid #f1f5f9;
+            flex-shrink: 0;
+            min-height: 52px;
+        }
+        .card-header .info { flex: 1; min-width: 0; }
+        .card-header .info .name { font-weight: 600; font-size: 0.75rem; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .card-header .info .name i { color: #1a5d6e; font-size: 0.7rem; }
+        .card-header .info .name .role { font-weight: 400; font-size: 0.55rem; color: #94a3b8; }
+        .card-header .info .loc { font-size: 0.6rem; color: #64748b; margin-top: 1px; display: flex; align-items: center; gap: 3px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .card-header .info .loc i { font-size: 0.5rem; flex-shrink: 0; }
+        .card-header .meta { text-align: right; flex-shrink: 0; }
+        .card-header .meta .time { font-size: 0.55rem; color: #94a3b8; display: block; white-space: nowrap; }
+        .card-header .meta .status { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 0.5rem; font-weight: 600; margin-top: 2px; white-space: nowrap; }
+        .status-selesai { background: #dcfce7; color: #166534; }
+        .status-menunggu { background: #fef3c7; color: #92400e; }
+        .status-libur { background: #fee2e2; color: #991b1b; }
+
+        .media-wrap {
+            position: relative;
+            background: #0f172a;
+            overflow: hidden;
+            aspect-ratio: 1/1;
             cursor: pointer;
-            background: rgba(255,255,255,0.7);
-            width: 36px;
-            height: 36px;
+            flex-shrink: 0;
+            width: 100%;
+        }
+        .media-slider {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.4s ease;
+        }
+        .media-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            position: relative;
+        }
+        .media-slide img { width: 100%; height: 100%; object-fit: cover; }
+
+        /* TIDAK ADA LABEL DI CARD */
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.25);
+            backdrop-filter: blur(4px);
+            color: white;
+            border: none;
+            width: 22px;
+            height: 22px;
             border-radius: 50%;
-            display: inline-flex;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.2s;
+            z-index: 5;
+            opacity: 0;
+        }
+        .media-wrap:hover .nav-btn { opacity: 1; }
+        .nav-btn:hover { background: rgba(0,0,0,0.5); }
+        .nav-btn.prev { left: 4px; }
+        .nav-btn.next { right: 4px; }
+
+        .dots {
+            position: absolute;
+            bottom: 6px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 3px;
+            z-index: 5;
+            background: rgba(0,0,0,0.2);
+            backdrop-filter: blur(4px);
+            padding: 3px 8px;
+            border-radius: 20px;
+        }
+        .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+        }
+        .dot.active { background: white; width: 14px; border-radius: 3px; }
+
+        .counter {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 0.5rem;
+            font-weight: 600;
+            z-index: 5;
+        }
+
+        .card-footer {
+            padding: 10px 12px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 6px;
+            min-height: 65px;
+        }
+        .card-footer .desc { font-size: 0.7rem; line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+        .card-footer .desc i { color: #94a3b8; margin-right: 3px; font-size: 0.6rem; }
+        .card-footer .desc .empty-desc { color: #cbd5e1; font-style: italic; }
+        .card-footer .tags { display: flex; flex-wrap: wrap; gap: 8px; font-size: 0.55rem; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 6px; flex-shrink: 0; min-height: 22px; }
+        .card-footer .tags span { display: flex; align-items: center; gap: 3px; }
+        .card-footer .tags i { font-size: 0.5rem; }
+
+        .viewer {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            padding: 20px;
+        }
+        .viewer.active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .viewer-close {
+            position: fixed;
+            top: 16px; right: 16px;
+            color: white;
+            font-size: 1.8rem;
+            cursor: pointer;
+            z-index: 1001;
+            background: rgba(0,0,0,0.5);
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            display: flex;
             align-items: center;
             justify-content: center;
             transition: 0.2s;
         }
-        .foto-icon:hover { background: rgba(255,255,255,0.9); transform: scale(1.05); }
-        
-        .modal-img {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
+        .viewer-close:hover { background: rgba(255,255,255,0.2); transform: rotate(90deg); }
+        .viewer-content {
+            max-width: 800px;
+            width: 100%;
+            background: #1a1a1a;
+            border-radius: 16px;
+            overflow: hidden;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .viewer-media {
+            position: relative;
+            flex: 1;
+            min-height: 300px;
+            background: #000;
+            aspect-ratio: 1/1;
+            overflow: hidden;
+        }
+        .viewer-slider {
+            display: flex;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.95);
-            backdrop-filter: blur(12px);
-            z-index: 1000;
-            justify-content: center;
+            transition: transform 0.4s ease;
+        }
+        .viewer-slide {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
             align-items: center;
-            cursor: pointer;
+            justify-content: center;
+            background: #000;
+            position: relative;
         }
-        .modal-img img { max-width: 85%; max-height: 85%; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); }
-        .close-modal {
+        .viewer-slide img { width: 100%; height: 100%; object-fit: contain; }
+
+        /* LABEL DI FULLSCREEN - HANYA BEFORE & AFTER */
+        .viewer-slide .viewer-label {
             position: absolute;
-            top: 24px;
-            right: 36px;
-            color: white;
-            font-size: 2.5rem;
-            cursor: pointer;
-        }
-        
-        .loader-container { text-align: center; padding: 4rem; }
-        .loader-container i { font-size: 2rem; margin-bottom: 1rem; display: block; }
-        .spinner {
-            border: 4px solid #e2e8f0;
-            border-top: 4px solid #1f6e8c;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 0.8s linear infinite;
-            margin: 0 auto 1rem;
-        }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .success-notice {
-            background: #d1fae5;
-            border-left: 4px solid #10b981;
-            padding: 12px 20px;
-            border-radius: 16px;
-            margin-bottom: 20px;
+            bottom: 20px;
+            left: 20px;
+            padding: 6px 18px;
+            border-radius: 20px;
             font-size: 0.85rem;
-            color: #065f46;
-            transition: opacity 0.5s;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            z-index: 3;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         }
-        
-        .filter-stats {
+        .viewer-slide .viewer-label.before {
+            background: rgba(234, 88, 12, 0.9);
+            color: white;
+        }
+        .viewer-slide .viewer-label.after {
+            background: rgba(22, 163, 74, 0.9);
+            color: white;
+        }
+
+        .viewer-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            color: white;
+            border: none;
+            width: 40px; height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: 0.2s;
+            z-index: 10;
+        }
+        .viewer-nav:hover { background: rgba(255,255,255,0.2); }
+        .viewer-nav.prev { left: 12px; }
+        .viewer-nav.next { right: 12px; }
+        .viewer-counter {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            color: white;
+            padding: 4px 14px;
+            border-radius: 20px;
             font-size: 0.75rem;
-            color: #64748b;
-            margin-left: 8px;
+            font-weight: 600;
+            z-index: 10;
         }
-        
-        @media (max-width: 700px) {
-            .cards-grid { grid-template-columns: 1fr; }
-            body { padding: 1rem; }
-            .date-filter { width: 100%; justify-content: center; }
-            .search-box { width: 100%; }
+        .viewer-info {
+            padding: 16px 20px;
+            background: white;
+            color: #262626;
+        }
+        .viewer-info .v-name { font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+        .viewer-info .v-name i { color: #1a5d6e; }
+        .viewer-info .v-loc { font-size: 0.8rem; color: #64748b; margin-top: 4px; }
+        .viewer-info .v-details { display: flex; flex-wrap: wrap; gap: 12px; font-size: 0.75rem; color: #64748b; margin-top: 8px; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+        .viewer-info .v-details span { display: flex; align-items: center; gap: 4px; }
+        .viewer-info .v-desc { margin-top: 8px; font-size: 0.85rem; line-height: 1.5; padding-top: 8px; border-top: 1px solid #f1f5f9; }
+
+        .loader { text-align: center; padding: 60px 20px; grid-column: 1 / -1; }
+        .loader .spinner { border: 3px solid #e2e8f0; border-top: 3px solid #1a5d6e; border-radius: 50%; width: 40px; height: 40px; animation: spin 0.8s linear infinite; margin: 0 auto 12px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .loader i { font-size: 2rem; color: #94a3b8; }
+        .loader p { color: #64748b; font-size: 0.9rem; }
+
+        .notice { padding: 10px 16px; border-radius: 12px; margin-bottom: 16px; font-size: 0.8rem; display: flex; align-items: center; gap: 8px; }
+        .notice-success { background: #dcfce7; border-left: 4px solid #22c55e; color: #166534; }
+        .notice-error { background: #fee2e2; border-left: 4px solid #ef4444; color: #991b1b; }
+
+        @media (max-width: 1200px) {
+            .grid { gap: 12px; }
+            .upcoming-grid { gap: 12px; }
+            .header h1 { font-size: 1.2rem; }
+            .header p { font-size: 0.7rem; }
+            .header .badge { font-size: 0.65rem; padding: 5px 14px; }
+        }
+        @media (max-width: 992px) {
+            body { padding: 12px; }
+            .grid { gap: 10px; }
+            .upcoming-grid { gap: 10px; }
+            .header { padding: 1rem 1.4rem; }
+            .header h1 { font-size: 1.1rem; }
+            .header p { font-size: 0.65rem; }
+            .header .badge { font-size: 0.6rem; padding: 4px 12px; }
+            .toolbar { padding: 8px 12px; }
+            .search-box { min-width: 140px; padding: 5px 12px; }
+            .search-box input { font-size: 0.7rem; }
+            .search-box i { font-size: 0.7rem; }
+            .date-filter label { font-size: 0.6rem; }
+            .date-filter input { font-size: 0.65rem; min-width: 100px; }
+            .btn-clear { font-size: 0.6rem; padding: 2px 8px; }
+            .btn-refresh { font-size: 0.65rem; padding: 5px 14px; }
+            .stats { font-size: 0.6rem; padding: 2px 8px; }
+            .card-header { padding: 8px 10px; min-height: 46px; }
+            .card-header .info .name { font-size: 0.65rem; }
+            .card-header .info .name .role { font-size: 0.5rem; }
+            .card-header .info .loc { font-size: 0.55rem; }
+            .card-header .meta .time { font-size: 0.5rem; }
+            .card-header .meta .status { font-size: 0.45rem; padding: 2px 6px; }
+            .card-footer { padding: 8px 10px; min-height: 56px; }
+            .card-footer .desc { font-size: 0.6rem; }
+            .card-footer .tags { font-size: 0.5rem; gap: 6px; padding-top: 4px; min-height: 18px; }
+            .nav-btn { width: 18px; height: 18px; font-size: 0.6rem; opacity: 1; }
+            .upcoming-card .upcoming-body .u-title { font-size: 0.7rem; }
+            .upcoming-card .upcoming-body .u-location { font-size: 0.6rem; }
+            .upcoming-card .upcoming-body .u-meta { font-size: 0.5rem; }
+            .upcoming-section .section-title h2 { font-size: 1rem; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .grid { gap: 8px; }
+            .upcoming-grid { gap: 8px; }
+            .header { padding: 0.8rem 1rem; border-radius: 14px; }
+            .header h1 { font-size: 0.95rem; gap: 8px; }
+            .header h1 i { font-size: 1rem; }
+            .header p { font-size: 0.6rem; }
+            .header .badge { font-size: 0.55rem; padding: 3px 10px; }
+            .toolbar { padding: 6px 10px; gap: 6px; }
+            .search-box { min-width: 100px; padding: 4px 10px; }
+            .search-box input { font-size: 0.6rem; }
+            .search-box i { font-size: 0.6rem; }
+            .date-filter { padding: 3px 8px; }
+            .date-filter label { font-size: 0.55rem; gap: 3px; }
+            .date-filter input { font-size: 0.6rem; min-width: 80px; }
+            .btn-clear { font-size: 0.5rem; padding: 2px 6px; }
+            .btn-refresh { font-size: 0.6rem; padding: 4px 12px; gap: 4px; }
+            .btn-refresh i { font-size: 0.6rem; }
+            .stats { font-size: 0.55rem; padding: 2px 8px; }
+            .card-header { padding: 6px 8px; min-height: 40px; }
+            .card-header .info .name { font-size: 0.6rem; }
+            .card-header .info .name i { font-size: 0.5rem; }
+            .card-header .info .name .role { font-size: 0.45rem; }
+            .card-header .info .loc { font-size: 0.5rem; }
+            .card-header .info .loc i { font-size: 0.4rem; }
+            .card-header .meta .time { font-size: 0.45rem; }
+            .card-header .meta .status { font-size: 0.4rem; padding: 1px 5px; }
+            .card-footer { padding: 6px 8px; min-height: 48px; gap: 3px; }
+            .card-footer .desc { font-size: 0.55rem; }
+            .card-footer .desc i { font-size: 0.5rem; }
+            .card-footer .tags { font-size: 0.45rem; gap: 4px; padding-top: 4px; min-height: 16px; }
+            .card-footer .tags i { font-size: 0.4rem; }
+            .nav-btn { width: 16px; height: 16px; font-size: 0.5rem; opacity: 1; }
+            .dots { padding: 2px 6px; gap: 2px; bottom: 4px; }
+            .dot { width: 4px; height: 4px; }
+            .dot.active { width: 10px; }
+            .counter { font-size: 0.4rem; padding: 1px 6px; top: 4px; right: 4px; }
+            .viewer-close { width: 36px; height: 36px; font-size: 1.4rem; top: 12px; right: 12px; }
+            .viewer-nav { width: 32px; height: 32px; font-size: 1rem; }
+            .viewer-counter { font-size: 0.6rem; padding: 3px 10px; bottom: 8px; }
+            .viewer-info { padding: 12px 16px; }
+            .viewer-info .v-name { font-size: 0.8rem; }
+            .viewer-info .v-loc { font-size: 0.7rem; }
+            .viewer-info .v-details { font-size: 0.65rem; gap: 8px; }
+            .viewer-info .v-desc { font-size: 0.75rem; }
+            .upcoming-section .section-title h2 { font-size: 0.9rem; }
+            .upcoming-card .upcoming-badge { font-size: 0.5rem; padding: 1px 10px; top: 8px; right: 8px; }
+            .upcoming-card .upcoming-body .u-title { font-size: 0.65rem; }
+            .upcoming-card .upcoming-body .u-location { font-size: 0.55rem; }
+            .upcoming-card .upcoming-body .u-meta { font-size: 0.45rem; gap: 4px; }
+            .viewer-slide .viewer-label { font-size: 0.7rem; padding: 4px 14px; bottom: 14px; left: 14px; }
+        }
+        @media (max-width: 480px) {
+            body { padding: 6px; }
+            .grid { gap: 6px; }
+            .upcoming-grid { gap: 6px; }
+            .header { padding: 0.6rem 0.8rem; border-radius: 12px; }
+            .header h1 { font-size: 0.75rem; gap: 6px; }
+            .header h1 i { font-size: 0.8rem; }
+            .header p { font-size: 0.5rem; margin-top: 1px; }
+            .header .badge { font-size: 0.45rem; padding: 2px 8px; }
+            .toolbar { padding: 4px 8px; gap: 4px; border-radius: 10px; }
+            .search-box { min-width: 60px; padding: 3px 8px; }
+            .search-box input { font-size: 0.5rem; }
+            .search-box i { font-size: 0.5rem; }
+            .date-filter { padding: 2px 6px; }
+            .date-filter label { font-size: 0.45rem; gap: 2px; }
+            .date-filter label i { font-size: 0.4rem; }
+            .date-filter input { font-size: 0.5rem; min-width: 60px; padding: 2px 0; }
+            .btn-clear { font-size: 0.4rem; padding: 1px 5px; gap: 2px; }
+            .btn-clear i { font-size: 0.4rem; }
+            .btn-refresh { font-size: 0.5rem; padding: 3px 8px; gap: 3px; }
+            .btn-refresh i { font-size: 0.5rem; }
+            .stats { font-size: 0.45rem; padding: 2px 6px; }
+            .card-header { padding: 4px 6px; gap: 4px; min-height: 32px; }
+            .card-header .info .name { font-size: 0.5rem; gap: 2px; }
+            .card-header .info .name i { font-size: 0.45rem; }
+            .card-header .info .name .role { font-size: 0.4rem; }
+            .card-header .info .loc { font-size: 0.4rem; gap: 2px; }
+            .card-header .info .loc i { font-size: 0.35rem; }
+            .card-header .meta .time { font-size: 0.4rem; }
+            .card-header .meta .status { font-size: 0.35rem; padding: 1px 4px; margin-top: 1px; }
+            .card-footer { padding: 4px 6px; gap: 2px; min-height: 38px; }
+            .card-footer .desc { font-size: 0.45rem; }
+            .card-footer .desc i { font-size: 0.4rem; margin-right: 2px; }
+            .card-footer .tags { font-size: 0.4rem; gap: 3px; padding-top: 3px; min-height: 14px; }
+            .card-footer .tags i { font-size: 0.35rem; }
+            .nav-btn { width: 14px; height: 14px; font-size: 0.4rem; opacity: 1; }
+            .nav-btn.prev { left: 2px; }
+            .nav-btn.next { right: 2px; }
+            .dots { padding: 2px 4px; gap: 2px; bottom: 3px; }
+            .dot { width: 3px; height: 3px; }
+            .dot.active { width: 6px; }
+            .counter { font-size: 0.35rem; padding: 1px 4px; top: 3px; right: 3px; }
+            .viewer-close { width: 30px; height: 30px; font-size: 1.2rem; top: 8px; right: 8px; }
+            .viewer-content { border-radius: 12px; max-height: 95vh; }
+            .viewer-media { min-height: 150px; }
+            .viewer-nav { width: 26px; height: 26px; font-size: 0.8rem; }
+            .viewer-nav.prev { left: 4px; }
+            .viewer-nav.next { right: 4px; }
+            .viewer-counter { font-size: 0.5rem; padding: 2px 8px; bottom: 6px; }
+            .viewer-info { padding: 8px 12px; }
+            .viewer-info .v-name { font-size: 0.7rem; gap: 4px; }
+            .viewer-info .v-name i { font-size: 0.7rem; }
+            .viewer-info .v-loc { font-size: 0.6rem; margin-top: 2px; }
+            .viewer-info .v-details { font-size: 0.55rem; gap: 6px; margin-top: 4px; padding-top: 4px; }
+            .viewer-info .v-details span { gap: 2px; }
+            .viewer-info .v-details i { font-size: 0.5rem; }
+            .viewer-info .v-desc { font-size: 0.65rem; margin-top: 4px; padding-top: 4px; }
+            .loader { padding: 30px 10px; }
+            .loader .spinner { width: 30px; height: 30px; margin: 0 auto 8px; }
+            .loader i { font-size: 1.5rem; }
+            .loader p { font-size: 0.7rem; }
+            .notice { padding: 6px 10px; font-size: 0.6rem; }
+            .notice i { font-size: 0.7rem; }
+            .upcoming-section .section-title h2 { font-size: 0.75rem; }
+            .upcoming-section .section-title .count-badge { font-size: 0.5rem; padding: 1px 8px; }
+            .upcoming-section .section-title .subtitle { font-size: 0.5rem; }
+            .upcoming-card .upcoming-badge { font-size: 0.4rem; padding: 1px 8px; top: 6px; right: 6px; }
+            .upcoming-card .upcoming-body .u-title { font-size: 0.55rem; }
+            .upcoming-card .upcoming-body .u-location { font-size: 0.5rem; }
+            .upcoming-card .upcoming-body .u-meta { font-size: 0.4rem; gap: 3px; }
+            .upcoming-card .upcoming-body { padding: 8px 10px; }
+            .viewer-slide .viewer-label { font-size: 0.6rem; padding: 3px 10px; bottom: 10px; left: 10px; }
         }
     </style>
 </head>
 <body>
+
 <div class="container">
-    <div class="dashboard-header">
-        <div class="title-section">
-            <h1><i class="fas fa-droplet"></i> OP Drainase Kecamatan Senapelan</h1>
-            <p><i class="fas fa-map-marked-alt"></i> Jadwal Operasi & Pemeliharaan Saluran Air / Drainase</p>
+    <div class="header">
+        <div>
+            <h1><i class="fas fa-droplet"></i> OP Drainase Senapelan</h1>
+            <p><i class="fas fa-map-marked-alt"></i> Jadwal Operasi & Pemeliharaan Saluran Air</p>
         </div>
-        <div class="badge-update">
-            <i class="fas fa-sync-alt"></i> Database Senapelan Satu Pintu
-        </div>
+        <div class="badge"><i class="fas fa-sync-alt"></i> <span id="statusText">Memuat...</span></div>
     </div>
 
     <div class="toolbar">
-        <div class="search-box">
-            <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Cari kelurahan, lokasi, penanggung jawab..." autocomplete="off">
+        <div class="toolbar-left">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" id="searchInput" placeholder="Cari kelurahan, lokasi..." autocomplete="off">
+            </div>
+            <div class="date-filter">
+                <label><i class="fas fa-calendar-alt"></i> Tanggal:</label>
+                <input type="date" id="dateInput">
+                <button class="btn-clear" id="clearDateBtn"><i class="fas fa-times"></i> Reset</button>
+            </div>
         </div>
-        
-        <div class="date-filter">
-            <label><i class="fas fa-calendar-alt"></i> Filter Tanggal:</label>
-            <input type="date" id="dateFilterInput" placeholder="Pilih tanggal">
-            <button class="btn-clear-date" id="clearDateBtn"><i class="fas fa-times"></i> Hapus</button>
+        <div class="toolbar-right">
+            <span class="stats" id="statsText">0 kegiatan</span>
+            <button class="btn-refresh" id="refreshBtn"><i class="fas fa-cloud-download-alt"></i> Refresh</button>
         </div>
-        
-        <button class="btn-refresh" id="refreshBtn"><i class="fas fa-cloud-download-alt"></i> Refresh Data</button>
     </div>
 
-    <div id="cardsContainer" class="cards-grid">
-        <div class="loader-container">
+    <div id="noticeContainer"></div>
+
+    <!-- UPCOMING -->
+    <div class="upcoming-section" id="upcomingSection">
+        <div class="section-title">
+            <h2><i class="fas fa-clock"></i> Kegiatan Akan Datang</h2>
+            <span class="count-badge" id="upcomingCount">0</span>
+            <span class="subtitle"><i class="fas fa-calendar-day"></i> <span id="todayDate"></span></span>
+        </div>
+        <div class="upcoming-grid" id="upcomingGrid"></div>
+    </div>
+
+    <!-- GRID -->
+    <div id="gridContainer" class="grid">
+        <div class="loader">
             <div class="spinner"></div>
             <p>Menghubungkan ke Google Sheets...</p>
         </div>
     </div>
 </div>
 
-<div id="imageModal" class="modal-img">
-    <span class="close-modal">&times;</span>
-    <img id="modalImg" src="" alt="Foto Kegiatan Drainase">
+<!-- FULLSCREEN VIEWER -->
+<div id="viewer" class="viewer" onclick="closeViewer(event)">
+    <div class="viewer-close" onclick="closeViewer()">✕</div>
+    <div class="viewer-content" onclick="event.stopPropagation()">
+        <div class="viewer-media" id="viewerMedia">
+            <div class="viewer-slider" id="viewerSlider"></div>
+            <button class="viewer-nav prev" onclick="viewerSlide(-1)">‹</button>
+            <button class="viewer-nav next" onclick="viewerSlide(1)">›</button>
+            <div class="viewer-counter" id="viewerCounter">1/1</div>
+        </div>
+        <div class="viewer-info" id="viewerInfo"></div>
+    </div>
 </div>
 
 <script>
-    // =============== KONFIGURASI ===============
-    // PERBAIKAN: URL yang benar untuk Web App yang sudah dipublish
-    // Ganti URL ini dengan URL Web App Anda yang sudah dipublish
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwlvHa_wVGTVX61DLl8k4KzaSVPspuZ2ESh-mRe4qUavV-lMl70Xvb7o19ZAqILxtsL/exec';
-    
-    // Cache data di localStorage (30 menit)
-    const CACHE_KEY = 'op_drainase_data_v2';
-    const CACHE_DURATION = 30 * 60 * 1000;
-    
-    let globalData = [];
-    let currentSearchTerm = '';
-    let currentDateFilter = '';
-    let isLoading = false;
-    let countdownInterval = null;
+    // ============================================================
+    // KONFIGURASI
+    // ============================================================
+    const DEFAULT_IMAGE = 'https://senapelan.github.io/Home/assets/metatag/operatorparit/defaultop800x800.png';
+    const APP_URL = 'https://script.google.com/macros/s/AKfycbxN44fWWd0Og1Hi9868cgvHY7Pz96ScKV-0CM5XBSkeUBOfYqoeLhG6sV3pRE9ybUOQ/exec';
 
-    function saveToCache(data) {
-        try {
-            const cacheData = {
-                timestamp: Date.now(),
-                data: data
-            };
-            localStorage.setItem(CACHE_KEY, JSON.stringify(cacheData));
-        } catch(e) {
-            console.warn('Cache gagal:', e);
-        }
-    }
-    
-    function loadFromCache() {
-        try {
-            const cached = localStorage.getItem(CACHE_KEY);
-            if (!cached) return null;
-            
-            const cacheData = JSON.parse(cached);
-            const isExpired = (Date.now() - cacheData.timestamp) > CACHE_DURATION;
-            
-            if (!isExpired && cacheData.data && cacheData.data.length > 0) {
-                console.log('✅ Memuat dari cache, usia:', Math.round((Date.now() - cacheData.timestamp)/1000), 'detik');
-                return cacheData.data;
-            }
-        } catch(e) {
-            console.warn('Gagal baca cache:', e);
-        }
-        return null;
-    }
+    let allData = [];
+    let viewerData = { slides: [], current: 0, info: null };
 
-    // PERBAIKAN: Fungsi fetch dengan error handling yang lebih baik
-    async function fetchDataFromAppsScript(forceRefresh = false) {
-        if (!forceRefresh) {
-            const cachedData = loadFromCache();
-            if (cachedData) {
-                return cachedData;
-            }
-        }
-        
-        if (isLoading) return null;
-        isLoading = true;
-        
+    // ============================================================
+    // FETCH DATA
+    // ============================================================
+    async function fetchData() {
         try {
-            const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 15000);
-            
-            const response = await fetch(APPS_SCRIPT_URL, { 
-                method: 'GET',
-                mode: 'cors',
-                cache: 'no-store',
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-            
-            if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            
-            const result = await response.json();
-            let dataArray = null;
-            
-            // PERBAIKAN: Penanganan format response yang lebih fleksibel
-            if (result && result.success === true && Array.isArray(result.data)) {
-                dataArray = result.data;
-            } 
-            else if (Array.isArray(result)) {
-                dataArray = result;
+            const res = await fetch(APP_URL, { cache: 'no-store' });
+            const json = await res.json();
+            console.log('📦 Data:', json);
+            if (json.success && json.data) {
+                return json.data;
             }
-            else if (result && result.data && Array.isArray(result.data)) {
-                dataArray = result.data;
-            }
-            else if (result && typeof result === 'object') {
-                // Coba cari array di dalam object
-                for (let key in result) {
-                    if (Array.isArray(result[key]) && result[key].length > 0) {
-                        dataArray = result[key];
-                        break;
-                    }
-                }
-            }
-            
-            if (dataArray && dataArray.length > 0) {
-                const filteredData = dataArray.filter(item => item && item["Hari/Tanggal"] && item["Hari/Tanggal"] !== '');
-                if (filteredData.length > 0) {
-                    saveToCache(filteredData);
-                    isLoading = false;
-                    return filteredData;
-                } else if (dataArray.length > 0) {
-                    // Data ada tapi tidak memenuhi filter
-                    saveToCache(dataArray);
-                    isLoading = false;
-                    return dataArray;
-                }
-            }
-            
-            // Jika response tidak valid, lempar error
-            throw new Error('Format data tidak dikenali');
-            
-        } catch (error) {
-            console.error('Fetch error:', error);
-            isLoading = false;
+            return null;
+        } catch (e) {
+            console.error('❌ Error:', e);
             return null;
         }
     }
 
-    function parseDateFromString(dateString) {
-        if (!dateString || dateString === '-') return null;
-        
-        const parts = dateString.split(',');
+    // ============================================================
+    // NOTIFIKASI
+    // ============================================================
+    function showNotice(msg, type = 'success') {
+        const c = document.getElementById('noticeContainer');
+        const el = document.createElement('div');
+        el.className = 'notice notice-' + type;
+        el.innerHTML = (type === 'success' ? '✅' : '⚠️') + ' ' + msg;
+        c.appendChild(el);
+        setTimeout(() => { el.style.opacity = '0'; setTimeout(() => el.remove(), 500); }, 4000);
+    }
+
+    // ============================================================
+    // PARSE TANGGAL
+    // ============================================================
+    function parseDate(str) {
+        if (!str) return null;
+        const parts = str.split(',');
         if (parts.length < 2) return null;
-        
-        const datePart = parts[1].trim();
-        const dateParts = datePart.split(' ');
-        
-        if (dateParts.length < 3) return null;
-        
-        const day = parseInt(dateParts[0], 10);
-        const monthName = dateParts[1];
-        const year = parseInt(dateParts[2], 10);
-        
-        const months = {
-            'Januari': 0, 'Jan': 0, 'January': 0,
-            'Februari': 1, 'Feb': 1, 'February': 1,
-            'Maret': 2, 'Mar': 2, 'March': 2,
-            'April': 3, 'Apr': 3,
-            'Mei': 4, 'May': 4,
-            'Juni': 5, 'Jun': 5, 'June': 5,
-            'Juli': 6, 'Jul': 6, 'July': 6,
-            'Agustus': 7, 'Agu': 7, 'Aug': 7, 'August': 7,
-            'September': 8, 'Sep': 8,
-            'Oktober': 9, 'Okt': 9, 'Oct': 9, 'October': 9,
-            'November': 10, 'Nov': 10,
-            'Desember': 11, 'Des': 11, 'Dec': 11, 'December': 11
-        };
-        
-        const month = months[monthName];
-        if (month === undefined) return null;
-        
-        return new Date(year, month, day);
+        const d = parts[1].trim().split(' ');
+        if (d.length < 3) return null;
+        const months = { 'Januari':0,'Jan':0,'January':0,'Februari':1,'Feb':1,'February':1,'Maret':2,'Mar':2,'March':2,'April':3,'Apr':3,'Mei':4,'May':4,'Juni':5,'Jun':5,'June':5,'Juli':6,'Jul':6,'July':6,'Agustus':7,'Agu':7,'Aug':7,'August':7,'September':8,'Sep':8,'Oktober':9,'Okt':9,'Oct':9,'October':9,'November':10,'Nov':10,'Desember':11,'Des':11,'Dec':11,'December':11 };
+        const m = months[d[1]];
+        if (m === undefined) return null;
+        return new Date(parseInt(d[2]), m, parseInt(d[0]));
     }
 
-    function filterByDate(item, filterDate) {
-        if (!filterDate) return true;
-        
-        const itemDate = parseDateFromString(item["Hari/Tanggal"]);
-        if (!itemDate) return false;
-        
-        return itemDate.getFullYear() === filterDate.getFullYear() &&
-               itemDate.getMonth() === filterDate.getMonth() &&
-               itemDate.getDate() === filterDate.getDate();
+    function formatDate(d) {
+        const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+        const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+        return days[d.getDay()] + ', ' + d.getDate() + ' ' + months[d.getMonth()] + ' ' + d.getFullYear();
     }
 
-    function getCardColorClass(item) {
-        const status = item["Status"] || '';
-        const ketLibur = item["Ket libur"] || '';
-        
-        if (status === 'Hari Libur' || ketLibur.toLowerCase().includes('libur')) {
-            return 'card-libur';
-        }
-        
-        if (status === 'Sudah Bekerja' || status === 'Selesai') {
-            return 'card-selesai';
-        }
-        
-        return 'card-menunggu';
-    }
-
-    function parseTimeToMinutes(timeStr) {
-        if (!timeStr || timeStr === '' || timeStr === '-') return null;
-        if (typeof timeStr === 'number') return timeStr * 60;
-        
-        let strTime = String(timeStr);
-        let cleaned = strTime.replace(/\./g, ':');
-        let parts = cleaned.split(':');
-        if(parts.length < 2) return null;
-        let hours = parseInt(parts[0], 10);
-        let minutes = parseInt(parts[1], 10);
-        if(isNaN(hours) || isNaN(minutes)) return null;
-        return hours * 60 + minutes;
-    }
-
-    function updateCountdowns() {
+    function getToday() {
         const now = new Date();
-        const currentMinutes = now.getHours() * 60 + now.getMinutes();
-        
-        document.querySelectorAll('.countdown-timer').forEach(el => {
-            const startStr = el.getAttribute('data-start');
-            const endStr = el.getAttribute('data-end');
-            const statusRaw = el.getAttribute('data-status');
-            const isLibur = el.getAttribute('data-libur') === 'libur';
-            
-            if(isLibur || statusRaw === 'Hari Libur') {
-                el.innerHTML = '<i class="fas fa-calendar-times"></i> Libur';
-                return;
-            }
-            if(statusRaw === 'Selesai' || statusRaw === 'Sudah Bekerja') {
-                el.innerHTML = '<i class="fas fa-check-circle"></i> Selesai';
-                return;
-            }
-            
-            const startMin = parseTimeToMinutes(startStr);
-            const endMin = parseTimeToMinutes(endStr);
-            if(startMin === null || endMin === null) {
-                el.innerHTML = '⏱️ Jadwal belum tersedia';
-                return;
-            }
-            
-            if(currentMinutes < startMin) {
-                let diff = startMin - currentMinutes;
-                let hours = Math.floor(diff / 60);
-                let mins = diff % 60;
-                el.innerHTML = `⏳ Mulai: ${hours}j ${mins}m`;
-            } 
-            else if(currentMinutes >= startMin && currentMinutes <= endMin) {
-                let diffEnd = endMin - currentMinutes;
-                let hours = Math.floor(diffEnd / 60);
-                let mins = diffEnd % 60;
-                el.innerHTML = `🔄 Berlangsung · sisa ${hours}j ${mins}m`;
-            } 
-            else {
-                el.innerHTML = '✅ Selesai';
-            }
-        });
+        return new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
-    function renderCards(data, searchTerm = '', filterDate = null) {
-        const container = document.getElementById('cardsContainer');
-        if(!data || data.length === 0) {
-            container.innerHTML = `<div class="loader-container"><i class="fas fa-database"></i><p>📭 Tidak ada data jadwal</p><button class="btn-refresh" id="retryBtnEmpty" style="margin-top:1rem;">Muat Ulang</button></div>`;
-            document.getElementById('retryBtnEmpty')?.addEventListener('click', () => loadDataAndRender(true));
-            return;
+// ============================================================
+// GET MEDIA LINKS - DENGAN LABEL (BEFORE, AFTER)
+// ============================================================
+function getMediaWithLabels(item) {
+    var links = [];
+    for (var i = 1; i <= 10; i++) {
+        var key = 'Link_Foto_' + i;
+        var value = item[key];
+        if (value && value.toString().trim() !== '') {
+            var label = '';
+            if (i >= 1 && i <= 5) {
+                label = 'BEFORE';
+            } else if (i >= 6 && i <= 10) {
+                label = 'AFTER';
+            }
+            links.push({
+                src: value.toString().trim(),
+                isVideo: false,
+                label: label,
+                index: i
+            });
         }
-        
-        let filtered = data.filter(item => {
-            let matchText = true;
-            if (searchTerm) {
-                const term = searchTerm.toLowerCase();
-                matchText = (item["Lokasi/Rute Pembersihan"]?.toLowerCase().includes(term) ||
-                           item["Kelurahan"]?.toLowerCase().includes(term) ||
-                           item["Penanggung Jawab"]?.toLowerCase().includes(term));
-            }
-            
-            let matchDate = true;
-            if (filterDate) {
-                matchDate = filterByDate(item, filterDate);
-            }
-            
-            return matchText && matchDate;
+    }
+    if (links.length === 0) {
+        links.push({
+            src: DEFAULT_IMAGE,
+            isVideo: false,
+            label: 'BEFORE',
+            index: 1
         });
-        
-        if(filtered.length === 0) {
-            let message = 'Tidak ada jadwal sesuai pencarian';
-            if (filterDate) message = `Tidak ada jadwal untuk tanggal ${filterDate.toLocaleDateString('id-ID')}`;
-            container.innerHTML = `<div class="loader-container"><i class="fas fa-search"></i><p>${message}</p></div>`;
+    }
+    return links;
+}
+
+    // ============================================================
+    // GET COVER MEDIA (untuk upcoming card)
+    // ============================================================
+    function getCoverMedia(item) {
+        var media = getMediaWithLabels(item);
+        var cover = media.find(m => m.label === 'COVER');
+        return cover || media[0] || { src: DEFAULT_IMAGE, isVideo: false, label: 'COVER' };
+    }
+
+    // ============================================================
+    // RENDER UPCOMING CARDS
+    // ============================================================
+    function renderUpcoming(data) {
+        const container = document.getElementById('upcomingGrid');
+        const countBadge = document.getElementById('upcomingCount');
+        const todayDate = document.getElementById('todayDate');
+
+        const today = new Date();
+        todayDate.textContent = formatDate(today);
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `<div class="upcoming-empty"><i class="fas fa-calendar-plus"></i> Tidak ada kegiatan akan datang</div>`;
+            countBadge.textContent = '0';
             return;
         }
-        
-        const fragment = document.createDocumentFragment();
-        const tempDiv = document.createElement('div');
-        
-        tempDiv.innerHTML = filtered.map(item => {
-            const cardColorClass = getCardColorClass(item);
-            const isLibur = (item["Ket libur"] && String(item["Ket libur"]).toLowerCase().includes('libur')) ? true : false;
-            const isHariLibur = (item["Status"] === 'Hari Libur');
-            const finalLibur = isLibur || isHariLibur;
-            let statusText = item["Status"] || 'Menunggu';
-            const lokasi = item["Lokasi/Rute Pembersihan"] || '-';
-            const rt = item["RT"] || '';
-            const rw = item["RW"] || '';
-            const rtRwText = (rt || rw) ? `RT ${rt} / RW ${rw}` : '';
-            const fotoUrl = item["Link_Foto"] || item["Link Foto"] || '';
-            
+
+        const todayObj = getToday();
+        const upcoming = data.filter(item => {
+            const d = parseDate(item['Hari/Tanggal']);
+            if (!d) return false;
+            return d >= todayObj;
+        });
+
+        upcoming.sort((a, b) => {
+            const da = parseDate(a['Hari/Tanggal']);
+            const db = parseDate(b['Hari/Tanggal']);
+            return da - db;
+        });
+
+        const top4 = upcoming.slice(0, 4);
+        countBadge.textContent = top4.length;
+
+        if (top4.length === 0) {
+            container.innerHTML = `<div class="upcoming-empty"><i class="fas fa-calendar-check"></i> Tidak ada kegiatan akan datang</div>`;
+            return;
+        }
+
+        container.innerHTML = top4.map(item => {
+            const cover = getCoverMedia(item);
+            const status = item['Status'] || 'Menunggu';
+            const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
+            const finalStatus = isLibur ? 'Hari Libur' : status;
+
             return `
-                <div class="card ${cardColorClass}">
-                    <div class="card-header">
-                        <span class="date-badge"><i class="far fa-calendar-alt"></i> ${escapeHtml(item["Hari/Tanggal"] || '-')}</span>
-                        <span class="status-badge">${finalLibur ? 'Libur' : statusText}</span>
+                <div class="upcoming-card">
+                    <div class="upcoming-badge"><i class="fas fa-clock"></i> ${finalStatus}</div>
+                    <div class="upcoming-img">
+                        <img src="${cover.src}" alt="${item['Lokasi/Rute Pembersihan'] || 'Kegiatan'}" 
+                             onerror="this.src='${DEFAULT_IMAGE}'">
                     </div>
-                    <div class="lokasi-box">
-                        <div class="lokasi-title">
-                            <i class="fas fa-map-pin"></i> ${escapeHtml(lokasi)}
-                            ${rtRwText ? `<span class="rt-rw">${escapeHtml(rtRwText)}</span>` : ''}
+                    <div class="upcoming-body">
+                        <div class="u-title">${item['Lokasi/Rute Pembersihan'] || 'Kegiatan'}</div>
+                        <div class="u-location">
+                            <i class="fas fa-map-pin"></i> ${item['Kelurahan'] || '-'} 
+                            ${item['RT'] ? 'RT '+item['RT'] : ''} ${item['RW'] ? '/ RW '+item['RW'] : ''}
                         </div>
-                        <div class="kelurahan"><i class="fas fa-building"></i> Kelurahan ${escapeHtml(item["Kelurahan"] || '-')}</div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-icon"><i class="far fa-clock"></i></div>
-                        <div class="detail-content">
-                            <div class="label-small">Jam Operasional</div>
-                            <strong>${escapeHtml(item["Jam Mulai"] || '--')} - ${escapeHtml(item["Jam Selesai"] || '--')}</strong>
-                            <div class="countdown-timer" data-start="${escapeHtml(item["Jam Mulai"] || '')}" data-end="${escapeHtml(item["Jam Selesai"] || '')}" data-status="${statusText}" data-libur="${finalLibur ? 'libur' : ''}">⏳ menghitung...</div>
-                        </div>
-                    </div>
-                    <div class="detail-item">
-                        <div class="detail-icon"><i class="fas fa-user-hard-hat"></i></div>
-                        <div class="detail-content">
-                            <div class="label-small">Penanggung Jawab</div>
-                            ${escapeHtml(item["Penanggung Jawab"] || '-')} ${item["Jumlah Personil"] ? `(👥 ${item["Jumlah Personil"]} personil)` : ''}
+                        <div class="u-meta">
+                            <span><i class="fas fa-calendar-alt"></i> ${item['Hari/Tanggal'] || '-'}</span>
+                            <span><i class="fas fa-clock"></i> ${item['Jam Mulai'] || '-'} - ${item['Jam Selesai'] || '-'}</span>
+                            ${item['Jumlah Personil'] > 0 ? `<span><i class="fas fa-users"></i> ${item['Jumlah Personil']}</span>` : ''}
+                            <span><i class="fas fa-user"></i> ${item['Penanggung Jawab'] || '-'}</span>
                         </div>
                     </div>
-                    <div class="detail-item">
-                        <div class="detail-icon"><i class="fas fa-info-circle"></i></div>
-                        <div class="detail-content">
-                            <div class="label-small">Keterangan</div>
-                            ${escapeHtml(item["Keterangan"] || '-')}
-                        </div>
-                    </div>
-                    <div class="detail-item" style="justify-content: space-between;">
-                        <div><i class="fas fa-camera"></i> Dokumentasi Foto</div>
-                        <div class="foto-icon" data-foto="${escapeHtml(fotoUrl)}">
-                            <i class="fas fa-image"></i>
-                        </div>
-                    </div>
-                    ${item["Ket libur"] ? `<div class="detail-item" style="background:rgba(0,0,0,0.03);"><i class="fas fa-ban"></i> ${escapeHtml(item["Ket libur"])}</div>` : ''}
                 </div>
             `;
         }).join('');
-        
-        while(tempDiv.firstChild) {
-            fragment.appendChild(tempDiv.firstChild);
+    }
+
+    // ============================================================
+    // RENDER CARDS - TIDAK ADA LABEL SAMA SEKALI
+    // ============================================================
+    function renderCards(data, search = '', dateFilter = null) {
+        const container = document.getElementById('gridContainer');
+
+        if (!data || data.length === 0) {
+            container.innerHTML = `<div class="loader"><i class="fas fa-database"></i><p>Tidak ada data</p></div>`;
+            document.getElementById('statsText').textContent = '0 kegiatan';
+            return;
         }
-        
-        container.innerHTML = '';
-        container.appendChild(fragment);
-        
-        container.querySelectorAll('.foto-icon').forEach(icon => {
-            icon.removeEventListener('click', fotoClickHandler);
-            icon.addEventListener('click', fotoClickHandler);
+
+        let filtered = data.filter(item => {
+            let matchText = true;
+            if (search) {
+                const s = search.toLowerCase();
+                matchText = (item['Lokasi/Rute Pembersihan'] || '').toLowerCase().includes(s) ||
+                            (item['Kelurahan'] || '').toLowerCase().includes(s) ||
+                            (item['Penanggung Jawab'] || '').toLowerCase().includes(s);
+            }
+            let matchDate = true;
+            if (dateFilter) {
+                const d = parseDate(item['Hari/Tanggal']);
+                matchDate = d && d.getFullYear() === dateFilter.getFullYear() &&
+                            d.getMonth() === dateFilter.getMonth() &&
+                            d.getDate() === dateFilter.getDate();
+            }
+            return matchText && matchDate;
         });
-        
-        updateCountdowns();
-        
-        if(countdownInterval) clearInterval(countdownInterval);
-        countdownInterval = setInterval(updateCountdowns, 60000);
-    }
-    
-    function fotoClickHandler(e) {
-        e.stopPropagation();
-        const fotoUrl = this.getAttribute('data-foto');
-        if(fotoUrl && fotoUrl !== '' && (fotoUrl.startsWith('http') || fotoUrl.startsWith('https'))) {
-            document.getElementById('modalImg').src = fotoUrl;
-            document.getElementById('imageModal').style.display = 'flex';
-        } else {
-            alert('📷 Belum ada foto dokumentasi untuk kegiatan ini');
+
+        document.getElementById('statsText').textContent = filtered.length + ' kegiatan';
+        document.getElementById('statusText').textContent = data.length + ' jadwal';
+
+        if (filtered.length === 0) {
+            let msg = 'Tidak ada jadwal sesuai pencarian';
+            if (dateFilter) msg = 'Tidak ada jadwal untuk tanggal ' + formatDate(dateFilter);
+            container.innerHTML = `<div class="loader"><i class="fas fa-search"></i><p>${msg}</p></div>`;
+            return;
         }
+
+        container.innerHTML = filtered.map((item, idx) => {
+            const status = item['Status'] || 'Menunggu';
+            const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
+            const finalStatus = isLibur ? 'Hari Libur' : status;
+            let statusClass = 'status-menunggu';
+            if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') statusClass = 'status-selesai';
+            else if (finalStatus === 'Hari Libur') statusClass = 'status-libur';
+
+            const media = getMediaWithLabels(item);
+            const total = media.length;
+            const cardId = 'card-' + idx;
+
+            // ==========================================================
+            // TIDAK ADA LABEL DI CARD
+            // ==========================================================
+            const slides = media.map((m, i) => {
+                return `
+                    <div class="media-slide" data-index="${i}" data-label="${m.label || 'COVER'}">
+                        <img src="${m.src}" alt="Foto ${i+1}" loading="lazy" onerror="this.src='${DEFAULT_IMAGE}'">
+                    </div>
+                `;
+            }).join('');
+
+            const dots = media.map((_, i) => `
+                <span class="dot ${i === 0 ? 'active' : ''}" data-index="${i}"></span>
+            `).join('');
+
+            const rt = item['RT'] || '';
+            const rw = item['RW'] || '';
+            const rtRw = (rt || rw) ? `RT ${rt} / RW ${rw}` : '';
+
+            const descText = item['Keterangan'] || '-';
+            const descHtml = descText === '-' 
+                ? `<span class="empty-desc">-</span>` 
+                : descText;
+
+            return `
+                <div class="card" data-id="${cardId}">
+                    <div class="card-header">
+                        <div class="info">
+                            <div class="name">
+                                <i class="fas fa-user-circle"></i> ${item['Penanggung Jawab'] || '-'}
+                                <span class="role">• Penanggung Jawab</span>
+                            </div>
+                            <div class="loc">
+                                <i class="fas fa-map-pin"></i> ${item['Lokasi/Rute Pembersihan'] || '-'} ${rtRw ? '('+rtRw+')' : ''}
+                            </div>
+                        </div>
+                        <div class="meta">
+                            <span class="time"><i class="far fa-clock"></i> ${item['Jam Mulai'] || '-'} - ${item['Jam Selesai'] || '-'}</span>
+                            <span class="status ${statusClass}">${finalStatus}</span>
+                        </div>
+                    </div>
+
+                    <div class="media-wrap" data-total="${total}">
+                        <div class="media-slider" style="transform:translateX(0%);" data-current="0">
+                            ${slides}
+                        </div>
+                        ${total > 1 ? `
+                            <button class="nav-btn prev" onclick="slideCard(this, -1)">‹</button>
+                            <button class="nav-btn next" onclick="slideCard(this, 1)">›</button>
+                            <div class="counter">1/${total}</div>
+                            <div class="dots">${dots}</div>
+                        ` : ''}
+                    </div>
+
+                    <div class="card-footer">
+                        <div class="desc"><i class="fas fa-info-circle"></i> ${descHtml}</div>
+                        <div class="tags">
+                            <span><i class="fas fa-calendar-alt"></i> ${item['Hari/Tanggal'] || '-'}</span>
+                            ${item['Jumlah Personil'] > 0 ? `<span><i class="fas fa-users"></i> ${item['Jumlah Personil']} personil</span>` : ''}
+                            <span><i class="fas fa-building"></i> ${item['Kelurahan'] || '-'}</span>
+                            ${isLibur ? `<span><i class="fas fa-ban"></i> ${item['Ket libur']}</span>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        setTimeout(() => {
+            document.querySelectorAll('.media-slide').forEach(el => {
+                el.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    const wrap = this.closest('.media-wrap');
+                    const card = wrap.closest('.card');
+                    const id = card.dataset.id;
+                    const idx = parseInt(id.split('-')[1]);
+                    const item = filtered[idx];
+                    if (item) openViewer(item, wrap);
+                });
+            });
+        }, 50);
     }
 
-    function escapeHtml(str) {
-        if(!str) return '';
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.innerHTML;
+    // ============================================================
+    // SLIDE CARD
+    // ============================================================
+    function slideCard(btn, dir) {
+        const wrap = btn.closest('.media-wrap');
+        const slider = wrap.querySelector('.media-slider');
+        const total = wrap.querySelectorAll('.media-slide').length;
+        const dots = wrap.querySelectorAll('.dot');
+        const counter = wrap.querySelector('.counter');
+
+        let cur = parseInt(slider.dataset.current || '0');
+        let next = cur + dir;
+        if (next < 0) next = 0;
+        if (next >= total) next = total - 1;
+        if (next === cur) return;
+
+        slider.style.transform = 'translateX(-' + (next * 100) + '%)';
+        slider.dataset.current = next;
+
+        dots.forEach((d, i) => d.classList.toggle('active', i === next));
+        if (counter) counter.textContent = (next + 1) + '/' + total;
     }
 
-    function applyFilters() {
-        if (!globalData || globalData.length === 0) return;
-        
-        const searchTerm = document.getElementById('searchInput')?.value || '';
-        const dateValue = document.getElementById('dateFilterInput')?.value || '';
-        
-        let filterDate = null;
-        if (dateValue) {
-            filterDate = new Date(dateValue);
-        }
-        
-        requestAnimationFrame(() => {
-            renderCards(globalData, searchTerm, filterDate);
-        });
+    // ============================================================
+    // FULLSCREEN VIEWER - HANYA BEFORE & AFTER
+    // ============================================================
+    function openViewer(item, wrap) {
+        const cur = parseInt(wrap.querySelector('.media-slider').dataset.current || '0');
+        const media = getMediaWithLabels(item);
+
+        viewerData.slides = media;
+        viewerData.current = Math.min(cur, media.length - 1);
+        viewerData.info = {
+            name: item['Penanggung Jawab'] || '-',
+            loc: item['Lokasi/Rute Pembersihan'] || '-',
+            time: (item['Jam Mulai'] || '-') + ' - ' + (item['Jam Selesai'] || '-'),
+            status: item['Status'] || 'Menunggu',
+            desc: item['Keterangan'] || '-',
+            date: item['Hari/Tanggal'] || '-',
+            personil: item['Jumlah Personil'] || 0,
+            kelurahan: item['Kelurahan'] || '-',
+            rt: item['RT'] || '',
+            rw: item['RW'] || '',
+            ketLibur: item['Ket libur'] || ''
+        };
+
+        renderViewer();
+        document.getElementById('viewer').classList.add('active');
+        document.body.style.overflow = 'hidden';
     }
 
-    async function loadDataAndRender(forceRefresh = false) {
-        const container = document.getElementById('cardsContainer');
-        container.innerHTML = `<div class="loader-container"><div class="spinner"></div><p>Mengambil data dari Server...</p></div>`;
-        
-        const oldNotice = document.getElementById('api-notice');
-        if(oldNotice) oldNotice.remove();
-        
-        const data = await fetchDataFromAppsScript(forceRefresh);
-        
-        if (data && data.length > 0) {
-            const notice = document.createElement('div');
-            notice.id = 'api-notice';
-            notice.className = 'success-notice';
-            notice.innerHTML = '<i class="fas fa-check-circle"></i> ✅ Data berhasil dimuat! Menampilkan ' + data.length + ' jadwal operasional drainase.';
-            const toolbar = document.querySelector('.toolbar');
-            toolbar.parentNode.insertBefore(notice, toolbar.nextSibling);
-            setTimeout(() => { 
-                if(notice) {
-                    notice.style.opacity = '0'; 
-                    setTimeout(() => notice.remove(), 500);
-                }
-            }, 5000);
+    function renderViewer() {
+        const slider = document.getElementById('viewerSlider');
+        const info = document.getElementById('viewerInfo');
+
+        slider.innerHTML = '';
+        viewerData.slides.forEach((m, i) => {
+            const div = document.createElement('div');
+            div.className = 'viewer-slide';
             
-            globalData = data;
+            // HANYA BEFORE & AFTER YANG TAMPIL - COVER TIDAK
+            var showLabel = m.label === 'BEFORE' || m.label === 'AFTER';
+            var labelClass = '';
+            if (m.label === 'BEFORE') labelClass = 'before';
+            else if (m.label === 'AFTER') labelClass = 'after';
+            
+            const img = document.createElement('img');
+            img.src = m.src;
+            img.alt = 'Foto ' + (i+1);
+            img.onerror = function() { this.src = DEFAULT_IMAGE; };
+            div.appendChild(img);
+            
+            if (showLabel) {
+                const label = document.createElement('div');
+                label.className = 'viewer-label ' + labelClass;
+                label.textContent = m.label;
+                div.appendChild(label);
+            }
+            
+            slider.appendChild(div);
+        });
+
+        updateViewer();
+
+        const d = viewerData.info;
+        const rtRw = (d.rt || d.rw) ? 'RT ' + d.rt + ' / RW ' + d.rw : '';
+        info.innerHTML = `
+            <div class="v-name"><i class="fas fa-user-circle"></i> ${d.name} <span style="font-weight:400;font-size:0.7rem;color:#94a3b8;">• Penanggung Jawab</span></div>
+            <div class="v-loc"><i class="fas fa-map-pin"></i> ${d.loc} ${rtRw ? '('+rtRw+')' : ''}</div>
+            <div class="v-details">
+                <span><i class="far fa-clock"></i> ${d.time}</span>
+                <span><i class="fas fa-tag"></i> ${d.status}</span>
+                <span><i class="fas fa-calendar-alt"></i> ${d.date}</span>
+                ${d.personil > 0 ? `<span><i class="fas fa-users"></i> ${d.personil} personil</span>` : ''}
+                <span><i class="fas fa-building"></i> ${d.kelurahan}</span>
+                ${d.ketLibur ? `<span><i class="fas fa-ban"></i> ${d.ketLibur}</span>` : ''}
+            </div>
+            <div class="v-desc"><i class="fas fa-info-circle"></i> ${d.desc}</div>
+        `;
+    }
+
+    function updateViewer() {
+        const slider = document.getElementById('viewerSlider');
+        const cur = viewerData.current;
+        slider.style.transform = 'translateX(-' + (cur * 100) + '%)';
+        document.getElementById('viewerCounter').textContent = (cur + 1) + '/' + viewerData.slides.length;
+    }
+
+    function viewerSlide(dir) {
+        const total = viewerData.slides.length;
+        let next = viewerData.current + dir;
+        if (next < 0) next = 0;
+        if (next >= total) next = total - 1;
+        if (next === viewerData.current) return;
+        viewerData.current = next;
+        updateViewer();
+    }
+
+    function closeViewer(e) {
+        if (e && e.target !== e.currentTarget) return;
+        document.getElementById('viewer').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // ============================================================
+    // FILTER
+    // ============================================================
+    function applyFilters() {
+        if (!allData || allData.length === 0) return;
+        const search = document.getElementById('searchInput').value || '';
+        const dateVal = document.getElementById('dateInput').value || '';
+        let filterDate = null;
+        if (dateVal) filterDate = new Date(dateVal);
+        
+        renderUpcoming(allData);
+        renderCards(allData, search, filterDate);
+    }
+
+    // ============================================================
+    // LOAD DATA
+    // ============================================================
+    async function loadData() {
+        const container = document.getElementById('gridContainer');
+        container.innerHTML = `<div class="loader"><div class="spinner"></div><p>Mengambil data dari server...</p></div>`;
+
+        const data = await fetchData();
+        if (data && data.length > 0) {
+            allData = data;
+            showNotice('✅ ' + data.length + ' jadwal berhasil dimuat!', 'success');
             applyFilters();
         } else {
-            const lastCache = loadFromCache();
-            if (lastCache && lastCache.length > 0) {
-                globalData = lastCache;
-                applyFilters();
-                const warning = document.createElement('div');
-                warning.className = 'success-notice';
-                warning.style.background = '#fed7aa';
-                warning.style.borderLeftColor = '#f59e0b';
-                warning.style.color = '#92400e';
-                warning.innerHTML = '<i class="fas fa-exclamation-triangle"></i> ⚠️ Menggunakan data cache (koneksi bermasalah)';
-                document.querySelector('.toolbar').parentNode.insertBefore(warning, document.querySelector('.toolbar').nextSibling);
-                setTimeout(() => warning.remove(), 4000);
-            } else {
-                container.innerHTML = `
-                    <div class="loader-container">
-                        <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#f59e0b;"></i>
-                        <p>Gagal memuat data dari Google Sheets</p>
-                        <p style="font-size:0.8rem;margin-top:0.5rem;">Pastikan Web App sudah dipublish dan URL sudah benar</p>
-                        <button class="btn-refresh" id="retryBtn" style="margin-top:1rem;">Coba Lagi</button>
-                    </div>`;
-                document.getElementById('retryBtn')?.addEventListener('click', () => loadDataAndRender(true));
-            }
+            container.innerHTML = `
+                <div class="loader">
+                    <i class="fas fa-exclamation-triangle" style="font-size:2rem;color:#f59e0b;"></i>
+                    <p>Gagal memuat data</p>
+                    <p style="font-size:0.8rem;color:#94a3b8;">Pastikan Web App sudah dipublish dan URL benar</p>
+                    <button class="btn-refresh" onclick="loadData()" style="margin-top:12px;">
+                        <i class="fas fa-sync-alt"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
+            document.getElementById('statusText').textContent = 'Gagal';
+            showNotice('❌ Gagal memuat data dari server', 'error');
         }
     }
-    
-    let searchTimeout;
-    const searchInput = document.getElementById('searchInput');
-    if (searchInput) {
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(applyFilters, 300);
-        });
-    }
-    
-    document.getElementById('refreshBtn')?.addEventListener('click', () => loadDataAndRender(true));
-    document.getElementById('dateFilterInput')?.addEventListener('change', applyFilters);
-    document.getElementById('clearDateBtn')?.addEventListener('click', () => {
-        const dateInput = document.getElementById('dateFilterInput');
-        if (dateInput) dateInput.value = '';
+
+    // ============================================================
+    // EVENT
+    // ============================================================
+    let searchTimer;
+    document.getElementById('searchInput').addEventListener('input', () => {
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(applyFilters, 300);
+    });
+    document.getElementById('dateInput').addEventListener('change', applyFilters);
+    document.getElementById('clearDateBtn').addEventListener('click', () => {
+        document.getElementById('dateInput').value = '';
         applyFilters();
     });
-    
-    const modal = document.getElementById('imageModal');
-    const closeModal = document.querySelector('.close-modal');
-    if (closeModal) {
-        closeModal.addEventListener('click', () => modal.style.display = 'none');
-    }
-    if (modal) {
-        modal.addEventListener('click', (e) => { if(e.target === modal) modal.style.display = 'none'; });
-    }
-    
-    loadDataAndRender();
+    document.getElementById('refreshBtn').addEventListener('click', loadData);
+
+    document.addEventListener('keydown', (e) => {
+        const v = document.getElementById('viewer');
+        if (!v.classList.contains('active')) return;
+        if (e.key === 'Escape') closeViewer();
+        else if (e.key === 'ArrowLeft') viewerSlide(-1);
+        else if (e.key === 'ArrowRight') viewerSlide(1);
+    });
+
+    let touchStart = 0;
+    document.getElementById('viewerMedia').addEventListener('touchstart', (e) => {
+        touchStart = e.changedTouches[0].screenX;
+    });
+    document.getElementById('viewerMedia').addEventListener('touchend', (e) => {
+        const diff = touchStart - e.changedTouches[0].screenX;
+        if (Math.abs(diff) > 50) viewerSlide(diff > 0 ? 1 : -1);
+    });
+
+    // ============================================================
+    // START
+    // ============================================================
+    loadData();
+    console.log('✅ OP Drainase - Siap!');
+    console.log('📸 Aturan Label: Card = TIDAK ADA, Fullscreen = ONLY BEFORE & AFTER');
 </script>
+
 </body>
 </html>
