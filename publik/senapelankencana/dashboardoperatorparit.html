@@ -147,9 +147,6 @@
         .upcoming-section .section-title .subtitle { font-size: 0.75rem; color: #94a3b8; margin-left: auto; }
         .upcoming-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
-        /* ============================================================ */
-        /* UPDATED: CARD PIN DENGAN WARNA + ICON PIN */
-        /* ============================================================ */
         .upcoming-card {
             background: white;
             border-radius: 14px;
@@ -160,10 +157,10 @@
             flex-direction: column;
             border-left: 4px solid #1a5d6e;
             position: relative;
+            cursor: pointer;
         }
         .upcoming-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.10); }
 
-        /* PIN ICON - Sudut Kiri Atas */
         .pin-icon {
             position: absolute;
             top: 8px;
@@ -175,9 +172,9 @@
             font-size: 0.7rem;
             z-index: 3;
             box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            pointer-events: none;
         }
 
-        /* Warna card pin berdasarkan status */
         .upcoming-card.card-pin-libur {
             background: #fef2f2;
             border-left-color: #dc2626;
@@ -211,6 +208,7 @@
             font-size: 0.55rem;
             font-weight: 600;
             z-index: 2;
+            pointer-events: none;
         }
         .upcoming-card .upcoming-badge i { margin-right: 4px; }
         .upcoming-card .upcoming-img {
@@ -219,10 +217,11 @@
             overflow: hidden;
             background: #0f172a;
             flex-shrink: 0;
+            pointer-events: none;
         }
-        .upcoming-card .upcoming-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+        .upcoming-card .upcoming-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; pointer-events: none; }
         .upcoming-card:hover .upcoming-img img { transform: scale(1.03); }
-        .upcoming-card .upcoming-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; gap: 4px; }
+        .upcoming-card .upcoming-body { padding: 12px 14px; flex: 1; display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
         .upcoming-card .upcoming-body .u-title { font-weight: 600; font-size: 0.8rem; color: #1e293b; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
         .upcoming-card .upcoming-body .u-location { font-size: 0.65rem; color: #64748b; display: flex; align-items: center; gap: 4px; }
         .upcoming-card .upcoming-body .u-location i { font-size: 0.5rem; color: #94a3b8; }
@@ -234,7 +233,6 @@
 
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
 
-        /* ===== WARNA CARD BERDASARKAN STATUS ===== */
         .card-status-libur {
             background: #fef2f2;
             border-left: 4px solid #dc2626;
@@ -318,8 +316,6 @@
             position: relative;
         }
         .media-slide img { width: 100%; height: 100%; object-fit: cover; }
-
-        /* TIDAK ADA LABEL DI CARD */
 
         .nav-btn {
             position: absolute;
@@ -459,7 +455,6 @@
         }
         .viewer-slide img { width: 100%; height: 100%; object-fit: contain; }
 
-        /* LABEL DI FULLSCREEN - HANYA BEFORE & AFTER */
         .viewer-slide .viewer-label {
             position: absolute;
             bottom: 20px;
@@ -876,13 +871,12 @@
     // ============================================================
     function getCoverMedia(item) {
         var media = getMediaWithLabels(item);
-        // Cari label 'BEFORE' atau ambil pertama
         var cover = media.find(m => m.label === 'BEFORE');
         return cover || media[0] || { src: DEFAULT_IMAGE, isVideo: false, label: 'BEFORE' };
     }
 
     // ============================================================
-    // RENDER UPCOMING CARDS - DENGAN WARNA + PIN
+    // RENDER UPCOMING CARDS - DENGAN WARNA + PIN + CLICKABLE
     // ============================================================
     function renderUpcoming(data) {
         const container = document.getElementById('upcomingGrid');
@@ -919,13 +913,12 @@
             return;
         }
 
-        container.innerHTML = top4.map(item => {
+        container.innerHTML = top4.map((item, index) => {
             const cover = getCoverMedia(item);
             const status = item['Status'] || 'Menunggu';
             const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
             const finalStatus = isLibur ? 'Hari Libur' : status;
             
-            // Tentukan class warna untuk pin card
             let pinColorClass = 'card-pin-menunggu';
             if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
                 pinColorClass = 'card-pin-selesai';
@@ -933,8 +926,10 @@
                 pinColorClass = 'card-pin-libur';
             }
 
+            const cardId = item.No || 'pin-' + index;
+
             return `
-                <div class="upcoming-card ${pinColorClass}">
+                <div class="upcoming-card ${pinColorClass}" data-id="${cardId}" data-index="${index}">
                     <div class="pin-icon"><i class="fas fa-thumbtack"></i></div>
                     <div class="upcoming-badge"><i class="fas fa-clock"></i> ${finalStatus}</div>
                     <div class="upcoming-img">
@@ -957,6 +952,44 @@
                 </div>
             `;
         }).join('');
+
+        // ==========================================================
+        // EVENT CLICK UNTUK CARD PIN - BISA BUKA FULLSCREEN
+        // ==========================================================
+        setTimeout(() => {
+            document.querySelectorAll('.upcoming-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Cari data item
+                    const id = this.dataset.id;
+                    const index = parseInt(this.dataset.index);
+                    let item = null;
+                    
+                    // Cari dari top4
+                    const top4Data = upcoming.slice(0, 4);
+                    if (!isNaN(index) && top4Data[index]) {
+                        item = top4Data[index];
+                    } else {
+                        item = allData.find(d => String(d.No || '') === String(id));
+                    }
+                    
+                    if (item) {
+                        // Buat wrap dummy untuk openViewer
+                        const wrap = {
+                            querySelector: function(sel) {
+                                if (sel === '.media-slider') {
+                                    return { 
+                                        getAttribute: function() { return '0'; }, 
+                                        dataset: { current: '0' } 
+                                    };
+                                }
+                                return null;
+                            }
+                        };
+                        openViewer(item, wrap);
+                    }
+                });
+            });
+        }, 50);
     }
 
     // ============================================================
@@ -1017,9 +1050,6 @@
             const total = media.length;
             const cardId = 'card-' + idx;
 
-            // ==========================================================
-            // TIDAK ADA LABEL DI CARD
-            // ==========================================================
             const slides = media.map((m, i) => {
                 return `
                     <div class="media-slide" data-index="${i}" data-label="${m.label || 'BEFORE'}">
@@ -1159,7 +1189,6 @@
             const div = document.createElement('div');
             div.className = 'viewer-slide';
             
-            // HANYA BEFORE & AFTER YANG TAMPIL
             var showLabel = m.label === 'BEFORE' || m.label === 'AFTER';
             var labelClass = '';
             if (m.label === 'BEFORE') labelClass = 'before';
@@ -1303,7 +1332,7 @@
     loadData();
     console.log('✅ OP Drainase - Siap!');
     console.log('📸 Aturan: Card = TIDAK ADA LABEL, Fullscreen = BEFORE & AFTER');
-    console.log('📌 Card pin = warna sesuai status + icon pin');
+    console.log('📌 Card pin = warna sesuai status + icon pin + bisa diklik!');
 </script>
 
 </body>
