@@ -7,10 +7,10 @@
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://senapelan.github.io/Home/publik/senapelankencana/operatorparit/dashboardopdrainase.html">
     <meta property="og:title" content="OP Drainase Senapelan - Dashboard Pemeliharaan Saluran Air">
-    <meta property="og:description" content="Dashboard monitoring jadwal operasi dan pemeliharaan saluran air/drainase se-Kecamatan Senapelan. Inovasi Camat Senapelan REIN RIZKA KARVY, S.STP., M.Si. Senapelan Hebat - Pekanbaru Bersih dan Aman">
+    <meta property="og:description" content="Dashboard monitoring jadwal operasi dan pemeliharaan saluran air/drainase se-Kecamatan Senapelan. Program Walikota Pekanbaru Bapak H. Agung Nugroho, S.E., M.M., - Pekanbaru Bersih dan Aman">
     <meta property="og:site_name" content="OP Drainase Senapelan - Senapelan Kencana">
     <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/operatorparit/opthumnail512px.png">
-    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/assets/metatag/operatorparit/opthumnail512px.png"> 
+    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/assets/metatag/operatorparit/opthumnail512px.png">
     <meta property="og:image:width" content="512">
     <meta property="og:image:height" content="512">
     <meta property="og:image:type" content="image/png">
@@ -639,6 +639,31 @@
             .upcoming-card .upcoming-body { padding: 8px 10px; }
             .viewer-slide .viewer-label { font-size: 0.6rem; padding: 3px 10px; bottom: 10px; left: 10px; }
         }
+
+/* ===== WARNA CARD BERDASARKAN STATUS ===== */
+.card-status-libur {
+    background: #fef2f2;
+    border-left: 4px solid #dc2626;
+}
+.card-status-selesai {
+    background: #f0fdf4;
+    border-left: 4px solid #16a34a;
+}
+.card-status-menunggu {
+    background: #f8fafc;
+    border-left: 4px solid #94a3b8;
+}
+.card-status-libur .card-header {
+    border-bottom-color: #fecaca;
+}
+.card-status-selesai .card-header {
+    border-bottom-color: #bbf7d0;
+}
+.card-status-menunggu .card-header {
+    border-bottom-color: #e2e8f0;
+}
+
+
     </style>
 </head>
 <body>
@@ -925,11 +950,17 @@ function getMediaWithLabels(item) {
 
         container.innerHTML = filtered.map((item, idx) => {
             const status = item['Status'] || 'Menunggu';
-            const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
-            const finalStatus = isLibur ? 'Hari Libur' : status;
-            let statusClass = 'status-menunggu';
-            if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') statusClass = 'status-selesai';
-            else if (finalStatus === 'Hari Libur') statusClass = 'status-libur';
+const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
+const finalStatus = isLibur ? 'Hari Libur' : status;
+let statusClass = 'status-menunggu';
+let cardColorClass = 'card-status-menunggu';
+if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
+    statusClass = 'status-selesai';
+    cardColorClass = 'card-status-selesai';
+} else if (finalStatus === 'Hari Libur') {
+    statusClass = 'status-libur';
+    cardColorClass = 'card-status-libur';
+}
 
             const media = getMediaWithLabels(item);
             const total = media.length;
@@ -960,7 +991,7 @@ function getMediaWithLabels(item) {
                 : descText;
 
             return `
-                <div class="card" data-id="${cardId}">
+                <div class="card ${cardColorClass}" data-id="${cardId}">
                     <div class="card-header">
                         <div class="info">
                             <div class="name">
