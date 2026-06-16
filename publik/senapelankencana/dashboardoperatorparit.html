@@ -147,6 +147,9 @@
         .upcoming-section .section-title .subtitle { font-size: 0.75rem; color: #94a3b8; margin-left: auto; }
         .upcoming-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
 
+        /* ============================================================ */
+        /* UPDATED: CARD PIN DENGAN WARNA + ICON PIN */
+        /* ============================================================ */
         .upcoming-card {
             background: white;
             border-radius: 14px;
@@ -159,11 +162,48 @@
             position: relative;
         }
         .upcoming-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(0,0,0,0.10); }
+
+        /* PIN ICON - Sudut Kiri Atas */
+        .pin-icon {
+            position: absolute;
+            top: 8px;
+            left: 8px;
+            background: rgba(26, 93, 110, 0.9);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 50%;
+            font-size: 0.7rem;
+            z-index: 3;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        /* Warna card pin berdasarkan status */
+        .upcoming-card.card-pin-libur {
+            background: #fef2f2;
+            border-left-color: #dc2626;
+        }
+        .upcoming-card.card-pin-selesai {
+            background: #f0fdf4;
+            border-left-color: #16a34a;
+        }
+        .upcoming-card.card-pin-menunggu {
+            background: #f8fafc;
+            border-left-color: #94a3b8;
+        }
+        .upcoming-card.card-pin-libur .upcoming-badge {
+            background: rgba(220, 38, 38, 0.9);
+        }
+        .upcoming-card.card-pin-selesai .upcoming-badge {
+            background: rgba(22, 163, 74, 0.9);
+        }
+        .upcoming-card.card-pin-menunggu .upcoming-badge {
+            background: rgba(148, 163, 184, 0.9);
+        }
+
         .upcoming-card .upcoming-badge {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(26, 93, 110, 0.9);
             backdrop-filter: blur(4px);
             color: white;
             padding: 2px 12px;
@@ -193,6 +233,29 @@
         .upcoming-empty i { font-size: 2rem; display: block; margin-bottom: 8px; color: #cbd5e1; }
 
         .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; align-items: stretch; }
+
+        /* ===== WARNA CARD BERDASARKAN STATUS ===== */
+        .card-status-libur {
+            background: #fef2f2;
+            border-left: 4px solid #dc2626;
+        }
+        .card-status-selesai {
+            background: #f0fdf4;
+            border-left: 4px solid #16a34a;
+        }
+        .card-status-menunggu {
+            background: #f8fafc;
+            border-left: 4px solid #94a3b8;
+        }
+        .card-status-libur .card-header {
+            border-bottom-color: #fecaca;
+        }
+        .card-status-selesai .card-header {
+            border-bottom-color: #bbf7d0;
+        }
+        .card-status-menunggu .card-header {
+            border-bottom-color: #e2e8f0;
+        }
 
         .card {
             background: white;
@@ -512,6 +575,7 @@
             .upcoming-card .upcoming-body .u-location { font-size: 0.6rem; }
             .upcoming-card .upcoming-body .u-meta { font-size: 0.5rem; }
             .upcoming-section .section-title h2 { font-size: 1rem; }
+            .pin-icon { font-size: 0.6rem; padding: 3px 6px; top: 6px; left: 6px; }
         }
         @media (max-width: 768px) {
             body { padding: 10px; }
@@ -565,6 +629,7 @@
             .upcoming-card .upcoming-body .u-location { font-size: 0.55rem; }
             .upcoming-card .upcoming-body .u-meta { font-size: 0.45rem; gap: 4px; }
             .viewer-slide .viewer-label { font-size: 0.7rem; padding: 4px 14px; bottom: 14px; left: 14px; }
+            .pin-icon { font-size: 0.5rem; padding: 3px 5px; top: 5px; left: 5px; }
         }
         @media (max-width: 480px) {
             body { padding: 6px; }
@@ -638,32 +703,8 @@
             .upcoming-card .upcoming-body .u-meta { font-size: 0.4rem; gap: 3px; }
             .upcoming-card .upcoming-body { padding: 8px 10px; }
             .viewer-slide .viewer-label { font-size: 0.6rem; padding: 3px 10px; bottom: 10px; left: 10px; }
+            .pin-icon { font-size: 0.4rem; padding: 2px 4px; top: 4px; left: 4px; }
         }
-
-/* ===== WARNA CARD BERDASARKAN STATUS ===== */
-.card-status-libur {
-    background: #fef2f2;
-    border-left: 4px solid #dc2626;
-}
-.card-status-selesai {
-    background: #f0fdf4;
-    border-left: 4px solid #16a34a;
-}
-.card-status-menunggu {
-    background: #f8fafc;
-    border-left: 4px solid #94a3b8;
-}
-.card-status-libur .card-header {
-    border-bottom-color: #fecaca;
-}
-.card-status-selesai .card-header {
-    border-bottom-color: #bbf7d0;
-}
-.card-status-menunggu .card-header {
-    border-bottom-color: #e2e8f0;
-}
-
-
     </style>
 </head>
 <body>
@@ -796,51 +837,52 @@
         return new Date(now.getFullYear(), now.getMonth(), now.getDate());
     }
 
-// ============================================================
-// GET MEDIA LINKS - DENGAN LABEL (BEFORE, AFTER)
-// ============================================================
-function getMediaWithLabels(item) {
-    var links = [];
-    for (var i = 1; i <= 10; i++) {
-        var key = 'Link_Foto_' + i;
-        var value = item[key];
-        if (value && value.toString().trim() !== '') {
-            var label = '';
-            if (i >= 1 && i <= 5) {
-                label = 'BEFORE';
-            } else if (i >= 6 && i <= 10) {
-                label = 'AFTER';
+    // ============================================================
+    // GET MEDIA LINKS - DENGAN LABEL (BEFORE, AFTER)
+    // ============================================================
+    function getMediaWithLabels(item) {
+        var links = [];
+        for (var i = 1; i <= 10; i++) {
+            var key = 'Link_Foto_' + i;
+            var value = item[key];
+            if (value && value.toString().trim() !== '') {
+                var label = '';
+                if (i >= 1 && i <= 5) {
+                    label = 'BEFORE';
+                } else if (i >= 6 && i <= 10) {
+                    label = 'AFTER';
+                }
+                links.push({
+                    src: value.toString().trim(),
+                    isVideo: false,
+                    label: label,
+                    index: i
+                });
             }
+        }
+        if (links.length === 0) {
             links.push({
-                src: value.toString().trim(),
+                src: DEFAULT_IMAGE,
                 isVideo: false,
-                label: label,
-                index: i
+                label: 'BEFORE',
+                index: 1
             });
         }
+        return links;
     }
-    if (links.length === 0) {
-        links.push({
-            src: DEFAULT_IMAGE,
-            isVideo: false,
-            label: 'BEFORE',
-            index: 1
-        });
-    }
-    return links;
-}
 
     // ============================================================
     // GET COVER MEDIA (untuk upcoming card)
     // ============================================================
     function getCoverMedia(item) {
         var media = getMediaWithLabels(item);
-        var cover = media.find(m => m.label === 'COVER');
-        return cover || media[0] || { src: DEFAULT_IMAGE, isVideo: false, label: 'COVER' };
+        // Cari label 'BEFORE' atau ambil pertama
+        var cover = media.find(m => m.label === 'BEFORE');
+        return cover || media[0] || { src: DEFAULT_IMAGE, isVideo: false, label: 'BEFORE' };
     }
 
     // ============================================================
-    // RENDER UPCOMING CARDS
+    // RENDER UPCOMING CARDS - DENGAN WARNA + PIN
     // ============================================================
     function renderUpcoming(data) {
         const container = document.getElementById('upcomingGrid');
@@ -882,9 +924,18 @@ function getMediaWithLabels(item) {
             const status = item['Status'] || 'Menunggu';
             const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
             const finalStatus = isLibur ? 'Hari Libur' : status;
+            
+            // Tentukan class warna untuk pin card
+            let pinColorClass = 'card-pin-menunggu';
+            if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
+                pinColorClass = 'card-pin-selesai';
+            } else if (finalStatus === 'Hari Libur') {
+                pinColorClass = 'card-pin-libur';
+            }
 
             return `
-                <div class="upcoming-card">
+                <div class="upcoming-card ${pinColorClass}">
+                    <div class="pin-icon"><i class="fas fa-thumbtack"></i></div>
                     <div class="upcoming-badge"><i class="fas fa-clock"></i> ${finalStatus}</div>
                     <div class="upcoming-img">
                         <img src="${cover.src}" alt="${item['Lokasi/Rute Pembersihan'] || 'Kegiatan'}" 
@@ -909,7 +960,7 @@ function getMediaWithLabels(item) {
     }
 
     // ============================================================
-    // RENDER CARDS - TIDAK ADA LABEL SAMA SEKALI
+    // RENDER CARDS - TIDAK ADA LABEL SAMA SEKALI + WARNA
     // ============================================================
     function renderCards(data, search = '', dateFilter = null) {
         const container = document.getElementById('gridContainer');
@@ -950,17 +1001,17 @@ function getMediaWithLabels(item) {
 
         container.innerHTML = filtered.map((item, idx) => {
             const status = item['Status'] || 'Menunggu';
-const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
-const finalStatus = isLibur ? 'Hari Libur' : status;
-let statusClass = 'status-menunggu';
-let cardColorClass = 'card-status-menunggu';
-if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
-    statusClass = 'status-selesai';
-    cardColorClass = 'card-status-selesai';
-} else if (finalStatus === 'Hari Libur') {
-    statusClass = 'status-libur';
-    cardColorClass = 'card-status-libur';
-}
+            const isLibur = item['Ket libur'] && String(item['Ket libur']).toLowerCase().includes('libur');
+            const finalStatus = isLibur ? 'Hari Libur' : status;
+            let statusClass = 'status-menunggu';
+            let cardColorClass = 'card-status-menunggu';
+            if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
+                statusClass = 'status-selesai';
+                cardColorClass = 'card-status-selesai';
+            } else if (finalStatus === 'Hari Libur') {
+                statusClass = 'status-libur';
+                cardColorClass = 'card-status-libur';
+            }
 
             const media = getMediaWithLabels(item);
             const total = media.length;
@@ -971,7 +1022,7 @@ if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
             // ==========================================================
             const slides = media.map((m, i) => {
                 return `
-                    <div class="media-slide" data-index="${i}" data-label="${m.label || 'COVER'}">
+                    <div class="media-slide" data-index="${i}" data-label="${m.label || 'BEFORE'}">
                         <img src="${m.src}" alt="Foto ${i+1}" loading="lazy" onerror="this.src='${DEFAULT_IMAGE}'">
                     </div>
                 `;
@@ -1108,7 +1159,7 @@ if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
             const div = document.createElement('div');
             div.className = 'viewer-slide';
             
-            // HANYA BEFORE & AFTER YANG TAMPIL - COVER TIDAK
+            // HANYA BEFORE & AFTER YANG TAMPIL
             var showLabel = m.label === 'BEFORE' || m.label === 'AFTER';
             var labelClass = '';
             if (m.label === 'BEFORE') labelClass = 'before';
@@ -1251,7 +1302,8 @@ if (finalStatus === 'Selesai' || finalStatus === 'Sudah Bekerja') {
     // ============================================================
     loadData();
     console.log('✅ OP Drainase - Siap!');
-    console.log('📸 Aturan Label: Card = TIDAK ADA, Fullscreen = ONLY BEFORE & AFTER');
+    console.log('📸 Aturan: Card = TIDAK ADA LABEL, Fullscreen = BEFORE & AFTER');
+    console.log('📌 Card pin = warna sesuai status + icon pin');
 </script>
 
 </body>
