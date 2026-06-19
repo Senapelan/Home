@@ -298,6 +298,41 @@
             color: #b0b0b0;
         }
 
+        /* ============================================
+           REMEMBER ME CHECKBOX
+           ============================================ */
+        .remember-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .remember-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-light);
+            cursor: pointer;
+            flex-shrink: 0;
+            padding: 0;
+            margin: 0;
+        }
+
+        .remember-group label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            cursor: pointer;
+            margin: 0;
+            user-select: none;
+        }
+
+        .remember-group label span {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
         .btn-login {
             width: 100%;
             padding: 16px;
@@ -361,6 +396,27 @@
             color: var(--text-secondary);
             font-size: 12px;
             opacity: 0.7;
+        }
+
+        /* ============================================
+           AUTO-LOGIN INDICATOR
+           ============================================ */
+        .auto-login-badge {
+            display: none;
+            background: #e8f5e9;
+            color: var(--success);
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            text-align: center;
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 12px;
+            border: 1px solid #c8e6c9;
+        }
+
+        .auto-login-badge.show {
+            display: block;
+            animation: fadeInUp 0.5s ease;
         }
 
         /* ============================================
@@ -1945,6 +2001,15 @@
                         <option value="Kelurahan Sago">Kelurahan Sago</option>
                     </select>
                 </div>
+
+                <!-- ============================================
+                REMEMBER ME CHECKBOX - FITUR BARU
+                ============================================ -->
+                <div class="remember-group">
+                    <input type="checkbox" id="rememberMe" checked>
+                    <label for="rememberMe">🔒 <span>Ingat Saya</span> — tidak perlu login ulang di HP ini</label>
+                </div>
+
                 <button type="submit" class="btn-login" id="btnLogin">
                     <span>🚀</span> Masuk
                 </button>
@@ -1952,8 +2017,13 @@
 
             <div id="loginMessage" class="login-message"></div>
 
+            <!-- Auto-login indicator -->
+            <div id="autoLoginBadge" class="auto-login-badge">
+                🔄 Sedang mencoba login otomatis...
+            </div>
+
             <div class="login-footer">
-                <small>💡 Masukkan nama dan pilih instansi untuk memulai transaksi</small>
+                <small>💡 Centang <strong>"Ingat Saya"</strong> agar tidak perlu login ulang di HP ini</small>
             </div>
         </div>
     </div>
@@ -2304,8 +2374,10 @@
         const loginForm = $('loginForm');
         const namaUser = $('namaUser');
         const instansiUser = $('instansiUser');
+        const rememberMe = $('rememberMe');
         const loginMessage = $('loginMessage');
         const btnLogin = $('btnLogin');
+        const autoLoginBadge = $('autoLoginBadge');
 
         // Navbar
         const userBadge = $('userBadge');
@@ -2386,6 +2458,41 @@
         const btnSendEmail = $('btnSendEmail');
 
         // ============================================
+        // REMEMBER ME - SAVE & LOAD
+        // ============================================
+        function saveRememberMe(nama, instansi) {
+            try {
+                localStorage.setItem('kasir_remember_user', nama);
+                localStorage.setItem('kasir_remember_instansi', instansi);
+                localStorage.setItem('kasir_remember_me', 'true');
+            } catch (e) {
+                console.error('Error saving remember me:', e);
+            }
+        }
+
+        function loadRememberMe() {
+            try {
+                const isRemembered = localStorage.getItem('kasir_remember_me') === 'true';
+                const nama = localStorage.getItem('kasir_remember_user') || '';
+                const instansi = localStorage.getItem('kasir_remember_instansi') || '';
+                return { isRemembered, nama, instansi };
+            } catch (e) {
+                console.error('Error loading remember me:', e);
+                return { isRemembered: false, nama: '', instansi: '' };
+            }
+        }
+
+        function clearRememberMe() {
+            try {
+                localStorage.removeItem('kasir_remember_user');
+                localStorage.removeItem('kasir_remember_instansi');
+                localStorage.removeItem('kasir_remember_me');
+            } catch (e) {
+                console.error('Error clearing remember me:', e);
+            }
+        }
+
+        // ============================================
         // UTILITY
         // ============================================
         function formatRupiah(angka) {
@@ -2459,6 +2566,75 @@
         }
 
         // ============================================
+        // AUTO LOGIN - CEK APAKAH ADA SESSION TERSIMPAN
+        // ============================================
+        async function tryAutoLogin() {
+            const { isRemembered, nama, instansi } = loadRememberMe();
+
+            if (!isRemembered || !nama || !instansi) {
+                // Tidak ada data tersimpan, tampilkan login
+                loginPage.style.display = 'flex';
+                dashboardPage.style.display = 'none';
+                autoLoginBadge.classList.remove('show');
+                // Isi form dengan data tersimpan jika ada
+                if (nama) namaUser.value = nama;
+                if (instansi) instansiUser.value = instansi;
+                return false;
+            }
+
+            // Tampilkan indikator auto-login
+            autoLoginBadge.textContent = '🔄 Login otomatis sebagai ' + nama + '...';
+            autoLoginBadge.classList.add('show');
+
+            try {
+                const result = await callApi('login', {
+                    nama_pengguna: nama,
+                    instansi: instansi
+                });
+
+                if (result.success) {
+                    currentUser = nama;
+                    currentInstansi = instansi;
+                    localStorage.setItem('kasir_user', nama);
+                    localStorage.setItem('kasir_instansi', instansi);
+
+                    // Pastikan remember me tetap tersimpan
+                    saveRememberMe(nama, instansi);
+
+                    loginPage.style.display = 'none';
+                    dashboardPage.style.display = 'block';
+                    autoLoginBadge.classList.remove('show');
+                    initDashboard();
+
+                    // Tampilkan notifikasi login otomatis
+                    setTimeout(() => {
+                        showModal('✅ Auto-Login', `
+                            Selamat datang kembali, <strong>${nama}</strong>!<br>
+                            🏛️ Instansi: ${instansi}<br>
+                            <small style="display:block; margin-top:8px; color:#666;">Login otomatis berhasil.</small>
+                        `);
+                    }, 500);
+
+                    return true;
+                } else {
+                    // Login gagal, hapus data tersimpan dan tampilkan login
+                    clearRememberMe();
+                    autoLoginBadge.classList.remove('show');
+                    loginPage.style.display = 'flex';
+                    dashboardPage.style.display = 'none';
+                    showModal('Info', '⚠️ Sesi login kedaluwarsa. Silakan login ulang.', true);
+                    return false;
+                }
+            } catch (error) {
+                console.error('Auto-login error:', error);
+                autoLoginBadge.classList.remove('show');
+                loginPage.style.display = 'flex';
+                dashboardPage.style.display = 'none';
+                return false;
+            }
+        }
+
+        // ============================================
         // LOGIN
         // ============================================
         async function handleLogin(e) {
@@ -2466,6 +2642,7 @@
 
             const nama = namaUser.value.trim();
             const instansi = instansiUser.value;
+            const remember = rememberMe.checked;
 
             if (!nama) {
                 showModal('Error', '❌ Nama pengguna tidak boleh kosong!', true);
@@ -2480,7 +2657,7 @@
             btnLogin.innerHTML = '⏳ Memproses...';
 
             try {
-                const result = await callApi('login', { 
+                const result = await callApi('login', {
                     nama_pengguna: nama,
                     instansi: instansi
                 });
@@ -2490,10 +2667,19 @@
                     currentInstansi = instansi;
                     localStorage.setItem('kasir_user', nama);
                     localStorage.setItem('kasir_instansi', instansi);
+
+                    // SIMPAN DATA "INGAT SAYA" JIKA DICENTANG
+                    if (remember) {
+                        saveRememberMe(nama, instansi);
+                    } else {
+                        clearRememberMe();
+                    }
+
                     showModal('Sukses', `✅ Selamat datang, <strong>${nama}</strong>!<br>🏛️ Instansi: ${instansi}`);
                     setTimeout(() => {
                         loginPage.style.display = 'none';
                         dashboardPage.style.display = 'block';
+                        autoLoginBadge.classList.remove('show');
                         initDashboard();
                     }, 800);
                 } else {
@@ -2513,7 +2699,7 @@
         async function initDashboard() {
             currentUser = localStorage.getItem('kasir_user');
             currentInstansi = localStorage.getItem('kasir_instansi');
-            
+
             if (!currentUser) {
                 loginPage.style.display = 'flex';
                 dashboardPage.style.display = 'none';
@@ -2528,7 +2714,7 @@
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             laporanDateStart.value = firstDay.toISOString().split('T')[0];
             laporanDateEnd.value = today.toISOString().split('T')[0];
-            
+
             // Set default instansi filter
             if (currentInstansi) {
                 laporanInstansi.value = currentInstansi;
@@ -2538,6 +2724,7 @@
             await loadBarangList();
             loadCartFromSession();
 
+            // Event Listeners
             btnLogout.addEventListener('click', handleLogout);
             btnPageKasir.addEventListener('click', () => switchPage('kasir'));
             btnPageBarang.addEventListener('click', () => switchPage('barang'));
@@ -2623,13 +2810,13 @@
         }
 
         // ============================================
-        // LOGOUT
+        // LOGOUT - HAPUS SESSION TAPI TIDAK HAPUS "INGAT SAYA"
         // ============================================
         async function handleLogout() {
             if (!confirm('Yakin ingin keluar?')) return;
 
             try {
-                await callApi('logout', { 
+                await callApi('logout', {
                     nama_pengguna: currentUser,
                     instansi: currentInstansi
                 });
@@ -2637,12 +2824,22 @@
                 console.error('Logout error:', e);
             }
 
+            // Hapus session tetapi tetap simpan data "Ingat Saya" jika ada
             localStorage.removeItem('kasir_user');
             localStorage.removeItem('kasir_instansi');
+
             loginPage.style.display = 'flex';
             dashboardPage.style.display = 'none';
             document.querySelectorAll('.page-container').forEach(el => el.classList.remove('active'));
             pageKasir.classList.add('active');
+
+            // Isi form dengan data tersimpan jika ada
+            const { nama, instansi } = loadRememberMe();
+            if (nama) namaUser.value = nama;
+            if (instansi) instansiUser.value = instansi;
+            if (nama) rememberMe.checked = true;
+
+            namaUser.focus();
         }
 
         // ============================================
@@ -3721,23 +3918,39 @@
         });
 
         // ============================================
-        // INIT
+        // INIT - CEK AUTO LOGIN PERTAMA
         // ============================================
         const savedUser = localStorage.getItem('kasir_user');
         const savedInstansi = localStorage.getItem('kasir_instansi');
-        
-        if (savedUser) {
+
+        // Cek apakah ada data "Ingat Saya"
+        const { isRemembered, nama: rememberedNama, instansi: rememberedInstansi } = loadRememberMe();
+
+        if (savedUser && savedInstansi) {
+            // Ada session aktif, langsung masuk
             loginPage.style.display = 'none';
             dashboardPage.style.display = 'block';
             currentUser = savedUser;
             currentInstansi = savedInstansi || '';
             document.addEventListener('DOMContentLoaded', initDashboard);
+        } else if (isRemembered && rememberedNama && rememberedInstansi) {
+            // Ada data "Ingat Saya", coba auto-login
+            document.addEventListener('DOMContentLoaded', () => {
+                tryAutoLogin();
+            });
         } else {
+            // Tidak ada data, tampilkan login
             loginPage.style.display = 'flex';
             dashboardPage.style.display = 'none';
             document.addEventListener('DOMContentLoaded', () => {
                 loginForm.addEventListener('submit', handleLogin);
                 namaUser.focus();
+
+                // Isi form dengan data tersimpan jika ada
+                const { nama, instansi } = loadRememberMe();
+                if (nama) namaUser.value = nama;
+                if (instansi) instansiUser.value = instansi;
+                if (nama) rememberMe.checked = true;
             });
         }
     </script>
