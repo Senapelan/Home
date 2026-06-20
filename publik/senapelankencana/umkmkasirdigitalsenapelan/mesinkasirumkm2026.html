@@ -1483,10 +1483,28 @@
         .laporan-table-wrap td {
             padding: 8px 10px;
             border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
         }
 
         .laporan-table-wrap tr:hover td {
             background: var(--bg);
+        }
+
+        /* Style khusus untuk kolom detail barang */
+        .laporan-table-wrap td.detail-barang {
+            max-width: 250px;
+            word-break: break-word;
+            line-height: 1.5;
+            font-size: 12px;
+        }
+
+        .laporan-table-wrap td.detail-barang .item-detail {
+            display: inline-block;
+            background: #f0f4ff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin: 1px 0;
+            font-size: 11px;
         }
 
         .laporan-empty {
@@ -1499,6 +1517,38 @@
             font-size: 48px;
             display: block;
             margin-bottom: 12px;
+        }
+
+        /* ============================================
+           RESPONSIVE LAPORAN
+           ============================================ */
+        @media (max-width: 1024px) {
+            .laporan-table-wrap td.detail-barang {
+                max-width: 150px;
+                font-size: 11px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .laporan-table-wrap td.detail-barang {
+                max-width: 100px;
+                font-size: 10px;
+            }
+            .laporan-table-wrap td.detail-barang .item-detail {
+                font-size: 9px;
+                padding: 1px 5px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .laporan-table-wrap td.detail-barang {
+                max-width: 70px;
+                font-size: 9px;
+            }
+            .laporan-table-wrap td.detail-barang .item-detail {
+                font-size: 8px;
+                padding: 1px 3px;
+            }
         }
 
         /* ============================================
@@ -2002,9 +2052,6 @@
                     </select>
                 </div>
 
-                <!-- ============================================
-                REMEMBER ME CHECKBOX - FITUR BARU
-                ============================================ -->
                 <div class="remember-group">
                     <input type="checkbox" id="rememberMe" checked>
                     <label for="rememberMe">🔒 <span>Ingat Saya</span> — tidak perlu login ulang di HP ini</label>
@@ -2017,7 +2064,6 @@
 
             <div id="loginMessage" class="login-message"></div>
 
-            <!-- Auto-login indicator -->
             <div id="autoLoginBadge" class="auto-login-badge">
                 🔄 Sedang mencoba login otomatis...
             </div>
@@ -2575,17 +2621,14 @@
             const { isRemembered, nama, instansi } = loadRememberMe();
 
             if (!isRemembered || !nama || !instansi) {
-                // Tidak ada data tersimpan, tampilkan login
                 loginPage.style.display = 'flex';
                 dashboardPage.style.display = 'none';
                 autoLoginBadge.classList.remove('show');
-                // Isi form dengan data tersimpan jika ada
                 if (nama) namaUser.value = nama;
                 if (instansi) instansiUser.value = instansi;
                 return false;
             }
 
-            // Tampilkan indikator auto-login
             autoLoginBadge.textContent = '🔄 Login otomatis sebagai ' + nama + '...';
             autoLoginBadge.classList.add('show');
 
@@ -2600,8 +2643,6 @@
                     currentInstansi = instansi;
                     localStorage.setItem('kasir_user', nama);
                     localStorage.setItem('kasir_instansi', instansi);
-
-                    // Pastikan remember me tetap tersimpan
                     saveRememberMe(nama, instansi);
 
                     loginPage.style.display = 'none';
@@ -2609,7 +2650,6 @@
                     autoLoginBadge.classList.remove('show');
                     initDashboard();
 
-                    // Tampilkan notifikasi login otomatis
                     setTimeout(() => {
                         showModal('✅ Auto-Login', `
                             Selamat datang kembali, <strong>${nama}</strong>!<br>
@@ -2620,7 +2660,6 @@
 
                     return true;
                 } else {
-                    // Login gagal, hapus data tersimpan dan tampilkan login
                     clearRememberMe();
                     autoLoginBadge.classList.remove('show');
                     loginPage.style.display = 'flex';
@@ -2671,7 +2710,6 @@
                     localStorage.setItem('kasir_user', nama);
                     localStorage.setItem('kasir_instansi', instansi);
 
-                    // SIMPAN DATA "INGAT SAYA" JIKA DICENTANG
                     if (remember) {
                         saveRememberMe(nama, instansi);
                     } else {
@@ -2709,7 +2747,6 @@
                 return;
             }
 
-            // Update label instansi di semua tempat
             instansiLabel.textContent = currentInstansi;
             formInstansiLabel.textContent = currentInstansi;
             listInstansiLabel.textContent = currentInstansi;
@@ -2717,13 +2754,11 @@
             userBadge.textContent = '👤 ' + currentUser;
             instansiBadge.textContent = '🏛️ ' + (currentInstansi || 'Belum pilih');
 
-            // Set default dates for laporan
             const today = new Date();
             const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
             laporanDateStart.value = firstDay.toISOString().split('T')[0];
             laporanDateEnd.value = today.toISOString().split('T')[0];
 
-            // Set default instansi filter
             if (currentInstansi) {
                 laporanInstansi.value = currentInstansi;
             }
@@ -2732,7 +2767,6 @@
             await loadBarangList();
             loadCartFromSession();
 
-            // Event Listeners
             btnLogout.addEventListener('click', handleLogout);
             btnPageKasir.addEventListener('click', () => switchPage('kasir'));
             btnPageBarang.addEventListener('click', () => switchPage('barang'));
@@ -2757,12 +2791,10 @@
             btnRefreshBarang.addEventListener('click', loadBarangList);
             searchBarangList.addEventListener('keyup', filterBarangList);
 
-            // Laporan
             btnFilterLaporan.addEventListener('click', loadLaporan);
             btnKirimEmail.addEventListener('click', openEmailModal);
             btnCetakLaporan.addEventListener('click', printLaporan);
 
-            // Email Modal
             emailModalClose.addEventListener('click', closeEmailModal);
             emailModalBtnClose.addEventListener('click', closeEmailModal);
             emailModal.addEventListener('click', (e) => {
@@ -2770,7 +2802,6 @@
             });
             btnSendEmail.addEventListener('click', sendEmailLaporan);
 
-            // Modal
             modalCloseBtn.addEventListener('click', hideModal);
             modalBtnClose.addEventListener('click', hideModal);
             notificationModal.addEventListener('click', (e) => {
@@ -2818,7 +2849,7 @@
         }
 
         // ============================================
-        // LOGOUT - HAPUS SESSION TAPI TIDAK HAPUS "INGAT SAYA"
+        // LOGOUT
         // ============================================
         async function handleLogout() {
             if (!confirm('Yakin ingin keluar?')) return;
@@ -2832,7 +2863,6 @@
                 console.error('Logout error:', e);
             }
 
-            // Hapus session tetapi tetap simpan data "Ingat Saya" jika ada
             localStorage.removeItem('kasir_user');
             localStorage.removeItem('kasir_instansi');
 
@@ -2841,7 +2871,6 @@
             document.querySelectorAll('.page-container').forEach(el => el.classList.remove('active'));
             pageKasir.classList.add('active');
 
-            // Isi form dengan data tersimpan jika ada
             const { nama, instansi } = loadRememberMe();
             if (nama) namaUser.value = nama;
             if (instansi) instansiUser.value = instansi;
@@ -2851,14 +2880,13 @@
         }
 
         // ============================================
-        // LOAD PRODUCTS - FILTER BERDASARKAN INSTANSI
+        // LOAD PRODUCTS
         // ============================================
         async function loadProducts() {
             try {
                 const result = await callApi('getBarang');
 
                 if (result.success) {
-                    // 🔥 FILTER berdasarkan instansi yang login
                     products = result.data.filter(item => 
                         item.status === 'aktif' && 
                         item.instansi === currentInstansi
@@ -2935,7 +2963,6 @@
                 return;
             }
 
-            // 🔥 Validasi instansi produk sama dengan instansi login
             if (product.instansi !== currentInstansi) {
                 showModal('Error', '❌ Produk ini milik instansi lain!', true);
                 return;
@@ -2982,7 +3009,6 @@
                 return;
             }
 
-            // 🔥 Cari hanya di produk yang sudah difilter (instansi yang login)
             let product = products.find(p => p.barcode == barcode);
 
             if (!product) {
@@ -2990,7 +3016,6 @@
                     const result = await callApi('getBarangByBarcode', { barcode: barcode });
                     if (result.success && result.data) {
                         product = result.data;
-                        // 🔥 Cek apakah produk sesuai instansi
                         if (product.instansi !== currentInstansi) {
                             showModal('Error', '❌ Produk ini milik instansi lain!', true);
                             barcodeInput.value = '';
@@ -3322,7 +3347,6 @@
                 id_pajak: fPajakId.value.trim() || '',
                 gambar: fGambar.value.trim() || '',
                 nama_pengguna: currentUser,
-                // 🔥 Instansi otomatis dari user login
                 instansi: currentInstansi
             };
 
@@ -3373,14 +3397,13 @@
         }
 
         // ============================================
-        // LOAD BARANG LIST - FILTER BERDASARKAN INSTANSI
+        // LOAD BARANG LIST
         // ============================================
         async function loadBarangList() {
             try {
                 const result = await callApi('getBarang');
 
                 if (result.success) {
-                    // 🔥 FILTER berdasarkan instansi yang login
                     const filteredData = result.data.filter(item => 
                         item.instansi === currentInstansi
                     );
@@ -3456,13 +3479,12 @@
         }
 
         // ============================================
-        // EDIT & DELETE BARANG - VALIDASI AKSES INSTANSI
+        // EDIT & DELETE BARANG
         // ============================================
         async function editBarang(id) {
             try {
                 const result = await callApi('getBarangById', { id_barang: id });
                 if (result.success && result.data) {
-                    // 🔥 Cek apakah barang milik instansi yang login
                     if (result.data.instansi !== currentInstansi) {
                         showModal('Error', '❌ Anda tidak memiliki akses untuk mengedit barang ini!', true);
                         return;
@@ -3482,7 +3504,6 @@
             if (!confirm('Yakin ingin menghapus barang ini? Data tidak bisa dikembalikan!')) return;
 
             try {
-                // 🔥 Cek dulu apakah barang milik instansi yang login
                 const checkResult = await callApi('getBarangById', { id_barang: id });
                 if (checkResult.success && checkResult.data) {
                     if (checkResult.data.instansi !== currentInstansi) {
@@ -3510,7 +3531,7 @@
         }
 
         // ============================================
-        // LAPORAN
+        // LAPORAN - DENGAN DETAIL BARANG
         // ============================================
         async function loadLaporan() {
             const type = laporanType.value;
@@ -3581,6 +3602,9 @@
             });
         }
 
+        // ============================================
+        // RENDER LAPORAN TRANSAKSI DENGAN DETAIL BARANG
+        // ============================================
         function renderLaporanTransaksi(data) {
             if (!data || data.length === 0) {
                 laporanTableWrap.innerHTML = `
@@ -3601,6 +3625,7 @@
                             <th>Tanggal</th>
                             <th>Kasir</th>
                             <th>Instansi</th>
+                            <th style="min-width:200px;">Detail Barang</th>
                             <th>Total</th>
                             <th>Diskon</th>
                             <th>Pajak</th>
@@ -3620,6 +3645,21 @@
                 const bayar = parseInt(item.bayar) || 0;
                 const kembalian = parseInt(item.kembalian) || 0;
                 totalSemua += grandTotal;
+                
+                // Parse detail barang
+                let detailHtml = '-';
+                try {
+                    if (item.detail) {
+                        const detail = typeof item.detail === 'string' ? JSON.parse(item.detail) : item.detail;
+                        if (Array.isArray(detail) && detail.length > 0) {
+                            detailHtml = detail.map(d => 
+                                `<span class="item-detail">${d.nama_barang || 'Barang'} (${d.qty || 0}x ${formatRupiah(parseInt(d.harga) || 0)})</span>`
+                            ).join('<br>');
+                        }
+                    }
+                } catch (e) {
+                    detailHtml = item.detail || '-';
+                }
 
                 html += `
                     <tr>
@@ -3627,6 +3667,7 @@
                         <td>${formatDate(item.tanggal)}</td>
                         <td>${item.nama_pengguna || '-'}</td>
                         <td>${item.instansi || '-'}</td>
+                        <td class="detail-barang">${detailHtml}</td>
                         <td>${formatRupiah(total)}</td>
                         <td>${formatRupiah(diskon)}</td>
                         <td>${formatRupiah(pajak)}</td>
@@ -3641,7 +3682,7 @@
                     </tbody>
                     <tfoot>
                         <tr style="background:var(--bg); font-weight:700;">
-                            <td colspan="7" style="text-align:right;">TOTAL SEMUA TRANSAKSI</td>
+                            <td colspan="8" style="text-align:right;">TOTAL SEMUA TRANSAKSI</td>
                             <td><strong>${formatRupiah(totalSemua)}</strong></td>
                             <td colspan="2"></td>
                         </tr>
@@ -3794,6 +3835,9 @@
             }
         }
 
+        // ============================================
+        // BUILD REPORT HTML UNTUK EMAIL & CETAK
+        // ============================================
         function buildReportHTML(type, data, startDate, endDate, instansiFilter) {
             const title = type === 'transaksi' ? 'Laporan Transaksi' : 'Laporan Barang';
             const period = `${formatDate(startDate)} - ${formatDate(endDate)}`;
@@ -3805,12 +3849,28 @@
                 data.forEach(item => {
                     const grandTotal = parseInt(item.grand_total) || 0;
                     totalSemua += grandTotal;
+                    
+                    let detailBarang = '-';
+                    try {
+                        if (item.detail) {
+                            const detail = typeof item.detail === 'string' ? JSON.parse(item.detail) : item.detail;
+                            if (Array.isArray(detail) && detail.length > 0) {
+                                detailBarang = detail.map(d => 
+                                    `${d.nama_barang || 'Barang'} (${d.qty || 0}x Rp${new Intl.NumberFormat('id-ID').format(parseInt(d.harga) || 0)})`
+                                ).join(', ');
+                            }
+                        }
+                    } catch (e) {
+                        detailBarang = item.detail || '-';
+                    }
+                    
                     tableRows += `
                         <tr>
                             <td>${item.no_faktur || '-'}</td>
                             <td>${formatDate(item.tanggal)}</td>
                             <td>${item.nama_pengguna || '-'}</td>
                             <td>${item.instansi || '-'}</td>
+                            <td style="font-size:11px;">${detailBarang}</td>
                             <td>${formatRupiah(parseInt(item.total) || 0)}</td>
                             <td>${formatRupiah(parseInt(item.diskon) || 0)}</td>
                             <td>${formatRupiah(parseInt(item.pajak) || 0)}</td>
@@ -3822,7 +3882,7 @@
                 });
                 tableRows += `
                     <tr style="background:#f5f5f5; font-weight:700;">
-                        <td colspan="7" style="text-align:right;">TOTAL SEMUA TRANSAKSI</td>
+                        <td colspan="8" style="text-align:right;">TOTAL SEMUA TRANSAKSI</td>
                         <td><strong>${formatRupiah(totalSemua)}</strong></td>
                         <td colspan="2"></td>
                     </tr>
@@ -3868,6 +3928,10 @@
                         tr:hover td { background: #f8f9fa; }
                         .footer { margin-top: 20px; padding-top: 12px; border-top: 2px solid #e8e8e8; font-size: 12px; color: #666; text-align: center; }
                         .total-row { background: #f5f5f5; font-weight: 700; }
+                        @media print {
+                            body { padding: 10px; }
+                            .no-print { display: none; }
+                        }
                     </style>
                 </head>
                 <body>
@@ -3886,6 +3950,7 @@
                                     <th>Tanggal</th>
                                     <th>Kasir</th>
                                     <th>Instansi</th>
+                                    <th>Detail Barang</th>
                                     <th>Total</th>
                                     <th>Diskon</th>
                                     <th>Pajak</th>
@@ -3969,35 +4034,30 @@
         });
 
         // ============================================
-        // INIT - CEK AUTO LOGIN PERTAMA
+        // INIT
         // ============================================
         const savedUser = localStorage.getItem('kasir_user');
         const savedInstansi = localStorage.getItem('kasir_instansi');
 
-        // Cek apakah ada data "Ingat Saya"
         const { isRemembered, nama: rememberedNama, instansi: rememberedInstansi } = loadRememberMe();
 
         if (savedUser && savedInstansi) {
-            // Ada session aktif, langsung masuk
             loginPage.style.display = 'none';
             dashboardPage.style.display = 'block';
             currentUser = savedUser;
             currentInstansi = savedInstansi || '';
             document.addEventListener('DOMContentLoaded', initDashboard);
         } else if (isRemembered && rememberedNama && rememberedInstansi) {
-            // Ada data "Ingat Saya", coba auto-login
             document.addEventListener('DOMContentLoaded', () => {
                 tryAutoLogin();
             });
         } else {
-            // Tidak ada data, tampilkan login
             loginPage.style.display = 'flex';
             dashboardPage.style.display = 'none';
             document.addEventListener('DOMContentLoaded', () => {
                 loginForm.addEventListener('submit', handleLogin);
                 namaUser.focus();
 
-                // Isi form dengan data tersimpan jika ada
                 const { nama, instansi } = loadRememberMe();
                 if (nama) namaUser.value = nama;
                 if (instansi) instansiUser.value = instansi;
