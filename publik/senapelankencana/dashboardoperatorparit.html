@@ -928,71 +928,90 @@
         // FUNGSI DETERMINE STATUS
         // ============================================
         function determineStatus(item) {
-            const tanggal = item['Hari/Tanggal'] || item['tanggal'] || '';
-            const jamMulai = item['Jam Mulai'] || '';
-            const jumlahPersonil = parseInt(item['Jumlah Personil']) || 0;
-            
-            if (jumlahPersonil === 0) {
-                return 'Hari Libur';
-            }
-            
-            const eventDate = parseDateYMD(tanggal);
-            if (!eventDate) return 'Belum Selesai';
-            
-            const now = getNowWIB();
-            const today = getTodayWIB();
-            const todayStr = formatDateWIB(today);
-            const eventDateStr = formatDateWIB(eventDate);
-            
-            if (eventDateStr > todayStr) {
-                return 'Menunggu Jadwal';
-            }
-            
-            if (eventDateStr === todayStr) {
-                let startHour = 0;
-                let startMinute = 0;
-                
-                if (jamMulai) {
-                    if (jamMulai.match(/^\d{1,2}:\d{2}$/)) {
-                        const parts = jamMulai.split(':');
-                        startHour = parseInt(parts[0]);
-                        startMinute = parseInt(parts[1]);
-                    } else {
-                        try {
-                            const d = new Date(jamMulai);
-                            if (!isNaN(d.getTime())) {
-                                startHour = d.getHours();
-                                startMinute = d.getMinutes();
-                            }
-                        } catch(e) {}
-                    }
-                }
-                
-                const nowHour = now.getHours();
-                const nowMinute = now.getMinutes();
-                const nowTotalMinutes = nowHour * 60 + nowMinute;
-                const startTotalMinutes = startHour * 60 + startMinute;
-                
-                if (nowTotalMinutes < startTotalMinutes) {
-                    return 'Menunggu Jadwal';
-                }
-            }
-            
-            if (eventDateStr < todayStr) {
-                const existingStatus = item['Status'] || '';
-                if (existingStatus === 'Sudah Bekerja' || existingStatus === 'Belum Selesai') {
-                    return existingStatus;
-                }
-                const jamSelesai = item['Jam Selesai'] || '';
-                if (jamSelesai) {
-                    return 'Sudah Bekerja';
-                }
-                return 'Belum Selesai';
-            }
-            
-            const status = item['Status'] || 'Belum Selesai';
-            return status;
+    const tanggal = item['Hari/Tanggal'] || item['tanggal'] || '';
+    const jamMulai = item['Jam Mulai'] || '';
+    const jamSelesai = item['Jam Selesai'] || '';
+    const jumlahPersonil = parseInt(item['Jumlah Personil']) || 0;
+    
+    // Jika jumlah personil 0 = Hari Libur
+    if (jumlahPersonil === 0) {
+        return 'Hari Libur';
+    }
+    
+    const eventDate = parseDateYMD(tanggal);
+    if (!eventDate) return 'Belum Selesai';
+    
+    const now = getNowWIB();
+    const today = getTodayWIB();
+    const todayStr = formatDateWIB(today);
+    const eventDateStr = formatDateWIB(eventDate);
+    
+    // Fungsi untuk parsing waktu ke menit
+    function parseTimeToMinutes(timeStr) {
+        if (!timeStr) return null;
+        if (timeStr.match(/^\d{1,2}:\d{2}$/)) {
+            const parts = timeStr.split(':');
+            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
         }
+        try {
+            const d = new Date(timeStr);
+            if (!isNaN(d.getTime())) {
+                return d.getHours() * 60 + d.getMinutes();
+            }
+        } catch(e) {}
+        return null;
+    }
+    
+    // === HARI KEMAREN (tanggal < hari ini) ===
+    if (eventDateStr < todayStr) {
+        // Cek status yang tersimpan di database
+        const existingStatus = item['Status'] || '';
+        if (existingStatus === 'Sudah Bekerja' || existingStatus === 'Belum Selesai') {
+            return existingStatus;
+        }
+        // Jika ada jam selesai, anggap sudah bekerja
+        if (jamSelesai) {
+            return 'Sudah Bekerja';
+        }
+        return 'Belum Selesai';
+    }
+    
+    // === HARI INI (tanggal = hari ini) ===
+    if (eventDateStr === todayStr) {
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const startMinutes = parseTimeToMinutes(jamMulai);
+        const endMinutes = parseTimeToMinutes(jamSelesai);
+        
+        // Jika belum mencapai jam mulai
+        if (startMinutes !== null && nowMinutes < startMinutes) {
+            return 'Menunggu Jadwal';
+        }
+        
+        // Jika sudah melewati jam selesai
+        if (endMinutes !== null && nowMinutes >= endMinutes) {
+            return 'Sudah Bekerja';
+        }
+        
+        // Jika sedang dalam jam kerja (antara mulai dan selesai)
+        if (startMinutes !== null && endMinutes !== null && 
+            nowMinutes >= startMinutes && nowMinutes < endMinutes) {
+            return 'Belum Selesai';
+        }
+        
+        // Fallback: cek apakah ada jam selesai
+        if (jamSelesai) {
+            return 'Sudah Bekerja';
+        }
+        return 'Belum Selesai';
+    }
+    
+    // === HARI BESOK (tanggal > hari ini) ===
+    if (eventDateStr > todayStr) {
+        return 'Menunggu Jadwal';
+    }
+    
+    return 'Belum Selesai';
+}
 
         // ============================================
         // LOAD DATA
