@@ -14,7 +14,7 @@
     <meta name="description" content="Jadwal data petugas operasi dan pembersihan drainase se-Kecamatan Senapelan. Data petugas parit dan drainase bersama Senapelan Kencana. Program Walikota Pekanbaru Bapak H. Agung Nugroho, S.E., M.M., - Pekanbaru Bersih dan Aman">
     <meta name="keywords" content="drainase, petugas parit, pembersihan drainase, operasi drainase, Senapelan, Pekanbaru, Senapelan Kencana">
     <meta name="robots" content="index, follow">
-    <meta name="author" content="Kecamatan Senapelan">   
+    <meta name="author" content="Kecamatan Senapelan">
     
     <!-- Open Graph / Facebook / WhatsApp -->
     <meta property="og:type" content="website">
@@ -50,7 +50,7 @@
     
     <!-- ============================================================ -->
     <!-- END META TAG                                                  -->
-    <!-- ============================================================ -->  
+    <!-- ============================================================ -->
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -1190,40 +1190,19 @@
                 }
 
                 var statusText = determineStatus(item);
-var badgeClass = 'badge-belum';
-var cardStatusClass = 'status-belum';
-var additionalBadge = '';
-
-if (statusText === 'Sudah Bekerja') {
-    badgeClass = 'badge-sudah';
-    cardStatusClass = 'status-sudah';
-    
-    // ===== FITUR TAMBAHAN: Label "Belum Selesai" untuk hari ini (sebelum 15:00) =====
-    const today = getTodayWIB();
-    const todayStr = formatDateWIB(today);
-    const tanggal = item['Hari/Tanggal'] || item['tanggal'] || '';
-    const eventDate = parseDateYMD(tanggal);
-    const eventDateStr = eventDate ? formatDateWIB(eventDate) : '';
-    
-    if (eventDateStr === todayStr) {
-        const now = getNowWIB();
-        const nowMinutes = now.getHours() * 60 + now.getMinutes();
-        const jamSelesaiMinutes = 15 * 60; // 15:00
-        
-        // Tampilkan "Belum Selesai" jika belum mencapai 15:00
-        if (nowMinutes < jamSelesaiMinutes) {
-            additionalBadge = `<span class="card-badge badge-belum" style="position:static;margin-top:6px;display:inline-block;">⏳ Belum Selesai</span>`;
-        }
-    }
-    // ===== END FITUR TAMBAHAN =====
-    
-} else if (statusText === 'Menunggu Jadwal') {
-    badgeClass = 'badge-menunggu';
-    cardStatusClass = 'status-menunggu';
-} else if (statusText === 'Hari Libur') {
-    badgeClass = 'badge-libur';
-    cardStatusClass = 'status-libur';
-}
+                var badgeClass = 'badge-belum';
+                var cardStatusClass = 'status-belum';
+                
+                if (statusText === 'Sudah Bekerja') {
+                    badgeClass = 'badge-sudah';
+                    cardStatusClass = 'status-sudah';
+                } else if (statusText === 'Menunggu Jadwal') {
+                    badgeClass = 'badge-menunggu';
+                    cardStatusClass = 'status-menunggu';
+                } else if (statusText === 'Hari Libur') {
+                    badgeClass = 'badge-libur';
+                    cardStatusClass = 'status-libur';
+                }
 
                 var cardId = 'card-' + index + '-' + Date.now();
                 var rowId = item._row || index;
@@ -1273,10 +1252,7 @@ if (statusText === 'Sudah Bekerja') {
                                     }).join('')}
                                 </div>
                             ` : ''}
-                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;position:absolute;top:12px;right:12px;z-index:5;">
-    <span class="card-badge ${badgeClass}">${statusText}</span>
-    ${additionalBadge}
-</div>
+                            <span class="card-badge ${badgeClass}">${statusText}</span>
                         </div>
                         <div class="card-body">
                             <div class="card-title">
