@@ -927,7 +927,7 @@
         // ============================================
         // FUNGSI DETERMINE STATUS
         // ============================================
-        function determineStatus(item) {
+ function determineStatus(item) {
     const tanggal = item['Hari/Tanggal'] || item['tanggal'] || '';
     const jamMulai = item['Jam Mulai'] || '';
     const jamSelesai = item['Jam Selesai'] || '';
@@ -938,74 +938,80 @@
         return 'Hari Libur';
     }
     
+    // Parsing tanggal
     const eventDate = parseDateYMD(tanggal);
     if (!eventDate) return 'Belum Selesai';
     
+    // Waktu sekarang (WIB)
     const now = getNowWIB();
     const today = getTodayWIB();
     const todayStr = formatDateWIB(today);
     const eventDateStr = formatDateWIB(eventDate);
     
-    // Fungsi untuk parsing waktu ke menit
+    // Fungsi untuk mengubah waktu (HH:MM) ke menit
     function parseTimeToMinutes(timeStr) {
         if (!timeStr) return null;
-        if (timeStr.match(/^\d{1,2}:\d{2}$/)) {
+        // Format: "08:00" atau "15:00"
+        if (typeof timeStr === 'string' && timeStr.includes(':')) {
             const parts = timeStr.split(':');
-            return parseInt(parts[0]) * 60 + parseInt(parts[1]);
-        }
-        try {
-            const d = new Date(timeStr);
-            if (!isNaN(d.getTime())) {
-                return d.getHours() * 60 + d.getMinutes();
+            if (parts.length === 2) {
+                return parseInt(parts[0]) * 60 + parseInt(parts[1]);
             }
-        } catch(e) {}
+        }
         return null;
     }
     
-    // === HARI KEMAREN (tanggal < hari ini) ===
+    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const startMinutes = parseTimeToMinutes(jamMulai);
+    const endMinutes = parseTimeToMinutes(jamSelesai);
+    
+    // ========================================
+    // LOGIKA UNTUK HARI KEMAREN (< hari ini)
+    // ========================================
     if (eventDateStr < todayStr) {
-        // Cek status yang tersimpan di database
+        // Jika ada jam selesai, sudah pasti sudah bekerja
+        if (jamSelesai) {
+            return 'Sudah Bekerja';
+        }
+        // Jika tidak ada jam selesai, gunakan status yang tersimpan
         const existingStatus = item['Status'] || '';
         if (existingStatus === 'Sudah Bekerja' || existingStatus === 'Belum Selesai') {
             return existingStatus;
         }
-        // Jika ada jam selesai, anggap sudah bekerja
-        if (jamSelesai) {
-            return 'Sudah Bekerja';
-        }
-        return 'Belum Selesai';
+        return 'Sudah Bekerja'; // Default untuk hari kemaren
     }
     
-    // === HARI INI (tanggal = hari ini) ===
+    // ========================================
+    // LOGIKA UNTUK HARI INI (= hari ini)
+    // ========================================
     if (eventDateStr === todayStr) {
-        const nowMinutes = now.getHours() * 60 + now.getMinutes();
-        const startMinutes = parseTimeToMinutes(jamMulai);
-        const endMinutes = parseTimeToMinutes(jamSelesai);
-        
-        // Jika belum mencapai jam mulai
+        // Case 1: Belum waktunya mulai
         if (startMinutes !== null && nowMinutes < startMinutes) {
             return 'Menunggu Jadwal';
         }
         
-        // Jika sudah melewati jam selesai
+        // Case 2: Sudah melewati jam selesai
         if (endMinutes !== null && nowMinutes >= endMinutes) {
             return 'Sudah Bekerja';
         }
         
-        // Jika sedang dalam jam kerja (antara mulai dan selesai)
+        // Case 3: Sedang dalam jam kerja
         if (startMinutes !== null && endMinutes !== null && 
             nowMinutes >= startMinutes && nowMinutes < endMinutes) {
             return 'Belum Selesai';
         }
         
-        // Fallback: cek apakah ada jam selesai
+        // Fallback: jika ada jam selesai tapi tidak terdeteksi
         if (jamSelesai) {
             return 'Sudah Bekerja';
         }
+        
         return 'Belum Selesai';
     }
     
-    // === HARI BESOK (tanggal > hari ini) ===
+    // ========================================
+    // LOGIKA UNTUK HARI BESOK (> hari ini)
+    // ========================================
     if (eventDateStr > todayStr) {
         return 'Menunggu Jadwal';
     }
