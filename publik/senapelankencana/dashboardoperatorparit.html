@@ -1190,19 +1190,40 @@
                 }
 
                 var statusText = determineStatus(item);
-                var badgeClass = 'badge-belum';
-                var cardStatusClass = 'status-belum';
-                
-                if (statusText === 'Sudah Bekerja') {
-                    badgeClass = 'badge-sudah';
-                    cardStatusClass = 'status-sudah';
-                } else if (statusText === 'Menunggu Jadwal') {
-                    badgeClass = 'badge-menunggu';
-                    cardStatusClass = 'status-menunggu';
-                } else if (statusText === 'Hari Libur') {
-                    badgeClass = 'badge-libur';
-                    cardStatusClass = 'status-libur';
-                }
+var badgeClass = 'badge-belum';
+var cardStatusClass = 'status-belum';
+var additionalBadge = '';
+
+if (statusText === 'Sudah Bekerja') {
+    badgeClass = 'badge-sudah';
+    cardStatusClass = 'status-sudah';
+    
+    // ===== FITUR TAMBAHAN: Label "Belum Selesai" untuk hari ini (sebelum 15:00) =====
+    const today = getTodayWIB();
+    const todayStr = formatDateWIB(today);
+    const tanggal = item['Hari/Tanggal'] || item['tanggal'] || '';
+    const eventDate = parseDateYMD(tanggal);
+    const eventDateStr = eventDate ? formatDateWIB(eventDate) : '';
+    
+    if (eventDateStr === todayStr) {
+        const now = getNowWIB();
+        const nowMinutes = now.getHours() * 60 + now.getMinutes();
+        const jamSelesaiMinutes = 15 * 60; // 15:00
+        
+        // Tampilkan "Belum Selesai" jika belum mencapai 15:00
+        if (nowMinutes < jamSelesaiMinutes) {
+            additionalBadge = `<span class="card-badge badge-belum" style="position:static;margin-top:6px;display:inline-block;">⏳ Belum Selesai</span>`;
+        }
+    }
+    // ===== END FITUR TAMBAHAN =====
+    
+} else if (statusText === 'Menunggu Jadwal') {
+    badgeClass = 'badge-menunggu';
+    cardStatusClass = 'status-menunggu';
+} else if (statusText === 'Hari Libur') {
+    badgeClass = 'badge-libur';
+    cardStatusClass = 'status-libur';
+}
 
                 var cardId = 'card-' + index + '-' + Date.now();
                 var rowId = item._row || index;
@@ -1252,7 +1273,10 @@
                                     }).join('')}
                                 </div>
                             ` : ''}
-                            <span class="card-badge ${badgeClass}">${statusText}</span>
+                            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px;position:absolute;top:12px;right:12px;z-index:5;">
+    <span class="card-badge ${badgeClass}">${statusText}</span>
+    ${additionalBadge}
+</div>
                         </div>
                         <div class="card-body">
                             <div class="card-title">
