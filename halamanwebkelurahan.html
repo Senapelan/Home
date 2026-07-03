@@ -1446,6 +1446,11 @@
         <div class="loader-text" id="loadingText">🔄 Memuat data kelurahan...</div>
     </div>
 
+    <!-- MUSIK - SAMA PERSIS ORIGINAL (AUDIO TAG) -->
+    <audio id="bgMusic" loop>
+        <source id="bgMusicSource" src="" type="audio/mpeg">
+    </audio>
+
     <!-- 3D BACKGROUND -->
     <canvas id="bg-canvas"></canvas>
 
@@ -1684,11 +1689,17 @@
         }
 
         // ============================================
-        // 3. FUNGSI MUSIK RANDOM
+        // 3. FUNGSI MUSIK - SAMA PERSIS ORIGINAL
         // ============================================
-        let bgMusic = null;
-        let musicStarted = false;
+        // Musik akan diputar saat user klik pertama kali (seperti original)
+        document.addEventListener("click", function() {
+            const music = document.getElementById("bgMusic");
+            if (music) {
+                music.play().catch(e => console.log('⚠️ Gagal play musik:', e));
+            }
+        }, { once: true });
 
+        // Fungsi untuk set musik dari spreadsheet (random 10)
         function initMusic(data) {
             const get = (key, defaultValue = '') => {
                 return data[key] ? data[key].value : defaultValue;
@@ -1699,87 +1710,40 @@
             for (let i = 1; i <= 10; i++) {
                 const url = get(`music_${i}_url`);
                 const title = get(`music_${i}_title`, `Musik ${i}`);
-                
                 if (url && url !== '') {
                     musicList.push({ url, title, index: i });
                 }
             }
             
+            // Jika tidak ada musik di spreadsheet, pakai default
             if (musicList.length === 0) {
-                console.log('🎵 Tidak ada musik yang dikonfigurasi');
+                console.log('🎵 Tidak ada musik di spreadsheet, pakai default');
+                document.getElementById('bgMusicSource').src = 'data/sound/alamwalker.mp3';
+                document.getElementById('bgMusic').load();
+                document.getElementById('loadingText').textContent = '🎵 Memutar: Alam Walker';
                 return;
             }
-            
-            // Ambil konfigurasi
-            const volume = parseFloat(get('music_volume', '0.4'));
-            const loop = get('music_loop', 'true') === 'true';
-            const autoPlay = get('music_auto_play', 'true') === 'true';
             
             // Pilih musik RANDOM
             const randomIndex = Math.floor(Math.random() * musicList.length);
             const selectedMusic = musicList[randomIndex];
-            
             console.log(`🎵 Musik terpilih: ${selectedMusic.title} (${selectedMusic.url})`);
             
-            // Buat audio
-            bgMusic = new Audio(selectedMusic.url);
-            bgMusic.loop = loop;
-            bgMusic.volume = volume;
+            // Set source ke audio tag
+            const audio = document.getElementById('bgMusic');
+            const source = document.getElementById('bgMusicSource');
+            source.src = selectedMusic.url;
+            audio.load();
             
-            bgMusic.addEventListener('ended', () => {
-                console.log('🎵 Musik selesai');
-            });
-            
-            bgMusic.addEventListener('error', (e) => {
-                console.error('❌ Error musik:', e);
-            });
+            // Set volume dan loop
+            const volume = parseFloat(get('music_volume', '0.4'));
+            const loop = get('music_loop', 'true') === 'true';
+            audio.volume = volume;
+            audio.loop = loop;
             
             // Tampilkan judul musik di loading
             document.getElementById('loadingText').textContent = `🎵 Memutar: ${selectedMusic.title}`;
-            
-            if (autoPlay) {
-                startMusic();
-            }
         }
-
-        function startMusic() {
-            if (musicStarted) return;
-            if (!bgMusic) return;
-            
-            const playPromise = bgMusic.play();
-            
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        console.log('✅ Musik berhasil diputar otomatis');
-                        musicStarted = true;
-                    })
-                    .catch(error => {
-                        console.log('⚠️ Menunggu interaksi user...');
-                        window.musicToPlay = bgMusic;
-                        window.musicStarted = false;
-                    });
-            }
-        }
-
-        const playMusicOnInteraction = () => {
-            if (window.musicToPlay && !window.musicStarted) {
-                window.musicToPlay.play()
-                    .then(() => {
-                        console.log('🎵 Musik diputar setelah interaksi user');
-                        window.musicStarted = true;
-                    })
-                    .catch(error => {
-                        console.log('❌ Gagal memutar musik:', error);
-                    });
-                
-                document.removeEventListener('click', playMusicOnInteraction);
-                document.removeEventListener('touchstart', playMusicOnInteraction);
-                document.removeEventListener('scroll', playMusicOnInteraction);
-                document.removeEventListener('keydown', playMusicOnInteraction);
-                document.removeEventListener('mousemove', playMusicOnInteraction);
-            }
-        };
 
         // ============================================
         // 4. RENDER META TAG
@@ -2125,7 +2089,7 @@
             document.getElementById('mobileHeaderTitle').textContent = get('mobile_header_title', get('header_title', 'Kampung Bandar'));
             document.getElementById('mobileHeaderSubtitle').textContent = get('mobile_header_subtitle', 'Kelurahan Modern');
             
-            // Music
+            // 🎵 MUSIK - SET DARI SPREADSHEET
             initMusic(data);
             
             // Animasi On Scroll
@@ -2316,12 +2280,6 @@
                 renderPage(data, sheetName);
                 
                 setTimeout(init3DBackground, 500);
-                
-                document.addEventListener('click', playMusicOnInteraction);
-                document.addEventListener('touchstart', playMusicOnInteraction);
-                document.addEventListener('scroll', playMusicOnInteraction);
-                document.addEventListener('keydown', playMusicOnInteraction);
-                document.addEventListener('mousemove', playMusicOnInteraction);
                 
             } catch (error) {
                 console.error('❌ Error:', error);
