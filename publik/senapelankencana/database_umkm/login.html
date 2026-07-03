@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Login - Sistem Pendataan UMKM</title>
+
+    <!-- ============================================
+    META TAG - SEO & SHARING
+    ============================================ -->
+    <meta name="description" content="Sistem Pendataan UMKM Digital Senapelan - Aplikasi pendataan dan monitoring UMKM se-Kecamatan Senapelan.">
+    <meta name="keywords" content="pendataan umkm, data umkm, umkm senapelan, sistem umkm, digitalisasi umkm, pekanbaru">
+    <meta name="author" content="Senapelan Kencana">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Login - Sistem Pendataan UMKM Digital Senapelan">
+    <meta property="og:description" content="Akses sistem pendataan UMKM se-Kecamatan Senapelan.">
+    <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+
+    <style>
+        /* ============================================
+           ROOT VARIABLES & RESET
+           ============================================ */
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5A4BD1;
+            --primary-light: #A29BFE;
+            --secondary: #00CEC9;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #E17055;
+            --dark: #2D3436;
+            --light: #F8F9FA;
+            --gray: #636E72;
+            --gradient: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+            --shadow: 0 10px 40px rgba(108, 92, 231, 0.15);
+            --shadow-hover: 0 15px 50px rgba(108, 92, 231, 0.25);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #F0F2F5;
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(40px, -40px) rotate(5deg); }
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(50px, -50px) scale(1.2); opacity: 0.6; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           LOGIN PAGE
+           ============================================ */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient);
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .login-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            top: -300px;
+            right: -200px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .login-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            bottom: -350px;
+            left: -200px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: particleFloat 15s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        .particle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 5%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 120px; height: 120px; top: 60%; left: 80%; animation-delay: -3s; }
+        .particle:nth-child(3) { width: 60px; height: 60px; top: 80%; left: 10%; animation-delay: -6s; }
+        .particle:nth-child(4) { width: 100px; height: 100px; top: 20%; left: 85%; animation-delay: -9s; }
+        .particle:nth-child(5) { width: 40px; height: 40px; top: 50%; left: 50%; animation-delay: -12s; }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-card .logo .icon-wrapper {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.15);
+            transition: all 0.3s ease;
+            padding: 10px;
+        }
+
+        .login-card .logo .icon-wrapper:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .login-card .logo .icon-wrapper img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .login-card .logo h2 {
+            font-weight: 800;
+            color: var(--dark);
+            font-size: 28px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .login-card .logo p {
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 14px;
+            margin: 5px 0 0;
+            -webkit-text-fill-color: var(--gray);
+        }
+
+        .form-floating-custom {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-floating-custom .form-control {
+            border-radius: var(--radius-sm);
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #E8ECF1;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 58px;
+            background: rgba(255, 255, 255, 0.8);
+            font-size: 15px;
+        }
+
+        .form-floating-custom .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+            background: white;
+        }
+
+        .form-floating-custom .form-control.is-invalid {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(225, 112, 85, 0.1);
+        }
+
+        .form-floating-custom .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 18px;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .form-floating-custom .form-control:focus ~ .input-icon {
+            color: var(--primary);
+        }
+
+        .btn-login {
+            background: var(--gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            height: 58px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.4);
+            color: white;
+        }
+
+        .btn-login:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-login .btn-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-login .btn-bg {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .btn-login .spinner-border {
+            width: 20px;
+            height: 20px;
+            border-width: 2px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0 20px;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            font-weight: 500;
+            color: var(--gray);
+            font-size: 14px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        .alert-custom {
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .alert-custom.show {
+            display: flex;
+        }
+
+        .alert-custom i {
+            font-size: 18px;
+        }
+
+        .alert-custom.alert-danger {
+            background: #FDE8E8;
+            color: #C0392B;
+            border: 1px solid #F5C6CB;
+        }
+
+        .alert-custom.alert-success {
+            background: #E8F8F5;
+            color: #1A7A5A;
+            border: 1px solid #C3E6CB;
+        }
+
+        .login-footer {
+            margin-top: 25px;
+            text-align: center;
+            padding-top: 15px;
+            border-top: 1px solid #E8ECF1;
+        }
+
+        .login-footer small {
+            color: var(--gray);
+            font-size: 12px;
+        }
+
+        .login-footer small strong {
+            color: var(--dark);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+
+            .login-card .logo .icon-wrapper {
+                width: 80px;
+                height: 80px;
+            }
+
+            .login-card .logo .icon-wrapper img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .login-card .logo h2 {
+                font-size: 22px;
+            }
+
+            .form-floating-custom .form-control {
+                height: 52px;
+                font-size: 14px;
+                padding: 12px 16px 12px 45px;
+            }
+
+            .btn-login {
+                height: 52px;
+                font-size: 15px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-card {
+                padding: 20px 15px;
+            }
+
+            .login-card .logo .icon-wrapper {
+                width: 60px;
+                height: 60px;
+            }
+
+            .login-card .logo .icon-wrapper img {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* ============================================
+           SCROLLBAR
+           ============================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #F0F2F5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== PARTICLES ===== -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <!-- ===== LOGIN PAGE ===== -->
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="logo">
+                <div class="icon-wrapper">
+                    <img src="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png" 
+                         alt="Logo Pendataan UMKM" 
+                         loading="lazy">
+                </div>
+                <h2>Sistem UMKM</h2>
+                <p>Pendataan UMKM Digital Senapelan</p>
+            </div>
+
+            <!-- Alert Message -->
+            <div class="alert-custom" id="loginAlert">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="alertMessage">Username atau password salah</span>
+            </div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-floating-custom">
+                    <input type="text" 
+                           class="form-control" 
+                           id="loginUsername" 
+                           placeholder="Username" 
+                           required 
+                           autocomplete="username"
+                           autofocus>
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+
+                <div class="form-floating-custom">
+                    <input type="password" 
+                           class="form-control" 
+                           id="loginPassword" 
+                           placeholder="Password" 
+                           required 
+                           autocomplete="current-password">
+                    <i class="fas fa-lock input-icon"></i>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" checked>
+                    <label for="rememberMe">Ingat saya</label>
+                </div>
+
+                <button type="submit" class="btn btn-login" id="btnLogin">
+                    <span class="btn-content" id="btnLoginContent">
+                        <i class="fas fa-sign-in-alt me-2"></i> Masuk
+                    </span>
+                    <span class="btn-bg"></span>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <small>© 2026 <strong>UMKM Data System</strong> v3.0</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
+
+    <script>
+        // ============================================
+        // KONFIGURASI
+        // ============================================
+        const CONFIG = {
+            // GANTI DENGAN URL DEPLOY APPS SCRIPT ANDA
+            DEPLOY_URL: 'https://script.google.com/macros/s/AKfycbx7QFkfwM0wfv3EY4VSiPZU9fy030bOAs59MXGqz-_mSbZriS91JoHiJVuk9sYAk5Akmw/exec',
+            SESSION_KEY: 'umkm_premium_session',
+            DASHBOARD_URL: 'form_input_umkm.html'
+        };
+
+        // ============================================
+        // DOM REFS
+        // ============================================
+        const form = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('loginUsername');
+        const passwordInput = document.getElementById('loginPassword');
+        const rememberMe = document.getElementById('rememberMe');
+        const btnLogin = document.getElementById('btnLogin');
+        const btnContent = document.getElementById('btnLoginContent');
+        const alertEl = document.getElementById('loginAlert');
+        const alertMsg = document.getElementById('alertMessage');
+
+        // ============================================
+        // SESSION MANAGER
+        // ============================================
+        const SessionManager = {
+            get() {
+                try {
+                    const data = localStorage.getItem(CONFIG.SESSION_KEY);
+                    if (!data) return null;
+                    const session = JSON.parse(data);
+                    if (session.expiry && session.expiry > Date.now()) {
+                        return session.user;
+                    }
+                    this.clear();
+                    return null;
+                } catch {
+                    return null;
+                }
+            },
+
+            save(user, remember = true) {
+                const session = {
+                    user: user,
+                    expiry: remember ? Date.now() + (7 * 24 * 60 * 60 * 1000) : Date.now() + (3600000)
+                };
+                localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(session));
+            },
+
+            clear() {
+                localStorage.removeItem(CONFIG.SESSION_KEY);
+            },
+
+            extend() {
+                const data = localStorage.getItem(CONFIG.SESSION_KEY);
+                if (data) {
+                    const session = JSON.parse(data);
+                    session.expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+                    localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(session));
+                }
+            }
+        };
+
+        // ============================================
+        // CHECK SESSION
+        // ============================================
+        async function checkSession() {
+            const user = SessionManager.get();
+            if (!user) return false;
+
+            try {
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'checkSession',
+                        username: user.username
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    SessionManager.extend();
+                    window.location.href = CONFIG.DASHBOARD_URL;
+                    return true;
+                } else {
+                    SessionManager.clear();
+                    return false;
+                }
+            } catch {
+                return false;
+            }
+        }
+
+        // ============================================
+        // SHOW ALERT
+        // ============================================
+        function showAlert(message, type = 'danger') {
+            alertEl.className = `alert-custom alert-${type} show`;
+            alertMsg.textContent = message;
+            
+            clearTimeout(window.alertTimeout);
+            window.alertTimeout = setTimeout(() => {
+                alertEl.classList.remove('show');
+            }, 5000);
+        }
+
+        function hideAlert() {
+            alertEl.classList.remove('show');
+            clearTimeout(window.alertTimeout);
+        }
+
+        // ============================================
+        // SET LOADING STATE
+        // ============================================
+        function setLoading(loading) {
+            if (loading) {
+                btnLogin.disabled = true;
+                btnContent.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Memproses...
+                `;
+            } else {
+                btnLogin.disabled = false;
+                btnContent.innerHTML = `
+                    <i class="fas fa-sign-in-alt me-2"></i> Masuk
+                `;
+            }
+        }
+
+        function removeInvalidState() {
+            usernameInput.classList.remove('is-invalid');
+            passwordInput.classList.remove('is-invalid');
+        }
+
+        // ============================================
+        // LOGIN HANDLER
+        // ============================================
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideAlert();
+            removeInvalidState();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            const remember = rememberMe.checked;
+
+            if (!username) {
+                usernameInput.classList.add('is-invalid');
+                usernameInput.focus();
+                showAlert('Username wajib diisi', 'danger');
+                return;
+            }
+
+            if (!password) {
+                passwordInput.classList.add('is-invalid');
+                passwordInput.focus();
+                showAlert('Password wajib diisi', 'danger');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const user = result.data;
+                    
+                    // Save session with user data including urlProfile
+                    SessionManager.save({
+                        username: user.username,
+                        namaLengkap: user.namaLengkap,
+                        urlProfile: user.urlProfile || '',
+                        kelurahan: user.kelurahan || '',
+                        role: user.role || 'user'
+                    }, remember);
+                    
+                    showAlert(`Selamat datang, ${user.namaLengkap || username}!`, 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = CONFIG.DASHBOARD_URL;
+                    }, 1000);
+                    
+                } else {
+                    showAlert(result.message || 'Username atau password salah', 'danger');
+                    passwordInput.value = '';
+                    passwordInput.focus();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Terjadi kesalahan. Periksa koneksi internet Anda.', 'danger');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // ============================================
+        // KEYBOARD SUPPORT
+        // ============================================
+        passwordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        usernameInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        });
+
+        // ============================================
+        // CLEAR ALERT ON INPUT
+        // ============================================
+        usernameInput.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            hideAlert();
+        });
+
+        passwordInput.addEventListener('input', function() {
+            this.classList.remove('is-invalid');
+            hideAlert();
+        });
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔐 Login Page v3.0');
+            console.log('📡 Deploy URL:', CONFIG.DEPLOY_URL);
+            
+            const savedUsername = localStorage.getItem('umkm_saved_username');
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                passwordInput.focus();
+            }
+            
+            checkSession();
+        });
+    </script>
+
+</body>
+</html>
