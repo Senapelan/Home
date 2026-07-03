@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Login - Sistem Pendataan UMKM Senapelan</title>
+
+    <!-- ============================================
+    META TAG - SEO & SHARING
+    ============================================ -->
+    <meta name="description" content="Inovasi Lurah Kampung Bandar | NOPRI ANUGRAH PUTRA, S.STP., | Aplikasi Pendataan dan Monitoring UMKM se-Kecamatan Senapelan 2026.">
+    <meta name="keywords" content="pendataan umkm, data umkm, umkm senapelan, sistem umkm, digitalisasi umkm, pekanbaru">
+    <meta name="author" content="Senapelan Kencana">
+    <meta name="robots" content="index, follow">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Login - Sistem Pendataan UMKM Digital se Kecamatan Senapelan">
+    <meta property="og:description" content="Inovasi Lurah Kampung Bandar | NOPRI ANUGRAH PUTRA, S.STP., | Aplikasi Pendataan dan Monitoring UMKM se-Kecamatan Senapelan 2026.">
+    <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+
+    <style>
+        /* ============================================
+           ROOT VARIABLES & RESET
+           ============================================ */
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5A4BD1;
+            --primary-light: #A29BFE;
+            --secondary: #00CEC9;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #E17055;
+            --dark: #2D3436;
+            --light: #F8F9FA;
+            --gray: #636E72;
+            --gradient: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+            --shadow: 0 10px 40px rgba(108, 92, 231, 0.15);
+            --shadow-hover: 0 15px 50px rgba(108, 92, 231, 0.25);
+            --radius: 20px;
+            --radius-sm: 12px;
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: url('https://senapelan.github.io/Home/publik/senapelankencana/database_umkm/foto/bgumkmsenapelan.jpg') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        /* Overlay gelap untuk readability */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+
+        /* ============================================
+           ANIMATIONS
+           ============================================ */
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(40px, -40px) rotate(5deg); }
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.2; }
+            50% { transform: translate(50px, -50px) scale(1.2); opacity: 0.5; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ============================================
+           PARTICLES
+           ============================================ */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.08);
+            animation: particleFloat 15s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .particle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 5%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 120px; height: 120px; top: 60%; left: 80%; animation-delay: -3s; }
+        .particle:nth-child(3) { width: 60px; height: 60px; top: 80%; left: 10%; animation-delay: -6s; }
+        .particle:nth-child(4) { width: 100px; height: 100px; top: 20%; left: 85%; animation-delay: -9s; }
+        .particle:nth-child(5) { width: 40px; height: 40px; top: 50%; left: 50%; animation-delay: -12s; }
+
+        /* ============================================
+           LOGIN CARD - GLASS EFFECT
+           ============================================ */
+        .login-wrapper {
+            width: 100%;
+            max-width: 440px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 40px 35px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .login-card:hover {
+            box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .login-card .logo .icon-wrapper {
+            width: 90px;
+            height: 90px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            padding: 10px;
+        }
+
+        .login-card .logo .icon-wrapper:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .login-card .logo .icon-wrapper img {
+            width: 70px;
+            height: 70px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .login-card .logo h2 {
+            font-weight: 800;
+            color: white;
+            font-size: 26px;
+            margin: 0;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            letter-spacing: 1px;
+        }
+
+        .login-card .logo h2 span {
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-card .logo p {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 500;
+            font-size: 13px;
+            margin: 5px 0 0;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        /* ============================================
+           FORM FLOATING
+           ============================================ */
+        .form-floating-custom {
+            position: relative;
+            margin-bottom: 18px;
+        }
+
+        .form-floating-custom .form-control {
+            border-radius: var(--radius-sm);
+            padding: 15px 20px 15px 48px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 54px;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            font-size: 15px;
+        }
+
+        .form-floating-custom .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .form-floating-custom .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.25);
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+        }
+
+        .form-floating-custom .form-control.is-invalid {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(225, 112, 85, 0.25);
+            background: rgba(225, 112, 85, 0.15);
+        }
+
+        .form-floating-custom .form-control.is-valid {
+            border-color: var(--success);
+            box-shadow: 0 0 0 4px rgba(0, 184, 148, 0.2);
+            background: rgba(0, 184, 148, 0.1);
+        }
+
+        .form-floating-custom .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 17px;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .form-floating-custom .form-control:focus ~ .input-icon {
+            color: var(--primary-light);
+        }
+
+        .form-floating-custom .form-control.is-invalid ~ .input-icon {
+            color: var(--danger);
+        }
+
+        .form-floating-custom .form-control.is-valid ~ .input-icon {
+            color: var(--success);
+        }
+
+        /* Toggle Password */
+        .toggle-password {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            z-index: 10;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            font-size: 17px;
+        }
+
+        .toggle-password:hover {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* ============================================
+           BUTTON LOGIN
+           ============================================ */
+        .btn-login {
+            background: var(--gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            height: 54px;
+            position: relative;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .btn-login:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.4);
+            color: white;
+        }
+
+        .btn-login:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+        }
+
+        .btn-login .btn-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-login .btn-bg {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .btn-login .spinner-border {
+            width: 20px;
+            height: 20px;
+            border-width: 2px;
+        }
+
+        /* ============================================
+           REMEMBER ME
+           ============================================ */
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 12px 0 18px;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 14px;
+            cursor: pointer;
+            margin: 0;
+        }
+
+        /* ============================================
+           ALERT
+           ============================================ */
+        .alert-custom {
+            border-radius: var(--radius-sm);
+            padding: 12px 16px;
+            font-size: 14px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            animation: slideUp 0.3s ease;
+        }
+
+        .alert-custom.show {
+            display: flex;
+        }
+
+        .alert-custom i {
+            font-size: 18px;
+        }
+
+        .alert-custom.alert-danger {
+            background: rgba(225, 112, 85, 0.2);
+            color: #FF6B6B;
+            border: 1px solid rgba(225, 112, 85, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-custom.alert-success {
+            background: rgba(0, 184, 148, 0.2);
+            color: #55EFC4;
+            border: 1px solid rgba(0, 184, 148, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-custom.alert-warning {
+            background: rgba(253, 203, 110, 0.2);
+            color: #FDCB6E;
+            border: 1px solid rgba(253, 203, 110, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        /* ============================================
+           REGISTER LINK
+           ============================================ */
+        .register-section {
+            text-align: center;
+            margin-top: 18px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .register-section p {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            margin: 0;
+        }
+
+        .btn-register {
+            background: none;
+            border: none;
+            color: var(--primary-light);
+            font-weight: 700;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+        }
+
+        .btn-register:hover {
+            color: white;
+            background: rgba(108, 92, 231, 0.3);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .login-footer {
+            margin-top: 20px;
+            text-align: center;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .login-footer small {
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 11px;
+        }
+
+        .login-footer small strong {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        /* ============================================
+           MODAL REGISTER
+           ============================================ */
+        .modal-content {
+            background: rgba(30, 30, 50, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 20px 25px;
+        }
+
+        .modal-header h5 {
+            font-weight: 700;
+            color: white;
+        }
+
+        .modal-header .btn-close {
+            filter: invert(1);
+            opacity: 0.7;
+        }
+
+        .modal-header .btn-close:hover {
+            opacity: 1;
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        .modal-footer {
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 15px 25px;
+        }
+
+        .modal-footer .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .modal-footer .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .modal .form-label {
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .modal .form-label .required {
+            color: var(--danger);
+            margin-left: 3px;
+        }
+
+        .modal .form-control,
+        .modal .form-select {
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.12);
+            color: white;
+            border-radius: var(--radius-sm);
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .modal .form-control::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .modal .form-control:focus,
+        .modal .form-select:focus {
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.15);
+            color: white;
+        }
+
+        .modal .form-control.is-invalid,
+        .modal .form-select.is-invalid {
+            border-color: var(--danger);
+            box-shadow: 0 0 0 4px rgba(225, 112, 85, 0.15);
+        }
+
+        .modal .form-control.is-valid,
+        .modal .form-select.is-valid {
+            border-color: var(--success);
+            box-shadow: 0 0 0 4px rgba(0, 184, 148, 0.15);
+        }
+
+        .modal .form-select option {
+            background: #1a1a2e;
+            color: white;
+        }
+
+        .modal .form-check-input {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            width: 18px;
+            height: 18px;
+            margin-top: 2px;
+        }
+
+        .modal .form-check-input:checked {
+            background-color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .modal .form-check-label {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .modal .form-check-label strong {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
+
+            .login-card .logo .icon-wrapper {
+                width: 70px;
+                height: 70px;
+            }
+
+            .login-card .logo .icon-wrapper img {
+                width: 55px;
+                height: 55px;
+            }
+
+            .login-card .logo h2 {
+                font-size: 22px;
+            }
+
+            .form-floating-custom .form-control {
+                height: 50px;
+                font-size: 14px;
+                padding: 12px 16px 12px 42px;
+            }
+
+            .btn-login {
+                height: 50px;
+                font-size: 15px;
+            }
+
+            .modal-body {
+                padding: 15px;
+                max-height: 60vh;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .login-card {
+                padding: 20px 15px;
+            }
+
+            .login-card .logo .icon-wrapper {
+                width: 60px;
+                height: 60px;
+            }
+
+            .login-card .logo .icon-wrapper img {
+                width: 45px;
+                height: 45px;
+            }
+        }
+
+        /* ============================================
+           SCROLLBAR
+           ============================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== PARTICLES ===== -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <!-- ===== LOGIN PAGE ===== -->
+    <div class="login-wrapper">
+        <div class="login-card">
+            <div class="logo">
+                <div class="icon-wrapper">
+                    <img src="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png" 
+                         alt="Logo Pendataan UMKM" 
+                         loading="lazy">
+                </div>
+                <h2>UMKM <span>SENAPELAN</span></h2>
+                <p>Pendataan UMKM Digital Senapelan</p>
+            </div>
+
+            <!-- Alert Message -->
+            <div class="alert-custom" id="loginAlert">
+                <i class="fas fa-exclamation-circle"></i>
+                <span id="alertMessage">Username atau password salah</span>
+            </div>
+
+            <form id="loginForm" novalidate>
+                <div class="form-floating-custom">
+                    <input type="text" 
+                           class="form-control" 
+                           id="loginUsername" 
+                           placeholder="Username" 
+                           required 
+                           autocomplete="username"
+                           autofocus>
+                    <i class="fas fa-user input-icon"></i>
+                </div>
+
+                <div class="form-floating-custom">
+                    <input type="password" 
+                           class="form-control" 
+                           id="loginPassword" 
+                           placeholder="Password" 
+                           required 
+                           autocomplete="current-password">
+                    <i class="fas fa-lock input-icon"></i>
+                    <button type="button" class="toggle-password" id="togglePassword">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+
+                <div class="remember-me">
+                    <input type="checkbox" id="rememberMe" checked>
+                    <label for="rememberMe">Ingat saya</label>
+                </div>
+
+                <button type="submit" class="btn btn-login" id="btnLogin">
+                    <span class="btn-content" id="btnLoginContent">
+                        <i class="fas fa-sign-in-alt me-2"></i> Masuk
+                    </span>
+                    <span class="btn-bg"></span>
+                </button>
+            </form>
+
+            <div class="register-section">
+                <p>Belum punya akun? 
+                    <button type="button" class="btn-register" id="btnRegister">
+                        <i class="fas fa-user-plus me-1"></i> Daftar Akun
+                    </button>
+                </p>
+            </div>
+
+            <div class="login-footer">
+                <small>© 2026 <strong>INOVASI LURAH KAMPUNG BANDAR</strong> | NOPRI ANUGRAH PUTRA, S.STP</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    MODAL REGISTER
+    ============================================ -->
+    <div class="modal fade" id="registerModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-user-plus me-2 text-primary"></i> Daftar Akun
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="registerForm" novalidate>
+                    <div class="modal-body">
+                        <!-- Alert di modal -->
+                        <div class="alert-custom" id="registerAlert" style="display:none;">
+                            <i class="fas fa-exclamation-circle"></i>
+                            <span id="registerAlertMessage"></span>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label">Nama Lengkap <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="regNamaLengkap" placeholder="Nama lengkap Anda" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Alamat Lengkap <span class="required">*</span></label>
+                                <textarea class="form-control" id="regAlamat" rows="2" placeholder="Alamat lengkap dengan RT/RW" required></textarea>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Status Saya <span class="required">*</span></label>
+                                <select class="form-select" id="regStatus" required>
+                                    <option value="">Pilih Status</option>
+                                    <option value="Ketua RT">Ketua RT</option>
+                                    <option value="Ketua RW">Ketua RW</option>
+                                    <option value="Tokoh Masyarakat">Tokoh Masyarakat</option>
+                                    <option value="Pemilik UMKM">Pemilik UMKM</option>
+                                    <option value="Lainnya">Lainnya</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Pilih Kelurahan <span class="required">*</span></label>
+                                <select class="form-select" id="regKelurahan" required>
+                                    <option value="">Pilih Kelurahan</option>
+                                    <option value="Kampung Baru">Kampung Baru</option>
+                                    <option value="Kampung Bandar">Kampung Bandar</option>
+                                    <option value="Kampung Dalam">Kampung Dalam</option>
+                                    <option value="Padang Bulan">Padang Bulan</option>
+                                    <option value="Padang Terubuk">Padang Terubuk</option>
+                                    <option value="Sago">Sago</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Username <span class="required">*</span></label>
+                                <input type="text" class="form-control" id="regUsername" placeholder="Pilih username" required>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Password <span class="required">*</span></label>
+                                <div class="position-relative">
+                                    <input type="password" class="form-control" id="regPassword" placeholder="Minimal 6 karakter" required minlength="6">
+                                    <button type="button" class="toggle-password" id="toggleRegPassword" style="right:16px;color:rgba(255,255,255,0.5);">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="regAgree" required>
+                                    <label class="form-check-label" for="regAgree">
+                                        Saya bertanggung jawab atas semua data yang saya isi pada aplikasi Pendataan UMKM Senapelan dan saya dapat mempertanggungjawabkannya jika data tidak benar secara hukum yang berlaku apabila merugikan pihak UMKM yang terdampak.
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-add" id="btnRegisterSubmit" style="background:var(--gradient);color:white;border:none;border-radius:var(--radius-sm);padding:10px 25px;font-weight:600;">
+                            <i class="fas fa-paper-plane me-2"></i> Daftar Sekarang
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
+
+    <script>
+        // ============================================
+        // KONFIGURASI
+        // ============================================
+        const CONFIG = {
+            DEPLOY_URL: 'https://script.google.com/macros/s/AKfycbx7QFkfwM0wfv3EY4VSiPZU9fy030bOAs59MXGqz-_mSbZriS91JoHiJVuk9sYAk5Akmw/exec',
+            SESSION_KEY: 'umkm_premium_session',
+            DASHBOARD_URL: 'form_input_umkm.html',
+            WA_NUMBER: '6282170089590'
+        };
+
+        // ============================================
+        // DOM REFS
+        // ============================================
+        const form = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('loginUsername');
+        const passwordInput = document.getElementById('loginPassword');
+        const rememberMe = document.getElementById('rememberMe');
+        const btnLogin = document.getElementById('btnLogin');
+        const btnContent = document.getElementById('btnLoginContent');
+        const alertEl = document.getElementById('loginAlert');
+        const alertMsg = document.getElementById('alertMessage');
+
+        // Register Modal
+        const registerModal = new bootstrap.Modal(document.getElementById('registerModal'));
+        const registerForm = document.getElementById('registerForm');
+        const regNamaLengkap = document.getElementById('regNamaLengkap');
+        const regAlamat = document.getElementById('regAlamat');
+        const regStatus = document.getElementById('regStatus');
+        const regKelurahan = document.getElementById('regKelurahan');
+        const regUsername = document.getElementById('regUsername');
+        const regPassword = document.getElementById('regPassword');
+        const regAgree = document.getElementById('regAgree');
+        const regAlert = document.getElementById('registerAlert');
+        const regAlertMsg = document.getElementById('registerAlertMessage');
+        const btnRegisterSubmit = document.getElementById('btnRegisterSubmit');
+
+        // ============================================
+        // SESSION MANAGER
+        // ============================================
+        const SessionManager = {
+            get() {
+                try {
+                    const data = localStorage.getItem(CONFIG.SESSION_KEY);
+                    if (!data) return null;
+                    const session = JSON.parse(data);
+                    if (session.expiry && session.expiry > Date.now()) {
+                        return session.user;
+                    }
+                    this.clear();
+                    return null;
+                } catch {
+                    return null;
+                }
+            },
+
+            save(user, remember = true) {
+                const session = {
+                    user: user,
+                    expiry: remember ? Date.now() + (7 * 24 * 60 * 60 * 1000) : Date.now() + (3600000)
+                };
+                localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(session));
+            },
+
+            clear() {
+                localStorage.removeItem(CONFIG.SESSION_KEY);
+            },
+
+            extend() {
+                const data = localStorage.getItem(CONFIG.SESSION_KEY);
+                if (data) {
+                    const session = JSON.parse(data);
+                    session.expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+                    localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(session));
+                }
+            }
+        };
+
+        // ============================================
+        // TOGGLE PASSWORD
+        // ============================================
+        document.getElementById('togglePassword').addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                passwordInput.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        document.getElementById('toggleRegPassword').addEventListener('click', function() {
+            const icon = this.querySelector('i');
+            if (regPassword.type === 'password') {
+                regPassword.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                regPassword.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        });
+
+        // ============================================
+        // CHECK SESSION
+        // ============================================
+        async function checkSession() {
+            const user = SessionManager.get();
+            if (!user) return false;
+
+            try {
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'checkSession',
+                        username: user.username
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    SessionManager.extend();
+                    window.location.href = CONFIG.DASHBOARD_URL;
+                    return true;
+                } else {
+                    SessionManager.clear();
+                    return false;
+                }
+            } catch {
+                return false;
+            }
+        }
+
+        // ============================================
+        // SHOW ALERT
+        // ============================================
+        function showAlert(message, type = 'danger') {
+            alertEl.className = `alert-custom alert-${type} show`;
+            alertMsg.textContent = message;
+            
+            clearTimeout(window.alertTimeout);
+            window.alertTimeout = setTimeout(() => {
+                alertEl.classList.remove('show');
+            }, 5000);
+        }
+
+        function hideAlert() {
+            alertEl.classList.remove('show');
+            clearTimeout(window.alertTimeout);
+        }
+
+        function showRegisterAlert(message, type = 'danger') {
+            regAlert.className = `alert-custom alert-${type} show`;
+            regAlert.style.display = 'flex';
+            regAlertMsg.textContent = message;
+            
+            clearTimeout(window.registerAlertTimeout);
+            window.registerAlertTimeout = setTimeout(() => {
+                regAlert.classList.remove('show');
+                regAlert.style.display = 'none';
+            }, 5000);
+        }
+
+        function hideRegisterAlert() {
+            regAlert.classList.remove('show');
+            regAlert.style.display = 'none';
+            clearTimeout(window.registerAlertTimeout);
+        }
+
+        // ============================================
+        // SET LOADING STATE
+        // ============================================
+        function setLoading(loading) {
+            if (loading) {
+                btnLogin.disabled = true;
+                btnContent.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Memproses...
+                `;
+            } else {
+                btnLogin.disabled = false;
+                btnContent.innerHTML = `
+                    <i class="fas fa-sign-in-alt me-2"></i> Masuk
+                `;
+            }
+        }
+
+        function setRegisterLoading(loading) {
+            if (loading) {
+                btnRegisterSubmit.disabled = true;
+                btnRegisterSubmit.innerHTML = `
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Memproses...
+                `;
+            } else {
+                btnRegisterSubmit.disabled = false;
+                btnRegisterSubmit.innerHTML = `
+                    <i class="fas fa-paper-plane me-2"></i> Daftar Sekarang
+                `;
+            }
+        }
+
+        function removeInvalidState() {
+            usernameInput.classList.remove('is-invalid', 'is-valid');
+            passwordInput.classList.remove('is-invalid', 'is-valid');
+        }
+
+        function removeRegisterInvalidState() {
+            document.querySelectorAll('#registerForm .form-control, #registerForm .form-select').forEach(el => {
+                el.classList.remove('is-invalid', 'is-valid');
+            });
+        }
+
+        // ============================================
+        // VALIDATE FIELD
+        // ============================================
+        function validateField(field) {
+            if (field.value.trim()) {
+                field.classList.remove('is-invalid');
+                field.classList.add('is-valid');
+                return true;
+            } else {
+                field.classList.remove('is-valid');
+                field.classList.add('is-invalid');
+                return false;
+            }
+        }
+
+        // ============================================
+        // LOGIN HANDLER
+        // ============================================
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideAlert();
+            removeInvalidState();
+
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            const remember = rememberMe.checked;
+
+            // Validasi
+            let isValid = true;
+            if (!username) {
+                usernameInput.classList.add('is-invalid');
+                isValid = false;
+            }
+            if (!password) {
+                passwordInput.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            if (!isValid) {
+                showAlert('Username dan password wajib diisi', 'warning');
+                return;
+            }
+
+            setLoading(true);
+
+            try {
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'login',
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    const user = result.data;
+                    
+                    SessionManager.save({
+                        username: user.username,
+                        namaLengkap: user.namaLengkap,
+                        urlProfile: user.urlProfile || '',
+                        kelurahan: user.kelurahan || '',
+                        role: user.role || 'user'
+                    }, remember);
+                    
+                    showAlert(`Selamat datang, ${user.namaLengkap || username}!`, 'success');
+                    
+                    setTimeout(() => {
+                        window.location.href = CONFIG.DASHBOARD_URL;
+                    }, 1000);
+                    
+                } else {
+                    showAlert(result.message || 'Username atau password salah', 'danger');
+                    passwordInput.value = '';
+                    passwordInput.classList.add('is-invalid');
+                    passwordInput.focus();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Terjadi kesalahan. Periksa koneksi internet Anda.', 'danger');
+            } finally {
+                setLoading(false);
+            }
+        });
+
+        // ============================================
+        // REGISTER HANDLER
+        // ============================================
+        document.getElementById('btnRegister').addEventListener('click', function() {
+            registerModal.show();
+            // Reset form
+            registerForm.reset();
+            removeRegisterInvalidState();
+            hideRegisterAlert();
+        });
+
+        // Real-time validation pada input
+        document.querySelectorAll('#registerForm .form-control, #registerForm .form-select').forEach(el => {
+            el.addEventListener('input', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+            el.addEventListener('change', function() {
+                if (this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                    this.classList.add('is-valid');
+                } else {
+                    this.classList.remove('is-valid');
+                    this.classList.add('is-invalid');
+                }
+            });
+        });
+
+        registerForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            hideRegisterAlert();
+            removeRegisterInvalidState();
+
+            // Validasi semua field
+            const namaLengkap = regNamaLengkap.value.trim();
+            const alamat = regAlamat.value.trim();
+            const status = regStatus.value;
+            const kelurahan = regKelurahan.value;
+            const username = regUsername.value.trim();
+            const password = regPassword.value;
+            const agree = regAgree.checked;
+
+            let isValid = true;
+
+            if (!namaLengkap) { regNamaLengkap.classList.add('is-invalid');
+                isValid = false; }
+            if (!alamat) { regAlamat.classList.add('is-invalid');
+                isValid = false; }
+            if (!status) { regStatus.classList.add('is-invalid');
+                isValid = false; }
+            if (!kelurahan) { regKelurahan.classList.add('is-invalid');
+                isValid = false; }
+            if (!username) { regUsername.classList.add('is-invalid');
+                isValid = false; }
+            if (!password || password.length < 6) { 
+                regPassword.classList.add('is-invalid');
+                isValid = false; 
+            }
+            if (!agree) {
+                showRegisterAlert('Anda harus menyetujui pernyataan tanggung jawab data', 'warning');
+                return;
+            }
+
+            if (!isValid) {
+                showRegisterAlert('Semua field wajib diisi dengan benar', 'warning');
+                return;
+            }
+
+            setRegisterLoading(true);
+
+            try {
+                // Kirim data registrasi ke server
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'registerUser',
+                        namaLengkap: namaLengkap,
+                        alamat: alamat,
+                        status: status,
+                        kelurahan: kelurahan,
+                        username: username,
+                        password: password
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Tutup modal
+                    registerModal.hide();
+                    
+                    // Tampilkan sukses
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Pendaftaran Berhasil!',
+                        text: 'Akun Anda telah didaftarkan. Silahkan tunggu konfirmasi dari admin.',
+                        confirmButtonColor: '#6C5CE7'
+                    });
+
+                    // Kirim ke WhatsApp
+                    const waMessage = encodeURIComponent(
+                        `Assalamualaikum Admin, perkenalkan saya:\n\n` +
+                        `📋 *DATA PENDAFTARAN AKUN UMKM SENAPELAN*\n` +
+                        `━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                        `👤 Nama Lengkap: ${namaLengkap}\n` +
+                        `📍 Alamat: ${alamat}\n` +
+                        `🏷️ Status: ${status}\n` +
+                        `🏘️ Kelurahan: ${kelurahan}\n` +
+                        `🔑 Username: ${username}\n` +
+                        `🔒 Password: ${password}\n` +
+                        `━━━━━━━━━━━━━━━━━━━━━━━━\n` +
+                        `✅ Saya bertanggung jawab atas semua data yang saya isi pada aplikasi Pendataan UMKM dan saya dapat mempertanggungjawabkannya jika data tidak benar secara hukum yang berlaku apabila merugikan pihak UMKM yang terdampak.\n\n` +
+                        `*Mohon diverifikasi dan diaktifkan akunnya.*\n` +
+                        `Terima kasih.`
+                    );
+
+                    // Redirect ke WhatsApp
+                    window.open(`https://wa.me/${CONFIG.WA_NUMBER}?text=${waMessage}`, '_blank');
+
+                    // Reset form
+                    registerForm.reset();
+                    removeRegisterInvalidState();
+
+                } else {
+                    showRegisterAlert(result.message || 'Gagal mendaftar. Silahkan coba lagi.', 'danger');
+                }
+            } catch (error) {
+                console.error('Register error:', error);
+                showRegisterAlert('Terjadi kesalahan. Periksa koneksi internet Anda.', 'danger');
+            } finally {
+                setRegisterLoading(false);
+            }
+        });
+
+        // ============================================
+        // KEYBOARD SUPPORT
+        // ============================================
+        passwordInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                form.dispatchEvent(new Event('submit'));
+            }
+        });
+
+        usernameInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                passwordInput.focus();
+            }
+        });
+
+        // ============================================
+        // CLEAR ALERT ON INPUT
+        // ============================================
+        usernameInput.addEventListener('input', function() {
+            this.classList.remove('is-invalid', 'is-valid');
+            if (this.value.trim()) this.classList.add('is-valid');
+            hideAlert();
+        });
+
+        passwordInput.addEventListener('input', function() {
+            this.classList.remove('is-invalid', 'is-valid');
+            if (this.value.trim()) this.classList.add('is-valid');
+            hideAlert();
+        });
+
+        // ============================================
+        // INIT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🔐 Login Page v3.0 - UMKM Senapelan');
+            console.log('📡 Deploy URL:', CONFIG.DEPLOY_URL);
+            console.log('📱 WhatsApp Admin:', CONFIG.WA_NUMBER);
+            
+            const savedUsername = localStorage.getItem('umkm_saved_username');
+            if (savedUsername) {
+                usernameInput.value = savedUsername;
+                passwordInput.focus();
+            }
+            
+            checkSession();
+        });
+    </script>
+
+</body>
+</html>
