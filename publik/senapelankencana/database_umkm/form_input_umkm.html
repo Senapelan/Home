@@ -57,6 +57,51 @@
             --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
             --radius: 20px;
             --radius-sm: 12px;
+            --bg-body: #F0F2F5;
+            --bg-card: white;
+            --text-color: #2D3436;
+            --text-muted: #636E72;
+            --border-color: rgba(0, 0, 0, 0.03);
+            --shadow-color: rgba(0, 0, 0, 0.06);
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-border: #E8ECF1;
+            --sidebar-bg: white;
+            --topbar-bg: white;
+            --modal-bg: white;
+            --modal-header-bg: #F8F9FA;
+            --modal-footer-bg: #F8F9FA;
+            --table-header-bg: #F8F9FA;
+            --table-row-bg: white;
+            --table-border: #F0F2F5;
+            --stat-card-bg: white;
+            --umkm-card-bg: white;
+            --data-card-bg: white;
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --bg-body: #1a1a2e;
+            --bg-card: #16213e;
+            --text-color: #e8e8e8;
+            --text-muted: #a0a0b8;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --sidebar-bg: #16213e;
+            --topbar-bg: #16213e;
+            --modal-bg: #1a1a2e;
+            --modal-header-bg: #16213e;
+            --modal-footer-bg: #16213e;
+            --table-header-bg: #1a1a2e;
+            --table-row-bg: #16213e;
+            --table-border: rgba(255, 255, 255, 0.05);
+            --stat-card-bg: #16213e;
+            --umkm-card-bg: #16213e;
+            --data-card-bg: #16213e;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 15px 50px rgba(0, 0, 0, 0.5);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.2);
         }
 
         * {
@@ -67,9 +112,11 @@
         }
 
         body {
-            background: #F0F2F5;
+            background: var(--bg-body);
             min-height: 100vh;
             padding-bottom: 80px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
         }
 
         /* ============================================
@@ -118,6 +165,50 @@
         @keyframes fadePage {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ============================================
+           DARK MODE TOGGLE
+           ============================================ */
+        .dark-mode-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--gray);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        .dark-mode-toggle.active {
+            background: var(--primary);
+        }
+
+        .dark-mode-toggle .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .dark-mode-toggle.active .toggle-slider {
+            left: 27px;
         }
 
         /* ============================================
@@ -357,6 +448,10 @@
             transition: all 0.4s ease;
         }
 
+        [data-theme="dark"] .loading-overlay {
+            background: rgba(26, 26, 46, 0.95);
+        }
+
         .loading-overlay.active {
             display: flex;
         }
@@ -405,13 +500,13 @@
 
         .loading-text {
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text-color);
             font-size: 18px;
             margin-bottom: 5px;
         }
 
         .loading-subtext {
-            color: var(--gray);
+            color: var(--text-muted);
             font-size: 14px;
             margin-bottom: 20px;
         }
@@ -423,6 +518,10 @@
             border-radius: 10px;
             overflow: hidden;
             position: relative;
+        }
+
+        [data-theme="dark"] .loading-progress {
+            background: rgba(255, 255, 255, 0.1);
         }
 
         .loading-progress .progress-bar {
@@ -469,13 +568,14 @@
             top: 0;
             bottom: 0;
             width: 280px;
-            background: white;
-            box-shadow: 4px 0 30px rgba(0, 0, 0, 0.05);
+            background: var(--sidebar-bg);
+            box-shadow: 4px 0 30px var(--shadow-color);
             padding: 25px 20px;
             z-index: 1000;
             overflow-y: auto;
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
             transform: translateX(0);
+            border-right: 1px solid var(--border-color);
         }
 
         .sidebar .brand {
@@ -484,7 +584,7 @@
             gap: 12px;
             padding: 10px 15px;
             margin-bottom: 30px;
-            border-bottom: 2px solid #F0F2F5;
+            border-bottom: 2px solid var(--border-color);
         }
 
         .sidebar .brand i {
@@ -496,24 +596,23 @@
 
         .sidebar .brand h4 {
             font-weight: 800;
-            color: var(--dark);
+            color: var(--text-color);
             margin: 0;
             font-size: 20px;
         }
 
         .sidebar .brand small {
             font-weight: 400;
-            color: var(--gray);
+            color: var(--text-muted);
             font-size: 11px;
             display: block;
-            -webkit-text-fill-color: var(--gray);
         }
 
         .sidebar .menu-label {
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: var(--gray);
+            color: var(--text-muted);
             font-weight: 700;
             padding: 10px 15px 5px;
         }
@@ -522,7 +621,7 @@
             padding: 12px 20px;
             border-radius: var(--radius-sm);
             margin-bottom: 4px;
-            color: var(--gray);
+            color: var(--text-muted);
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -537,7 +636,7 @@
         }
 
         .sidebar .nav-item:hover {
-            background: #F8F9FA;
+            background: var(--bg-body);
             color: var(--primary);
         }
 
@@ -568,11 +667,11 @@
 
         .sidebar .user-profile {
             padding: 20px;
-            background: var(--light);
+            background: var(--bg-body);
             border-radius: var(--radius);
             margin-top: 20px;
             text-align: center;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
         }
 
         .sidebar .user-profile .avatar {
@@ -598,13 +697,13 @@
 
         .sidebar .user-profile .name {
             font-weight: 700;
-            color: var(--dark);
+            color: var(--text-color);
             font-size: 15px;
         }
 
         .sidebar .user-profile .role {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         .sidebar .user-profile .kelurahan {
@@ -624,9 +723,9 @@
 
         /* Top Bar */
         .top-bar {
-            background: white;
+            background: var(--topbar-bg);
             padding: 15px 30px;
-            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 20px var(--shadow-color);
             position: sticky;
             top: 0;
             z-index: 100;
@@ -635,18 +734,19 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 10px;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .top-bar .page-info h4 {
             font-weight: 800;
-            color: var(--dark);
+            color: var(--text-color);
             margin: 0;
             font-size: 22px;
         }
 
         .top-bar .page-info p {
             margin: 0;
-            color: var(--gray);
+            color: var(--text-muted);
             font-size: 14px;
         }
 
@@ -685,13 +785,13 @@
 
         .top-bar .user-name {
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text-color);
             font-size: 14px;
         }
 
         .top-bar .user-role {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         .menu-toggle {
@@ -699,14 +799,14 @@
             background: none;
             border: none;
             font-size: 24px;
-            color: var(--dark);
+            color: var(--text-color);
             padding: 5px 10px;
             border-radius: var(--radius-sm);
             transition: all 0.3s ease;
         }
 
         .menu-toggle:hover {
-            background: #F0F2F5;
+            background: var(--bg-body);
         }
 
         /* Content */
@@ -727,14 +827,14 @@
         }
 
         .stat-card {
-            background: white;
+            background: var(--stat-card-bg);
             border-radius: var(--radius);
             padding: 25px;
             box-shadow: var(--shadow-soft);
             transition: all 0.3s ease;
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
             position: relative;
-            overflow: visible !important;
+            cursor: pointer;
         }
 
         .stat-card::before {
@@ -745,6 +845,7 @@
             right: 0;
             height: 4px;
             background: var(--gradient);
+            border-radius: var(--radius) var(--radius) 0 0;
         }
 
         .stat-card:hover {
@@ -791,14 +892,87 @@
         .stat-card .stat-number {
             font-size: 32px;
             font-weight: 800;
-            color: var(--dark);
+            color: var(--text-color);
             line-height: 1.2;
         }
 
         .stat-card .stat-label {
             font-size: 14px;
-            color: var(--gray);
+            color: var(--text-muted);
             font-weight: 500;
+        }
+
+        .stat-card .stat-info-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card .stat-info-btn:hover {
+            background: var(--bg-body);
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* ============================================
+           STAT TOOLTIP MODAL
+           ============================================ */
+        .stat-detail-modal .modal-content {
+            background: var(--modal-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-detail-modal .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            background: var(--modal-header-bg);
+        }
+
+        .stat-detail-modal .modal-header h5 {
+            color: var(--text-color);
+        }
+
+        .stat-detail-modal .modal-body {
+            color: var(--text-color);
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-label {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            padding: 15px;
+            background: var(--bg-body);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary);
         }
 
         /* ============================================
@@ -812,12 +986,13 @@
         }
 
         .umkm-card {
-            background: white;
+            background: var(--umkm-card-bg);
             border-radius: var(--radius);
             overflow: hidden;
             box-shadow: var(--shadow-soft);
             transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid rgba(0, 0, 0, 0.03);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
         }
 
         .umkm-card:hover {
@@ -869,13 +1044,13 @@
 
         .umkm-card .card-body h5 {
             font-weight: 700;
-            color: var(--dark);
+            color: var(--text-color);
             margin-bottom: 5px;
             font-size: 18px;
         }
 
         .umkm-card .card-body .owner {
-            color: var(--gray);
+            color: var(--text-muted);
             font-size: 14px;
             margin-bottom: 8px;
         }
@@ -886,7 +1061,7 @@
         }
 
         .umkm-card .card-body .location {
-            color: var(--gray);
+            color: var(--text-muted);
             font-size: 13px;
             margin-bottom: 12px;
         }
@@ -899,7 +1074,7 @@
         .umkm-card .card-body .card-details {
             display: none;
             padding-top: 12px;
-            border-top: 1px solid #F0F2F5;
+            border-top: 1px solid var(--border-color);
             margin-top: 12px;
         }
 
@@ -911,12 +1086,12 @@
         .umkm-card .card-body .card-details small {
             display: block;
             padding: 3px 0;
-            color: var(--gray);
+            color: var(--text-muted);
             font-size: 12px;
         }
 
         .umkm-card .card-body .card-details small strong {
-            color: var(--dark);
+            color: var(--text-color);
         }
 
         .umkm-card .card-body .btn-toggle-detail {
@@ -939,7 +1114,7 @@
             display: flex;
             gap: 8px;
             padding-top: 12px;
-            border-top: 1px solid #F0F2F5;
+            border-top: 1px solid var(--border-color);
             flex-wrap: wrap;
         }
 
@@ -992,14 +1167,63 @@
         }
 
         /* ============================================
+           UMKM DETAIL MODAL
+           ============================================ */
+        .umkm-detail-modal .modal-content {
+            background: var(--modal-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .umkm-detail-modal .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            background: var(--modal-header-bg);
+        }
+
+        .umkm-detail-modal .modal-header h5 {
+            color: var(--text-color);
+        }
+
+        .umkm-detail-modal .modal-body {
+            color: var(--text-color);
+        }
+
+        .umkm-detail-modal .modal-body .detail-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+
+        .umkm-detail-modal .modal-body .detail-item {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .umkm-detail-modal .modal-body .detail-item .label {
+            font-weight: 600;
+            width: 40%;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .umkm-detail-modal .modal-body .detail-item .value {
+            width: 60%;
+            color: var(--text-color);
+            word-break: break-word;
+        }
+
+        /* ============================================
            DATA CARD
            ============================================ */
         .data-card {
-            background: white;
+            background: var(--data-card-bg);
             border-radius: var(--radius);
             padding: 25px;
             box-shadow: var(--shadow-soft);
             margin-bottom: 25px;
+            border: 1px solid var(--border-color);
         }
 
         .data-card .card-header-custom {
@@ -1013,7 +1237,7 @@
 
         .data-card .card-header-custom h5 {
             font-weight: 700;
-            color: var(--dark);
+            color: var(--text-color);
             margin: 0;
             font-size: 18px;
         }
@@ -1062,8 +1286,8 @@
         }
 
         .table-umkm thead th {
-            background: var(--light);
-            color: var(--dark);
+            background: var(--table-header-bg);
+            color: var(--text-color);
             font-weight: 700;
             font-size: 11px;
             text-transform: uppercase;
@@ -1077,12 +1301,13 @@
         }
 
         .table-umkm tbody td {
-            background: white;
+            background: var(--table-row-bg);
             padding: 10px 15px;
             border: none;
             vertical-align: middle;
-            border-bottom: 1px solid #F0F2F5;
+            border-bottom: 1px solid var(--table-border);
             font-size: 13px;
+            color: var(--text-color);
         }
 
         .table-umkm tbody tr {
@@ -1090,7 +1315,7 @@
         }
 
         .table-umkm tbody tr:hover {
-            background: #FAFBFC;
+            background: var(--bg-body);
         }
 
         .table-umkm tbody td:first-child {
@@ -1106,7 +1331,7 @@
             height: 50px;
             object-fit: cover;
             border-radius: var(--radius-sm);
-            border: 3px solid #F0F2F5;
+            border: 3px solid var(--border-color);
             transition: all 0.3s ease;
             cursor: pointer;
         }
@@ -1131,6 +1356,14 @@
         .badge-status.bantuan { background: #FBE9E7; color: #E17055; }
         .badge-status.binaan { background: #E8F0FE; color: #2980B9; }
         .badge-status.tidak { background: #F5F5F5; color: #95A5A6; }
+
+        [data-theme="dark"] .badge-status.rintisan { background: rgba(0, 184, 148, 0.2); color: #55EFC4; }
+        [data-theme="dark"] .badge-status.berkembang { background: rgba(108, 92, 231, 0.2); color: #A29BFE; }
+        [data-theme="dark"] .badge-status.siap { background: rgba(243, 156, 18, 0.2); color: #FDCB6E; }
+        [data-theme="dark"] .badge-status.mandiri { background: rgba(0, 184, 148, 0.2); color: #55EFC4; }
+        [data-theme="dark"] .badge-status.bantuan { background: rgba(225, 112, 85, 0.2); color: #FF6B6B; }
+        [data-theme="dark"] .badge-status.binaan { background: rgba(41, 128, 185, 0.2); color: #74B9FF; }
+        [data-theme="dark"] .badge-status.tidak { background: rgba(149, 165, 166, 0.2); color: #BDC3C7; }
 
         .btn-action-sm {
             width: 35px;
@@ -1199,35 +1432,39 @@
             border-radius: var(--radius);
             border: none;
             box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+            background: var(--modal-bg);
+            color: var(--text-color);
         }
 
         .modal-header {
-            border-bottom: 2px solid #F0F2F5;
+            border-bottom: 2px solid var(--border-color);
             padding: 20px 25px;
-            background: var(--light);
+            background: var(--modal-header-bg);
             border-radius: var(--radius) var(--radius) 0 0;
         }
 
         .modal-header h5 {
             font-weight: 700;
+            color: var(--text-color);
         }
 
         .modal-body {
             padding: 25px;
             max-height: 70vh;
             overflow-y: auto;
+            color: var(--text-color);
         }
 
         .modal-footer {
-            border-top: 2px solid #F0F2F5;
+            border-top: 2px solid var(--border-color);
             padding: 15px 25px;
-            background: var(--light);
+            background: var(--modal-footer-bg);
             border-radius: 0 0 var(--radius) var(--radius);
         }
 
         .form-label {
             font-weight: 600;
-            color: var(--dark);
+            color: var(--text-color);
             font-size: 13px;
             margin-bottom: 5px;
         }
@@ -1240,16 +1477,25 @@
         .form-control,
         .form-select {
             border-radius: var(--radius-sm);
-            border: 2px solid #E8ECF1;
+            border: 2px solid var(--input-border);
             padding: 10px 15px;
             transition: all 0.3s ease;
             font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text-color);
         }
 
         .form-control:focus,
         .form-select:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.08);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
         }
 
         .form-control-lg {
@@ -1257,23 +1503,27 @@
             font-size: 15px;
         }
 
+        .form-control.text-uppercase {
+            text-transform: uppercase;
+        }
+
         /* ============================================
            UPLOAD AREA
            ============================================ */
         .upload-area {
-            border: 2px dashed #DDE1E6;
+            border: 2px dashed var(--input-border);
             border-radius: var(--radius-sm);
             padding: 20px;
             text-align: center;
             cursor: pointer;
             transition: all 0.3s ease;
-            background: #FAFBFC;
+            background: var(--input-bg);
             position: relative;
         }
 
         .upload-area:hover {
             border-color: var(--primary);
-            background: #F8F9FA;
+            background: var(--bg-body);
         }
 
         .upload-area.dragover {
@@ -1284,12 +1534,12 @@
 
         .upload-area i {
             font-size: 30px;
-            color: #BDC3C7;
+            color: var(--text-muted);
             margin-bottom: 5px;
         }
 
         .upload-area p {
-            color: var(--gray);
+            color: var(--text-muted);
             margin: 0;
             font-size: 13px;
         }
@@ -1300,7 +1550,7 @@
             gap: 15px;
             margin-top: 10px;
             padding: 10px;
-            background: var(--light);
+            background: var(--bg-body);
             border-radius: var(--radius-sm);
         }
 
@@ -1309,7 +1559,7 @@
             height: 60px;
             border-radius: var(--radius-sm);
             object-fit: cover;
-            border: 2px solid white;
+            border: 2px solid var(--border-color);
         }
 
         .upload-preview-wrapper .upload-info {
@@ -1320,12 +1570,12 @@
         .upload-preview-wrapper .upload-info .filename {
             font-weight: 600;
             font-size: 13px;
-            color: var(--dark);
+            color: var(--text-color);
         }
 
         .upload-preview-wrapper .upload-info .filesize {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-muted);
         }
 
         .upload-progress-container {
@@ -1335,7 +1585,7 @@
         .upload-progress-container .progress {
             height: 6px;
             border-radius: 10px;
-            background: #E8ECF1;
+            background: var(--input-border);
             overflow: hidden;
         }
 
@@ -1348,7 +1598,7 @@
 
         .upload-progress-container .upload-status {
             font-size: 12px;
-            color: var(--gray);
+            color: var(--text-muted);
             margin-top: 4px;
             display: flex;
             justify-content: space-between;
@@ -1372,11 +1622,11 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: white;
-            box-shadow: 0 -5px 30px rgba(0, 0, 0, 0.08);
+            background: var(--bg-card);
+            box-shadow: 0 -5px 30px var(--shadow-color);
             padding: 8px 0;
             z-index: 999;
-            border-top: 1px solid rgba(0, 0, 0, 0.05);
+            border-top: 1px solid var(--border-color);
         }
 
         .bottom-nav .nav-items {
@@ -1390,7 +1640,7 @@
             flex-direction: column;
             align-items: center;
             padding: 5px 10px;
-            color: var(--gray);
+            color: var(--text-muted);
             text-decoration: none;
             transition: all 0.3s ease;
             cursor: pointer;
@@ -1444,6 +1694,61 @@
         }
 
         /* ============================================
+           PANDUAN PAGE
+           ============================================ */
+        .panduan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .panduan-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .panduan-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .panduan-card .panduan-kode {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(108, 92, 231, 0.1);
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .panduan-card .panduan-status {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .panduan-card .panduan-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .panduan-card .panduan-id {
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.5;
+            margin-top: 10px;
+        }
+
+        /* ============================================
            RESPONSIVE
            ============================================ */
         @media (max-width: 992px) {
@@ -1472,10 +1777,6 @@
         }
 
         @media (max-width: 768px) {
-            .login-card {
-                padding: 35px 25px;
-                border-radius: 25px;
-            }
             .content-area {
                 padding: 15px;
             }
@@ -1541,10 +1842,27 @@
                 font-size: 18px;
             }
             .umkm-grid {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px;
             }
             .umkm-card .card-image {
-                height: 180px;
+                height: 140px;
+            }
+            .umkm-card .card-body h5 {
+                font-size: 15px;
+            }
+            .umkm-card .card-body .owner {
+                font-size: 12px;
+            }
+            .umkm-card .card-body .location {
+                font-size: 11px;
+            }
+            .umkm-card .card-body .card-actions .btn-action {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .panduan-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1562,21 +1880,31 @@
             .stat-card .stat-label {
                 font-size: 12px;
             }
-            .login-card {
-                padding: 25px 20px;
-            }
-            .login-card .logo .icon-wrapper {
-                width: 60px;
-                height: 60px;
-            }
-            .login-card .logo .icon-wrapper i {
-                font-size: 30px;
-            }
-            .login-card .logo h2 {
-                font-size: 22px;
+            .umkm-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px;
             }
             .umkm-card .card-image {
-                height: 150px;
+                height: 120px;
+            }
+            .umkm-card .card-body {
+                padding: 12px;
+            }
+            .umkm-card .card-body h5 {
+                font-size: 13px;
+            }
+            .umkm-card .card-body .owner {
+                font-size: 11px;
+            }
+            .umkm-card .card-body .location {
+                font-size: 10px;
+            }
+            .umkm-card .card-body .card-actions .btn-action {
+                font-size: 9px;
+                padding: 3px 8px;
+            }
+            .umkm-card .card-body .btn-toggle-detail {
+                font-size: 11px;
             }
         }
 
@@ -1594,7 +1922,7 @@
             height: 6px;
         }
         ::-webkit-scrollbar-track {
-            background: #F0F2F5;
+            background: var(--bg-body);
         }
         ::-webkit-scrollbar-thumb {
             background: var(--primary);
@@ -1609,9 +1937,11 @@
            ============================================ */
         .dataTables_wrapper .dataTables_filter input {
             border-radius: var(--radius-sm);
-            border: 2px solid #E8ECF1;
+            border: 2px solid var(--input-border);
             padding: 8px 15px;
             margin-left: 10px;
+            background: var(--input-bg);
+            color: var(--text-color);
         }
 
         .dataTables_wrapper .dataTables_filter input:focus {
@@ -1623,6 +1953,7 @@
             border-radius: var(--radius-sm) !important;
             padding: 6px 14px !important;
             margin: 0 3px !important;
+            color: var(--text-color) !important;
         }
 
         .dataTables_wrapper .dataTables_paginate .paginate_button.current {
@@ -1631,16 +1962,76 @@
             border: none !important;
         }
 
+        .dataTables_wrapper .dataTables_info {
+            color: var(--text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_length label {
+            color: var(--text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 4px 8px;
+        }
+
         .img-fallback {
-            background: #f0f2f5;
+            background: var(--bg-body);
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #b0b8c0;
+            color: var(--text-muted);
             font-size: 20px;
         }
         .img-fallback i {
             font-size: 28px;
+        }
+
+        /* ============================================
+           FILTER SECTION
+           ============================================ */
+        .filter-active {
+            border-color: var(--primary) !important;
+            background-color: rgba(108, 92, 231, 0.05);
+        }
+
+        /* ============================================
+           USER OWNERSHIP BADGE
+           ============================================ */
+        .badge-owner {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           DARK MODE TOGGLE IN PROFILE
+           ============================================ */
+        .dark-mode-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode-row .dark-mode-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode-row .dark-mode-label i {
+            font-size: 20px;
+            color: var(--primary);
         }
     </style>
 </head>
@@ -1691,6 +2082,9 @@
             <button class="nav-item" data-page="dataumkm">
                 <i class="fas fa-list"></i> Data UMKM
                 <span class="badge-menu" id="menuBadge">0</span>
+            </button>
+            <button class="nav-item" data-page="panduan" id="menuPanduan">
+                <i class="fas fa-book"></i> Panduan
             </button>
             <button class="nav-item" data-page="rekap" id="menuRekap">
                 <i class="fas fa-chart-bar"></i> Rekap Kelurahan
@@ -1748,7 +2142,7 @@
                     <div class="data-card" style="margin-bottom:20px;">
                         <div class="card-header-custom">
                             <h5><i class="fas fa-filter"></i> Filter Data</h5>
-                            <button class="btn btn-sm btn-outline-secondary" id="btnResetFilter" style="border-radius:var(--radius-sm);padding:6px 16px;">
+                            <button class="btn btn-sm btn-outline-secondary" id="btnResetFilter" style="border-radius:var(--radius-sm);padding:6px 16px;border-color:var(--border-color);color:var(--text-color);">
                                 <i class="fas fa-undo"></i> Reset Filter
                             </button>
                         </div>
@@ -1761,11 +2155,11 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">RT</label>
-                                <input type="text" class="form-control" id="filterRT" placeholder="Cari RT...">
+                                <input type="text" class="form-control" id="filterRT" placeholder="Cari RT...(001)">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">RW</label>
-                                <input type="text" class="form-control" id="filterRW" placeholder="Cari RW...">
+                                <input type="text" class="form-control" id="filterRW" placeholder="Cari RW...(003)">
                             </div>
                             <div class="col-md-2">
                                 <button class="btn btn-add w-100" id="btnApplyFilter">
@@ -1838,6 +2232,19 @@
                     </div>
                 </div>
 
+                <!-- ===== PAGE: PANDUAN ===== -->
+                <div class="page-content" id="pagePanduan">
+                    <div class="data-card">
+                        <div class="card-header-custom">
+                            <h5><i class="fas fa-book"></i> Panduan Status UMKM</h5>
+                            <span class="text-muted" style="font-size:13px;">Pahami status UMKM sebelum menginput data</span>
+                        </div>
+                        <div class="panduan-grid" id="panduanGrid">
+                            <!-- Loaded by JS -->
+                        </div>
+                    </div>
+                </div>
+
                 <!-- ===== PAGE: REKAP ===== -->
                 <div class="page-content" id="pageRekap">
                     <div class="data-card">
@@ -1903,7 +2310,20 @@
                                         <input type="text" class="form-control" id="profileKelurahanInput" disabled>
                                     </div>
                                 </div>
-                                <div class="mt-4">
+
+                                <!-- Dark Mode Toggle -->
+                                <div class="mt-4 pt-3 border-top" style="border-color:var(--border-color);">
+                                    <div class="dark-mode-row">
+                                        <span class="dark-mode-label">
+                                            <i class="fas fa-moon"></i> Mode Gelap
+                                        </span>
+                                        <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+                                            <span class="toggle-slider">🌙</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
                                     <button class="btn btn-danger" id="btnLogoutProfile">
                                         <i class="fas fa-sign-out-alt me-2"></i> Logout
                                     </button>
@@ -1929,9 +2349,9 @@
                 <span>Data</span>
                 <span class="badge-nav" id="dataBadge">0</span>
             </button>
-            <button class="nav-item" data-page="rekap" id="navRekap">
-                <i class="fas fa-chart-bar"></i>
-                <span>Rekap</span>
+            <button class="nav-item" data-page="panduan" id="navPanduan">
+                <i class="fas fa-book"></i>
+                <span>Panduan</span>
             </button>
             <button class="nav-item" data-page="profile">
                 <i class="fas fa-user"></i>
@@ -1969,20 +2389,20 @@
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">RT</label>
-                                <input type="text" class="form-control" id="fRT" placeholder="RT">
+                                <input type="text" class="form-control" id="fRT" placeholder="001">
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">RW</label>
-                                <input type="text" class="form-control" id="fRW" placeholder="RW">
+                                <input type="text" class="form-control" id="fRW" placeholder="003">
                             </div>
 
                             <div class="col-md-6">
                                 <label class="form-label">Nama UMKM <span class="required">*</span></label>
-                                <input type="text" class="form-control form-control-lg" id="fNamaUMKM" placeholder="Nama UMKM" required>
+                                <input type="text" class="form-control form-control-lg text-uppercase" id="fNamaUMKM" placeholder="Nama UMKM" required>
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Nama Pemilik <span class="required">*</span></label>
-                                <input type="text" class="form-control form-control-lg" id="fPemilik" placeholder="Nama Pemilik" required>
+                                <input type="text" class="form-control form-control-lg text-uppercase" id="fPemilik" placeholder="Nama Pemilik" required>
                             </div>
 
                             <div class="col-md-12">
@@ -1992,7 +2412,7 @@
 
                             <div class="col-12">
                                 <label class="form-label">Alamat UMKM <span class="required">*</span></label>
-                                <textarea class="form-control" id="fAlamat" rows="2" placeholder="Alamat lengkap" required></textarea>
+                                <textarea class="form-control text-uppercase" id="fAlamat" rows="2" placeholder="Alamat lengkap" required></textarea>
                             </div>
 
                             <div class="col-md-6">
@@ -2025,7 +2445,7 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label">Email</label>
-                                <input type="email" class="form-control" id="fEmail" placeholder="Email">
+                                <input type="email" class="form-control text-uppercase" id="fEmail" placeholder="Email">
                             </div>
 
                             <div class="col-12">
@@ -2059,12 +2479,53 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background:var(--bg-body);color:var(--text-color);border-color:var(--border-color);">Batal</button>
                         <button type="submit" class="btn btn-add" id="btnSubmitForm">
                             <i class="fas fa-save me-2"></i> Simpan
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL STAT DETAIL ===== -->
+    <div class="modal fade stat-detail-modal" id="statDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="statDetailTitle">Detail Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" id="statDetailBody">
+                    <div class="stat-detail-icon" id="statDetailIcon"></div>
+                    <div class="stat-detail-number" id="statDetailNumber">0</div>
+                    <div class="stat-detail-label" id="statDetailLabel">Label</div>
+                    <div class="mt-3">
+                        <div class="stat-detail-desc" id="statDetailDesc">Deskripsi</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background:var(--bg-body);color:var(--text-color);border-color:var(--border-color);">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL UMKM DETAIL ===== -->
+    <div class="modal fade umkm-detail-modal" id="umkmDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="umkmDetailTitle">Detail UMKM</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="umkmDetailBody">
+                    <!-- Loaded by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background:var(--bg-body);color:var(--text-color);border-color:var(--border-color);">Tutup</button>
+                </div>
             </div>
         </div>
     </div>
@@ -2088,12 +2549,12 @@
         // KONFIGURASI
         // ============================================
         const CONFIG = {
-            // GANTI DENGAN URL DEPLOY APPS SCRIPT ANDA
             DEPLOY_URL: 'https://script.google.com/macros/s/AKfycbwe7A_yaM-i6BI3Lg9gcJqEBncphB42rF7nFkROLoAZQonDM6yUbrs9J575ByDtMxRo/exec',
             DRIVE_FOLDER_ID: '1ZCjmmZT7oYRsXGXRCM3X2NJVKAc1OOjo',
             SESSION_KEY: 'umkm_premium_session',
             CACHE_KEY: 'umkm_data_cache',
-            CACHE_DURATION: 5 * 60 * 1000
+            CACHE_DURATION: 5 * 60 * 1000,
+            DARK_MODE_KEY: 'umkm_dark_mode'
         };
 
         console.log('🚀 Script dimulai...');
@@ -2118,6 +2579,53 @@
             rt: '',
             rw: ''
         };
+        let isDarkMode = false;
+
+        // ============================================
+        // DARK MODE
+        // ============================================
+        function loadDarkMode() {
+            try {
+                const saved = localStorage.getItem(CONFIG.DARK_MODE_KEY);
+                if (saved !== null) {
+                    isDarkMode = saved === 'true';
+                } else {
+                    // Deteksi preferensi sistem
+                    isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+                applyDarkMode(isDarkMode);
+            } catch {
+                isDarkMode = false;
+                applyDarkMode(false);
+            }
+        }
+
+        function applyDarkMode(enabled) {
+            isDarkMode = enabled;
+            const toggle = document.getElementById('darkModeToggle');
+            const slider = toggle?.querySelector('.toggle-slider');
+            
+            if (enabled) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                if (toggle) toggle.classList.add('active');
+                if (slider) slider.textContent = '☀️';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                if (toggle) toggle.classList.remove('active');
+                if (slider) slider.textContent = '🌙';
+            }
+            
+            try {
+                localStorage.setItem(CONFIG.DARK_MODE_KEY, String(enabled));
+            } catch {}
+        }
+
+        function toggleDarkMode() {
+            applyDarkMode(!isDarkMode);
+        }
+
+        // Dark mode toggle event
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
 
         // ============================================
         // PREMIUM LOADING MANAGER
@@ -2137,8 +2645,6 @@
                 this.percentage = document.getElementById('loadPercentage');
                 
                 console.log('✅ Loader initialized');
-                console.log('📦 overlay:', this.overlay);
-                console.log('📦 progressBar:', this.progressBar);
             },
 
             show(message = 'Memuat data...', subtext = 'Mohon tunggu sebentar') {
@@ -2276,6 +2782,18 @@
             } catch { return dateStr; }
         }
 
+        // Fungsi untuk mengubah teks menjadi huruf besar (UPPERCASE) - untuk input
+        function toUpperCase(str) {
+            if (!str) return '';
+            return String(str).toUpperCase();
+        }
+
+        // Fungsi untuk plain text (tidak mengubah format)
+        function toPlainText(str) {
+            if (!str) return '';
+            return String(str).trim();
+        }
+
         function getStatusClass(status) {
             let s = status || 'Tidak Aktif';
             s = s.replace(/^UMKM\s+/, '');
@@ -2302,6 +2820,21 @@
             if (display === 'Membutuhkan Bantuan Pemerintah') display = 'Butuh Bantuan';
 
             return `<span class="badge-status ${cls}">${display}</span>`;
+        }
+
+        function getStatusKode(status) {
+            const map = {
+                'Rintisan': 'RINTISAN',
+                'Berkembang': 'BERKEMBANG',
+                'Siap Naik Kelas': 'SIAP_NAIK',
+                'Siap Naik': 'SIAP_NAIK',
+                'Mandiri': 'MANDIRI',
+                'Membutuhkan Bantuan Pemerintah': 'BUTUH_BANTUAN',
+                'Butuh Bantuan': 'BUTUH_BANTUAN',
+                'Binaan Pemerintah': 'BINAAN',
+                'Tidak Aktif': 'TIDAK_AKTIF'
+            };
+            return map[status] || status;
         }
 
         function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
@@ -2415,7 +2948,6 @@
                 }
             } catch (error) {
                 console.error('❌ Error checkSession:', error);
-                // Coba lagi dengan redirect ke login
                 window.location.href = 'login.html';
                 return false;
             }
@@ -2508,23 +3040,17 @@
         }
 
         // ============================================
-        // SHOW DASHBOARD - FIXED
+        // SHOW DASHBOARD
         // ============================================
         function showDashboard() {
             console.log('📊 showDashboard dipanggil');
             console.log('👤 currentUser:', currentUser);
             
-            // Cek elemen loginPage dan dashboardPage
             const loginPage = document.getElementById('loginPage');
             const dashboardPage = document.getElementById('dashboardPage');
             
-            console.log('📦 loginPage:', loginPage);
-            console.log('📦 dashboardPage:', dashboardPage);
-            
-            // Sembunyikan loginPage (jika ada)
             if (loginPage) loginPage.style.display = 'none';
             
-            // Tampilkan dashboardPage
             if (dashboardPage) {
                 dashboardPage.style.display = 'block';
                 console.log('✅ Dashboard ditampilkan');
@@ -2598,6 +3124,7 @@
             const pageMap = {
                 'dashboard': 'pageDashboard',
                 'dataumkm': 'pageDataUMKM',
+                'panduan': 'pagePanduan',
                 'rekap': 'pageRekap',
                 'profile': 'pageProfile'
             };
@@ -2608,6 +3135,7 @@
             const titles = {
                 'dashboard': 'Dashboard',
                 'dataumkm': 'Data UMKM',
+                'panduan': 'Panduan Status UMKM',
                 'rekap': 'Rekap Per Kelurahan',
                 'profile': 'Profil Saya'
             };
@@ -2615,6 +3143,7 @@
             const subtitles = {
                 'dashboard': 'Ringkasan data UMKM',
                 'dataumkm': 'Kelola data UMKM lengkap',
+                'panduan': 'Pahami status UMKM sebelum menginput data',
                 'rekap': 'Statistik per kelurahan',
                 'profile': 'Informasi akun Anda'
             };
@@ -2693,20 +3222,81 @@
         // RENDER FUNCTIONS
         // ============================================
         
-        // RENDER DASHBOARD STATS
+        // RENDER DASHBOARD STATS - dengan info deskripsi dari STATUS_UMKM
         function renderDashboard() {
             const data = getFilteredData();
             const total = data.length;
 
+            // Ambil data status dari sheet untuk deskripsi
+            const statusData = allData.status || [];
+            const statusMap = {};
+            statusData.forEach(s => {
+                const key = s.Status || '';
+                const kode = s.Kode || getStatusKode(key);
+                statusMap[kode] = {
+                    status: key,
+                    kode: kode,
+                    deskripsi: s.Deskripsi || ''
+                };
+            });
+
             const statusInfo = {
-                'Total UMKM': { label: 'Total UMKM', icon: 'fa-store', color: 'purple' },
-                'Rintisan': { label: 'Rintisan', icon: 'fa-leaf', color: 'green' },
-                'Berkembang': { label: 'Berkembang', icon: 'fa-arrow-up', color: 'orange' },
-                'Siap Naik': { label: 'Siap Naik', icon: 'fa-rocket', color: 'blue' },
-                'Mandiri': { label: 'Mandiri', icon: 'fa-crown', color: 'purple' },
-                'Butuh Bantuan': { label: 'Butuh Bantuan', icon: 'fa-hand-holding-heart', color: 'red' },
-                'Binaan Pemerintah': { label: 'Binaan Pemerintah', icon: 'fa-hands-helping', color: 'orange' },
-                'Tidak Aktif': { label: 'Tidak Aktif', icon: 'fa-circle', color: 'gray' }
+                'Total UMKM': { 
+                    label: 'Total UMKM', 
+                    icon: 'fa-store', 
+                    color: 'purple',
+                    kode: 'TOTAL',
+                    deskripsi: 'Jumlah seluruh UMKM yang terdaftar dalam sistem pendataan.'
+                },
+                'Rintisan': { 
+                    label: 'Rintisan', 
+                    icon: 'fa-leaf', 
+                    color: 'green',
+                    kode: 'RINTISAN',
+                    deskripsi: statusMap['RINTISAN']?.deskripsi || 'Usaha baru dimulai atau masih dalam tahap awal pengembangan.'
+                },
+                'Berkembang': { 
+                    label: 'Berkembang', 
+                    icon: 'fa-arrow-up', 
+                    color: 'orange',
+                    kode: 'BERKEMBANG',
+                    deskripsi: statusMap['BERKEMBANG']?.deskripsi || 'Usaha telah berjalan dengan baik dan menunjukkan perkembangan.'
+                },
+                'Siap Naik': { 
+                    label: 'Siap Naik', 
+                    icon: 'fa-rocket', 
+                    color: 'blue',
+                    kode: 'SIAP_NAIK',
+                    deskripsi: statusMap['SIAP_NAIK']?.deskripsi || 'Usaha sudah stabil dan memiliki potensi untuk berkembang ke skala yang lebih besar.'
+                },
+                'Mandiri': { 
+                    label: 'Mandiri', 
+                    icon: 'fa-crown', 
+                    color: 'purple',
+                    kode: 'MANDIRI',
+                    deskripsi: statusMap['MANDIRI']?.deskripsi || 'Usaha telah berjalan secara stabil dan mampu berkembang tanpa bergantung pada bantuan pemerintah.'
+                },
+                'Butuh Bantuan': { 
+                    label: 'Butuh Bantuan', 
+                    icon: 'fa-hand-holding-heart', 
+                    color: 'red',
+                    kode: 'BUTUH_BANTUAN',
+                    deskripsi: statusMap['BUTUH_BANTUAN']?.deskripsi || 'Usaha mengalami kendala yang menghambat perkembangan dan memerlukan dukungan pemerintah.'
+                },
+                'Binaan Pemerintah': { 
+                    label: 'Binaan Pemerintah', 
+                    icon: 'fa-hands-helping', 
+                    color: 'orange',
+                    kode: 'BINAAN',
+                    deskripsi: statusMap['BINAAN']?.deskripsi || 'Usaha yang dibina langsung oleh Pemerintah Kota Pekanbaru melalui program pembinaan dan pendampingan UMKM.'
+                },
+                'Tidak Aktif': { 
+                    label: 'Tidak Aktif', 
+                    icon: 'fa-circle', 
+                    color: 'gray',
+                    kode: 'TIDAK_AKTIF',
+                    deskripsi: statusMap['TIDAK_AKTIF']?.deskripsi || 'Usaha tidak lagi beroperasi untuk sementara atau telah berhenti beroperasi.'
+                }
             };
 
             const statusKeys = ['Rintisan', 'Berkembang', 'Siap Naik', 'Mandiri', 'Butuh Bantuan', 'Binaan Pemerintah', 'Tidak Aktif'];
@@ -2737,11 +3327,15 @@
                 const info = statusInfo[item.key];
                 if (!info) return;
 
+                const id = item.key.replace(/\s+/g, '-');
                 html += `
-                    <div class="stat-card">
+                    <div class="stat-card" data-stat="${id}" onclick="showStatDetail('${id}')">
                         <div class="stat-icon ${info.color}"><i class="fas ${info.icon}"></i></div>
                         <div class="stat-number">${item.number}</div>
                         <div class="stat-label">${info.label}</div>
+                        <button class="stat-info-btn" onclick="event.stopPropagation();showStatDetail('${id}')" title="Lihat Deskripsi">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
                     </div>
                 `;
             });
@@ -2750,26 +3344,136 @@
             if (container) container.innerHTML = html;
         }
 
+        // ============================================
+        // SHOW STAT DETAIL - Modal
+        // ============================================
+        function showStatDetail(id) {
+            const statMap = {
+                'Total-UMKM': { 
+                    label: 'Total UMKM', 
+                    icon: 'fa-store', 
+                    color: 'purple',
+                    desc: 'Jumlah seluruh UMKM yang terdaftar dalam sistem pendataan.'
+                },
+                'Rintisan': { 
+                    label: 'Rintisan', 
+                    icon: 'fa-leaf', 
+                    color: 'green',
+                    desc: getAllStatusDesc('RINTISAN') || 'Usaha baru dimulai atau masih dalam tahap awal pengembangan.'
+                },
+                'Berkembang': { 
+                    label: 'Berkembang', 
+                    icon: 'fa-arrow-up', 
+                    color: 'orange',
+                    desc: getAllStatusDesc('BERKEMBANG') || 'Usaha telah berjalan dengan baik dan menunjukkan perkembangan.'
+                },
+                'Siap-Naik': { 
+                    label: 'Siap Naik', 
+                    icon: 'fa-rocket', 
+                    color: 'blue',
+                    desc: getAllStatusDesc('SIAP_NAIK') || 'Usaha sudah stabil dan memiliki potensi untuk berkembang ke skala yang lebih besar.'
+                },
+                'Mandiri': { 
+                    label: 'Mandiri', 
+                    icon: 'fa-crown', 
+                    color: 'purple',
+                    desc: getAllStatusDesc('MANDIRI') || 'Usaha telah berjalan secara stabil dan mampu berkembang tanpa bergantung pada bantuan pemerintah.'
+                },
+                'Butuh-Bantuan': { 
+                    label: 'Butuh Bantuan', 
+                    icon: 'fa-hand-holding-heart', 
+                    color: 'red',
+                    desc: getAllStatusDesc('BUTUH_BANTUAN') || 'Usaha mengalami kendala yang menghambat perkembangan dan memerlukan dukungan pemerintah.'
+                },
+                'Binaan-Pemerintah': { 
+                    label: 'Binaan Pemerintah', 
+                    icon: 'fa-hands-helping', 
+                    color: 'orange',
+                    desc: getAllStatusDesc('BINAAN') || 'Usaha yang dibina langsung oleh Pemerintah Kota Pekanbaru.'
+                },
+                'Tidak-Aktif': { 
+                    label: 'Tidak Aktif', 
+                    icon: 'fa-circle', 
+                    color: 'gray',
+                    desc: getAllStatusDesc('TIDAK_AKTIF') || 'Usaha tidak lagi beroperasi untuk sementara atau telah berhenti beroperasi.'
+                }
+            };
+
+            // Cari data dari berbagai kemungkinan ID
+            let statData = null;
+            const possibleKeys = [id, id.replace(/-/g, '')];
+            
+            for (const key of possibleKeys) {
+                if (statMap[key]) {
+                    statData = statMap[key];
+                    break;
+                }
+                // Coba cari dengan case insensitive
+                for (const [mapKey, mapValue] of Object.entries(statMap)) {
+                    if (mapKey.toLowerCase() === key.toLowerCase()) {
+                        statData = mapValue;
+                        break;
+                    }
+                }
+                if (statData) break;
+            }
+
+            if (!statData) {
+                // Coba cari berdasarkan label
+                const label = id.replace(/-/g, ' ');
+                for (const [mapKey, mapValue] of Object.entries(statMap)) {
+                    if (mapValue.label.toLowerCase() === label.toLowerCase()) {
+                        statData = mapValue;
+                        break;
+                    }
+                }
+            }
+
+            if (!statData) {
+                console.warn('Stat data not found for:', id);
+                return;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('statDetailModal'));
+            document.getElementById('statDetailTitle').textContent = statData.label;
+            document.getElementById('statDetailIcon').innerHTML = `<i class="fas ${statData.icon}" style="color:${statData.color};"></i>`;
+            
+            // Ambil angka dari card
+            const card = document.querySelector(`.stat-card[data-stat="${id}"]`);
+            const numberEl = card?.querySelector('.stat-number');
+            const number = numberEl ? numberEl.textContent : '0';
+            
+            document.getElementById('statDetailNumber').textContent = number;
+            document.getElementById('statDetailLabel').textContent = statData.label;
+            document.getElementById('statDetailDesc').textContent = statData.desc;
+            
+            modal.show();
+        }
+
+        function getAllStatusDesc(kode) {
+            const statusData = allData.status || [];
+            const found = statusData.find(s => s.Kode === kode);
+            return found ? found.Deskripsi : null;
+        }
+
+        // ============================================
         // GET FILTERED DATA
+        // ============================================
         function getFilteredData() {
             let data = allData.umkm || [];
             
-            // Filter Kelurahan
             if (filterSettings.kelurahan) {
                 data = data.filter(item => item.Kelurahan === filterSettings.kelurahan);
             }
             
-            // Filter RT
             if (filterSettings.rt) {
-                data = data.filter(item => item.RT && item.RT.toString().includes(filterSettings.rt));
+                data = data.filter(item => item.RT && String(item.RT).includes(filterSettings.rt));
             }
             
-            // Filter RW
             if (filterSettings.rw) {
-                data = data.filter(item => item.RW && item.RW.toString().includes(filterSettings.rw));
+                data = data.filter(item => item.RW && String(item.RW).includes(filterSettings.rw));
             }
             
-            // Filter berdasarkan kelurahan user (untuk non-admin)
             if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
                 data = data.filter(item => item.Kelurahan === currentUser.kelurahan);
             }
@@ -2777,7 +3481,49 @@
             return data;
         }
 
+        // ============================================
+        // RENDER PANDUAN
+        // ============================================
+        function renderPanduan() {
+            const grid = document.getElementById('panduanGrid');
+            if (!grid) return;
+
+            const statusData = allData.status || [];
+
+            if (statusData.length === 0) {
+                grid.innerHTML = `
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-book fa-3x mb-3" style="color:#DDE1E6;"></i>
+                        <p>Belum ada data panduan</p>
+                        <p class="small">Silahkan tambahkan data status UMKM di sheet STATUS_UMKM</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            statusData.forEach(item => {
+                const status = item.Status || '';
+                const kode = item.Kode || getStatusKode(status);
+                const deskripsi = item.Deskripsi || '-';
+                const id = item.ID || '-';
+
+                html += `
+                    <div class="panduan-card">
+                        <div class="panduan-kode">${kode}</div>
+                        <div class="panduan-status">${status}</div>
+                        <div class="panduan-desc">${deskripsi}</div>
+                        <div class="panduan-id">ID: ${id}</div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // ============================================
         // POPULATE FILTER KELURAHAN
+        // ============================================
         function populateFilterKelurahan() {
             const select = document.getElementById('filterKelurahan');
             if (!select) return;
@@ -2796,7 +3542,6 @@
                     if (name) kelurahanList.add(name);
                 });
             } else {
-                // Non-admin hanya bisa melihat kelurahannya sendiri
                 if (currentUser && currentUser.kelurahan) {
                     kelurahanList.add(currentUser.kelurahan);
                 }
@@ -2812,7 +3557,9 @@
             if (currentValue) select.value = currentValue;
         }
 
+        // ============================================
         // UPDATE FILTER INFO
+        // ============================================
         function updateFilterInfo() {
             const info = document.getElementById('filterInfo');
             if (!info) return;
@@ -2833,7 +3580,9 @@
             }
         }
 
+        // ============================================
         // RENDER UMKM CARDS
+        // ============================================
         function renderUMKMCards() {
             const data = getFilteredData();
             const grid = document.getElementById('umkmGrid');
@@ -2842,7 +3591,7 @@
 
             if (data.length === 0) {
                 grid.innerHTML = `
-                    <div class="text-center text-muted py-5">
+                    <div class="text-center text-muted py-5" style="grid-column:1/-1;">
                         <i class="fas fa-store fa-3x mb-3" style="color:#DDE1E6;"></i>
                         <p>Belum ada data UMKM</p>
                         <button class="btn btn-add" onclick="document.getElementById('btnTambahUMKM').click()">
@@ -2863,7 +3612,7 @@
                 const canEdit = canEditDelete(item);
 
                 html += `
-                    <div class="umkm-card">
+                    <div class="umkm-card" onclick="showUMKMDetail(${index})">
                         <div class="card-image">
                             ${foto ? 
                                 `<img src="${foto}" alt="${item['Nama UMKM'] || 'UMKM'}" loading="lazy" 
@@ -2871,7 +3620,7 @@
                                  <div class="img-fallback" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;">
                                      <i class="fas fa-image"></i>
                                  </div>` : 
-                                `<div class="d-flex align-items-center justify-content-center h-100 text-muted" style="background:#F8F9FA;">
+                                `<div class="d-flex align-items-center justify-content-center h-100 text-muted" style="background:var(--bg-body);">
                                     <i class="fas fa-image fa-3x"></i>
                                 </div>`
                             }
@@ -2883,7 +3632,7 @@
                             <div class="owner"><i class="fas fa-user"></i> ${item['Nama Pemilik'] || '-'}</div>
                             <div class="location"><i class="fas fa-map-marker-alt"></i> ${item.Kelurahan || '-'}</div>
                             
-                            <button class="btn-toggle-detail" onclick="toggleCardDetail(this)">
+                            <button class="btn-toggle-detail" onclick="event.stopPropagation();toggleCardDetail(this)">
                                 <i class="fas fa-chevron-down"></i> Lihat Detail
                             </button>
                             
@@ -2901,7 +3650,7 @@
                                 <small><strong>Tanggal Input:</strong> ${formatDateTime(item['Tanggal Input'])}</small>
                             </div>
                             
-                            <div class="card-actions">
+                            <div class="card-actions" onclick="event.stopPropagation();">
                                 <button class="btn-action btn-edit" onclick="editUMKM(${index})" ${!canEdit ? 'disabled' : ''}>
                                     <i class="fas fa-edit"></i> Edit
                                 </button>
@@ -2935,7 +3684,62 @@
             }
         }
 
+        // ============================================
+        // SHOW UMKM DETAIL MODAL
+        // ============================================
+        function showUMKMDetail(index) {
+            const data = allData.umkm[index];
+            if (!data) return;
+
+            const modal = new bootstrap.Modal(document.getElementById('umkmDetailModal'));
+            const body = document.getElementById('umkmDetailBody');
+            
+            const rawFoto = data['Link Foto Thumbnail'] || '';
+            const foto = getEmbeddableDriveUrl(rawFoto);
+            
+            document.getElementById('umkmDetailTitle').textContent = data['Nama UMKM'] || 'Detail UMKM';
+
+            let html = `
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        ${foto ? 
+                            `<img src="${foto}" class="detail-image" alt="${data['Nama UMKM'] || 'UMKM'}" 
+                                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22 viewBox=%220 0 400 300%22%3E%3Crect width=%22400%22 height=%22300%22 fill=%22%23f0f2f5%22/%3E%3Ctext x=%22200%22 y=%22150%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22%23b0b8c0%22%3E📷%3C/text%3E%3C/svg%3E'">` :
+                            `<div class="detail-image d-flex align-items-center justify-content-center bg-light text-muted" style="height:300px;border-radius:var(--radius-sm);">
+                                <i class="fas fa-image fa-4x"></i>
+                            </div>`
+                        }
+                        <div class="mt-2 text-center">
+                            <span class="badge-status ${getStatusClass(data['Status UMKM'])}">${data['Status UMKM'] || 'Tidak Aktif'}</span>
+                            ${isOwnedByUser(data) ? '<span class="badge-owned ms-2"><i class="fas fa-user-check"></i> Data Saya</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h5 class="mb-3">${data['Nama UMKM'] || 'Tanpa Nama'}</h5>
+                        <div class="detail-item"><span class="label">Pemilik</span><span class="value">${data['Nama Pemilik'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Kelurahan</span><span class="value">${data.Kelurahan || '-'}</span></div>
+                        <div class="detail-item"><span class="label">RT/RW</span><span class="value">${data.RT || '-'}/${data.RW || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Alamat</span><span class="value">${data['Alamat UMKM'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">No Surat Izin</span><span class="value">${data['No Surat Izin'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Kategori</span><span class="value">${data.Kategori || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Sub Kategori</span><span class="value">${data['Sub Kategori'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Tahun Berdiri</span><span class="value">${data['Tahun Berdiri'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Telepon</span><span class="value">${data['No Telepon'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Email</span><span class="value">${data.Email || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Website</span><span class="value">${data['Website/Sosial Media'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Diinput Oleh</span><span class="value">${data['Diinput Oleh'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Tanggal Input</span><span class="value">${formatDateTime(data['Tanggal Input'])}</span></div>
+                    </div>
+                </div>
+            `;
+
+            body.innerHTML = html;
+            modal.show();
+        }
+
+        // ============================================
         // RENDER UMKM TABLE
+        // ============================================
         function renderUMKMTable() {
             const data = getFilteredData();
             const tbody = document.getElementById('umkmTableBody');
@@ -2960,7 +3764,7 @@
                     `<img src="${foto}" class="thumbnail-img" alt="Foto" 
                               onclick="window.open('${foto}', '_blank')"
                               onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-                             <div class="thumbnail-img img-fallback" style="display:none;width:50px;height:50px;border-radius:12px;background:#f0f2f5;align-items:center;justify-content:center;color:#b0b8c0;font-size:20px;">
+                             <div class="thumbnail-img img-fallback" style="display:none;width:50px;height:50px;border-radius:12px;align-items:center;justify-content:center;font-size:20px;">
                                  <i class="fas fa-image"></i>
                              </div>` :
                     `<div class="thumbnail-img d-flex align-items-center justify-content-center bg-light text-muted" style="width:50px;height:50px;border-radius:12px;"><i class="fas fa-image"></i></div>`;
@@ -3020,7 +3824,9 @@
             });
         }
 
+        // ============================================
         // RENDER REKAP
+        // ============================================
         function renderRekap() {
             const data = allData.rekap || [];
             const body = document.getElementById('rekapTableBody');
@@ -3051,7 +3857,9 @@
             body.innerHTML = html;
         }
 
+        // ============================================
         // UPDATE BADGE
+        // ============================================
         function updateBadge() {
             const data = getFilteredData();
             const count = data.length;
@@ -3061,13 +3869,14 @@
             if (badge2) badge2.textContent = count;
         }
 
+        // ============================================
         // POPULATE FORM OPTIONS
+        // ============================================
         function populateFormOptions() {
             const kelSelect = document.getElementById('fKelurahan');
             if (kelSelect) {
                 kelSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
                 
-                // Jika bukan admin, hanya tampilkan kelurahan sendiri
                 if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
                     const opt = document.createElement('option');
                     opt.value = currentUser.kelurahan;
@@ -3134,6 +3943,7 @@
         function renderAll() {
             console.log('🔄 renderAll dipanggil');
             renderDashboard();
+            renderPanduan();
             renderUMKMCards();
             renderUMKMTable();
             renderRekap();
@@ -3163,7 +3973,6 @@
             const rt = document.getElementById('filterRT').value.trim();
             const rw = document.getElementById('filterRW').value.trim();
             
-            // Jika user bukan admin, batasi kelurahan
             if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
                 if (kelurahan && kelurahan !== currentUser.kelurahan) {
                     Swal.fire({
@@ -3352,63 +4161,59 @@
         }
 
         document.getElementById('fFileFoto').addEventListener('change', async function() {
-    const file = this.files[0];
-    if (!file) return;
+            const file = this.files[0];
+            if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-        Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 5MB' });
-        this.value = '';
-        return;
-    }
-
-    try {
-        const result = await uploadPhotoWithProgress(file);
-
-        if (result.success) {
-            // PERBAIKAN: Ambil dari result.data
-            const thumbnailUrl = result.data.thumbnailUrl || result.data.viewUrl || '';
-            
-            // Set ke hidden input
-            document.getElementById('fFotoUrl').value = thumbnailUrl;
-            
-            // Tampilkan preview
-            const container = document.getElementById('uploadPreviewContainer');
-            if (container) {
-                container.innerHTML = `
-                    <div class="upload-preview-wrapper">
-                        <img src="${thumbnailUrl}" class="preview-img" alt="Preview" 
-                             onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22%3E%3Crect width=%2280%22 height=%2280%22 fill=%22%23f0f2f5%22/%3E%3Ctext x=%2240%22 y=%2245%22 text-anchor=%22middle%22 font-size=%2230%22 fill=%22%23b0b8c0%22%3E📷%3C/text%3E%3C/svg%3E'">
-                        <div class="upload-info">
-                            <div class="filename">${result.data.filename || file.name}</div>
-                            <div class="filesize">${formatFileSize(file.size)}</div>
-                        </div>
-                        <i class="fas fa-check-circle text-success" style="font-size:20px;"></i>
-                    </div>
-                `;
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 5MB' });
+                this.value = '';
+                return;
             }
-            
-            // Tampilkan sukses
-            Swal.fire({
-                icon: 'success',
-                title: 'Upload Berhasil',
-                text: 'Foto berhasil diupload',
-                timer: 1500,
-                showConfirmButton: false
-            });
-            
-        } else {
-            throw new Error(result.message || 'Upload gagal');
-        }
-    } catch (error) {
-        console.error('Upload error:', error);
-        Swal.fire({ 
-            icon: 'error', 
-            title: 'Upload Gagal', 
-            text: error.message || 'Terjadi kesalahan saat upload' 
+
+            try {
+                const result = await uploadPhotoWithProgress(file);
+
+                if (result.success) {
+                    const thumbnailUrl = result.data.thumbnailUrl || result.data.viewUrl || '';
+                    
+                    document.getElementById('fFotoUrl').value = thumbnailUrl;
+                    
+                    const container = document.getElementById('uploadPreviewContainer');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="upload-preview-wrapper">
+                                <img src="${thumbnailUrl}" class="preview-img" alt="Preview" 
+                                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22%3E%3Crect width=%2280%22 height=%2280%22 fill=%22%23f0f2f5%22/%3E%3Ctext x=%2240%22 y=%2245%22 text-anchor=%22middle%22 font-size=%2230%22 fill=%22%23b0b8c0%22%3E📷%3C/text%3E%3C/svg%3E'">
+                                <div class="upload-info">
+                                    <div class="filename">${result.data.filename || file.name}</div>
+                                    <div class="filesize">${formatFileSize(file.size)}</div>
+                                </div>
+                                <i class="fas fa-check-circle text-success" style="font-size:20px;"></i>
+                            </div>
+                        `;
+                    }
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Upload Berhasil',
+                        text: 'Foto berhasil diupload',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    
+                } else {
+                    throw new Error(result.message || 'Upload gagal');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Upload Gagal', 
+                    text: error.message || 'Terjadi kesalahan saat upload' 
+                });
+                this.value = '';
+            }
         });
-        this.value = '';
-    }
-});
 
         // ============================================
         // TAMBAH UMKM
@@ -3436,7 +4241,6 @@
                 document.getElementById('fFileFoto').value = '';
                 uploadProgressContainer.style.display = 'none';
                 
-                // Set kelurahan otomatis untuk non-admin
                 if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
                     document.getElementById('fKelurahan').value = currentUser.kelurahan;
                 }
@@ -3499,6 +4303,28 @@
         }
 
         // ============================================
+        // AUTO UPPERCASE PADA INPUT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto uppercase untuk field tertentu
+            const uppercaseFields = ['fNamaUMKM', 'fPemilik', 'fAlamat', 'fEmail'];
+            uppercaseFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', function() {
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        this.value = this.value.toUpperCase();
+                        this.setSelectionRange(start, end);
+                    });
+                }
+            });
+
+            // Pastikan RT, RW, No Izin, Telepon tetap plain text (tidak diubah)
+            // Sudah default plain text
+        });
+
+        // ============================================
         // EDIT UMKM
         // ============================================
         function editUMKM(index) {
@@ -3508,7 +4334,6 @@
                 return;
             }
             
-            // Cek izin
             if (!canEditDelete(data)) {
                 Swal.fire({
                     icon: 'warning',
@@ -3531,7 +4356,6 @@
                 return;
             }
 
-            // Cek izin
             if (!canEditDelete(data)) {
                 Swal.fire({
                     icon: 'warning',
@@ -3600,12 +4424,13 @@
             const rowNum = document.getElementById('formRowNum').value;
 
             const kelurahan = document.getElementById('fKelurahan').value;
-            const namaUMKM = document.getElementById('fNamaUMKM').value.trim();
-            const pemilik = document.getElementById('fPemilik').value.trim();
-            const alamat = document.getElementById('fAlamat').value.trim();
+            const namaUMKM = document.getElementById('fNamaUMKM').value.trim().toUpperCase();
+            const pemilik = document.getElementById('fPemilik').value.trim().toUpperCase();
+            const alamat = document.getElementById('fAlamat').value.trim().toUpperCase();
             const kategori = document.getElementById('fKategori').value;
             const status = document.getElementById('fStatus').value;
 
+            // Validasi required
             if (!kelurahan || !namaUMKM || !pemilik || !alamat || !kategori || !status) {
                 Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Isi semua field yang wajib (*)' });
                 return;
@@ -3618,20 +4443,21 @@
                 return;
             }
 
+            // Form data - pastikan uppercase untuk field tertentu, plain text untuk RT, RW, No Izin, Telepon
             const formData = {
                 Kelurahan: kelurahan,
-                RT: document.getElementById('fRT').value,
-                RW: document.getElementById('fRW').value,
+                RT: toPlainText(document.getElementById('fRT').value), // plain text
+                RW: toPlainText(document.getElementById('fRW').value), // plain text
                 'Nama UMKM': namaUMKM,
                 'Nama Pemilik': pemilik,
-                'No Surat Izin': document.getElementById('fNoIzin').value,
+                'No Surat Izin': toPlainText(document.getElementById('fNoIzin').value), // plain text
                 'Alamat UMKM': alamat,
                 Kategori: kategori,
                 'Sub Kategori': document.getElementById('fSubKategori').value,
                 'Status UMKM': status,
                 'Tahun Berdiri': document.getElementById('fTahun').value,
-                'No Telepon': document.getElementById('fTelepon').value,
-                Email: document.getElementById('fEmail').value,
+                'No Telepon': toPlainText(document.getElementById('fTelepon').value), // plain text
+                Email: document.getElementById('fEmail').value.trim().toUpperCase(),
                 'Website/Sosial Media': document.getElementById('fWebsite').value,
                 'Link Foto Thumbnail': document.getElementById('fFotoUrl').value,
                 'Nama File Foto': document.getElementById('fFileFoto').files[0]?.name || ''
@@ -3747,6 +4573,10 @@
             try {
                 Loader.init();
                 console.log('✅ Loader initialized');
+                
+                // Load dark mode
+                loadDarkMode();
+                console.log('🌓 Dark mode:', isDarkMode ? 'ON' : 'OFF');
                 
                 console.log('🔍 Memeriksa session...');
                 const hasSession = await checkSession();
