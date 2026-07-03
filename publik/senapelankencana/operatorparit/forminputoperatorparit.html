@@ -41,7 +41,7 @@
     
     <style>
         /* ============================================================ */
-        /* CSS LENGKAP - SAMA DENGAN SEBELUMNYA DENGAN TAMBAHAN         */
+        /* CSS LENGKAP                                                   */
         /* ============================================================ */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -96,7 +96,6 @@
         /* BUTTON CETAK LAPORAN */
         .btn-laporan { background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: var(--white); border: none; padding: 8px 18px; border-radius: 50px; font-weight: 600; font-size: 13px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: var(--transition); }
         .btn-laporan:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
-        .btn-laporan-group { display: flex; gap: 8px; flex-wrap: wrap; }
         
         /* CARDS */
         .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 20px; }
@@ -141,8 +140,6 @@
         .card-actions { display: flex; gap: 6px; flex-wrap: wrap; }
         .btn-edit { background: var(--primary); color: var(--white); border: none; padding: 5px 14px; border-radius: 50px; font-size: 11px; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 4px; }
         .btn-edit:hover { background: var(--primary-dark); transform: scale(1.05); }
-        .btn-delete { background: var(--danger); color: var(--white); border: none; padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 4px; }
-        .btn-delete:hover { opacity: 0.8; transform: scale(1.05); }
         .btn-share { background: #25D366; color: var(--white); border: none; padding: 5px 12px; border-radius: 50px; font-size: 11px; font-weight: 600; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 4px; }
         .btn-share:hover { opacity: 0.8; transform: scale(1.05); }
         
@@ -223,7 +220,6 @@
         /* SHARE MODAL */
         .share-modal .modal-content { max-width: 600px; }
         .share-caption { background: var(--gray-100); padding: 14px; border-radius: var(--radius-sm); margin: 12px 0; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-all; max-height: 300px; overflow-y: auto; border: 1px solid var(--gray-300); }
-        .share-caption .photo-links { font-size: 11px; color: var(--gray-500); }
         .btn-copy { background: var(--info); color: var(--white); border: none; padding: 8px 18px; border-radius: 50px; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
         .btn-copy:hover { opacity: 0.8; transform: scale(1.05); }
         .btn-wa { background: #25D366; color: var(--white); border: none; padding: 8px 18px; border-radius: 50px; font-weight: 600; font-size: 13px; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; }
@@ -250,11 +246,10 @@
         .laporan-content table th { background: #667eea; color: white; padding: 8px 10px; text-align: left; border: 1px solid #ddd; }
         .laporan-content table td { padding: 6px 10px; border: 1px solid #ddd; }
         .laporan-content table tr:nth-child(even) { background: #f9f9f9; }
-        .laporan-content .footer-laporan { margin-top: 30px; display: flex; justify-content: space-between; }
-        .laporan-content .footer-laporan .ttd { text-align: center; }
+        .laporan-content .footer-laporan { margin-top: 30px; display: flex; justify-content: space-between; align-items: flex-end; }
+        .laporan-content .footer-laporan .ttd { text-align: center; flex: 1; }
         .laporan-content .footer-laporan .ttd p { margin: 4px 0; font-size: 13px; }
-        .laporan-content .footer-laporan .ttd .nama { font-weight: 700; font-size: 14px; }
-        .laporan-content .footer-laporan .ttd .underline { border-bottom: 1px solid #000; padding-bottom: 20px; margin-bottom: 0; }
+        .laporan-content .footer-laporan .ttd .nama { font-weight: 700; font-size: 14px; text-decoration: underline; }
         
         /* RESPONSIVE */
         @media (max-width: 768px) {
@@ -270,7 +265,7 @@
             .card-slider { height: 180px; }
             .modal-header h2 { font-size: 16px; }
             .logo-text h1 { font-size: 16px; }
-            .laporan-content .footer-laporan { flex-direction: column; gap: 20px; }
+            .laporan-content .footer-laporan { flex-direction: column-reverse; gap: 20px; align-items: center; }
             .laporan-preview .preview-content { padding: 16px; }
         }
         @media (max-width: 480px) {
@@ -281,7 +276,6 @@
             .card-actions { width: 100%; justify-content: flex-end; }
         }
         
-        /* STATUS COLOR INDICATOR */
         .status-indicator { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; }
         .status-menunggu { background: #4299e1; }
         .status-sedang { background: #ed8936; }
@@ -620,7 +614,7 @@
         // KONFIGURASI
         // ============================================
         const CONFIG = {
-            API_URL: 'https://script.google.com/macros/s/AKfycbzcifvvpIsrCMYTvLEOpY7vg5C2DFekS5bKMSp5G_QrO2-VWAXbBNoaNq0Igwp8b8l5/exec',
+            API_URL: 'https://script.google.com/macros/s/AKfycbxu0tK1u6cNBCbxkbeAK2VtuZiAULZfwDr_x4GbhWfIxUwzf08y_mIqttEHNCF0S1U7/exec',
             SPREADSHEET_ID: '13LMmlL3II81naFPM2Ky3HbbVtdb7_s0Tk-amsY6tTi4',
             SHEET_NAME: 'EDITOR_KOORDINATOR',
             DRIVE_FOLDER_ID: '14r5JIpkCmK93LFWHenTQZORbAI9nyNSt',
@@ -690,6 +684,7 @@
         let sliderStates = {};
         let koordinatorData = [];
         let camatData = {};
+        let pejabatData = {};
         let shareData = null;
 
         // ============================================
@@ -767,7 +762,7 @@
         }
 
         // ============================================
-        // LOAD KOORDINATORS - UPDATED
+        // LOAD KOORDINATORS
         // ============================================
         async function loadKoordinators() {
             try {
@@ -782,7 +777,6 @@
                     camatData = result.camat || {};
                     populateKoordinatorSelect(koordinatorData);
                 } else {
-                    // Fallback data
                     koordinatorData = [
                         { nama: 'Budi Santoso', jabatan: 'Koordinator Lapangan', pangkatGol: 'Penata Muda / IIIa', nip: '197001011990011001' }
                     ];
@@ -833,6 +827,29 @@
         }
 
         // ============================================
+        // LOAD PEJABAT DATA
+        // ============================================
+        async function loadPejabatData() {
+            try {
+                const response = await fetch(CONFIG.API_URL + '?action=getPejabat&spreadsheetId=' + CONFIG.SPREADSHEET_ID, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+                const result = await response.json();
+                
+                if (result.success && result.data) {
+                    pejabatData = result.data;
+                    console.log('📋 Data Pejabat:', pejabatData);
+                } else {
+                    pejabatData = {};
+                }
+            } catch (error) {
+                console.error('Load Pejabat Error:', error);
+                pejabatData = {};
+            }
+        }
+
+        // ============================================
         // LOAD DATA
         // ============================================
         async function loadData() {
@@ -863,7 +880,7 @@
         }
 
         // ============================================
-        // RENDER CARDS - UPDATED WITH SHARE BUTTON
+        // RENDER CARDS
         // ============================================
         function renderCards(data) {
             if (!data || data.length === 0) {
@@ -1101,7 +1118,7 @@
         }
 
         // ============================================
-        // UPDATE STATS - UPDATED
+        // UPDATE STATS
         // ============================================
         function updateStats(data) {
             var total = data.length;
@@ -1434,8 +1451,6 @@
                 'Keterangan': document.getElementById('keterangan').value,
             };
 
-            // Status akan di-generate oleh backend
-
             btnSubmit.disabled = true;
             btnSubmit.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
 
@@ -1553,7 +1568,7 @@
         }
 
         // ============================================
-        // SHARE MODAL - UPDATED
+        // SHARE MODAL
         // ============================================
         function openShareModal(rowId) {
             var data = allData.find(function(d) { return d._row == rowId; });
@@ -1579,12 +1594,10 @@
             var status = data['Status'] || 'Menunggu Jadwal';
             var koordinator = data['Koordinator'] || '-';
             
-            // Get koordinator detail
             var koordDetail = getKoordinatorDetail(koordinator);
             var koordPangkat = koordDetail ? koordDetail.pangkatGol : '';
             var koordNip = koordDetail ? koordDetail.nip : '';
 
-            // Get foto links
             var fotoLinks = [];
             for (var i = 1; i <= 10; i++) {
                 var key = 'Link_Foto_' + i;
@@ -1601,10 +1614,11 @@ Berikut laporan singkat pekerjaan Operator Parit tanggal ${tanggal}:
 ⏰ Waktu: ${jamMulai} - ${jamSelesai}
 👤 Penanggung Jawab: ${pj}
 📊 Status: ${status}
-➜] Akses lengkap: ${CONFIG.PAGE_URL}
 
 Foto dokumentasi:
 ${fotoText}
+
+Akses lengkap: ${CONFIG.PAGE_URL}
 
 Terima kasih atas perhatiannya.
 Wassalamualaikum wr wb.
@@ -1624,7 +1638,6 @@ NIP. ${koordNip}`;
             navigator.clipboard.writeText(text).then(function() {
                 showToast('Caption berhasil disalin!', 'success');
             }).catch(function() {
-                // Fallback
                 var textarea = document.createElement('textarea');
                 textarea.value = text;
                 document.body.appendChild(textarea);
@@ -1658,7 +1671,6 @@ NIP. ${koordNip}`;
         btnLaporan.addEventListener('click', function() {
             laporanModal.classList.add('active');
             document.body.style.overflow = 'hidden';
-            // Set default period to today
             var today = getTodayWIB();
             laporanType.value = 'harian';
             laporanPeriod.value = formatDateWIB(today);
@@ -1680,7 +1692,6 @@ NIP. ${koordNip}`;
             document.body.style.overflow = '';
         });
 
-        // Update placeholder berdasarkan jenis laporan
         laporanType.addEventListener('change', function() {
             var type = this.value;
             var placeholders = {
@@ -1706,7 +1717,6 @@ NIP. ${koordNip}`;
                 return;
             }
 
-            // Validasi format
             var isValid = false;
             var validationMsg = '';
             switch(type) {
@@ -1759,6 +1769,9 @@ NIP. ${koordNip}`;
             }
         }
 
+        // ============================================================
+        // RENDER LAPORAN PDF - DIPERBAIKI DENGAN FORMAT TTD YANG BENAR
+        // ============================================================
         function renderLaporanPDF(data, type, period) {
             var title = '';
             var periodDisplay = '';
@@ -1791,7 +1804,7 @@ NIP. ${koordNip}`;
                 data.forEach(function(item, index) {
                     rows += `
                         <tr>
-                            <td>${index + 1}</td>
+                            <td style="text-align:center;">${index + 1}</td>
                             <td>${formatDateDisplayWIB(item['Hari/Tanggal'] || '')}</td>
                             <td>${item['Lokasi/Rute Pembersihan'] || '-'}</td>
                             <td>${item['Status'] || '-'}</td>
@@ -1803,22 +1816,23 @@ NIP. ${koordNip}`;
                 });
             }
 
-            // Get koordinator and camat data for TTD
-            var koordinatorNama = koordinatorData.length > 0 ? koordinatorData[0].nama : '___________________';
-            var koordinatorJabatan = koordinatorData.length > 0 ? koordinatorData[0].jabatan : 'Koordinator Lapangan';
-            var koordinatorPangkat = koordinatorData.length > 0 ? koordinatorData[0].pangkatGol : '';
-            var koordinatorNip = koordinatorData.length > 0 ? koordinatorData[0].nip : '';
+            // AMBIL DATA DARI PEJABAT_PEMBUAT_LAPORAN
+            var koordinatorNama = pejabatData.NAMA_KOORDINATOR || '___________________';
+            var koordinatorJabatan = pejabatData.JABATAN || 'Koordinator Lapangan';
+            var koordinatorPangkat = pejabatData.PANGKAT_GOL || '';
+            var koordinatorNip = pejabatData.NIP || '';
             
-            var camatNama = camatData.nama || '___________________';
-            var camatJabatan = camatData.jabatan || 'Camat Senapelan';
-            var camatPangkat = camatData.pangkatGol || '';
-            var camatNip = camatData.nip || '';
+            var camatNama = pejabatData.NAMA_CAMAT || '___________________';
+            var camatJabatan = pejabatData.JABATAN_CAMAT || 'Camat Senapelan';
+            var camatPangkat = pejabatData.PANGKAT_GOL_CAMAT || '';
+            var camatNip = pejabatData.NIP_CAMAT || '';
+
+            var todayFormatted = formatDateDisplayWIB(formatDateWIB(getTodayWIB()));
 
             var html = `
                 <div class="header-laporan">
-                    <h1>LAPORAN PETUGAS OPERASI DAN</h1>
-                    <h1>PEMELIHARAAN DRAINASE</h1>
-                    <h2>KECAMATAN SENAPELAN</h2>
+                    <h1>LAPORAN PETUGAS OPERASI DAN PEMELIHARAAN DRAINASE</h1>
+                    <h2>KECAMATAN SENAPELAN KOTA PEKANBARU</h2>
                     <p style="font-weight:600;margin-top:8px;">${title}</p>
                     <p>Periode: ${periodDisplay}</p>
                 </div>
@@ -1826,7 +1840,7 @@ NIP. ${koordNip}`;
                 <table>
                     <thead>
                         <tr>
-                            <th style="width:40px;">No</th>
+                            <th style="width:40px;text-align:center;">No</th>
                             <th style="width:120px;">Tanggal</th>
                             <th>Lokasi</th>
                             <th style="width:130px;">Status</th>
@@ -1841,20 +1855,22 @@ NIP. ${koordNip}`;
                 </table>
 
                 <div class="footer-laporan">
-                    <div class="ttd">
-                        <p style="margin-bottom:20px;">Pekanbaru, ${formatDateDisplayWIB(formatDateWIB(getTodayWIB()))}</p>
-                        <p style="font-weight:700;margin-top:30px;">Camat Senapelan,</p>
-                        <p style="margin-top:40px;"></p>
+                    <!-- KIRI: CAMAT -->
+                    <div class="ttd" style="text-align:center;flex:1;">
+                        <p style="margin-bottom:5px;font-weight:600;">Mengetahui,</p>
+                        <p style="margin-bottom:10px;font-weight:600;">Camat Senapelan,</p>
+                        <p style="margin-top:50px;"></p>
                         <p class="nama">${camatNama}</p>
-                        <p>${camatJabatan}</p>
                         ${camatPangkat ? `<p>${camatPangkat}</p>` : ''}
                         ${camatNip ? `<p>NIP. ${camatNip}</p>` : ''}
                     </div>
-                    <div class="ttd">
-                        <p style="font-weight:700;margin-top:30px;">Koordinator,</p>
-                        <p style="margin-top:40px;"></p>
+
+                    <!-- KANAN: TANGGAL + KOORDINATOR -->
+                    <div class="ttd" style="text-align:center;flex:1;">
+                        <p style="margin-bottom:30px;">Pekanbaru, ${todayFormatted}</p>
+                        <p style="font-weight:600;margin-top:20px;">Koordinator,</p>
+                        <p style="margin-top:50px;"></p>
                         <p class="nama">${koordinatorNama}</p>
-                        <p>${koordinatorJabatan}</p>
                         ${koordinatorPangkat ? `<p>${koordinatorPangkat}</p>` : ''}
                         ${koordinatorNip ? `<p>NIP. ${koordinatorNip}</p>` : ''}
                     </div>
@@ -1937,6 +1953,7 @@ NIP. ${koordNip}`;
         async function init() {
             console.log('🚀 Inisialisasi aplikasi...');
             await loadKoordinators();
+            await loadPejabatData();
             await loadData();
             console.log('✅ Aplikasi siap digunakan!');
             console.log('📍 Timezone:', Intl.DateTimeFormat().resolvedOptions().timeZone);
