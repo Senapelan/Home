@@ -1,0 +1,4621 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Sistem Pendataan UMKM - Premium v3.0</title>
+
+    <!-- ============================================
+    META TAG - SEO & SHARING
+    ============================================ -->
+    <title>Sistem Pendataan UMKM Digital Senapelan - Data UMKM se-Kecamatan Senapelan</title> 
+    <meta name="description" content="Sistem Pendataan UMKM Digital Senapelan - Aplikasi pendataan dan monitoring UMKM se-Kecamatan Senapelan.">
+    <meta name="keywords" content="pendataan umkm, data umkm, umkm senapelan, sistem umkm, digitalisasi umkm, pekanbaru">
+    <meta name="author" content="Senapelan Kencana">
+    <meta name="robots" content="index, follow">  
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sistem Pendataan UMKM Digital Senapelan - Data UMKM se-Kecamatan Senapelan">
+    <meta property="og:description" content="Sistem Pendataan UMKM Digital untuk se-Kecamatan Senapelan.">
+    <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/pendataanumkm/pendataanumkmt512x512.png">
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <!-- Font Awesome 6 -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <!-- DataTables -->
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet" />
+
+    <style>
+        /* ============================================
+           ROOT VARIABLES & RESET
+           ============================================ */
+        :root {
+            --primary: #6C5CE7;
+            --primary-dark: #5A4BD1;
+            --primary-light: #A29BFE;
+            --secondary: #00CEC9;
+            --success: #00B894;
+            --warning: #FDCB6E;
+            --danger: #E17055;
+            --dark: #2D3436;
+            --light: #F8F9FA;
+            --gray: #636E72;
+            --gradient: linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%);
+            --gradient-soft: linear-gradient(135deg, rgba(108, 92, 231, 0.05) 0%, rgba(162, 155, 254, 0.05) 100%);
+            --shadow: 0 10px 40px rgba(108, 92, 231, 0.15);
+            --shadow-hover: 0 15px 50px rgba(108, 92, 231, 0.25);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.06);
+            --radius: 20px;
+            --radius-sm: 12px;
+            --bg-body: #F0F2F5;
+            --bg-card: white;
+            --text-color: #2D3436;
+            --text-muted: #636E72;
+            --border-color: rgba(0, 0, 0, 0.03);
+            --shadow-color: rgba(0, 0, 0, 0.06);
+            --input-bg: rgba(255, 255, 255, 0.8);
+            --input-border: #E8ECF1;
+            --sidebar-bg: white;
+            --topbar-bg: white;
+            --modal-bg: white;
+            --modal-header-bg: #F8F9FA;
+            --modal-footer-bg: #F8F9FA;
+            --table-header-bg: #F8F9FA;
+            --table-row-bg: white;
+            --table-border: #F0F2F5;
+            --stat-card-bg: white;
+            --umkm-card-bg: white;
+            --data-card-bg: white;
+        }
+
+        /* Dark Mode */
+        [data-theme="dark"] {
+            --bg-body: #1a1a2e;
+            --bg-card: #16213e;
+            --text-color: #e8e8e8;
+            --text-muted: #a0a0b8;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --input-bg: rgba(255, 255, 255, 0.05);
+            --input-border: rgba(255, 255, 255, 0.1);
+            --sidebar-bg: #16213e;
+            --topbar-bg: #16213e;
+            --modal-bg: #1a1a2e;
+            --modal-header-bg: #16213e;
+            --modal-footer-bg: #16213e;
+            --table-header-bg: #1a1a2e;
+            --table-row-bg: #16213e;
+            --table-border: rgba(255, 255, 255, 0.05);
+            --stat-card-bg: #16213e;
+            --umkm-card-bg: #16213e;
+            --data-card-bg: #16213e;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            --shadow-hover: 0 15px 50px rgba(0, 0, 0, 0.5);
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        * {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-body);
+            min-height: 100vh;
+            padding-bottom: 80px;
+            color: var(--text-color);
+            transition: all 0.3s ease;
+        }
+
+        /* ============================================
+           ANIMASI
+           ============================================ */
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(40px, -40px) rotate(5deg); }
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); opacity: 0.3; }
+            50% { transform: translate(50px, -50px) scale(1.2); opacity: 0.6; }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes shimmer {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes progressShimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes skeletonLoading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @keyframes fadePage {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* ============================================
+           DARK MODE TOGGLE
+           ============================================ */
+        .dark-mode-toggle {
+            position: relative;
+            width: 50px;
+            height: 26px;
+            background: var(--gray);
+            border-radius: 13px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            flex-shrink: 0;
+        }
+
+        .dark-mode-toggle.active {
+            background: var(--primary);
+        }
+
+        .dark-mode-toggle .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+
+        .dark-mode-toggle.active .toggle-slider {
+            left: 27px;
+        }
+
+        /* ============================================
+           LOGIN PAGE
+           ============================================ */
+        .login-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--gradient);
+            position: relative;
+            overflow: hidden;
+            padding: 20px;
+        }
+
+        .login-wrapper::before {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            top: -300px;
+            right: -200px;
+            animation: float 20s infinite ease-in-out;
+        }
+
+        .login-wrapper::after {
+            content: '';
+            position: absolute;
+            width: 700px;
+            height: 700px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 50%;
+            bottom: -350px;
+            left: -200px;
+            animation: float 25s infinite ease-in-out reverse;
+        }
+
+        .particle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: particleFloat 15s infinite ease-in-out;
+            pointer-events: none;
+        }
+
+        .particle:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 5%; animation-delay: 0s; }
+        .particle:nth-child(2) { width: 120px; height: 120px; top: 60%; left: 80%; animation-delay: -3s; }
+        .particle:nth-child(3) { width: 60px; height: 60px; top: 80%; left: 10%; animation-delay: -6s; }
+        .particle:nth-child(4) { width: 100px; height: 100px; top: 20%; left: 85%; animation-delay: -9s; }
+        .particle:nth-child(5) { width: 40px; height: 40px; top: 50%; left: 50%; animation-delay: -12s; }
+
+        .login-card {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(30px);
+            border-radius: 30px;
+            padding: 50px 40px;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+            position: relative;
+            z-index: 1;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .login-card .logo {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        .login-card .logo .icon-wrapper {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.15);
+            transition: all 0.3s ease;
+            padding: 10px;
+        }
+
+        .login-card .logo .icon-wrapper:hover {
+            transform: scale(1.05) rotate(-3deg);
+        }
+
+        .login-card .logo .icon-wrapper img {
+            width: 80px;
+            height: 80px;
+            object-fit: contain;
+            border-radius: 12px;
+        }
+
+        .login-card .logo h2 {
+            font-weight: 800;
+            color: var(--dark);
+            font-size: 28px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 0;
+        }
+
+        .login-card .logo p {
+            color: var(--gray);
+            font-weight: 500;
+            font-size: 14px;
+            margin: 5px 0 0;
+            -webkit-text-fill-color: var(--gray);
+        }
+
+        .form-floating-custom {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .form-floating-custom .form-control {
+            border-radius: var(--radius-sm);
+            padding: 15px 20px 15px 50px;
+            border: 2px solid #E8ECF1;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            height: 58px;
+            background: rgba(255, 255, 255, 0.8);
+        }
+
+        .form-floating-custom .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+            background: white;
+        }
+
+        .form-floating-custom .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+            font-size: 18px;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .form-floating-custom .form-control:focus+.input-icon {
+            color: var(--primary);
+        }
+
+        .btn-login {
+            background: var(--gradient);
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-weight: 700;
+            font-size: 16px;
+            color: white;
+            transition: all 0.3s ease;
+            width: 100%;
+            height: 58px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.4);
+            color: white;
+        }
+
+        .btn-login:active {
+            transform: scale(0.98);
+        }
+
+        .btn-login .btn-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-login .btn-bg {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            animation: shimmer 2s infinite;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 15px 0 20px;
+            cursor: pointer;
+        }
+
+        .remember-me input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        .remember-me label {
+            font-weight: 500;
+            color: var(--gray);
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        /* ============================================
+           REFRESH BUTTON
+           ============================================ */
+        .btn-refresh .fa-sync-alt.spinning {
+            animation: spin 0.8s linear infinite;
+        }
+
+        /* ============================================
+           PREMIUM LOADING OVERLAY
+           ============================================ */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(10px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: all 0.4s ease;
+        }
+
+        [data-theme="dark"] .loading-overlay {
+            background: rgba(26, 26, 46, 0.95);
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-container {
+            text-align: center;
+            max-width: 400px;
+            padding: 20px;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            position: relative;
+        }
+
+        .loading-spinner .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 4px solid transparent;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .loading-spinner .spinner-ring:nth-child(2) {
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            border-top-color: var(--secondary);
+            animation-duration: 1.2s;
+            animation-direction: reverse;
+        }
+
+        .loading-spinner .spinner-ring:nth-child(3) {
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            border-top-color: var(--warning);
+            animation-duration: 0.6s;
+        }
+
+        .loading-text {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .loading-subtext {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+
+        .loading-progress {
+            width: 100%;
+            height: 6px;
+            background: #E8ECF1;
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        [data-theme="dark"] .loading-progress {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .loading-progress .progress-bar {
+            height: 100%;
+            background: var(--gradient);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+            position: relative;
+        }
+
+        .loading-progress .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            animation: progressShimmer 1.5s infinite;
+        }
+
+        .loading-percentage {
+            font-weight: 700;
+            color: var(--primary);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        /* ============================================
+           DASHBOARD
+           ============================================ */
+        .dashboard-wrapper {
+            display: none;
+            min-height: 100vh;
+        }
+
+        /* ============================================
+           SIDEBAR
+           ============================================ */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 280px;
+            background: var(--sidebar-bg);
+            box-shadow: 4px 0 30px var(--shadow-color);
+            padding: 25px 20px;
+            z-index: 1000;
+            overflow-y: auto;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            transform: translateX(0);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .sidebar .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 15px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .sidebar .brand i {
+            font-size: 32px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sidebar .brand h4 {
+            font-weight: 800;
+            color: var(--text-color);
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .sidebar .brand small {
+            font-weight: 400;
+            color: var(--text-muted);
+            font-size: 11px;
+            display: block;
+        }
+
+        .sidebar .menu-label {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+            font-weight: 700;
+            padding: 10px 15px 5px;
+        }
+
+        .sidebar .nav-item {
+            padding: 12px 20px;
+            border-radius: var(--radius-sm);
+            margin-bottom: 4px;
+            color: var(--text-muted);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            border: none;
+            background: none;
+            width: 100%;
+            font-size: 14px;
+        }
+
+        .sidebar .nav-item:hover {
+            background: var(--bg-body);
+            color: var(--primary);
+        }
+
+        .sidebar .nav-item.active {
+            background: var(--gradient);
+            color: white;
+            box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .sidebar .nav-item i {
+            width: 24px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .sidebar .nav-item .badge-menu {
+            margin-left: auto;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .sidebar .nav-item.active .badge-menu {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .sidebar .user-profile {
+            padding: 20px;
+            background: var(--bg-body);
+            border-radius: var(--radius);
+            margin-top: 20px;
+            text-align: center;
+            border: 1px solid var(--border-color);
+        }
+
+        .sidebar .user-profile .avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            color: white;
+            font-size: 24px;
+            font-weight: 700;
+            overflow: hidden;
+        }
+
+        .sidebar .user-profile .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar .user-profile .name {
+            font-weight: 700;
+            color: var(--text-color);
+            font-size: 15px;
+        }
+
+        .sidebar .user-profile .role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .sidebar .user-profile .kelurahan {
+            font-size: 13px;
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* ============================================
+           MAIN CONTENT
+           ============================================ */
+        .main-content {
+            margin-left: 280px;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Top Bar */
+        .top-bar {
+            background: var(--topbar-bg);
+            padding: 15px 30px;
+            box-shadow: 0 2px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .top-bar .page-info h4 {
+            font-weight: 800;
+            color: var(--text-color);
+            margin: 0;
+            font-size: 22px;
+        }
+
+        .top-bar .page-info p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+
+        .top-bar .user-info-top {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .top-bar .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: var(--gradient);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .top-bar .user-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .top-bar .user-avatar:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 20px rgba(108, 92, 231, 0.3);
+        }
+
+        .top-bar .user-name {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .top-bar .user-role {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--bg-body);
+        }
+
+        /* Content */
+        .content-area {
+            padding: 25px 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* ============================================
+           STATS CARDS
+           ============================================ */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--stat-card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-color);
+            position: relative;
+            cursor: pointer;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient);
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+
+        .stat-card .stat-icon.purple {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+        .stat-card .stat-icon.green {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success);
+        }
+        .stat-card .stat-icon.orange {
+            background: rgba(253, 203, 110, 0.1);
+            color: #F39C12;
+        }
+        .stat-card .stat-icon.red {
+            background: rgba(225, 112, 85, 0.1);
+            color: var(--danger);
+        }
+        .stat-card .stat-icon.blue {
+            background: rgba(0, 206, 201, 0.1);
+            color: var(--secondary);
+        }
+        .stat-card .stat-icon.gray {
+            background: rgba(149, 165, 166, 0.1);
+            color: #95A5A6;
+        }
+
+        .stat-card .stat-number {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--text-color);
+            line-height: 1.2;
+        }
+
+        .stat-card .stat-label {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .stat-card .stat-info-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 5px;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .stat-card .stat-info-btn:hover {
+            background: var(--bg-body);
+            color: var(--primary);
+            transform: scale(1.1);
+        }
+
+        /* ============================================
+           STAT TOOLTIP MODAL
+           ============================================ */
+        .stat-detail-modal .modal-content {
+            background: var(--modal-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .stat-detail-modal .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            background: var(--modal-header-bg);
+        }
+
+        .stat-detail-modal .modal-header h5 {
+            color: var(--text-color);
+        }
+
+        .stat-detail-modal .modal-body {
+            color: var(--text-color);
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-number {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--text-color);
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-label {
+            font-size: 18px;
+            color: var(--text-muted);
+        }
+
+        .stat-detail-modal .modal-body .stat-detail-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.8;
+            padding: 15px;
+            background: var(--bg-body);
+            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--primary);
+        }
+
+        /* ============================================
+           UMKM CARDS - DASHBOARD
+           ============================================ */
+        .umkm-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .umkm-card {
+            background: var(--umkm-card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .umkm-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .umkm-card .card-image {
+            position: relative;
+            height: 200px;
+            background: var(--gradient-soft);
+            overflow: hidden;
+        }
+
+        .umkm-card .card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: all 0.5s ease;
+        }
+
+        .umkm-card:hover .card-image img {
+            transform: scale(1.05);
+        }
+
+        .umkm-card .card-image .status-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 11px;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .umkm-card .card-image .status-badge.rintisan { background: #00B894; }
+        .umkm-card .card-image .status-badge.berkembang { background: #6C5CE7; }
+        .umkm-card .card-image .status-badge.siap { background: #F39C12; }
+        .umkm-card .card-image .status-badge.mandiri { background: #27AE60; }
+        .umkm-card .card-image .status-badge.bantuan { background: #E17055; }
+        .umkm-card .card-image .status-badge.binaan { background: #2980B9; }
+        .umkm-card .card-image .status-badge.tidak { background: #95A5A6; }
+
+        .umkm-card .card-body {
+            padding: 20px;
+        }
+
+        .umkm-card .card-body h5 {
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 5px;
+            font-size: 18px;
+        }
+
+        .umkm-card .card-body .owner {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .umkm-card .card-body .owner i {
+            color: var(--primary);
+            margin-right: 5px;
+        }
+
+        .umkm-card .card-body .location {
+            color: var(--text-muted);
+            font-size: 13px;
+            margin-bottom: 12px;
+        }
+
+        .umkm-card .card-body .location i {
+            color: var(--secondary);
+            margin-right: 5px;
+        }
+
+        .umkm-card .card-body .card-details {
+            display: none;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            margin-top: 12px;
+        }
+
+        .umkm-card .card-body .card-details.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .umkm-card .card-body .card-details small {
+            display: block;
+            padding: 3px 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        .umkm-card .card-body .card-details small strong {
+            color: var(--text-color);
+        }
+
+        .umkm-card .card-body .btn-toggle-detail {
+            background: none;
+            border: none;
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 13px;
+            padding: 5px 0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .umkm-card .card-body .btn-toggle-detail:hover {
+            color: var(--primary-dark);
+        }
+
+        .umkm-card .card-body .card-actions {
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .umkm-card .card-body .card-actions .btn-action {
+            padding: 6px 14px;
+            border-radius: var(--radius-sm);
+            border: none;
+            font-weight: 600;
+            font-size: 12px;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .umkm-card .card-body .card-actions .btn-action.btn-edit {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+
+        .umkm-card .card-body .card-actions .btn-action.btn-edit:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+        }
+
+        .umkm-card .card-body .card-actions .btn-action.btn-edit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .umkm-card .card-body .card-actions .btn-action.btn-delete {
+            background: rgba(225, 112, 85, 0.1);
+            color: var(--danger);
+        }
+
+        .umkm-card .card-body .card-actions .btn-action.btn-delete:hover:not(:disabled) {
+            background: var(--danger);
+            color: white;
+        }
+
+        .umkm-card .card-body .card-actions .btn-action.btn-delete:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .umkm-card .card-body .card-actions .btn-action.btn-owned {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success);
+            cursor: default;
+        }
+
+        /* ============================================
+           UMKM DETAIL MODAL
+           ============================================ */
+        .umkm-detail-modal .modal-content {
+            background: var(--modal-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .umkm-detail-modal .modal-header {
+            border-bottom: 1px solid var(--border-color);
+            background: var(--modal-header-bg);
+        }
+
+        .umkm-detail-modal .modal-header h5 {
+            color: var(--text-color);
+        }
+
+        .umkm-detail-modal .modal-body {
+            color: var(--text-color);
+        }
+
+        .umkm-detail-modal .modal-body .detail-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+        }
+
+        .umkm-detail-modal .modal-body .detail-item {
+            display: flex;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .umkm-detail-modal .modal-body .detail-item .label {
+            font-weight: 600;
+            width: 40%;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
+        .umkm-detail-modal .modal-body .detail-item .value {
+            width: 60%;
+            color: var(--text-color);
+            word-break: break-word;
+        }
+
+        /* ============================================
+           DATA CARD
+           ============================================ */
+        .data-card {
+            background: var(--data-card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow-soft);
+            margin-bottom: 25px;
+            border: 1px solid var(--border-color);
+        }
+
+        .data-card .card-header-custom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .data-card .card-header-custom h5 {
+            font-weight: 700;
+            color: var(--text-color);
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .data-card .card-header-custom h5 i {
+            color: var(--primary);
+            margin-right: 8px;
+        }
+
+        .btn-add {
+            background: var(--gradient);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            padding: 10px 22px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-add:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(108, 92, 231, 0.3);
+            color: white;
+        }
+
+        .btn-add:active {
+            transform: scale(0.98);
+        }
+
+        /* ============================================
+           TABLE
+           ============================================ */
+        .table-responsive-custom {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .table-umkm {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 8px;
+        }
+
+        .table-umkm thead th {
+            background: var(--table-header-bg);
+            color: var(--text-color);
+            font-weight: 700;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            padding: 12px 15px;
+            border: none;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table-umkm tbody td {
+            background: var(--table-row-bg);
+            padding: 10px 15px;
+            border: none;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--table-border);
+            font-size: 13px;
+            color: var(--text-color);
+        }
+
+        .table-umkm tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table-umkm tbody tr:hover {
+            background: var(--bg-body);
+        }
+
+        .table-umkm tbody td:first-child {
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+        }
+
+        .table-umkm tbody td:last-child {
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+        }
+
+        .thumbnail-img {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            border: 3px solid var(--border-color);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .thumbnail-img:hover {
+            transform: scale(1.1);
+            border-color: var(--primary);
+        }
+
+        .badge-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 11px;
+            display: inline-block;
+        }
+
+        .badge-status.rintisan { background: #E8F8F5; color: #00B894; }
+        .badge-status.berkembang { background: #E8F0FE; color: #6C5CE7; }
+        .badge-status.siap { background: #FFF3E0; color: #F39C12; }
+        .badge-status.mandiri { background: #E8F5E9; color: #27AE60; }
+        .badge-status.bantuan { background: #FBE9E7; color: #E17055; }
+        .badge-status.binaan { background: #E8F0FE; color: #2980B9; }
+        .badge-status.tidak { background: #F5F5F5; color: #95A5A6; }
+
+        [data-theme="dark"] .badge-status.rintisan { background: rgba(0, 184, 148, 0.2); color: #55EFC4; }
+        [data-theme="dark"] .badge-status.berkembang { background: rgba(108, 92, 231, 0.2); color: #A29BFE; }
+        [data-theme="dark"] .badge-status.siap { background: rgba(243, 156, 18, 0.2); color: #FDCB6E; }
+        [data-theme="dark"] .badge-status.mandiri { background: rgba(0, 184, 148, 0.2); color: #55EFC4; }
+        [data-theme="dark"] .badge-status.bantuan { background: rgba(225, 112, 85, 0.2); color: #FF6B6B; }
+        [data-theme="dark"] .badge-status.binaan { background: rgba(41, 128, 185, 0.2); color: #74B9FF; }
+        [data-theme="dark"] .badge-status.tidak { background: rgba(149, 165, 166, 0.2); color: #BDC3C7; }
+
+        .btn-action-sm {
+            width: 35px;
+            height: 35px;
+            border-radius: var(--radius-sm);
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 3px;
+        }
+
+        .btn-action-sm.btn-edit {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+        }
+
+        .btn-action-sm.btn-edit:hover:not(:disabled) {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-action-sm.btn-edit:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-action-sm.btn-delete {
+            background: rgba(225, 112, 85, 0.1);
+            color: var(--danger);
+        }
+
+        .btn-action-sm.btn-delete:hover:not(:disabled) {
+            background: var(--danger);
+            color: white;
+            transform: scale(1.05);
+        }
+
+        .btn-action-sm.btn-delete:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-action-sm.btn-owned {
+            background: rgba(0, 184, 148, 0.1);
+            color: var(--success);
+            cursor: default;
+        }
+
+        .badge-owned {
+            background: rgba(0, 184, 148, 0.15);
+            color: var(--success);
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* ============================================
+           MODAL FORM
+           ============================================ */
+        .modal-content {
+            border-radius: var(--radius);
+            border: none;
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+            background: var(--modal-bg);
+            color: var(--text-color);
+        }
+
+        .modal-header {
+            border-bottom: 2px solid var(--border-color);
+            padding: 20px 25px;
+            background: var(--modal-header-bg);
+            border-radius: var(--radius) var(--radius) 0 0;
+        }
+
+        .modal-header h5 {
+            font-weight: 700;
+            color: var(--text-color);
+        }
+
+        .modal-body {
+            padding: 25px;
+            max-height: 70vh;
+            overflow-y: auto;
+            color: var(--text-color);
+        }
+
+        .modal-footer {
+            border-top: 2px solid var(--border-color);
+            padding: 15px 25px;
+            background: var(--modal-footer-bg);
+            border-radius: 0 0 var(--radius) var(--radius);
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .form-label .required {
+            color: var(--danger);
+            margin-left: 3px;
+        }
+
+        .form-control,
+        .form-select {
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--input-border);
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.08);
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+            opacity: 0.5;
+        }
+
+        .form-control-lg {
+            padding: 12px 18px;
+            font-size: 15px;
+        }
+
+        .form-control.text-uppercase {
+            text-transform: uppercase;
+        }
+
+        /* ============================================
+           UPLOAD AREA
+           ============================================ */
+        .upload-area {
+            border: 2px dashed var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: var(--input-bg);
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: var(--bg-body);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: rgba(108, 92, 231, 0.05);
+            transform: scale(1.02);
+        }
+
+        .upload-area i {
+            font-size: 30px;
+            color: var(--text-muted);
+            margin-bottom: 5px;
+        }
+
+        .upload-area p {
+            color: var(--text-muted);
+            margin: 0;
+            font-size: 13px;
+        }
+
+        .upload-preview-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 10px;
+            padding: 10px;
+            background: var(--bg-body);
+            border-radius: var(--radius-sm);
+        }
+
+        .upload-preview-wrapper .preview-img {
+            width: 60px;
+            height: 60px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 2px solid var(--border-color);
+        }
+
+        .upload-preview-wrapper .upload-info {
+            flex: 1;
+            text-align: left;
+        }
+
+        .upload-preview-wrapper .upload-info .filename {
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--text-color);
+        }
+
+        .upload-preview-wrapper .upload-info .filesize {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .upload-progress-container {
+            margin-top: 10px;
+        }
+
+        .upload-progress-container .progress {
+            height: 6px;
+            border-radius: 10px;
+            background: var(--input-border);
+            overflow: hidden;
+        }
+
+        .upload-progress-container .progress .progress-bar {
+            background: var(--gradient);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        .upload-progress-container .upload-status {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .upload-progress-container .upload-status .status-text {
+            font-weight: 500;
+        }
+
+        .upload-progress-container .upload-status .status-percent {
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        /* ============================================
+           BOTTOM NAV (Mobile)
+           ============================================ */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bg-card);
+            box-shadow: 0 -5px 30px var(--shadow-color);
+            padding: 8px 0;
+            z-index: 999;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .bottom-nav .nav-items {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 10px;
+            gap: 2px;
+            position: relative;
+            font-weight: 500;
+        }
+
+        .bottom-nav .nav-item i {
+            font-size: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: var(--primary);
+        }
+
+        .bottom-nav .nav-item.active i {
+            transform: scale(1.1);
+        }
+
+        .bottom-nav .nav-item .badge-nav {
+            position: absolute;
+            top: -2px;
+            right: -8px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* ============================================
+           PAGES
+           ============================================ */
+        .page-content {
+            display: none;
+            animation: fadePage 0.4s ease;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        /* ============================================
+           PANDUAN PAGE
+           ============================================ */
+        .panduan-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .panduan-card {
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--primary);
+        }
+
+        .panduan-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .panduan-card .panduan-kode {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            background: rgba(108, 92, 231, 0.1);
+            padding: 2px 12px;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .panduan-card .panduan-status {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 8px;
+        }
+
+        .panduan-card .panduan-desc {
+            font-size: 14px;
+            color: var(--text-muted);
+            line-height: 1.7;
+        }
+
+        .panduan-card .panduan-id {
+            font-size: 11px;
+            color: var(--text-muted);
+            opacity: 0.5;
+            margin-top: 10px;
+        }
+
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 300px;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0;
+            }
+            .menu-toggle {
+                display: block;
+            }
+            .top-bar {
+                padding: 15px 20px;
+            }
+            .top-bar .page-info h4 {
+                font-size: 18px;
+            }
+            .umkm-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 768px) {
+            .content-area {
+                padding: 15px;
+            }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 12px;
+            }
+            .stat-card {
+                padding: 18px;
+            }
+            .stat-card .stat-number {
+                font-size: 24px;
+            }
+            .stat-card .stat-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 18px;
+            }
+            .data-card {
+                padding: 15px;
+                border-radius: var(--radius-sm);
+            }
+            .data-card .card-header-custom h5 {
+                font-size: 16px;
+            }
+            .btn-add {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+            .bottom-nav {
+                display: block !important;
+            }
+            .table-umkm thead th {
+                font-size: 10px;
+                padding: 8px 10px;
+            }
+            .table-umkm tbody td {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+            .thumbnail-img {
+                width: 40px;
+                height: 40px;
+            }
+            .modal-body {
+                padding: 15px;
+                max-height: 60vh;
+            }
+            .form-control,
+            .form-select {
+                font-size: 16px;
+            }
+            .top-bar .user-name {
+                display: none;
+            }
+            .top-bar .user-role {
+                display: none;
+            }
+            .top-bar .page-info p {
+                display: none;
+            }
+            .sidebar .brand h4 {
+                font-size: 18px;
+            }
+            .umkm-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 12px;
+            }
+            .umkm-card .card-image {
+                height: 140px;
+            }
+            .umkm-card .card-body h5 {
+                font-size: 15px;
+            }
+            .umkm-card .card-body .owner {
+                font-size: 12px;
+            }
+            .umkm-card .card-body .location {
+                font-size: 11px;
+            }
+            .umkm-card .card-body .card-actions .btn-action {
+                font-size: 10px;
+                padding: 4px 10px;
+            }
+            .panduan-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card {
+                padding: 15px;
+            }
+            .stat-card .stat-number {
+                font-size: 20px;
+            }
+            .stat-card .stat-label {
+                font-size: 12px;
+            }
+            .umkm-grid {
+                grid-template-columns: repeat(2, 1fr) !important;
+                gap: 10px;
+            }
+            .umkm-card .card-image {
+                height: 120px;
+            }
+            .umkm-card .card-body {
+                padding: 12px;
+            }
+            .umkm-card .card-body h5 {
+                font-size: 13px;
+            }
+            .umkm-card .card-body .owner {
+                font-size: 11px;
+            }
+            .umkm-card .card-body .location {
+                font-size: 10px;
+            }
+            .umkm-card .card-body .card-actions .btn-action {
+                font-size: 9px;
+                padding: 3px 8px;
+            }
+            .umkm-card .card-body .btn-toggle-detail {
+                font-size: 11px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .bottom-nav {
+                display: none !important;
+            }
+        }
+
+        /* ============================================
+           SCROLLBAR
+           ============================================ */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-body);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
+
+        /* ============================================
+           DATATABLES
+           ============================================ */
+        .dataTables_wrapper .dataTables_filter input {
+            border-radius: var(--radius-sm);
+            border: 2px solid var(--input-border);
+            padding: 8px 15px;
+            margin-left: 10px;
+            background: var(--input-bg);
+            color: var(--text-color);
+        }
+
+        .dataTables_wrapper .dataTables_filter input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.08);
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button {
+            border-radius: var(--radius-sm) !important;
+            padding: 6px 14px !important;
+            margin: 0 3px !important;
+            color: var(--text-color) !important;
+        }
+
+        .dataTables_wrapper .dataTables_paginate .paginate_button.current {
+            background: var(--gradient) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        .dataTables_wrapper .dataTables_info {
+            color: var(--text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_length label {
+            color: var(--text-muted) !important;
+        }
+
+        .dataTables_wrapper .dataTables_length select {
+            background: var(--input-bg);
+            color: var(--text-color);
+            border: 1px solid var(--input-border);
+            border-radius: var(--radius-sm);
+            padding: 4px 8px;
+        }
+
+        .img-fallback {
+            background: var(--bg-body);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 20px;
+        }
+        .img-fallback i {
+            font-size: 28px;
+        }
+
+        /* ============================================
+           FILTER SECTION
+           ============================================ */
+        .filter-active {
+            border-color: var(--primary) !important;
+            background-color: rgba(108, 92, 231, 0.05);
+        }
+
+        /* ============================================
+           USER OWNERSHIP BADGE
+           ============================================ */
+        .badge-owner {
+            background: rgba(108, 92, 231, 0.1);
+            color: var(--primary);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           DARK MODE TOGGLE IN PROFILE
+           ============================================ */
+        .dark-mode-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .dark-mode-row .dark-mode-label {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .dark-mode-row .dark-mode-label i {
+            font-size: 20px;
+            color: var(--primary);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== PARTICLES ===== -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <!-- ===== PREMIUM LOADING OVERLAY ===== -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-container">
+            <div class="loading-spinner">
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loading-text" id="loadText">Memuat Data...</div>
+            <div class="loading-subtext" id="loadSubtext">Mohon tunggu sebentar</div>
+            <div class="loading-progress">
+                <div class="progress-bar" id="loadProgressBar"></div>
+            </div>
+            <div class="loading-percentage" id="loadPercentage">0%</div>
+        </div>
+    </div>
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboardPage" class="dashboard-wrapper">
+
+        <!-- ===== SIDEBAR ===== -->
+        <div class="sidebar" id="sidebar">
+            <div class="brand">
+                <i class="fas fa-store"></i>
+                <div>
+                    <h4>UMKM Data</h4>
+                    <small>Sistem Pendataan</small>
+                </div>
+            </div>
+
+            <div class="menu-label">Menu Utama</div>
+
+            <button class="nav-item active" data-page="dashboard">
+                <i class="fas fa-th-large"></i> Dashboard
+            </button>
+            <button class="nav-item" data-page="dataumkm">
+                <i class="fas fa-list"></i> Data UMKM
+                <span class="badge-menu" id="menuBadge">0</span>
+            </button>
+            <button class="nav-item" data-page="panduan" id="menuPanduan">
+                <i class="fas fa-book"></i> Panduan
+            </button>
+            <button class="nav-item" data-page="rekap" id="menuRekap">
+                <i class="fas fa-chart-bar"></i> Rekap Kelurahan
+            </button>
+
+            <div class="menu-label" style="margin-top:20px;">Akun</div>
+            <button class="nav-item" data-page="profile">
+                <i class="fas fa-user"></i> Profil Saya
+            </button>
+            <button class="nav-item" id="sidebarLogout" style="color: var(--danger);">
+                <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+
+            <div class="user-profile">
+                <div class="avatar" id="sidebarAvatar">U</div>
+                <div class="name" id="sidebarName">User</div>
+                <div class="role" id="sidebarRole">Role</div>
+                <div class="kelurahan" id="sidebarKelurahan">Kelurahan</div>
+            </div>
+        </div>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <div class="main-content">
+            <!-- Top Bar -->
+            <div class="top-bar">
+                <div class="d-flex align-items-center gap-3">
+                    <button class="menu-toggle" id="menuToggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <div class="page-info">
+                        <h4 id="pageTitle">Dashboard</h4>
+                        <p id="pageSubtitle">Selamat datang, <span id="greetingName">User</span></p>
+                    </div>
+                </div>
+                <div class="user-info-top">
+                    <button class="btn btn-sm btn-refresh" id="btnRefreshData" title="Refresh Data Manual" style="background:var(--gradient);color:white;border:none;border-radius:var(--radius-sm);padding:8px 16px;font-weight:600;display:flex;align-items:center;gap:6px;">
+                        <i class="fas fa-sync-alt" id="refreshIcon"></i> Refresh
+                    </button>
+                    <div class="text-end d-none d-sm-block">
+                        <div class="user-name" id="userNameTop">User</div>
+                        <div class="user-role" id="userRoleTop">Role</div>
+                    </div>
+                    <div class="user-avatar" id="userAvatarTop" title="Profil">
+                        U
+                    </div>
+                </div>
+            </div>
+
+            <!-- Content Area -->
+            <div class="content-area">
+
+                <!-- ===== PAGE: DASHBOARD ===== -->
+                <div class="page-content active" id="pageDashboard">
+                    <!-- ===== FILTER SECTION ===== -->
+                    <div class="data-card" style="margin-bottom:20px;">
+                        <div class="card-header-custom">
+                            <h5><i class="fas fa-filter"></i> Filter Data</h5>
+                            <button class="btn btn-sm btn-outline-secondary" id="btnResetFilter" style="border-radius:var(--radius-sm);padding:6px 16px;border-color:var(--border-color);color:var(--text-color);">
+                                <i class="fas fa-undo"></i> Reset Filter
+                            </button>
+                        </div>
+                        <div class="row g-3 align-items-end">
+                            <div class="col-md-4">
+                                <label class="form-label">Kelurahan</label>
+                                <select class="form-select" id="filterKelurahan">
+                                    <option value="">Semua Kelurahan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">RT</label>
+                                <input type="text" class="form-control" id="filterRT" placeholder="Cari RT...(001)">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">RW</label>
+                                <input type="text" class="form-control" id="filterRW" placeholder="Cari RW...(003)">
+                            </div>
+                            <div class="col-md-2">
+                                <button class="btn btn-add w-100" id="btnApplyFilter">
+                                    <i class="fas fa-search"></i> Terapkan
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <small class="text-muted" id="filterInfo">Menampilkan semua data</small>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid" id="statsContainer">
+                        <!-- Loaded by JS -->
+                    </div>
+
+                    <div class="data-card">
+                        <div class="card-header-custom">
+                            <h5><i class="fas fa-store"></i> Daftar UMKM Terdaftar</h5>
+                            <button class="btn btn-add" id="btnTambahUMKM">
+                                <i class="fas fa-plus"></i> Tambah UMKM
+                            </button>
+                        </div>
+                        <div class="umkm-grid" id="umkmGrid">
+                            <!-- Loaded by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PAGE: DATA UMKM ===== -->
+                <div class="page-content" id="pageDataUMKM">
+                    <div class="data-card">
+                        <div class="card-header-custom">
+                            <h5><i class="fas fa-list"></i> Data UMKM Lengkap</h5>
+                            <button class="btn btn-add" id="btnTambahUMKM2">
+                                <i class="fas fa-plus"></i> Tambah UMKM
+                            </button>
+                        </div>
+                        <div class="table-responsive-custom">
+                            <table class="table table-umkm" id="umkmTable">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Foto</th>
+                                        <th>Kelurahan</th>
+                                        <th>RT</th>
+                                        <th>RW</th>
+                                        <th>Nama UMKM</th>
+                                        <th>Pemilik</th>
+                                        <th>No Izin</th>
+                                        <th>Alamat</th>
+                                        <th>Kategori</th>
+                                        <th>Sub</th>
+                                        <th>Status</th>
+                                        <th>Tahun</th>
+                                        <th>Telepon</th>
+                                        <th>Email</th>
+                                        <th>Website</th>
+                                        <th>File Foto</th>
+                                        <th>Tanggal</th>
+                                        <th>Diinput</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="umkmTableBody">
+                                    <tr><td colspan="20" class="text-center text-muted">Tidak ada data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PAGE: PANDUAN ===== -->
+                <div class="page-content" id="pagePanduan">
+                    <div class="data-card">
+                        <div class="card-header-custom">
+                            <h5><i class="fas fa-book"></i> Panduan Status UMKM</h5>
+                            <span class="text-muted" style="font-size:13px;">Pahami status UMKM sebelum menginput data</span>
+                        </div>
+                        <div class="panduan-grid" id="panduanGrid">
+                            <!-- Loaded by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PAGE: REKAP ===== -->
+                <div class="page-content" id="pageRekap">
+                    <div class="data-card">
+                        <div class="card-header-custom">
+                            <h5><i class="fas fa-chart-bar"></i> Rekap Per Kelurahan</h5>
+                            <button class="btn btn-add" id="btnRefreshRekap">
+                                <i class="fas fa-sync"></i> Refresh
+                            </button>
+                        </div>
+                        <div class="table-responsive-custom">
+                            <table class="table table-umkm" id="rekapTable">
+                                <thead>
+                                    <tr>
+                                        <th>Kelurahan</th>
+                                        <th>Total</th>
+                                        <th>Rintisan</th>
+                                        <th>Berkembang</th>
+                                        <th>Siap Naik</th>
+                                        <th>Mandiri</th>
+                                        <th>Butuh Bantuan</th>
+                                        <th>Tidak Aktif</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rekapTableBody">
+                                    <tr><td colspan="8" class="text-center text-muted">Tidak ada data</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ===== PAGE: PROFILE ===== -->
+                <div class="page-content" id="pageProfile">
+                    <div class="data-card">
+                        <div class="card-header-custom">
+                            <h5><i class="fas fa-user"></i> Profil Saya</h5>
+                        </div>
+                        <div class="row g-4">
+                            <div class="col-md-4 text-center">
+                                <div class="avatar" style="width:120px;height:120px;font-size:48px;margin:0 auto;background:var(--gradient);color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;overflow:hidden;">
+                                    <span id="profileAvatar">U</span>
+                                </div>
+                                <h5 class="mt-3" id="profileName">User</h5>
+                                <p class="text-muted" id="profileRole">Role</p>
+                                <p class="text-primary" id="profileKelurahan">Kelurahan</p>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Username</label>
+                                        <input type="text" class="form-control" id="profileUsername" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Nama Lengkap</label>
+                                        <input type="text" class="form-control" id="profileFullname" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Role</label>
+                                        <input type="text" class="form-control" id="profileRoleInput" disabled>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label">Kelurahan</label>
+                                        <input type="text" class="form-control" id="profileKelurahanInput" disabled>
+                                    </div>
+                                </div>
+
+                                <!-- Dark Mode Toggle -->
+                                <div class="mt-4 pt-3 border-top" style="border-color:var(--border-color);">
+                                    <div class="dark-mode-row">
+                                        <span class="dark-mode-label">
+                                            <i class="fas fa-moon"></i> Mode Gelap
+                                        </span>
+                                        <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+                                            <span class="toggle-slider">🌙</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="mt-3">
+                                    <button class="btn btn-danger" id="btnLogoutProfile">
+                                        <i class="fas fa-sign-out-alt me-2"></i> Logout
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== BOTTOM NAV (Mobile) ===== -->
+    <div class="bottom-nav" id="bottomNav">
+        <div class="nav-items">
+            <button class="nav-item active" data-page="dashboard">
+                <i class="fas fa-home"></i>
+                <span>Beranda</span>
+            </button>
+            <button class="nav-item" data-page="dataumkm">
+                <i class="fas fa-list"></i>
+                <span>Data</span>
+                <span class="badge-nav" id="dataBadge">0</span>
+            </button>
+            <button class="nav-item" data-page="panduan" id="navPanduan">
+                <i class="fas fa-book"></i>
+                <span>Panduan</span>
+            </button>
+            <button class="nav-item" data-page="profile">
+                <i class="fas fa-user"></i>
+                <span>Profil</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===== MODAL FORM ===== -->
+    <div class="modal fade" id="umkmModal" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="umkmModalTitle">
+                        <i class="fas fa-plus-circle me-2 text-primary"></i> Tambah UMKM
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="umkmForm" novalidate>
+                    <div class="modal-body">
+                        <input type="hidden" id="formAction" value="add">
+                        <input type="hidden" id="formRowNum" value="">
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Field dengan tanda <span class="text-danger">*</span> wajib diisi
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">Kelurahan <span class="required">*</span></label>
+                                <select class="form-select" id="fKelurahan" required>
+                                    <option value="">Pilih Kelurahan</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">RT</label>
+                                <input type="text" class="form-control" id="fRT" placeholder="001">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">RW</label>
+                                <input type="text" class="form-control" id="fRW" placeholder="003">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Nama UMKM <span class="required">*</span></label>
+                                <input type="text" class="form-control form-control-lg text-uppercase" id="fNamaUMKM" placeholder="Nama UMKM" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Nama Pemilik <span class="required">*</span></label>
+                                <input type="text" class="form-control form-control-lg text-uppercase" id="fPemilik" placeholder="Nama Pemilik" required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label">No Surat Izin</label>
+                                <input type="text" class="form-control" id="fNoIzin" placeholder="Nomor Surat Izin Usaha">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Alamat UMKM <span class="required">*</span></label>
+                                <textarea class="form-control text-uppercase" id="fAlamat" rows="2" placeholder="Alamat lengkap" required></textarea>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Kategori <span class="required">*</span></label>
+                                <select class="form-select" id="fKategori" required>
+                                    <option value="">Pilih Kategori</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Sub Kategori</label>
+                                <select class="form-select" id="fSubKategori">
+                                    <option value="">Pilih Sub Kategori</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">Status UMKM <span class="required">*</span></label>
+                                <select class="form-select" id="fStatus" required>
+                                    <option value="">Pilih Status</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Tahun Berdiri</label>
+                                <input type="number" class="form-control" id="fTahun" placeholder="Tahun" min="1900" max="2026">
+                            </div>
+
+                            <div class="col-md-6">
+                                <label class="form-label">No Telepon</label>
+                                <input type="text" class="form-control" id="fTelepon" placeholder="Nomor Telepon">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Email</label>
+                                <input type="email" class="form-control text-uppercase" id="fEmail" placeholder="Email">
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label">Website / Sosial Media</label>
+                                <input type="text" class="form-control" id="fWebsite" placeholder="URL Website atau Sosial Media">
+                            </div>
+
+                            <!-- ===== UPLOAD AREA ===== -->
+                            <div class="col-12">
+                                <label class="form-label">Foto UMKM</label>
+                                <div class="upload-area" id="uploadArea">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p><strong>Klik atau drag & drop</strong><br>untuk upload foto</p>
+                                    <input type="file" id="fFileFoto" accept="image/*" style="display:none;">
+                                    <div id="uploadPreviewContainer"></div>
+                                </div>
+                                <small class="text-muted">Format: JPG, PNG, GIF. Maks 5MB</small>
+                                <input type="hidden" id="fFotoUrl" value="">
+
+                                <!-- Progress Bar Upload -->
+                                <div class="upload-progress-container" id="uploadProgressContainer" style="display:none;">
+                                    <div class="progress">
+                                        <div class="progress-bar" id="uploadProgressBar" role="progressbar" style="width:0%"></div>
+                                    </div>
+                                    <div class="upload-status">
+                                        <span class="status-text" id="uploadStatusText">Mempersiapkan upload...</span>
+                                        <span class="status-percent" id="uploadStatusPercent">0%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background:var(--bg-body);color:var(--text-color);border-color:var(--border-color);">Batal</button>
+                        <button type="submit" class="btn btn-add" id="btnSubmitForm">
+                            <i class="fas fa-save me-2"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL STAT DETAIL ===== -->
+    <div class="modal fade stat-detail-modal" id="statDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="statDetailTitle">Detail Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center" id="statDetailBody">
+                    <div class="stat-detail-icon" id="statDetailIcon"></div>
+                    <div class="stat-detail-number" id="statDetailNumber">0</div>
+                    <div class="stat-detail-label" id="statDetailLabel">Label</div>
+                    <div class="mt-3">
+                        <div class="stat-detail-desc" id="statDetailDesc">Deskripsi</div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background:var(--bg-body);color:var(--text-color);border-color:var(--border-color);">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL UMKM DETAIL ===== -->
+    <div class="modal fade umkm-detail-modal" id="umkmDetailModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="umkmDetailTitle">Detail UMKM</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="umkmDetailBody">
+                    <!-- Loaded by JS -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="background:var(--bg-body);color:var(--text-color);border-color:var(--border-color);">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+    SCRIPTS
+    ============================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js">
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js">
+    </script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js">
+    </script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js">
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11">
+    </script>
+
+    <script>
+        // ============================================
+        // KONFIGURASI
+        // ============================================
+        const CONFIG = {
+            DEPLOY_URL: 'https://script.google.com/macros/s/AKfycbwe7A_yaM-i6BI3Lg9gcJqEBncphB42rF7nFkROLoAZQonDM6yUbrs9J575ByDtMxRo/exec',
+            DRIVE_FOLDER_ID: '1ZCjmmZT7oYRsXGXRCM3X2NJVKAc1OOjo',
+            SESSION_KEY: 'umkm_premium_session',
+            CACHE_KEY: 'umkm_data_cache',
+            CACHE_DURATION: 5 * 60 * 1000,
+            DARK_MODE_KEY: 'umkm_dark_mode'
+        };
+
+        console.log('🚀 Script dimulai...');
+        console.log('📡 DEPLOY_URL:', CONFIG.DEPLOY_URL);
+        console.log('📁 DRIVE_FOLDER_ID:', CONFIG.DRIVE_FOLDER_ID);
+
+        // ============================================
+        // STATE
+        // ============================================
+        let currentUser = null;
+        let allData = {
+            umkm: [],
+            kelurahan: [],
+            kategori: [],
+            status: [],
+            rekap: [],
+            logs: []
+        };
+        let dataTable = null;
+        let filterSettings = {
+            kelurahan: '',
+            rt: '',
+            rw: ''
+        };
+        let isDarkMode = false;
+
+        // ============================================
+        // DARK MODE
+        // ============================================
+        function loadDarkMode() {
+            try {
+                const saved = localStorage.getItem(CONFIG.DARK_MODE_KEY);
+                if (saved !== null) {
+                    isDarkMode = saved === 'true';
+                } else {
+                    // Deteksi preferensi sistem
+                    isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                }
+                applyDarkMode(isDarkMode);
+            } catch {
+                isDarkMode = false;
+                applyDarkMode(false);
+            }
+        }
+
+        function applyDarkMode(enabled) {
+            isDarkMode = enabled;
+            const toggle = document.getElementById('darkModeToggle');
+            const slider = toggle?.querySelector('.toggle-slider');
+            
+            if (enabled) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                if (toggle) toggle.classList.add('active');
+                if (slider) slider.textContent = '☀️';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                if (toggle) toggle.classList.remove('active');
+                if (slider) slider.textContent = '🌙';
+            }
+            
+            try {
+                localStorage.setItem(CONFIG.DARK_MODE_KEY, String(enabled));
+            } catch {}
+        }
+
+        function toggleDarkMode() {
+            applyDarkMode(!isDarkMode);
+        }
+
+        // Dark mode toggle event
+        document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+
+        // ============================================
+        // PREMIUM LOADING MANAGER
+        // ============================================
+        const Loader = {
+            overlay: null,
+            progressBar: null,
+            text: null,
+            subtext: null,
+            percentage: null,
+
+            init() {
+                this.overlay = document.getElementById('loadingOverlay');
+                this.progressBar = document.getElementById('loadProgressBar');
+                this.text = document.getElementById('loadText');
+                this.subtext = document.getElementById('loadSubtext');
+                this.percentage = document.getElementById('loadPercentage');
+                
+                console.log('✅ Loader initialized');
+            },
+
+            show(message = 'Memuat data...', subtext = 'Mohon tunggu sebentar') {
+                if (!this.overlay) {
+                    console.error('❌ Overlay not found!');
+                    return;
+                }
+                this.overlay.style.display = 'flex';
+                setTimeout(() => {
+                    this.overlay.classList.add('active');
+                }, 50);
+                this.text.textContent = message;
+                this.subtext.textContent = subtext;
+                this.updateProgress(0);
+            },
+
+            updateProgress(value, message = null, subtext = null) {
+                const percent = Math.min(Math.max(value, 0), 100);
+                if (this.progressBar) this.progressBar.style.width = percent + '%';
+                if (this.percentage) this.percentage.textContent = Math.round(percent) + '%';
+                if (message && this.text) this.text.textContent = message;
+                if (subtext && this.subtext) this.subtext.textContent = subtext;
+            },
+
+            hide() {
+                if (!this.overlay) return;
+                this.overlay.classList.remove('active');
+                setTimeout(() => {
+                    this.overlay.style.display = 'none';
+                    if (this.progressBar) this.progressBar.style.width = '0%';
+                    if (this.percentage) this.percentage.textContent = '0%';
+                }, 400);
+            }
+        };
+
+        // ============================================
+        // SESSION MANAGER
+        // ============================================
+        const SessionManager = {
+            get() {
+                try {
+                    const data = localStorage.getItem(CONFIG.SESSION_KEY);
+                    if (!data) return null;
+                    const session = JSON.parse(data);
+                    if (session.expiry && session.expiry > Date.now()) {
+                        return session.user;
+                    }
+                    this.clear();
+                    return null;
+                } catch {
+                    return null;
+                }
+            },
+
+            save(user, remember = true) {
+                const session = {
+                    user: user,
+                    expiry: remember ? Date.now() + (7 * 24 * 60 * 60 * 1000) : Date.now() + (3600000)
+                };
+                localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(session));
+            },
+
+            clear() {
+                localStorage.removeItem(CONFIG.SESSION_KEY);
+            },
+
+            extend() {
+                const data = localStorage.getItem(CONFIG.SESSION_KEY);
+                if (data) {
+                    const session = JSON.parse(data);
+                    session.expiry = Date.now() + (7 * 24 * 60 * 60 * 1000);
+                    localStorage.setItem(CONFIG.SESSION_KEY, JSON.stringify(session));
+                }
+            }
+        };
+
+        // ============================================
+        // DATA CACHE
+        // ============================================
+        const DataCache = {
+            get() {
+                try {
+                    const data = localStorage.getItem(CONFIG.CACHE_KEY);
+                    if (!data) return null;
+                    const cached = JSON.parse(data);
+                    if (cached.timestamp + CONFIG.CACHE_DURATION > Date.now()) {
+                        return cached.value;
+                    }
+                    this.clear();
+                    return null;
+                } catch {
+                    return null;
+                }
+            },
+
+            set(data) {
+                localStorage.setItem(CONFIG.CACHE_KEY, JSON.stringify({
+                    timestamp: Date.now(),
+                    value: data
+                }));
+            },
+
+            clear() {
+                localStorage.removeItem(CONFIG.CACHE_KEY);
+            }
+        };
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+        function safeSetText(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value || '';
+        }
+
+        function safeSetValue(id, value) {
+            const el = document.getElementById(id);
+            if (el) el.value = value || '';
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+            } catch { return dateStr; }
+        }
+
+        function formatDateTime(dateStr) {
+            if (!dateStr) return '-';
+            try {
+                const d = new Date(dateStr);
+                return d.toLocaleString('id-ID', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit',
+                    minute: '2-digit' });
+            } catch { return dateStr; }
+        }
+
+        // Fungsi untuk mengubah teks menjadi huruf besar (UPPERCASE) - untuk input
+        function toUpperCase(str) {
+            if (!str) return '';
+            return String(str).toUpperCase();
+        }
+
+        // Fungsi untuk plain text (tidak mengubah format)
+        function toPlainText(str) {
+            if (!str) return '';
+            return String(str).trim();
+        }
+
+        function getStatusClass(status) {
+            let s = status || 'Tidak Aktif';
+            s = s.replace(/^UMKM\s+/, '');
+            if (s === 'Siap Naik Kelas') s = 'Siap Naik';
+            if (s === 'Membutuhkan Bantuan Pemerintah') s = 'Butuh Bantuan';
+
+            const map = {
+                'Rintisan': 'rintisan',
+                'Berkembang': 'berkembang',
+                'Siap Naik': 'siap',
+                'Mandiri': 'mandiri',
+                'Butuh Bantuan': 'bantuan',
+                'Binaan Pemerintah': 'binaan',
+                'Tidak Aktif': 'tidak'
+            };
+            return map[s] || 'tidak';
+        }
+
+        function getStatusBadge(status) {
+            const cls = getStatusClass(status);
+            let display = status || 'Tidak Aktif';
+            display = display.replace(/^UMKM\s+/, '');
+            if (display === 'Siap Naik Kelas') display = 'Siap Naik';
+            if (display === 'Membutuhkan Bantuan Pemerintah') display = 'Butuh Bantuan';
+
+            return `<span class="badge-status ${cls}">${display}</span>`;
+        }
+
+        function getStatusKode(status) {
+            const map = {
+                'Rintisan': 'RINTISAN',
+                'Berkembang': 'BERKEMBANG',
+                'Siap Naik Kelas': 'SIAP_NAIK',
+                'Siap Naik': 'SIAP_NAIK',
+                'Mandiri': 'MANDIRI',
+                'Membutuhkan Bantuan Pemerintah': 'BUTUH_BANTUAN',
+                'Butuh Bantuan': 'BUTUH_BANTUAN',
+                'Binaan Pemerintah': 'BINAAN',
+                'Tidak Aktif': 'TIDAK_AKTIF'
+            };
+            return map[status] || status;
+        }
+
+        function compressImage(file, maxWidth = 800, maxHeight = 800, quality = 0.8) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > maxWidth) {
+                                height = (height * maxWidth) / width;
+                                width = maxWidth;
+                            }
+                        } else {
+                            if (height > maxHeight) {
+                                width = (width * maxHeight) / height;
+                                height = maxHeight;
+                            }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.imageSmoothingEnabled = true;
+                        ctx.imageSmoothingQuality = 'high';
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                    img.onerror = reject;
+                };
+                reader.onerror = reject;
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function getEmbeddableDriveUrl(url) {
+            if (!url) return '';
+            if (url.includes('/thumbnail?')) return url;
+            let fileId = null;
+            let match = url.match(/[?&]id=([^&]+)/);
+            if (match) fileId = match[1];
+            if (!fileId) {
+                match = url.match(/\/d\/([^\/]+)/);
+                if (match) fileId = match[1];
+            }
+            if (!fileId) {
+                match = url.match(/\/file\/d\/([^\/]+)/);
+                if (match) fileId = match[1];
+            }
+            if (!fileId) {
+                match = url.match(/uc\?export=view&id=([^&]+)/);
+                if (match) fileId = match[1];
+            }
+            if (!fileId) return url;
+            return `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+        }
+
+        // ============================================
+        // CHECK SESSION & AUTH
+        // ============================================
+        async function checkSession() {
+            console.log('🔍 checkSession dipanggil');
+            
+            const user = SessionManager.get();
+            console.log('👤 User dari session:', user);
+            
+            if (!user) {
+                console.log('❌ Tidak ada session, redirect ke login');
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            try {
+                console.log('📡 Mengirim request checkSession ke:', CONFIG.DEPLOY_URL);
+                
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'checkSession',
+                        username: user.username
+                    })
+                });
+
+                console.log('📥 Response status:', response.status);
+                const result = await response.json();
+                console.log('📦 Result:', result);
+
+                if (result.success) {
+                    currentUser = { ...user, ...result.data };
+                    SessionManager.extend();
+                    console.log('✅ Session valid, user:', currentUser);
+                    return true;
+                } else {
+                    console.log('❌ Session tidak valid:', result.message);
+                    SessionManager.clear();
+                    window.location.href = 'login.html';
+                    return false;
+                }
+            } catch (error) {
+                console.error('❌ Error checkSession:', error);
+                window.location.href = 'login.html';
+                return false;
+            }
+        }
+
+        // ============================================
+        // CHECK OWNERSHIP
+        // ============================================
+        function isOwnedByUser(item) {
+            if (!currentUser) return false;
+            if (currentUser.role === 'admin' || currentUser.role === 'superadmin') return true;
+            return item['Diinput Oleh'] === currentUser.username;
+        }
+
+        function canEditDelete(item) {
+            if (!currentUser) return false;
+            if (currentUser.role === 'admin' || currentUser.role === 'superadmin') return true;
+            return item['Diinput Oleh'] === currentUser.username;
+        }
+
+        // ============================================
+        // LOAD DATA
+        // ============================================
+        async function loadData(forceRefresh = false) {
+            console.log('📊 loadData dipanggil, forceRefresh:', forceRefresh);
+            
+            if (!currentUser) {
+                console.error('❌ currentUser null di loadData');
+                return;
+            }
+
+            if (!forceRefresh) {
+                const cached = DataCache.get();
+                if (cached) {
+                    console.log('📦 Menggunakan cache data');
+                    allData = cached;
+                    renderAll();
+                    return;
+                }
+            }
+
+            Loader.show('Memuat data UMKM...', 'Mengambil data dari server');
+            Loader.updateProgress(10, 'Menghubungi server...');
+
+            try {
+                const url = CONFIG.DEPLOY_URL;
+                console.log('📡 Fetching data dari:', url);
+                
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({
+                        action: 'getAllData',
+                        username: currentUser.username,
+                        role: currentUser.role,
+                        kelurahan: currentUser.kelurahan || ''
+                    })
+                });
+
+                console.log('📥 Response status:', response.status);
+                Loader.updateProgress(50, 'Menerima data...');
+
+                const result = await response.json();
+                console.log('📦 Result data:', result);
+
+                if (result.success) {
+                    Loader.updateProgress(80, 'Memproses data...');
+                    allData = result.data;
+                    
+                    if (result.data.user) {
+                        currentUser = { ...currentUser, ...result.data.user };
+                    }
+                    
+                    DataCache.set(allData);
+                    renderAll();
+                    Loader.updateProgress(100, 'Selesai!');
+                    setTimeout(() => Loader.hide(), 400);
+                } else {
+                    throw new Error(result.message || 'Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('❌ Error loadData:', error);
+                Loader.hide();
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Error Load Data', 
+                    text: error.message || 'Terjadi kesalahan saat memuat data' 
+                });
+            }
+        }
+
+        // ============================================
+        // SHOW DASHBOARD
+        // ============================================
+        function showDashboard() {
+            console.log('📊 showDashboard dipanggil');
+            console.log('👤 currentUser:', currentUser);
+            
+            const loginPage = document.getElementById('loginPage');
+            const dashboardPage = document.getElementById('dashboardPage');
+            
+            if (loginPage) loginPage.style.display = 'none';
+            
+            if (dashboardPage) {
+                dashboardPage.style.display = 'block';
+                console.log('✅ Dashboard ditampilkan');
+            } else {
+                console.error('❌ dashboardPage tidak ditemukan!');
+                return;
+            }
+            
+            if (!currentUser) {
+                console.error('❌ currentUser null!');
+                return;
+            }
+
+            const name = currentUser.namaLengkap || currentUser.username;
+            const initial = name.charAt(0).toUpperCase();
+            const urlProfile = currentUser.urlProfile || '';
+
+            // Set avatar dengan foto profil jika ada
+            const avatarEl = document.getElementById('userAvatarTop');
+            const sidebarAvatarEl = document.getElementById('sidebarAvatar');
+            const profileAvatarEl = document.getElementById('profileAvatar');
+
+            if (urlProfile) {
+                const avatarImg = `<img src="${urlProfile}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none';this.parentElement.textContent='${initial}'">`;
+                if (avatarEl) avatarEl.innerHTML = avatarImg;
+                if (sidebarAvatarEl) sidebarAvatarEl.innerHTML = avatarImg;
+                if (profileAvatarEl) profileAvatarEl.innerHTML = avatarImg;
+            } else {
+                if (avatarEl) avatarEl.textContent = initial;
+                if (sidebarAvatarEl) sidebarAvatarEl.textContent = initial;
+                if (profileAvatarEl) profileAvatarEl.textContent = initial;
+            }
+
+            safeSetText('greetingName', name);
+            safeSetText('userNameTop', name);
+            safeSetText('userRoleTop', currentUser.role === 'admin' ? 'Administrator' : 'User');
+            safeSetText('sidebarName', name);
+            safeSetText('sidebarRole', currentUser.role === 'admin' ? 'Administrator' : 'User');
+            safeSetText('sidebarKelurahan', currentUser.kelurahan || 'Semua Kelurahan');
+            safeSetText('profileName', name);
+            safeSetText('profileRole', currentUser.role === 'admin' ? 'Administrator' : 'User');
+            safeSetText('profileKelurahan', currentUser.kelurahan || 'Semua Kelurahan');
+            safeSetValue('profileUsername', currentUser.username);
+            safeSetValue('profileFullname', name);
+            safeSetValue('profileRoleInput', currentUser.role === 'admin' ? 'Administrator' : 'User');
+            safeSetValue('profileKelurahanInput', currentUser.kelurahan || 'Semua Kelurahan');
+
+            const isAdmin = currentUser.role === 'admin' || currentUser.role === 'superadmin';
+            const rekapMenu = document.getElementById('menuRekap');
+            const navRekap = document.getElementById('navRekap');
+            if (rekapMenu) rekapMenu.style.display = isAdmin ? 'flex' : 'none';
+            if (navRekap) navRekap.style.display = isAdmin ? 'flex' : 'none';
+            
+            console.log('✅ showDashboard selesai');
+        }
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        function navigateTo(page) {
+            document.querySelectorAll('.sidebar .nav-item[data-page]').forEach(n => n.classList.remove('active'));
+            const sidebarItem = document.querySelector(`.sidebar .nav-item[data-page="${page}"]`);
+            if (sidebarItem) sidebarItem.classList.add('active');
+
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+            const bottomItem = document.querySelector(`.bottom-nav .nav-item[data-page="${page}"]`);
+            if (bottomItem) bottomItem.classList.add('active');
+
+            document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+
+            const pageMap = {
+                'dashboard': 'pageDashboard',
+                'dataumkm': 'pageDataUMKM',
+                'panduan': 'pagePanduan',
+                'rekap': 'pageRekap',
+                'profile': 'pageProfile'
+            };
+
+            const target = document.getElementById(pageMap[page]);
+            if (target) target.classList.add('active');
+
+            const titles = {
+                'dashboard': 'Dashboard',
+                'dataumkm': 'Data UMKM',
+                'panduan': 'Panduan Status UMKM',
+                'rekap': 'Rekap Per Kelurahan',
+                'profile': 'Profil Saya'
+            };
+
+            const subtitles = {
+                'dashboard': 'Ringkasan data UMKM',
+                'dataumkm': 'Kelola data UMKM lengkap',
+                'panduan': 'Pahami status UMKM sebelum menginput data',
+                'rekap': 'Statistik per kelurahan',
+                'profile': 'Informasi akun Anda'
+            };
+
+            safeSetText('pageTitle', titles[page] || 'Dashboard');
+            const subtitleEl = document.getElementById('pageSubtitle');
+            if (subtitleEl) subtitleEl.innerHTML = subtitles[page] || '';
+
+            document.getElementById('sidebar').classList.remove('open');
+
+            if (page === 'dataumkm' && dataTable) {
+                setTimeout(() => dataTable.columns.adjust().draw(), 100);
+            }
+        }
+
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar .nav-item[data-page]').forEach(item => {
+            item.addEventListener('click', function() {
+                navigateTo(this.dataset.page);
+            });
+        });
+
+        // Bottom nav
+        document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                navigateTo(this.dataset.page);
+            });
+        });
+
+        // Menu toggle
+        document.getElementById('menuToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // Avatar click = profile
+        document.getElementById('userAvatarTop').addEventListener('click', function() {
+            navigateTo('profile');
+        });
+
+        // Close sidebar on outside click
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const toggle = document.getElementById('menuToggle');
+            if (window.innerWidth <= 992) {
+                if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // ============================================
+        // LOGOUT
+        // ============================================
+        function logout() {
+            Swal.fire({
+                title: 'Konfirmasi Logout',
+                text: 'Apakah Anda yakin ingin keluar?',
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Logout',
+                cancelButtonText: 'Batal'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    SessionManager.clear();
+                    DataCache.clear();
+                    currentUser = null;
+                    window.location.href = 'login.html';
+                }
+            });
+        }
+
+        document.getElementById('btnLogoutProfile').addEventListener('click', logout);
+        document.getElementById('sidebarLogout').addEventListener('click', logout);
+
+        // ============================================
+        // RENDER FUNCTIONS
+        // ============================================
+        
+        // RENDER DASHBOARD STATS - dengan info deskripsi dari STATUS_UMKM
+        function renderDashboard() {
+            const data = getFilteredData();
+            const total = data.length;
+
+            // Ambil data status dari sheet untuk deskripsi
+            const statusData = allData.status || [];
+            const statusMap = {};
+            statusData.forEach(s => {
+                const key = s.Status || '';
+                const kode = s.Kode || getStatusKode(key);
+                statusMap[kode] = {
+                    status: key,
+                    kode: kode,
+                    deskripsi: s.Deskripsi || ''
+                };
+            });
+
+            const statusInfo = {
+                'Total UMKM': { 
+                    label: 'Total UMKM', 
+                    icon: 'fa-store', 
+                    color: 'purple',
+                    kode: 'TOTAL',
+                    deskripsi: 'Jumlah seluruh UMKM yang terdaftar dalam sistem pendataan.'
+                },
+                'Rintisan': { 
+                    label: 'Rintisan', 
+                    icon: 'fa-leaf', 
+                    color: 'green',
+                    kode: 'RINTISAN',
+                    deskripsi: statusMap['RINTISAN']?.deskripsi || 'Usaha baru dimulai atau masih dalam tahap awal pengembangan.'
+                },
+                'Berkembang': { 
+                    label: 'Berkembang', 
+                    icon: 'fa-arrow-up', 
+                    color: 'orange',
+                    kode: 'BERKEMBANG',
+                    deskripsi: statusMap['BERKEMBANG']?.deskripsi || 'Usaha telah berjalan dengan baik dan menunjukkan perkembangan.'
+                },
+                'Siap Naik': { 
+                    label: 'Siap Naik', 
+                    icon: 'fa-rocket', 
+                    color: 'blue',
+                    kode: 'SIAP_NAIK',
+                    deskripsi: statusMap['SIAP_NAIK']?.deskripsi || 'Usaha sudah stabil dan memiliki potensi untuk berkembang ke skala yang lebih besar.'
+                },
+                'Mandiri': { 
+                    label: 'Mandiri', 
+                    icon: 'fa-crown', 
+                    color: 'purple',
+                    kode: 'MANDIRI',
+                    deskripsi: statusMap['MANDIRI']?.deskripsi || 'Usaha telah berjalan secara stabil dan mampu berkembang tanpa bergantung pada bantuan pemerintah.'
+                },
+                'Butuh Bantuan': { 
+                    label: 'Butuh Bantuan', 
+                    icon: 'fa-hand-holding-heart', 
+                    color: 'red',
+                    kode: 'BUTUH_BANTUAN',
+                    deskripsi: statusMap['BUTUH_BANTUAN']?.deskripsi || 'Usaha mengalami kendala yang menghambat perkembangan dan memerlukan dukungan pemerintah.'
+                },
+                'Binaan Pemerintah': { 
+                    label: 'Binaan Pemerintah', 
+                    icon: 'fa-hands-helping', 
+                    color: 'orange',
+                    kode: 'BINAAN',
+                    deskripsi: statusMap['BINAAN']?.deskripsi || 'Usaha yang dibina langsung oleh Pemerintah Kota Pekanbaru melalui program pembinaan dan pendampingan UMKM.'
+                },
+                'Tidak Aktif': { 
+                    label: 'Tidak Aktif', 
+                    icon: 'fa-circle', 
+                    color: 'gray',
+                    kode: 'TIDAK_AKTIF',
+                    deskripsi: statusMap['TIDAK_AKTIF']?.deskripsi || 'Usaha tidak lagi beroperasi untuk sementara atau telah berhenti beroperasi.'
+                }
+            };
+
+            const statusKeys = ['Rintisan', 'Berkembang', 'Siap Naik', 'Mandiri', 'Butuh Bantuan', 'Binaan Pemerintah', 'Tidak Aktif'];
+            const statusCount = {};
+            statusKeys.forEach(s => statusCount[s] = 0);
+
+            data.forEach(item => {
+                let s = item['Status UMKM'] || 'Tidak Aktif';
+                s = s.replace(/^UMKM\s+/, '');
+                if (s === 'Siap Naik Kelas') s = 'Siap Naik';
+                if (s === 'Membutuhkan Bantuan Pemerintah') s = 'Butuh Bantuan';
+                if (statusCount.hasOwnProperty(s)) statusCount[s]++;
+            });
+
+            const statKeys = [
+                { key: 'Total UMKM', number: total },
+                { key: 'Rintisan', number: statusCount['Rintisan'] },
+                { key: 'Berkembang', number: statusCount['Berkembang'] },
+                { key: 'Siap Naik', number: statusCount['Siap Naik'] },
+                { key: 'Mandiri', number: statusCount['Mandiri'] },
+                { key: 'Butuh Bantuan', number: statusCount['Butuh Bantuan'] },
+                { key: 'Binaan Pemerintah', number: statusCount['Binaan Pemerintah'] },
+                { key: 'Tidak Aktif', number: statusCount['Tidak Aktif'] }
+            ];
+
+            let html = '';
+            statKeys.forEach(item => {
+                const info = statusInfo[item.key];
+                if (!info) return;
+
+                const id = item.key.replace(/\s+/g, '-');
+                html += `
+                    <div class="stat-card" data-stat="${id}" onclick="showStatDetail('${id}')">
+                        <div class="stat-icon ${info.color}"><i class="fas ${info.icon}"></i></div>
+                        <div class="stat-number">${item.number}</div>
+                        <div class="stat-label">${info.label}</div>
+                        <button class="stat-info-btn" onclick="event.stopPropagation();showStatDetail('${id}')" title="Lihat Deskripsi">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                `;
+            });
+
+            const container = document.getElementById('statsContainer');
+            if (container) container.innerHTML = html;
+        }
+
+        // ============================================
+        // SHOW STAT DETAIL - Modal
+        // ============================================
+        function showStatDetail(id) {
+            const statMap = {
+                'Total-UMKM': { 
+                    label: 'Total UMKM', 
+                    icon: 'fa-store', 
+                    color: 'purple',
+                    desc: 'Jumlah seluruh UMKM yang terdaftar dalam sistem pendataan.'
+                },
+                'Rintisan': { 
+                    label: 'Rintisan', 
+                    icon: 'fa-leaf', 
+                    color: 'green',
+                    desc: getAllStatusDesc('RINTISAN') || 'Usaha baru dimulai atau masih dalam tahap awal pengembangan.'
+                },
+                'Berkembang': { 
+                    label: 'Berkembang', 
+                    icon: 'fa-arrow-up', 
+                    color: 'orange',
+                    desc: getAllStatusDesc('BERKEMBANG') || 'Usaha telah berjalan dengan baik dan menunjukkan perkembangan.'
+                },
+                'Siap-Naik': { 
+                    label: 'Siap Naik', 
+                    icon: 'fa-rocket', 
+                    color: 'blue',
+                    desc: getAllStatusDesc('SIAP_NAIK') || 'Usaha sudah stabil dan memiliki potensi untuk berkembang ke skala yang lebih besar.'
+                },
+                'Mandiri': { 
+                    label: 'Mandiri', 
+                    icon: 'fa-crown', 
+                    color: 'purple',
+                    desc: getAllStatusDesc('MANDIRI') || 'Usaha telah berjalan secara stabil dan mampu berkembang tanpa bergantung pada bantuan pemerintah.'
+                },
+                'Butuh-Bantuan': { 
+                    label: 'Butuh Bantuan', 
+                    icon: 'fa-hand-holding-heart', 
+                    color: 'red',
+                    desc: getAllStatusDesc('BUTUH_BANTUAN') || 'Usaha mengalami kendala yang menghambat perkembangan dan memerlukan dukungan pemerintah.'
+                },
+                'Binaan-Pemerintah': { 
+                    label: 'Binaan Pemerintah', 
+                    icon: 'fa-hands-helping', 
+                    color: 'orange',
+                    desc: getAllStatusDesc('BINAAN') || 'Usaha yang dibina langsung oleh Pemerintah Kota Pekanbaru.'
+                },
+                'Tidak-Aktif': { 
+                    label: 'Tidak Aktif', 
+                    icon: 'fa-circle', 
+                    color: 'gray',
+                    desc: getAllStatusDesc('TIDAK_AKTIF') || 'Usaha tidak lagi beroperasi untuk sementara atau telah berhenti beroperasi.'
+                }
+            };
+
+            // Cari data dari berbagai kemungkinan ID
+            let statData = null;
+            const possibleKeys = [id, id.replace(/-/g, '')];
+            
+            for (const key of possibleKeys) {
+                if (statMap[key]) {
+                    statData = statMap[key];
+                    break;
+                }
+                // Coba cari dengan case insensitive
+                for (const [mapKey, mapValue] of Object.entries(statMap)) {
+                    if (mapKey.toLowerCase() === key.toLowerCase()) {
+                        statData = mapValue;
+                        break;
+                    }
+                }
+                if (statData) break;
+            }
+
+            if (!statData) {
+                // Coba cari berdasarkan label
+                const label = id.replace(/-/g, ' ');
+                for (const [mapKey, mapValue] of Object.entries(statMap)) {
+                    if (mapValue.label.toLowerCase() === label.toLowerCase()) {
+                        statData = mapValue;
+                        break;
+                    }
+                }
+            }
+
+            if (!statData) {
+                console.warn('Stat data not found for:', id);
+                return;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('statDetailModal'));
+            document.getElementById('statDetailTitle').textContent = statData.label;
+            document.getElementById('statDetailIcon').innerHTML = `<i class="fas ${statData.icon}" style="color:${statData.color};"></i>`;
+            
+            // Ambil angka dari card
+            const card = document.querySelector(`.stat-card[data-stat="${id}"]`);
+            const numberEl = card?.querySelector('.stat-number');
+            const number = numberEl ? numberEl.textContent : '0';
+            
+            document.getElementById('statDetailNumber').textContent = number;
+            document.getElementById('statDetailLabel').textContent = statData.label;
+            document.getElementById('statDetailDesc').textContent = statData.desc;
+            
+            modal.show();
+        }
+
+        function getAllStatusDesc(kode) {
+            const statusData = allData.status || [];
+            const found = statusData.find(s => s.Kode === kode);
+            return found ? found.Deskripsi : null;
+        }
+
+        // ============================================
+        // GET FILTERED DATA
+        // ============================================
+        function getFilteredData() {
+            let data = allData.umkm || [];
+            
+            if (filterSettings.kelurahan) {
+                data = data.filter(item => item.Kelurahan === filterSettings.kelurahan);
+            }
+            
+            if (filterSettings.rt) {
+                data = data.filter(item => item.RT && String(item.RT).includes(filterSettings.rt));
+            }
+            
+            if (filterSettings.rw) {
+                data = data.filter(item => item.RW && String(item.RW).includes(filterSettings.rw));
+            }
+            
+            if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+                data = data.filter(item => item.Kelurahan === currentUser.kelurahan);
+            }
+            
+            return data;
+        }
+
+        // ============================================
+        // RENDER PANDUAN
+        // ============================================
+        function renderPanduan() {
+            const grid = document.getElementById('panduanGrid');
+            if (!grid) return;
+
+            const statusData = allData.status || [];
+
+            if (statusData.length === 0) {
+                grid.innerHTML = `
+                    <div class="text-center text-muted py-5">
+                        <i class="fas fa-book fa-3x mb-3" style="color:#DDE1E6;"></i>
+                        <p>Belum ada data panduan</p>
+                        <p class="small">Silahkan tambahkan data status UMKM di sheet STATUS_UMKM</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            statusData.forEach(item => {
+                const status = item.Status || '';
+                const kode = item.Kode || getStatusKode(status);
+                const deskripsi = item.Deskripsi || '-';
+                const id = item.ID || '-';
+
+                html += `
+                    <div class="panduan-card">
+                        <div class="panduan-kode">${kode}</div>
+                        <div class="panduan-status">${status}</div>
+                        <div class="panduan-desc">${deskripsi}</div>
+                        <div class="panduan-id">ID: ${id}</div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        // ============================================
+        // POPULATE FILTER KELURAHAN
+        // ============================================
+        function populateFilterKelurahan() {
+            const select = document.getElementById('filterKelurahan');
+            if (!select) return;
+            
+            const currentValue = select.value;
+            select.innerHTML = '<option value="">Semua Kelurahan</option>';
+            
+            const kelurahanList = new Set();
+            (allData.umkm || []).forEach(item => {
+                if (item.Kelurahan) kelurahanList.add(item.Kelurahan);
+            });
+            
+            if (currentUser && (currentUser.role === 'admin' || currentUser.role === 'superadmin')) {
+                (allData.kelurahan || []).forEach(k => {
+                    const name = k['Nama Kelurahan'] || '';
+                    if (name) kelurahanList.add(name);
+                });
+            } else {
+                if (currentUser && currentUser.kelurahan) {
+                    kelurahanList.add(currentUser.kelurahan);
+                }
+            }
+            
+            Array.from(kelurahanList).sort().forEach(name => {
+                const opt = document.createElement('option');
+                opt.value = name;
+                opt.textContent = name;
+                select.appendChild(opt);
+            });
+            
+            if (currentValue) select.value = currentValue;
+        }
+
+        // ============================================
+        // UPDATE FILTER INFO
+        // ============================================
+        function updateFilterInfo() {
+            const info = document.getElementById('filterInfo');
+            if (!info) return;
+            
+            const parts = [];
+            if (filterSettings.kelurahan) parts.push(`Kelurahan: ${filterSettings.kelurahan}`);
+            if (filterSettings.rt) parts.push(`RT: ${filterSettings.rt}`);
+            if (filterSettings.rw) parts.push(`RW: ${filterSettings.rw}`);
+            
+            if (parts.length === 0) {
+                info.textContent = 'Menampilkan semua data';
+                info.style.color = '';
+                info.style.fontWeight = '';
+            } else {
+                info.textContent = `Filter: ${parts.join(' | ')}`;
+                info.style.color = 'var(--primary)';
+                info.style.fontWeight = '600';
+            }
+        }
+
+        // ============================================
+        // RENDER UMKM CARDS
+        // ============================================
+        function renderUMKMCards() {
+            const data = getFilteredData();
+            const grid = document.getElementById('umkmGrid');
+            
+            if (!grid) return;
+
+            if (data.length === 0) {
+                grid.innerHTML = `
+                    <div class="text-center text-muted py-5" style="grid-column:1/-1;">
+                        <i class="fas fa-store fa-3x mb-3" style="color:#DDE1E6;"></i>
+                        <p>Belum ada data UMKM</p>
+                        <button class="btn btn-add" onclick="document.getElementById('btnTambahUMKM').click()">
+                            <i class="fas fa-plus"></i> Tambah UMKM Pertama
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            data.forEach((item, index) => {
+                const rawFoto = item['Link Foto Thumbnail'] || '';
+                const foto = getEmbeddableDriveUrl(rawFoto);
+                const status = item['Status UMKM'] || 'Tidak Aktif';
+                const statusClass = getStatusClass(status);
+                const isOwner = isOwnedByUser(item);
+                const canEdit = canEditDelete(item);
+
+                html += `
+                    <div class="umkm-card" onclick="showUMKMDetail(${index})">
+                        <div class="card-image">
+                            ${foto ? 
+                                `<img src="${foto}" alt="${item['Nama UMKM'] || 'UMKM'}" loading="lazy" 
+                                      onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                                 <div class="img-fallback" style="display:none;width:100%;height:100%;position:absolute;top:0;left:0;">
+                                     <i class="fas fa-image"></i>
+                                 </div>` : 
+                                `<div class="d-flex align-items-center justify-content-center h-100 text-muted" style="background:var(--bg-body);">
+                                    <i class="fas fa-image fa-3x"></i>
+                                </div>`
+                            }
+                            <span class="status-badge ${statusClass}">${status}</span>
+                            ${isOwner ? '<span class="status-badge" style="background:#6C5CE7;top:15px;left:15px;right:auto;font-size:10px;"><i class="fas fa-user-check"></i> Saya</span>' : ''}
+                        </div>
+                        <div class="card-body">
+                            <h5>${item['Nama UMKM'] || 'Tanpa Nama'}</h5>
+                            <div class="owner"><i class="fas fa-user"></i> ${item['Nama Pemilik'] || '-'}</div>
+                            <div class="location"><i class="fas fa-map-marker-alt"></i> ${item.Kelurahan || '-'}</div>
+                            
+                            <button class="btn-toggle-detail" onclick="event.stopPropagation();toggleCardDetail(this)">
+                                <i class="fas fa-chevron-down"></i> Lihat Detail
+                            </button>
+                            
+                            <div class="card-details">
+                                <small><strong>RT/RW:</strong> ${item.RT || '-'}/${item.RW || '-'}</small>
+                                <small><strong>Kategori:</strong> ${item.Kategori || '-'}</small>
+                                <small><strong>Sub Kategori:</strong> ${item['Sub Kategori'] || '-'}</small>
+                                <small><strong>Alamat:</strong> ${item['Alamat UMKM'] || '-'}</small>
+                                <small><strong>No Surat Izin:</strong> ${item['No Surat Izin'] || '-'}</small>
+                                <small><strong>Tahun Berdiri:</strong> ${item['Tahun Berdiri'] || '-'}</small>
+                                <small><strong>Telepon:</strong> ${item['No Telepon'] || '-'}</small>
+                                <small><strong>Email:</strong> ${item.Email || '-'}</small>
+                                <small><strong>Website:</strong> ${item['Website/Sosial Media'] || '-'}</small>
+                                <small><strong>Diinput Oleh:</strong> ${item['Diinput Oleh'] || '-'}</small>
+                                <small><strong>Tanggal Input:</strong> ${formatDateTime(item['Tanggal Input'])}</small>
+                            </div>
+                            
+                            <div class="card-actions" onclick="event.stopPropagation();">
+                                <button class="btn-action btn-edit" onclick="editUMKM(${index})" ${!canEdit ? 'disabled' : ''}>
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button class="btn-action btn-delete" onclick="deleteUMKM(${index})" ${!canEdit ? 'disabled' : ''}>
+                                    <i class="fas fa-trash"></i> Hapus
+                                </button>
+                                ${!canEdit ? '<span class="btn-action btn-owned"><i class="fas fa-lock"></i> Hanya pemilik</span>' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            grid.innerHTML = html;
+        }
+
+        function toggleCardDetail(btn) {
+            if (!btn) return;
+            const details = btn.parentElement.querySelector('.card-details');
+            const icon = btn.querySelector('i');
+            if (!details) return;
+            
+            if (details.classList.contains('show')) {
+                details.classList.remove('show');
+                if (icon) icon.className = 'fas fa-chevron-down';
+                btn.innerHTML = '<i class="fas fa-chevron-down"></i> Lihat Detail';
+            } else {
+                details.classList.add('show');
+                if (icon) icon.className = 'fas fa-chevron-up';
+                btn.innerHTML = '<i class="fas fa-chevron-up"></i> Sembunyikan Detail';
+            }
+        }
+
+        // ============================================
+        // SHOW UMKM DETAIL MODAL
+        // ============================================
+        function showUMKMDetail(index) {
+            const data = allData.umkm[index];
+            if (!data) return;
+
+            const modal = new bootstrap.Modal(document.getElementById('umkmDetailModal'));
+            const body = document.getElementById('umkmDetailBody');
+            
+            const rawFoto = data['Link Foto Thumbnail'] || '';
+            const foto = getEmbeddableDriveUrl(rawFoto);
+            
+            document.getElementById('umkmDetailTitle').textContent = data['Nama UMKM'] || 'Detail UMKM';
+
+            let html = `
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        ${foto ? 
+                            `<img src="${foto}" class="detail-image" alt="${data['Nama UMKM'] || 'UMKM'}" 
+                                  onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22 viewBox=%220 0 400 300%22%3E%3Crect width=%22400%22 height=%22300%22 fill=%22%23f0f2f5%22/%3E%3Ctext x=%22200%22 y=%22150%22 text-anchor=%22middle%22 font-size=%2240%22 fill=%22%23b0b8c0%22%3E📷%3C/text%3E%3C/svg%3E'">` :
+                            `<div class="detail-image d-flex align-items-center justify-content-center bg-light text-muted" style="height:300px;border-radius:var(--radius-sm);">
+                                <i class="fas fa-image fa-4x"></i>
+                            </div>`
+                        }
+                        <div class="mt-2 text-center">
+                            <span class="badge-status ${getStatusClass(data['Status UMKM'])}">${data['Status UMKM'] || 'Tidak Aktif'}</span>
+                            ${isOwnedByUser(data) ? '<span class="badge-owned ms-2"><i class="fas fa-user-check"></i> Data Saya</span>' : ''}
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h5 class="mb-3">${data['Nama UMKM'] || 'Tanpa Nama'}</h5>
+                        <div class="detail-item"><span class="label">Pemilik</span><span class="value">${data['Nama Pemilik'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Kelurahan</span><span class="value">${data.Kelurahan || '-'}</span></div>
+                        <div class="detail-item"><span class="label">RT/RW</span><span class="value">${data.RT || '-'}/${data.RW || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Alamat</span><span class="value">${data['Alamat UMKM'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">No Surat Izin</span><span class="value">${data['No Surat Izin'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Kategori</span><span class="value">${data.Kategori || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Sub Kategori</span><span class="value">${data['Sub Kategori'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Tahun Berdiri</span><span class="value">${data['Tahun Berdiri'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Telepon</span><span class="value">${data['No Telepon'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Email</span><span class="value">${data.Email || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Website</span><span class="value">${data['Website/Sosial Media'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Diinput Oleh</span><span class="value">${data['Diinput Oleh'] || '-'}</span></div>
+                        <div class="detail-item"><span class="label">Tanggal Input</span><span class="value">${formatDateTime(data['Tanggal Input'])}</span></div>
+                    </div>
+                </div>
+            `;
+
+            body.innerHTML = html;
+            modal.show();
+        }
+
+        // ============================================
+        // RENDER UMKM TABLE
+        // ============================================
+        function renderUMKMTable() {
+            const data = getFilteredData();
+            const tbody = document.getElementById('umkmTableBody');
+            
+            if (!tbody) return;
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="20" class="text-center text-muted">Belum ada data UMKM</td></tr>';
+                if (dataTable) { dataTable.destroy();
+                    dataTable = null; }
+                return;
+            }
+
+            let html = '';
+            data.forEach((item, index) => {
+                const rawFoto = item['Link Foto Thumbnail'] || '';
+                const foto = getEmbeddableDriveUrl(rawFoto);
+                const isOwner = isOwnedByUser(item);
+                const canEdit = canEditDelete(item);
+                
+                const fotoHtml = foto ?
+                    `<img src="${foto}" class="thumbnail-img" alt="Foto" 
+                              onclick="window.open('${foto}', '_blank')"
+                              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+                             <div class="thumbnail-img img-fallback" style="display:none;width:50px;height:50px;border-radius:12px;align-items:center;justify-content:center;font-size:20px;">
+                                 <i class="fas fa-image"></i>
+                             </div>` :
+                    `<div class="thumbnail-img d-flex align-items-center justify-content-center bg-light text-muted" style="width:50px;height:50px;border-radius:12px;"><i class="fas fa-image"></i></div>`;
+
+                const ownerBadge = isOwner ? '<span class="badge-owned"><i class="fas fa-user-check"></i> Saya</span>' : '';
+
+                html += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>${fotoHtml}</td>
+                        <td>${item.Kelurahan || '-'}</td>
+                        <td>${item.RT || '-'}</td>
+                        <td>${item.RW || '-'}</td>
+                        <td><strong>${item['Nama UMKM'] || '-'}</strong> ${ownerBadge}</td>
+                        <td>${item['Nama Pemilik'] || '-'}</td>
+                        <td>${item['No Surat Izin'] || '-'}</td>
+                        <td style="max-width:150px;white-space:normal;">${item['Alamat UMKM'] || '-'}</td>
+                        <td>${item.Kategori || '-'}</td>
+                        <td>${item['Sub Kategori'] || '-'}</td>
+                        <td>${getStatusBadge(item['Status UMKM'])}</td>
+                        <td>${item['Tahun Berdiri'] || '-'}</td>
+                        <td>${item['No Telepon'] || '-'}</td>
+                        <td>${item.Email || '-'}</td>
+                        <td style="max-width:100px;white-space:normal;word-break:break-all;">${item['Website/Sosial Media'] || '-'}</td>
+                        <td>${item['Nama File Foto'] || '-'}</td>
+                        <td style="white-space:nowrap;">${formatDateTime(item['Tanggal Input'])}</td>
+                        <td>${item['Diinput Oleh'] || '-'}</td>
+                        <td>
+                            <button class="btn-action-sm btn-edit" onclick="editUMKM(${index})" title="Edit" ${!canEdit ? 'disabled' : ''}>
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn-action-sm btn-delete" onclick="deleteUMKM(${index})" title="Hapus" ${!canEdit ? 'disabled' : ''}>
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            ${!canEdit ? '<span class="btn-action-sm btn-owned"><i class="fas fa-lock"></i></span>' : ''}
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+
+            if (dataTable) dataTable.destroy();
+            dataTable = $('#umkmTable').DataTable({
+                language: { url: '//cdn.datatables.net/plug-ins/1.13.6/i18n/id.json' },
+                pageLength: 10,
+                scrollX: true,
+                autoWidth: false,
+                order: [[0, 'asc']],
+                columnDefs: [
+                    { orderable: false, targets: [1, 19] },
+                    { width: '50px', targets: [1] },
+                    { width: '80px', targets: [0] },
+                    { width: '120px', targets: [5, 6] },
+                    { width: '150px', targets: [8] }
+                ]
+            });
+        }
+
+        // ============================================
+        // RENDER REKAP
+        // ============================================
+        function renderRekap() {
+            const data = allData.rekap || [];
+            const body = document.getElementById('rekapTableBody');
+            
+            if (!body) return;
+
+            if (data.length === 0) {
+                body.innerHTML = '<tr><td colspan="8" class="text-center text-muted">Tidak ada data rekap</td></tr>';
+                return;
+            }
+
+            let html = '';
+            data.forEach(item => {
+                html += `
+                    <tr>
+                        <td><strong>${item.Kelurahan || '-'}</strong></td>
+                        <td><span class="badge bg-primary rounded-pill">${item['Total UMKM'] || 0}</span></td>
+                        <td>${item.Rintisan || 0}</td>
+                        <td>${item.Berkembang || 0}</td>
+                        <td>${item['Siap Naik'] || 0}</td>
+                        <td>${item.Mandiri || 0}</td>
+                        <td>${item['Butuh Bantuan'] || 0}</td>
+                        <td>${item['Tidak Aktif'] || 0}</td>
+                    </tr>
+                `;
+            });
+
+            body.innerHTML = html;
+        }
+
+        // ============================================
+        // UPDATE BADGE
+        // ============================================
+        function updateBadge() {
+            const data = getFilteredData();
+            const count = data.length;
+            const badge1 = document.getElementById('menuBadge');
+            const badge2 = document.getElementById('dataBadge');
+            if (badge1) badge1.textContent = count;
+            if (badge2) badge2.textContent = count;
+        }
+
+        // ============================================
+        // POPULATE FORM OPTIONS
+        // ============================================
+        function populateFormOptions() {
+            const kelSelect = document.getElementById('fKelurahan');
+            if (kelSelect) {
+                kelSelect.innerHTML = '<option value="">Pilih Kelurahan</option>';
+                
+                if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+                    const opt = document.createElement('option');
+                    opt.value = currentUser.kelurahan;
+                    opt.textContent = currentUser.kelurahan;
+                    kelSelect.appendChild(opt);
+                    kelSelect.value = currentUser.kelurahan;
+                    kelSelect.disabled = true;
+                } else {
+                    (allData.kelurahan || []).forEach(k => {
+                        const opt = document.createElement('option');
+                        opt.value = k['Nama Kelurahan'] || '';
+                        opt.textContent = k['Nama Kelurahan'] || '';
+                        kelSelect.appendChild(opt);
+                    });
+                    kelSelect.disabled = false;
+                }
+            }
+
+            const katSelect = document.getElementById('fKategori');
+            if (katSelect) {
+                katSelect.innerHTML = '<option value="">Pilih Kategori</option>';
+                (allData.kategori || []).forEach(k => {
+                    const opt = document.createElement('option');
+                    opt.value = k['Kategori Utama'] || '';
+                    opt.textContent = k['Kategori Utama'] || '';
+                    katSelect.appendChild(opt);
+                });
+            }
+
+            const statusSelect = document.getElementById('fStatus');
+            if (statusSelect) {
+                statusSelect.innerHTML = '<option value="">Pilih Status</option>';
+                (allData.status || []).forEach(s => {
+                    const opt = document.createElement('option');
+                    opt.value = s.Status || '';
+                    opt.textContent = s.Status || '';
+                    statusSelect.appendChild(opt);
+                });
+            }
+
+            const kategoriSelect = document.getElementById('fKategori');
+            if (kategoriSelect) {
+                kategoriSelect.addEventListener('change', function() {
+                    const selected = this.value;
+                    const subSelect = document.getElementById('fSubKategori');
+                    if (subSelect) {
+                        subSelect.innerHTML = '<option value="">Pilih Sub Kategori</option>';
+                        (allData.kategori || []).forEach(k => {
+                            if (k['Kategori Utama'] === selected && k['Sub Kategori']) {
+                                const opt = document.createElement('option');
+                                opt.value = k['Sub Kategori'];
+                                opt.textContent = k['Sub Kategori'];
+                                subSelect.appendChild(opt);
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        // ============================================
+        // RENDER ALL
+        // ============================================
+        function renderAll() {
+            console.log('🔄 renderAll dipanggil');
+            renderDashboard();
+            renderPanduan();
+            renderUMKMCards();
+            renderUMKMTable();
+            renderRekap();
+            populateFormOptions();
+            populateFilterKelurahan();
+            updateBadge();
+            applyFilterToUI();
+            updateFilterInfo();
+            console.log('✅ renderAll selesai');
+        }
+
+        // ============================================
+        // FILTER FUNCTIONS
+        // ============================================
+        function applyFilterToUI() {
+            const kelSelect = document.getElementById('filterKelurahan');
+            const rtInput = document.getElementById('filterRT');
+            const rwInput = document.getElementById('filterRW');
+            
+            if (kelSelect) kelSelect.value = filterSettings.kelurahan || '';
+            if (rtInput) rtInput.value = filterSettings.rt || '';
+            if (rwInput) rwInput.value = filterSettings.rw || '';
+        }
+
+        function applyFilter() {
+            const kelurahan = document.getElementById('filterKelurahan').value;
+            const rt = document.getElementById('filterRT').value.trim();
+            const rw = document.getElementById('filterRW').value.trim();
+            
+            if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+                if (kelurahan && kelurahan !== currentUser.kelurahan) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Akses Dibatasi',
+                        text: `Anda hanya dapat melihat data kelurahan ${currentUser.kelurahan}`,
+                        timer: 2000,
+                        showConfirmButton: false
+                    });
+                    document.getElementById('filterKelurahan').value = currentUser.kelurahan;
+                    return;
+                }
+            }
+            
+            filterSettings.kelurahan = kelurahan;
+            filterSettings.rt = rt;
+            filterSettings.rw = rw;
+            
+            renderAll();
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'Filter Diterapkan',
+                text: 'Data berhasil difilter',
+                timer: 1000,
+                showConfirmButton: false
+            });
+        }
+
+        function resetFilter() {
+            filterSettings = { kelurahan: '', rt: '', rw: '' };
+            document.getElementById('filterKelurahan').value = '';
+            document.getElementById('filterRT').value = '';
+            document.getElementById('filterRW').value = '';
+            renderAll();
+            
+            Swal.fire({
+                icon: 'info',
+                title: 'Filter Direset',
+                text: 'Semua data ditampilkan kembali',
+                timer: 1200,
+                showConfirmButton: false
+            });
+        }
+
+        // ============================================
+        // REFRESH DATA
+        // ============================================
+        document.getElementById('btnRefreshData').addEventListener('click', async function() {
+            const icon = this.querySelector('i.fa-sync-alt') || document.getElementById('refreshIcon');
+            const btnText = this.querySelector('.btn-text') || this;
+
+            if (this.disabled) return;
+
+            this.disabled = true;
+            if (icon) icon.classList.add('spinning');
+            btnText.textContent = ' Memuat...';
+
+            try {
+                Loader.show('Memperbarui data...', 'Mengambil data terbaru dari server');
+                Loader.updateProgress(30, 'Menghubungi server...');
+
+                await loadData(true);
+
+                Loader.updateProgress(100, 'Data diperbarui!');
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Data Diperbarui!',
+                    text: 'Data UMKM berhasil di-refresh dari server',
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+
+                setTimeout(() => Loader.hide(), 500);
+
+            } catch (error) {
+                Loader.hide();
+                console.error('Refresh error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Gagal Refresh',
+                    text: error.message || 'Terjadi kesalahan saat refresh data'
+                });
+            } finally {
+                setTimeout(() => {
+                    this.disabled = false;
+                    if (icon) icon.classList.remove('spinning');
+                    btnText.textContent = ' Refresh';
+                }, 500);
+            }
+        });
+
+        // ============================================
+        // UPLOAD PHOTO
+        // ============================================
+        const uploadArea = document.getElementById('uploadArea');
+        const uploadProgressContainer = document.getElementById('uploadProgressContainer');
+        const uploadProgressBar = document.getElementById('uploadProgressBar');
+        const uploadStatusText = document.getElementById('uploadStatusText');
+        const uploadStatusPercent = document.getElementById('uploadStatusPercent');
+
+        if (uploadArea) {
+            uploadArea.addEventListener('click', function() {
+                document.getElementById('fFileFoto').click();
+            });
+
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    document.getElementById('fFileFoto').files = files;
+                    document.getElementById('fFileFoto').dispatchEvent(new Event('change'));
+                }
+            });
+        }
+
+        async function uploadPhotoWithProgress(file) {
+            return new Promise((resolve, reject) => {
+                uploadProgressContainer.style.display = 'block';
+                updateUploadProgress(0, 'Membaca file...');
+
+                const reader = new FileReader();
+                reader.onprogress = (e) => {
+                    if (e.lengthComputable) {
+                        const progress = (e.loaded / e.total) * 30;
+                        updateUploadProgress(progress, 'Membaca file...');
+                    }
+                };
+
+                reader.onload = async (e) => {
+                    try {
+                        updateUploadProgress(30, 'Mengompres gambar...');
+                        const compressed = await compressImage(file, 800, 800, 0.8);
+
+                        updateUploadProgress(50, 'Mengupload ke server...');
+
+                        const response = await fetch(CONFIG.DEPLOY_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({
+                                action: 'uploadPhoto',
+                                username: currentUser.username,
+                                fileData: compressed,
+                                filename: file.name
+                            })
+                        });
+
+                        updateUploadProgress(85, 'Memproses response...');
+
+                        const result = await response.json();
+                        if (result.success) {
+                            updateUploadProgress(100, 'Upload selesai!');
+                            setTimeout(() => {
+                                uploadProgressContainer.style.display = 'none';
+                            }, 1000);
+                            resolve(result);
+                        } else {
+                            reject(new Error(result.message));
+                        }
+                    } catch (error) {
+                        reject(error);
+                    }
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function updateUploadProgress(value, statusText) {
+            const percent = Math.min(Math.max(value, 0), 100);
+            if (uploadProgressBar) uploadProgressBar.style.width = percent + '%';
+            if (uploadStatusPercent) uploadStatusPercent.textContent = Math.round(percent) + '%';
+            if (uploadStatusText) uploadStatusText.textContent = statusText;
+        }
+
+        document.getElementById('fFileFoto').addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                Swal.fire({ icon: 'error', title: 'File Terlalu Besar', text: 'Maksimal 5MB' });
+                this.value = '';
+                return;
+            }
+
+            try {
+                const result = await uploadPhotoWithProgress(file);
+
+                if (result.success) {
+                    const thumbnailUrl = result.data.thumbnailUrl || result.data.viewUrl || '';
+                    
+                    document.getElementById('fFotoUrl').value = thumbnailUrl;
+                    
+                    const container = document.getElementById('uploadPreviewContainer');
+                    if (container) {
+                        container.innerHTML = `
+                            <div class="upload-preview-wrapper">
+                                <img src="${thumbnailUrl}" class="preview-img" alt="Preview" 
+                                     onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22%3E%3Crect width=%2280%22 height=%2280%22 fill=%22%23f0f2f5%22/%3E%3Ctext x=%2240%22 y=%2245%22 text-anchor=%22middle%22 font-size=%2230%22 fill=%22%23b0b8c0%22%3E📷%3C/text%3E%3C/svg%3E'">
+                                <div class="upload-info">
+                                    <div class="filename">${result.data.filename || file.name}</div>
+                                    <div class="filesize">${formatFileSize(file.size)}</div>
+                                </div>
+                                <i class="fas fa-check-circle text-success" style="font-size:20px;"></i>
+                            </div>
+                        `;
+                    }
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Upload Berhasil',
+                        text: 'Foto berhasil diupload',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    
+                } else {
+                    throw new Error(result.message || 'Upload gagal');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                Swal.fire({ 
+                    icon: 'error', 
+                    title: 'Upload Gagal', 
+                    text: error.message || 'Terjadi kesalahan saat upload' 
+                });
+                this.value = '';
+            }
+        });
+
+        // ============================================
+        // TAMBAH UMKM
+        // ============================================
+        document.getElementById('btnTambahUMKM').addEventListener('click', function() {
+            openModal('add');
+        });
+
+        document.getElementById('btnTambahUMKM2').addEventListener('click', function() {
+            openModal('add');
+        });
+
+        function openModal(action, data = null, index = null) {
+            const title = document.getElementById('umkmModalTitle');
+            const formAction = document.getElementById('formAction');
+            const rowNum = document.getElementById('formRowNum');
+
+            if (action === 'add') {
+                title.innerHTML = '<i class="fas fa-plus-circle me-2 text-primary"></i> Tambah UMKM';
+                formAction.value = 'add';
+                rowNum.value = '';
+                document.getElementById('umkmForm').reset();
+                document.getElementById('fFotoUrl').value = '';
+                document.getElementById('uploadPreviewContainer').innerHTML = '';
+                document.getElementById('fFileFoto').value = '';
+                uploadProgressContainer.style.display = 'none';
+                
+                if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+                    document.getElementById('fKelurahan').value = currentUser.kelurahan;
+                }
+            } else if (action === 'edit' && data) {
+                title.innerHTML = '<i class="fas fa-edit me-2 text-primary"></i> Edit UMKM';
+                formAction.value = 'edit';
+                rowNum.value = index;
+
+                safeSetValue('fKelurahan', data.Kelurahan || '');
+                safeSetValue('fRT', data.RT || '');
+                safeSetValue('fRW', data.RW || '');
+                safeSetValue('fNamaUMKM', data['Nama UMKM'] || '');
+                safeSetValue('fPemilik', data['Nama Pemilik'] || '');
+                safeSetValue('fNoIzin', data['No Surat Izin'] || '');
+                safeSetValue('fAlamat', data['Alamat UMKM'] || '');
+                safeSetValue('fKategori', data.Kategori || '');
+                safeSetValue('fStatus', data['Status UMKM'] || '');
+                safeSetValue('fTahun', data['Tahun Berdiri'] || '');
+                safeSetValue('fTelepon', data['No Telepon'] || '');
+                safeSetValue('fEmail', data.Email || '');
+                safeSetValue('fWebsite', data['Website/Sosial Media'] || '');
+                safeSetValue('fFotoUrl', data['Link Foto Thumbnail'] || '');
+
+                if (data.Kategori) {
+                    const katSelect = document.getElementById('fKategori');
+                    katSelect.value = data.Kategori;
+                    katSelect.dispatchEvent(new Event('change'));
+                    setTimeout(() => {
+                        safeSetValue('fSubKategori', data['Sub Kategori'] || '');
+                    }, 100);
+                }
+
+                const preview = document.getElementById('uploadPreviewContainer');
+                if (preview && data['Link Foto Thumbnail']) {
+                    const embedUrl = getEmbeddableDriveUrl(data['Link Foto Thumbnail']);
+                    preview.innerHTML = `
+                        <div class="upload-preview-wrapper">
+                            <img src="${embedUrl}" class="preview-img" alt="Preview" 
+                                 onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22 viewBox=%220 0 80 80%22%3E%3Crect width=%2280%22 height=%2280%22 fill=%22%23f0f2f5%22/%3E%3Ctext x=%2240%22 y=%2245%22 text-anchor=%22middle%22 font-size=%2230%22 fill=%22%23b0b8c0%22%3E📷%3C/text%3E%3C/svg%3E'">
+                            <div class="upload-info">
+                                <div class="filename">${data['Nama File Foto'] || 'Foto'}</div>
+                                <div class="filesize">${data['Link Foto Thumbnail'] ? 'Tersimpan' : '-'}</div>
+                            </div>
+                            <i class="fas fa-check-circle text-success" style="font-size:20px;"></i>
+                        </div>
+                    `;
+                }
+            }
+
+            const kelSelect = document.getElementById('fKelurahan');
+            if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin') {
+                kelSelect.value = currentUser.kelurahan;
+                kelSelect.disabled = true;
+            } else {
+                kelSelect.disabled = false;
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('umkmModal'));
+            modal.show();
+        }
+
+        // ============================================
+        // AUTO UPPERCASE PADA INPUT
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto uppercase untuk field tertentu
+            const uppercaseFields = ['fNamaUMKM', 'fPemilik', 'fAlamat', 'fEmail'];
+            uppercaseFields.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', function() {
+                        const start = this.selectionStart;
+                        const end = this.selectionEnd;
+                        this.value = this.value.toUpperCase();
+                        this.setSelectionRange(start, end);
+                    });
+                }
+            });
+
+            // Pastikan RT, RW, No Izin, Telepon tetap plain text (tidak diubah)
+            // Sudah default plain text
+        });
+
+        // ============================================
+        // EDIT UMKM
+        // ============================================
+        function editUMKM(index) {
+            const data = allData.umkm[index];
+            if (!data) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Data tidak ditemukan!' });
+                return;
+            }
+            
+            if (!canEditDelete(data)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Akses Ditolak',
+                    text: 'Anda hanya bisa mengedit data yang Anda input sendiri!'
+                });
+                return;
+            }
+            
+            openModal('edit', data, index);
+        }
+
+        // ============================================
+        // DELETE UMKM
+        // ============================================
+        function deleteUMKM(index) {
+            const data = allData.umkm[index];
+            if (!data) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Data tidak ditemukan!' });
+                return;
+            }
+
+            if (!canEditDelete(data)) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Akses Ditolak',
+                    text: 'Anda hanya bisa menghapus data yang Anda input sendiri!'
+                });
+                return;
+            }
+
+            Swal.fire({
+                title: 'Hapus Data?',
+                text: `Hapus "${data['Nama UMKM']}" dari ${data.Kelurahan}?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#E17055',
+                confirmButtonText: 'Ya, Hapus!',
+                cancelButtonText: 'Batal'
+            }).then(async result => {
+                if (result.isConfirmed) {
+                    Loader.show('Menghapus data...', 'Mohon tunggu sebentar');
+                    Loader.updateProgress(30, 'Memproses permintaan...');
+
+                    try {
+                        const response = await fetch(CONFIG.DEPLOY_URL, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                            body: new URLSearchParams({
+                                action: 'deleteData',
+                                username: currentUser.username,
+                                role: currentUser.role,
+                                rowNum: index,
+                                kelurahan: data.Kelurahan || '',
+                                userKelurahan: currentUser.kelurahan || ''
+                            })
+                        });
+
+                        Loader.updateProgress(70, 'Memperbarui data...');
+
+                        const result = await response.json();
+                        if (result.success) {
+                            DataCache.clear();
+                            await loadData(true);
+                            Loader.updateProgress(100, 'Selesai!');
+                            setTimeout(() => Loader.hide(), 400);
+                            Swal.fire({ icon: 'success', title: 'Berhasil Dihapus', timer: 1500,
+                                showConfirmButton: false });
+                        } else {
+                            Loader.hide();
+                            throw new Error(result.message);
+                        }
+                    } catch (error) {
+                        Loader.hide();
+                        Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+                    }
+                }
+            });
+        }
+
+        // ============================================
+        // SUBMIT FORM
+        // ============================================
+        document.getElementById('umkmForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const action = document.getElementById('formAction').value;
+            const rowNum = document.getElementById('formRowNum').value;
+
+            const kelurahan = document.getElementById('fKelurahan').value;
+            const namaUMKM = document.getElementById('fNamaUMKM').value.trim().toUpperCase();
+            const pemilik = document.getElementById('fPemilik').value.trim().toUpperCase();
+            const alamat = document.getElementById('fAlamat').value.trim().toUpperCase();
+            const kategori = document.getElementById('fKategori').value;
+            const status = document.getElementById('fStatus').value;
+
+            // Validasi required
+            if (!kelurahan || !namaUMKM || !pemilik || !alamat || !kategori || !status) {
+                Swal.fire({ icon: 'warning', title: 'Data Belum Lengkap', text: 'Isi semua field yang wajib (*)' });
+                return;
+            }
+
+            if (currentUser && currentUser.role !== 'admin' && currentUser.role !== 'superadmin' && kelurahan !== currentUser
+                .kelurahan) {
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Anda hanya bisa mengakses data di kelurahan ' +
+                        currentUser.kelurahan });
+                return;
+            }
+
+            // Form data - pastikan uppercase untuk field tertentu, plain text untuk RT, RW, No Izin, Telepon
+            const formData = {
+                Kelurahan: kelurahan,
+                RT: toPlainText(document.getElementById('fRT').value), // plain text
+                RW: toPlainText(document.getElementById('fRW').value), // plain text
+                'Nama UMKM': namaUMKM,
+                'Nama Pemilik': pemilik,
+                'No Surat Izin': toPlainText(document.getElementById('fNoIzin').value), // plain text
+                'Alamat UMKM': alamat,
+                Kategori: kategori,
+                'Sub Kategori': document.getElementById('fSubKategori').value,
+                'Status UMKM': status,
+                'Tahun Berdiri': document.getElementById('fTahun').value,
+                'No Telepon': toPlainText(document.getElementById('fTelepon').value), // plain text
+                Email: document.getElementById('fEmail').value.trim().toUpperCase(),
+                'Website/Sosial Media': document.getElementById('fWebsite').value,
+                'Link Foto Thumbnail': document.getElementById('fFotoUrl').value,
+                'Nama File Foto': document.getElementById('fFileFoto').files[0]?.name || ''
+            };
+
+            const submitBtn = document.getElementById('btnSubmitForm');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Menyimpan...';
+
+            Loader.show('Menyimpan data...', 'Mohon tunggu sebentar');
+            Loader.updateProgress(30, 'Mempersiapkan data...');
+
+            try {
+                const params = {
+                    action: 'saveData',
+                    username: currentUser.username,
+                    role: currentUser.role,
+                    userKelurahan: currentUser.kelurahan || '',
+                    saveAction: action,
+                    data: JSON.stringify(formData)
+                };
+
+                if (action === 'edit') {
+                    params.rowNum = rowNum;
+                }
+
+                Loader.updateProgress(50, 'Mengirim data ke server...');
+
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams(params)
+                });
+
+                Loader.updateProgress(80, 'Memproses response...');
+
+                const result = await response.json();
+
+                if (result.success) {
+                    DataCache.clear();
+                    await loadData(true);
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('umkmModal'));
+                    if (modal) modal.hide();
+                    Loader.updateProgress(100, 'Selesai!');
+                    setTimeout(() => Loader.hide(), 400);
+                    Swal.fire({ icon: 'success', title: 'Data Berhasil Disimpan', timer: 1500,
+                        showConfirmButton: false });
+                } else {
+                    Loader.hide();
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                Loader.hide();
+                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<i class="fas fa-save me-2"></i> Simpan';
+            }
+        });
+
+        // ============================================
+        // REFRESH REKAP
+        // ============================================
+        document.getElementById('btnRefreshRekap').addEventListener('click', async function() {
+            Loader.show('Memperbarui rekap...', 'Mohon tunggu sebentar');
+            Loader.updateProgress(30, 'Menghubungi server...');
+
+            try {
+                const response = await fetch(CONFIG.DEPLOY_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ action: 'updateRekap' })
+                });
+
+                Loader.updateProgress(70, 'Memproses data...');
+
+                const result = await response.json();
+                if (result.success) {
+                    DataCache.clear();
+                    await loadData(true);
+                    Loader.updateProgress(100, 'Selesai!');
+                    setTimeout(() => Loader.hide(), 400);
+                    Swal.fire({ icon: 'success', title: 'Rekap Diperbarui', timer: 1500, showConfirmButton: false });
+                } else {
+                    Loader.hide();
+                    throw new Error(result.message);
+                }
+            } catch (error) {
+                Loader.hide();
+                Swal.fire({ icon: 'error', title: 'Error', text: error.message });
+            }
+        });
+
+        // ============================================
+        // FILTER EVENT LISTENERS
+        // ============================================
+        document.getElementById('btnApplyFilter').addEventListener('click', applyFilter);
+        document.getElementById('btnResetFilter').addEventListener('click', resetFilter);
+
+        document.getElementById('filterRT')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') applyFilter();
+        });
+        document.getElementById('filterRW')?.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') applyFilter();
+        });
+
+        // ============================================
+        // INIT
+        // ============================================
+        async function init() {
+            console.log('🚀 Init dimulai...');
+            
+            try {
+                Loader.init();
+                console.log('✅ Loader initialized');
+                
+                // Load dark mode
+                loadDarkMode();
+                console.log('🌓 Dark mode:', isDarkMode ? 'ON' : 'OFF');
+                
+                console.log('🔍 Memeriksa session...');
+                const hasSession = await checkSession();
+                console.log('📊 Hasil checkSession:', hasSession);
+                
+                if (hasSession && currentUser) {
+                    console.log('👤 User valid, memuat data...');
+                    await loadData();
+                    console.log('✅ Data dimuat, menampilkan dashboard...');
+                    showDashboard();
+                    console.log('✅ Dashboard ditampilkan');
+                    Loader.hide();
+                } else {
+                    console.log('❌ Session tidak valid, redirect ke login');
+                    window.location.href = 'login.html';
+                }
+            } catch (error) {
+                console.error('❌ Error di init:', error);
+                Loader.hide();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error Inisialisasi',
+                    text: error.message || 'Terjadi kesalahan saat memuat aplikasi'
+                });
+            }
+        }
+
+        // ============================================
+        // START
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 UMKM Data System Premium v3.0');
+            console.log('👤 User:', SessionManager.get() ? 'Logged in' : 'Not logged in');
+            console.log('📊 Spreadsheet UMKM:', '1pxRuCXMGk5BTCMYCLDwTyzQiBk0PLdFtIAyqn0ydkf4');
+            console.log('📁 Folder:', '1ZCjmmZT7oYRsXGXRCM3X2NJVKAc1OOjo');
+            
+            init();
+        });
+    </script>
+
+</body>
+</html>
