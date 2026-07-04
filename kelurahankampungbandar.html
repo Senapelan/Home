@@ -1,41 +1,44 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <!-- Open Graph utama -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://senapelan.github.io/Home/kelurahankampungbandar.html">
-    <meta property="og:title" content="Kelurahan Kampung Bandar - berkomitmen memberikan pelayanan cepat, transparan, dan modern berbasis digital.">
-    <meta property="og:description" content="Pelayanan terbaik lahir dari keikhlasan dan kebersamaan">
-    <meta property="og:site_name" content="Kampung Bandar">
-       
-    <!-- Gambar preview -->
-    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/thumbnailkampungbandar.png">
-    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/data/foto/thumbnailkampungbandar.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="1200">
+    <!-- ========================================== -->
+    <!-- META TAG - UNIK PER KELURAHAN              -->
+    <!-- ========================================== -->
+<!-- Open Graph utama -->
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://senapelan.github.io/Home/kelurahankampungbandar.html">
+<meta property="og:title" id="ogTitle" content="Kelurahan Kampung Bandar - berkomitmen memberikan pelayanan cepat, transparan, dan modern berbasis digital.">
+<meta property="og:description" id="ogDescription" content="Pelayanan terbaik lahir dari keikhlasan dan kebersamaan">
+<meta property="og:site_name" id="ogSiteName" content="Kampung Bandar">
+   
+<!-- Gambar preview -->
+<meta property="og:image" id="ogImage" content="https://senapelan.github.io/Home/data/foto/thumbnailkampungbandar.png">
+<meta property="og:image:secure_url" id="ogImageSecure" content="https://senapelan.github.io/Home/data/foto/thumbnailkampungbandar.png">
+<meta property="og:image:width" id="ogImageWidth" content="1200">
+<meta property="og:image:height" id="ogImageHeight" content="1200">
+
+<!-- Twitter / X -->
+<meta name="twitter:card" id="twitterCard" content="summary_large_image">
+<meta name="twitter:title" id="twitterTitle" content="Kelurahan Kampung Bandar - berkomitmen memberikan pelayanan cepat, transparan, dan modern berbasis digital.">
+<meta name="twitter:description" id="twitterDescription" content="Pelayanan terbaik lahir dari keikhlasan dan kebersamaan">
+<meta name="twitter:image" id="twitterImage" content="https://senapelan.github.io/Home/data/foto/thumbnailkampungbandar.png">
+
+<title id="pageTitle">Kelurahan Kampung Bandar</title>
     
-    <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Kelurahan Kampung Bandar - berkomitmen memberikan pelayanan cepat, transparan, dan modern berbasis digital.">
-    <meta name="twitter:description" content="Pelayanan terbaik lahir dari keikhlasan dan kebersamaan">
-    <meta name="twitter:image" content="https://senapelan.github.io/Home/data/foto/thumbnailkampungbandar.png">
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Kelurahan Kampung Bandar</title>
+    <!-- FAVICON -->
+    <link id="faviconLink" rel="icon" type="image/png" sizes="32x32" href="data/foto/favico/favico.png">
     
     <!-- GOOGLE FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
-    <!-- FAVICON -->
-    <link rel="icon" type="image/png" sizes="32x32" href="data/foto/favico/favico.png">
-    
     <!-- 3D LIBRARY -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
-    <!-- STYLES -->
     <style>
+        /* ============================================
+           ROOT VARIABLES
+           ============================================ */
         :root {
             --primary: #1e6bff;
             --primary-dark: #0a4fcc;
@@ -72,7 +75,9 @@
             cursor: default;
         }
 
-        /* ================= 3D BACKGROUND EFFECT ================= */
+        /* ============================================
+           3D BACKGROUND
+           ============================================ */
         #bg-canvas {
             position: fixed;
             top: 0;
@@ -83,7 +88,158 @@
             opacity: 0.03;
         }
 
-        /* ================= GLASS HEADER ================= */
+        /* ============================================
+           LOADING - FLOAT EFFECT (PREMIUM)
+           ============================================ */
+        #loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--dark);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.8s ease;
+        }
+
+        #loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            position: relative;
+        }
+
+        .loader-glow {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(0, 102, 255, 0.2) 0%, transparent 70%);
+            animation: glowPulse 3s ease-in-out infinite;
+            filter: blur(40px);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { 
+                opacity: 0.3;
+                transform: translate(-50%, -50%) scale(1);
+            }
+            50% { 
+                opacity: 0.7;
+                transform: translate(-50%, -50%) scale(1.2);
+            }
+        }
+
+        .loader-logo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: contain;
+            background: transparent;
+            padding: 10px;
+            border: none;
+            position: relative;
+            z-index: 2;
+            animation: float 3s ease-in-out infinite;
+            box-shadow: none;
+        }
+
+        @keyframes float {
+            0%, 100% { 
+                transform: translateY(0px);
+            }
+            50% { 
+                transform: translateY(-18px);
+            }
+        }
+
+        .loader-bar {
+            width: 280px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 2px;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .loader-bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            animation: barProgress 2.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(30, 107, 255, 0.3);
+        }
+
+        @keyframes barProgress {
+            0% { width: 0%; }
+            50% { width: 75%; }
+            100% { width: 100%; }
+        }
+
+        .loader-text {
+            color: white;
+            font-size: 16px;
+            font-weight: 500;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+            letter-spacing: 1px;
+        }
+
+        .loader-status {
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 13px;
+            font-weight: 300;
+            position: relative;
+            z-index: 2;
+            animation: statusPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes statusPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        @media (max-width: 480px) {
+            .loader-logo {
+                width: 80px;
+                height: 80px;
+                padding: 8px;
+            }
+            .loader-bar {
+                width: 220px;
+            }
+            .loader-glow {
+                width: 150px;
+                height: 150px;
+            }
+            .loader-text {
+                font-size: 14px;
+            }
+            .loader-status {
+                font-size: 12px;
+            }
+        }
+
+        /* ============================================
+           GLASS HEADER
+           ============================================ */
         .header {
             position: fixed;
             top: 0;
@@ -140,7 +296,6 @@
             border-radius: 12px;
         }
 
-        /* LOGO HOVER EFFECT */
         .logo-img:hover {
             transform: scale(1.1);
         }
@@ -199,7 +354,9 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
-        /* ================= NAVIGATION MODERN ================= */
+        /* ============================================
+           NAVIGASI DESKTOP
+           ============================================ */
         .nav-desktop {
             display: flex;
             gap: 35px;
@@ -279,7 +436,9 @@
             border-left: 3px solid var(--primary);
         }
 
-        /* ================= MODERN HERO SECTION - FIXED FOR MOBILE ================= */
+        /* ============================================
+           HERO SECTION
+           ============================================ */
         .hero-section {
             position: relative;
             height: 100vh;
@@ -331,7 +490,7 @@
 
         .hero-title {
             font-family: 'Poppins', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-size: clamp(2.5rem, 5vw, 4.5rem);
             font-weight: 800;
             color: white;
             line-height: 1.1;
@@ -340,37 +499,27 @@
             transform: translateY(30px);
             animation: fadeUp 1s ease forwards;
             letter-spacing: -0.5px;
-            width: 100%;
             word-wrap: break-word;
-            overflow-wrap: break-word;
-            hyphens: auto;
-            display: block;
-            text-align: center;
         }
 
-        .hero-title span {
+        .hero-title .line1 {
+            display: block;
+            color: white;
+            font-weight: 800;
+        }
+
+        .hero-title .line2 {
+            display: inline-block;
             background: linear-gradient(135deg, #4d90ff, #00c9b7);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            position: relative;
-            display: inline-block;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-
-        /* FIXED: Floating animation untuk mobile */
-        .hero-title span.floating {
             animation: float 6s ease-in-out infinite;
         }
 
         @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-15px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-15px); }
         }
 
         .hero-subtitle {
@@ -381,7 +530,6 @@
             transform: translateY(30px);
             animation: fadeUp 1s ease 0.3s forwards;
             line-height: 1.6;
-            padding: 0 10px;
             max-width: 800px;
             margin-left: auto;
             margin-right: auto;
@@ -398,13 +546,12 @@
         }
 
         @keyframes fadeUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ================= MODERN BUTTONS ================= */
+        /* ============================================
+           BUTTONS
+           ============================================ */
         .btn {
             display: inline-flex;
             align-items: center;
@@ -429,7 +576,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
             transition: left 0.6s;
         }
 
@@ -460,13 +607,77 @@
             transform: translateY(-5px);
         }
 
-        /* ================= MODERN PROFILE SECTION ================= */
-        .profile-section {
+        /* ============================================
+           SECTION COMMON
+           ============================================ */
+        .section {
             padding: 120px 40px;
-            background: var(--light);
             position: relative;
         }
 
+        .section-light {
+            background: var(--light);
+        }
+
+        .section-white {
+            background: white;
+        }
+
+        .section-dark {
+            background: linear-gradient(135deg, var(--dark), #0a1525);
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 1200px;
+            margin: 0 auto 80px;
+        }
+
+        .section-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: clamp(2.5rem, 4vw, 3.5rem);
+            font-weight: 800;
+            color: var(--dark);
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 3px;
+        }
+
+        .section-title-white {
+            color: white;
+        }
+
+        .section-title-white::after {
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .section-subtitle {
+            font-size: clamp(1.1rem, 2vw, 1.3rem);
+            color: var(--text-light);
+            line-height: 1.6;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .section-subtitle-white {
+            color: rgba(255,255,255,0.8);
+        }
+
+        /* ============================================
+           PROFILE SECTION
+           ============================================ */
         .profile-container {
             max-width: 1800px;
             margin: 0 auto;
@@ -483,6 +694,19 @@
             transition: var(--transition);
             position: relative;
             overflow: hidden;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.4s ease;
+        }
+
+        .profile-card.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .profile-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-lg);
         }
 
         .profile-card::before {
@@ -493,11 +717,6 @@
             width: 100%;
             height: 4px;
             background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-
-        .profile-card:hover {
-            transform: translateY(-10px);
-            box-shadow: var(--shadow-lg);
         }
 
         .profile-main {
@@ -583,6 +802,9 @@
             font-size: 16px;
         }
 
+        /* ============================================
+           SCHEDULE
+           ============================================ */
         .schedule-card {
             display: flex;
             flex-direction: column;
@@ -628,50 +850,9 @@
             font-size: 15px;
         }
 
-        /* ================= SERVICES SECTION ================= */
-        .services-section {
-            padding: 120px 40px;
-            background: white;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .section-header {
-            text-align: center;
-            max-width: 1200px;
-            margin: 0 auto 80px;
-        }
-
-        .section-title {
-            font-family: 'Poppins', sans-serif;
-            font-size: clamp(2.5rem, 4vw, 3.5rem);
-            font-weight: 800;
-            color: var(--dark);
-            margin-bottom: 20px;
-            position: relative;
-            display: inline-block;
-        }
-
-        .section-title::after {
-            content: '';
-            position: absolute;
-            bottom: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100px;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 3px;
-        }
-
-        .section-subtitle {
-            font-size: clamp(1.1rem, 2vw, 1.3rem);
-            color: var(--text-light);
-            line-height: 1.6;
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
+        /* ============================================
+           SERVICES
+           ============================================ */
         .services-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -694,6 +875,14 @@
             transform-style: preserve-3d;
             perspective: 1000px;
             cursor: pointer;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+        }
+
+        .service-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .service-card:link,
@@ -726,12 +915,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.3),
-                transparent
-            );
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transition: left 0.8s;
         }
 
@@ -753,7 +937,6 @@
             width: 100%;
             height: 100%;
             object-fit: contain;
-            transition: var(--transition);
             background: transparent !important;
             padding: 0;
         }
@@ -803,27 +986,6 @@
             transform: translateY(-2px);
         }
 
-        .service-card:nth-child(1) .service-title {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .service-card:nth-child(1) .service-desc {
-            color: var(--primary);
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .service-card:nth-child(2) .service-desc {
-            font-size: 15px;
-        }
-
-        .service-card:nth-child(3) .service-desc {
-            font-size: 15px;
-        }
-
         .service-card::after {
             content: '';
             position: absolute;
@@ -842,14 +1004,9 @@
             transform: scale(1.5);
         }
 
-        /* ================= CONTACT SECTION ================= */
-        .contact-section {
-            padding: 120px 40px;
-            background: linear-gradient(135deg, var(--dark), #0a1525);
-            position: relative;
-            overflow: hidden;
-        }
-
+        /* ============================================
+           CONTACT
+           ============================================ */
         .contact-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -865,6 +1022,14 @@
             padding: 50px 40px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             transition: var(--transition);
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.6s ease, transform 0.6s ease, background 0.4s ease, border-color 0.4s ease;
+        }
+
+        .contact-card.visible {
+            opacity: 1;
+            transform: translateY(0);
         }
 
         .contact-card:hover {
@@ -998,7 +1163,9 @@
             border: none;
         }
 
-        /* ================= FOOTER ================= */
+        /* ============================================
+           FOOTER
+           ============================================ */
         .footer {
             background: #0a1525;
             color: rgba(255, 255, 255, 0.8);
@@ -1033,7 +1200,9 @@
             color: rgba(255, 255, 255, 0.6);
         }
 
-        /* ================= MOBILE MENU ================= */
+        /* ============================================
+           MOBILE TOGGLE
+           ============================================ */
         .mobile-toggle {
             display: none;
             width: 44px;
@@ -1045,10 +1214,34 @@
             font-size: 24px;
             cursor: pointer;
             transition: var(--transition);
+            align-items: center;
+            justify-content: center;
         }
 
         .mobile-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ============================================
+           MOBILE MENU
+           ============================================ */
+        .mobile-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 1999;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .mobile-overlay.active {
+            opacity: 1;
+            visibility: visible;
         }
 
         .mobile-menu {
@@ -1134,6 +1327,19 @@
             transform: translateX(10px);
         }
 
+        .mobile-nav a.has-dropdown::after {
+            content: '▾';
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            transition: transform 0.3s ease;
+        }
+
+        .mobile-nav a.has-dropdown.active::after {
+            transform: translateY(-50%) rotate(180deg);
+        }
+
         .mobile-dropdown {
             padding-left: 20px;
             margin-top: 10px;
@@ -1156,51 +1362,9 @@
             transform: translateX(15px);
         }
 
-        .mobile-nav a.has-dropdown {
-            padding-right: 40px;
-        }
-
-        .mobile-nav a.has-dropdown::after {
-            content: '▾';
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            transition: transform 0.3s ease;
-        }
-
-        .mobile-nav a.has-dropdown.active::after {
-            transform: translateY(-50%) rotate(180deg);
-        }
-
-        .mobile-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            z-index: 1999;
-            opacity: 0;
-            visibility: hidden;
-            transition: var(--transition);
-        }
-
-        .mobile-overlay.active {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        /* ================= RESPONSIVE DESIGN ================= */
-        @media (max-width: 1400px) {
-            .profile-container,
-            .contact-container,
-            .services-grid {
-                max-width: 1400px;
-            }
-        }
-
+        /* ============================================
+           RESPONSIVE
+           ============================================ */
         @media (max-width: 1200px) {
             .profile-container {
                 grid-template-columns: 1fr;
@@ -1227,7 +1391,6 @@
             }
         }
 
-        /* ================= MOBILE RESPONSIVE FIXES ================= */
         @media (max-width: 992px) {
             .header {
                 padding: 0 20px;
@@ -1242,67 +1405,16 @@
                 align-items: center;
                 justify-content: center;
             }
-            
-            /* FIXED HERO TITLE FOR MOBILE */
-            .hero-title {
-                font-size: clamp(2.2rem, 5vw, 3.2rem) !important;
-                line-height: 1.15 !important;
-                padding: 0 15px;
-                white-space: normal;
-                word-break: break-word;
-                display: block;
-            }
-            
-            .hero-title br {
-                display: block;
-                margin: 5px 0;
-            }
-            
-            .hero-title span {
-                display: inline-block;
-                line-height: 1.2;
-                margin-top: 10px;
-                animation: floatMobile 6s ease-in-out infinite;
-            }
-            
-            @keyframes floatMobile {
-                0%, 100% {
-                    transform: translateY(0);
-                }
-                50% {
-                    transform: translateY(-8px);
-                }
-            }
-            
-            .hero-subtitle {
-                font-size: clamp(1rem, 2vw, 1.2rem);
-                padding: 0 20px;
-                line-height: 1.5;
-            }
-            
-            .hero-cta {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-            }
-            
-            .btn {
-                width: 100%;
-                max-width: 280px;
-                min-width: auto;
-                padding: 14px 24px;
-            }
         }
 
         @media (max-width: 768px) {
-            .profile-section,
-            .services-section,
-            .contact-section {
+            .section {
                 padding: 80px 20px;
             }
             
             .profile-card,
-            .contact-card {
+            .contact-card,
+            .service-card {
                 padding: 40px 25px;
             }
             
@@ -1325,52 +1437,52 @@
                 gap: 30px;
             }
             
-            .service-card {
-                padding: 40px 25px;
-            }
-            
-            /* FURTHER HERO FIXES FOR SMALL MOBILE */
-            .hero-section {
-                min-height: 500px;
-                padding: 70px 15px 15px;
-            }
-            
             .hero-title {
-                font-size: 2.2rem !important;
-                line-height: 1.1 !important;
-                margin-bottom: 15px;
+                font-size: clamp(2.2rem, 5vw, 3.2rem) !important;
+                line-height: 1.15 !important;
             }
             
-            .hero-title span {
-                font-size: 2rem;
+            .hero-title .line1 {
+                font-size: clamp(2rem, 4vw, 2.8rem);
+            }
+            
+            .hero-title .line2 {
+                font-size: clamp(2rem, 4vw, 2.8rem);
             }
             
             .hero-subtitle {
-                font-size: 1.1rem;
-                margin-bottom: 30px;
+                font-size: clamp(1rem, 2vw, 1.2rem);
+            }
+            
+            .hero-cta {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .btn {
+                width: 100%;
+                max-width: 280px;
+                min-width: auto;
+                padding: 14px 24px;
             }
         }
 
         @media (max-width: 576px) {
-            /* EXTRA SMALL DEVICES FIX */
-            .hero-section {
-                min-height: 450px;
-            }
-            
             .hero-title {
-                font-size: 1.8rem !important;
-                line-height: 1.1 !important;
+                font-size: clamp(1.8rem, 4vw, 2.2rem) !important;
             }
             
-            .hero-title span {
-                font-size: 1.6rem;
-                display: block;
-                margin-top: 5px;
+            .hero-title .line1 {
+                font-size: clamp(1.6rem, 3.5vw, 2rem);
+            }
+            
+            .hero-title .line2 {
+                font-size: clamp(1.6rem, 3.5vw, 2rem);
             }
             
             .hero-subtitle {
-                font-size: 0.95rem;
-                padding: 0 10px;
+                font-size: clamp(0.9rem, 2vw, 1rem);
             }
             
             .btn {
@@ -1398,72 +1510,22 @@
                 width: 100%;
             }
             
-            .profile-card,
-            .contact-card,
-            .service-card {
-                padding: 30px 20px;
-            }
-            
-            .profile-title {
-                font-size: 26px;
-            }
-            
-            .profile-name {
-                font-size: 24px;
-            }
-            
-            .schedule-title {
-                font-size: 24px;
-            }
-            
-            .contact-title {
-                font-size: 22px;
-            }
-            
-            /* EXTREME SMALL DEVICE FIX */
             .hero-title {
-                font-size: 1.6rem !important;
+                font-size: clamp(1.6rem, 3.5vw, 1.8rem) !important;
             }
             
-            .hero-title span {
-                font-size: 1.4rem;
+            .hero-title .line1 {
+                font-size: clamp(1.4rem, 3vw, 1.6rem);
             }
             
-            .hero-subtitle {
-                font-size: 0.9rem;
-            }
-            
-            .hero-content {
-                padding: 0 10px;
+            .hero-title .line2 {
+                font-size: clamp(1.4rem, 3vw, 1.6rem);
             }
         }
 
-        @media (max-width: 360px) {
-            /* SMARTPHONE LAMA FIX */
-            .hero-title {
-                font-size: 1.5rem !important;
-            }
-            
-            .hero-title span {
-                font-size: 1.3rem;
-            }
-            
-            .hero-subtitle {
-                font-size: 0.85rem;
-            }
-        }
-
-        /* ================= ANIMATIONS ================= */
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-20px);
-            }
-        }
-
-        /* ================= SCROLLBAR ================= */
+        /* ============================================
+           SCROLLBAR
+           ============================================ */
         ::-webkit-scrollbar {
             width: 10px;
         }
@@ -1484,102 +1546,82 @@
 </head>
 
 <body>
-    <!-- 3D Background Canvas -->
+    <!-- LOADING SCREEN - FLOAT EFFECT -->
+    <div id="loading">
+        <div class="loader-container">
+            <div class="loader-glow"></div>
+            <img class="loader-logo" src="https://senapelan.github.io/Home/data/foto/favico/favico.png" alt="Logo">
+            <div class="loader-bar">
+                <div class="loader-bar-fill" id="loaderBarFill"></div>
+            </div>
+            <div class="loader-text" id="loadingText">🔄 Memuat data kelurahan...</div>
+            <div class="loader-status" id="loaderStatus">Menyiapkan data...</div>
+        </div>
+    </div>
+
+    <!-- MUSIK - SAMA PERSIS ORIGINAL (AUDIO TAG) -->
+    <audio id="bgMusic" loop>
+        <source id="bgMusicSource" src="" type="audio/mpeg">
+    </audio>
+
+    <!-- 3D BACKGROUND -->
     <canvas id="bg-canvas"></canvas>
-    
-    <!-- Glass Header -->
+
+    <!-- HEADER -->
     <header class="header" id="header">
-        <a href="https://senapelan.github.io/Home/" class="logo">
+        <a href="https://senapelan.github.io/Home/" class="logo" id="logoContainer">
             <div class="logo-img">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
+                <img id="logoImage" src="" alt="Logo Pekanbaru">
             </div>
             <div class="logo-text">
-                <div class="logo-main">Kampung Bandar</div>
-                <div class="logo-sub">Website Kelurahan</div>
+                <div class="logo-main" id="headerTitle">Kampung Bandar</div>
+                <div class="logo-sub" id="headerSubtitle">Website Kelurahan</div>
             </div>
         </a>
         
-        <nav class="nav-desktop">
-            <a href="https://senapelan.github.io/Home/" class="nav-link">Beranda</a>
-            
-            <div class="dropdown-container">
-                <a href="#services" class="nav-link">Pelayanan ▾</a>
-                <div class="dropdown-menu">
-                    <a href="https://senapelan.github.io/Home/publik/menupelayanan/pelayanankampungbandar.html" class="dropdown-item">SI NOPRI</a>
-                    <a href="https://senapelan.github.io/Home/publik/persyaratanberkas/persyaratanberkas.html" class="dropdown-item">Persyaratan</a>
-                    <a href="maintenance.html" class="dropdown-item">Unduh Berkas</a>
-                </div>
-            </div>
-            
-            <div class="dropdown-container">
-                <a href="#" class="nav-link">Lembaga ▾</a>
-                <div class="dropdown-menu">
-                    <a href="https://senapelan.github.io/Home/publik/lkk/rtrw-lpm-kampungbandar.html" class="dropdown-item">INFORMASI LPM, RT DAN RW</a>
-                    <a href="maintenance.html" class="dropdown-item">PKK</a>
-                    <a href="maintenance.html" class="dropdown-item">Posyandu</a>
-                    <a href="maintenance.html" class="dropdown-item">Karang Taruna</a>
-                    <a href="maintenance.html" class="dropdown-item">LPS</a>
-                </div>
-            </div>
-            
-            <a href="#profile" class="nav-link">Profil</a>
-            
-            <div class="dropdown-container">
-                <a href="#" class="nav-link">Publikasi ▾</a>
-                <div class="dropdown-menu">
-                    <a href="maintenance.html" class="dropdown-item">Surat Keputusan</a>
-                    <a href="maintenance.html" class="dropdown-item">Dokumen</a>
-                    <a href="maintenance.html" class="dropdown-item">Peraturan</a>
-                    <a href="maintenance.html" class="dropdown-item">Foto Kegiatan</a>
-                    <a href="maintenance.html" class="dropdown-item">Video Kegiatan</a>
-                </div>
-            </div>
-            
-            <a href="#contact" class="nav-link">Kontak</a>
+        <nav class="nav-desktop" id="navDesktop">
+            <!-- Dinamis dari JavaScript -->
         </nav>
         
         <button class="mobile-toggle" id="mobileToggle">☰</button>
     </header>
-    
-    <!-- Modern Hero Section -->
+
+    <!-- HERO SECTION -->
     <section class="hero-section" id="home">
         <div class="hero-bg">
-            <video autoplay muted loop playsinline>
-                <source src="data/video/bgallin.mp4" type="video/mp4">
+            <video id="heroVideo" autoplay muted loop playsinline>
+                <source id="heroVideoSource" src="" type="video/mp4">
                 Your browser does not support the video tag.
             </video>
         </div>
         <div class="hero-overlay"></div>
         <div class="hero-content">
-            <h1 class="hero-title">
-                SELAMAT DATANG DI<br>
-                <span class="floating">KELURAHAN KAMPUNG BANDAR</span>
+            <h1 class="hero-title" id="heroTitle">
+                <!-- Dinamis dari JavaScript -->
             </h1>
-            <p class="hero-subtitle">
-                Jalan Merbau<br>
-                Kecamatan Senapelan - Pekanbaru
+            <p class="hero-subtitle" id="heroSubtitle">
+                <!-- Dinamis dari JavaScript -->
             </p>
-            <div class="hero-cta">
-                <a href="#services" class="btn btn-primary">Buka Pelayanan</a>
-                <a href="#profile" class="btn btn-secondary">Kenali Kami</a>
+            <div class="hero-cta" id="heroCta">
+                <!-- Dinamis dari JavaScript -->
             </div>
         </div>
     </section>
-    
-    <!-- Modern Profile Section -->
-    <section class="profile-section" id="profile">
+
+    <!-- PROFILE SECTION -->
+    <section class="section section-light" id="profile">
         <div class="profile-container">
-            <div class="profile-card">
+            <div class="profile-card" id="profileCard">
                 <div class="profile-main">
                     <div class="profile-image">
-                        <img src="data/foto/lurah/kampungbandar.png" alt="Lurah Kampung Bandar">
-                        <div class="profile-badge">Lurah</div>
+                        <img id="profileImage" src="" alt="Lurah Kampung Bandar">
+                        <div class="profile-badge" id="profileBadge">Lurah</div>
                     </div>
                     <div class="profile-info">
-                        <h2 class="profile-title">Selamat Datang</h2>
-                        <p class="profile-position">Lurah Kampung Bandar</p>
-                        <h3 class="profile-name">NOPRI ANUGRAH PUTRA, S.STP</h3>
-                        <p class="profile-message">
+                        <h2 class="profile-title" id="profileTitle">Selamat Datang</h2>
+                        <p class="profile-position" id="profilePosition">Lurah Kampung Bandar</p>
+                        <h3 class="profile-name" id="profileName">NOPRI ANUGRAH PUTRA, S.STP</h3>
+                        <p class="profile-message" id="profileMessage">
                             Selamat datang di portal resmi Kelurahan Kampung Bandar. 
                             Kami berkomitmen untuk memberikan pelayanan terbaik bagi masyarakat 
                             dengan prinsip transparansi, akuntabilitas, dan profesionalisme.
@@ -1588,140 +1630,76 @@
                 </div>
             </div>
             
-            <div class="profile-card schedule-card">
-                <h2 class="schedule-title">Jadwal Pelayanan</h2>
-                <ul class="schedule-list">
-                    <li class="schedule-item">
-                        <span class="schedule-day">Senin – Rabu (Pagi)</span>
-                        <span class="schedule-time">07.30 – 12.00 WIB</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="schedule-day">Senin – Rabu (Siang)</span>
-                        <span class="schedule-time">13.00 – 16.00 WIB</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="schedule-day">Kamis (Pagi)</span>
-                        <span class="schedule-time">07.30 – 12.00 WIB</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="schedule-day">Kamis (Siang)</span>
-                        <span class="schedule-time">13.00 – 16.30 WIB</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="schedule-day">Jum'at (Pagi)</span>
-                        <span class="schedule-time">07.30 – 11.30 WIB</span>
-                    </li>
-                    <li class="schedule-item">
-                        <span class="schedule-day">Jum'at (Siang)</span>
-                        <span class="schedule-time">13.30 – 16.30 WIB</span>
-                    </li>
+            <div class="profile-card schedule-card" id="scheduleCard">
+                <h2 class="schedule-title" id="scheduleTitle">Jadwal Pelayanan</h2>
+                <ul class="schedule-list" id="scheduleList">
+                    <!-- Dinamis dari JavaScript -->
                 </ul>
             </div>
         </div>
     </section>
-    
-    <!-- Modern Services Section -->
-    <section class="services-section" id="services">
+
+    <!-- SERVICES SECTION -->
+    <section class="section section-white" id="services">
         <div class="section-header">
-            <h2 class="section-title">Layanan Digital</h2>
-            <p class="section-subtitle">
+            <h2 class="section-title" id="serviceTitle">Layanan Digital</h2>
+            <p class="section-subtitle" id="serviceSubtitle">
                 Akses berbagai layanan publik secara online dengan mudah dan cepat
             </p>
         </div>
         
-        <div class="services-grid">
-            <a href="https://senapelan.github.io/Home/publik/menupelayanan/pelayanankampungbandar.html" class="service-card">
-                <div class="service-icon">
-                    <img src="data/foto/gambarpelayanan/sinopri.png" alt="SI NOPRI">
-                </div>
-                <h3 class="service-title">SI NOPRI</h3>
-                <p class="service-desc">
-                    Sistem Informasi NOPRI untuk pelayanan terpadu
-                </p>
-            </a>
-            
-            <a href="https://senapelan.github.io/Home/publik/persyaratanberkas/persyaratanberkas.html" class="service-card">
-                <div class="service-icon">
-                    <img src="data/foto/gambarpelayanan/persyaratan.png" alt="Persyaratan">
-                </div>
-                <h3 class="service-title">Persyaratan</h3>
-                <p class="service-desc">
-                    Informasi lengkap persyaratan berbagai layanan administrasi
-                </p>
-            </a>
-            
-            <a href="maintenance.html" class="service-card">
-                <div class="service-icon">
-                    <img src="data/foto/gambarpelayanan/unduhberkas.png" alt="Unduh Berkas">
-                </div>
-                <h3 class="service-title">Unduh Berkas</h3>
-                <p class="service-desc">
-                    Download berbagai formulir dan dokumen yang diperlukan
-                </p>
-            </a>
-            
-            <a href="https://www.lapor.go.id/" class="service-card">
-                <div class="service-icon">
-                    <img src="data/foto/gambarpelayanan/laporpengaduan.png" alt="Lapor Pengaduan">
-                </div>
-                <h3 class="service-title">Lapor Pengaduan</h3>
-                <p class="service-desc">
-                    Saluran pengaduan masyarakat secara online
-                </p>
-            </a>
+        <div class="services-grid" id="servicesGrid">
+            <!-- Dinamis dari JavaScript -->
         </div>
     </section>
-    
-    <!-- Modern Contact Section -->
-    <section class="contact-section" id="contact">
+
+    <!-- CONTACT SECTION -->
+    <section class="section section-dark" id="contact">
         <div class="contact-container">
-            <div class="contact-card">
-                <h3 class="contact-title">Kontak Kami</h3>
+            <div class="contact-card" id="contactCard1">
+                <h3 class="contact-title" id="contactTitle">Kontak Kami</h3>
                 <div class="contact-info">
                     <div class="contact-icon">
-                        <img src="data/foto/favico/favico.png" alt="Logo Kelurahan">
+                        <img id="contactIcon" src="" alt="Logo Kelurahan">
                     </div>
                     <div class="contact-text">
-                        <strong>Kelurahan Kampung Bandar</strong>
-                        Kecamatan Senapelan
+                        <strong id="contactName">Kelurahan Kampung Bandar</strong>
+                        <span id="contactSubname">Kecamatan Senapelan</span>
                     </div>
                 </div>
                 <div class="contact-details">
                     <div class="contact-item">
                         <span class="contact-label">Alamat:</span>
-                        <span class="contact-value">Jalan Merbau - Senapelan - Pekanbaru</span>
+                        <span class="contact-value" id="contactAddress">Jalan Merbau - Senapelan - Pekanbaru</span>
                     </div>
                     <div class="contact-item">
                         <span class="contact-label">No. Tlp:</span>
-                        <span class="contact-value">-</span>
+                        <span class="contact-value" id="contactPhone">-</span>
                     </div>
                     <div class="contact-item">
                         <span class="contact-label">Email:</span>
-                        <span class="contact-value">-</span>
+                        <span class="contact-value" id="contactEmail">-</span>
                     </div>
                     <div class="contact-item">
                         <span class="contact-label">WhatsApp:</span>
-                        <span class="contact-value">-</span>
+                        <span class="contact-value" id="contactWhatsapp">-</span>
                     </div>
                 </div>
             </div>
             
-            <div class="contact-card">
-                <h3 class="contact-title">Informasi</h3>
-                <ul class="quick-links">
-                    <li class="quick-link"><a href="maintenance.html">Sejarah Kelurahan</a></li>
-                    <li class="quick-link"><a href="maintenance.html">Struktur Organisasi</a></li>
-                    <li class="quick-link"><a href="maintenance.html">Data Pegawai</a></li>
-                    <li class="quick-link"><a href="maintenance.html">Visi dan Misi</a></li>
-                    <li class="quick-link"><a href="maintenance.html">Unit Kerja</a></li>
+            <div class="contact-card" id="contactCard2">
+                <h3 class="contact-title" id="infoTitle">Informasi</h3>
+                <ul class="quick-links" id="quickLinks">
+                    <!-- Dinamis dari JavaScript -->
                 </ul>
             </div>
             
-            <div class="contact-card">
-                <h3 class="contact-title">Lokasi Kantor</h3>
+            <div class="contact-card" id="contactCard3">
+                <h3 class="contact-title" id="mapTitle">Lokasi Kantor</h3>
                 <div class="map-container">
                     <iframe 
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d705.2757517214966!2d101.43797745534154!3d0.5384554633773039!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31d5ac76a1401bc9%3A0xd6f1f1c006c454c4!2sKantor%20Lurah%20Kampung%20Bandar!5e0!3m2!1sen!2sid!4v1770378685821!5m2!1sen!2sid"
+                        id="mapIframe"
+                        src=""
                         loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"
                         title="Lokasi Kantor Kelurahan Kampung Bandar">
@@ -1730,130 +1708,531 @@
             </div>
         </div>
     </section>
-    
-    <!-- Modern Footer -->
+
+    <!-- FOOTER -->
     <footer class="footer">
         <div class="footer-content">
-            <p class="footer-copy">© 2026 Kelurahan Kampung Bandar. Hak Cipta Dilindungi.</p>
-            <p class="footer-credits">Website Modern | Teknologi 2026 | Sub - Senapelan Satu Pintu</p>
+            <p class="footer-copy" id="footerCopyright">© 2026 Kelurahan Kampung Bandar. Hak Cipta Dilindungi.</p>
+            <p class="footer-credits" id="footerCredits">Website Modern | Teknologi 2026 | Sub - Senapelan Satu Pintu</p>
         </div>
     </footer>
-    
-    <!-- Mobile Menu -->
+
+    <!-- MOBILE MENU -->
     <div class="mobile-overlay" id="mobileOverlay"></div>
     <div class="mobile-menu" id="mobileMenu">
         <div class="mobile-header">
             <div class="mobile-logo">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo">
+                <img id="mobileLogo" src="" alt="Logo">
             </div>
             <div>
-                <div style="color: white; font-weight: 700; font-size: 18px;">Kampung Bandar</div>
-                <div style="color: rgba(255,255,255,0.7); font-size: 12px;">Kelurahan Modern</div>
+                <div style="color: white; font-weight: 700; font-size: 18px;" id="mobileHeaderTitle">Kampung Bandar</div>
+                <div style="color: rgba(255,255,255,0.7); font-size: 12px;" id="mobileHeaderSubtitle">Kelurahan Modern</div>
             </div>
         </div>
         
-        <nav class="mobile-nav">
-            <a href="#home">Beranda</a>
-            
-            <a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('pelayanan')">Pelayanan</a>
-            <div class="mobile-dropdown" id="pelayanan">
-                <a href="https://senapelan.github.io/Home/publik/menupelayanan/pelayanankampungbandar.html">SI NOPRI</a>
-                <a href="https://senapelan.github.io/Home/publik/persyaratanberkas/persyaratanberkas.html">Persyaratan</a>
-                <a href="maintenance.html">Unduh Berkas</a>
-            </div>
-            
-            <a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('lembaga')">Lembaga</a>
-            <div class="mobile-dropdown" id="lembaga">
-                <a href="https://senapelan.github.io/Home/publik/lkk/rtrw-lpm-kampungbandar.html" class="dropdown-item">INFORMASI LPM, RT DAN RW</a>
-                <a href="maintenance.html">PKK</a>
-                <a href="maintenance.html">Posyandu</a>
-                <a href="maintenance.html">Karang Taruna</a>
-                <a href="maintenance.html">LPS</a>
-            </div>
-            
-            <a href="#profile">Profil</a>
-            
-            <a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('publikasi')">Publikasi</a>
-            <div class="mobile-dropdown" id="publikasi">
-                <a href="maintenance.html">Surat Keputusan</a>
-                <a href="maintenance.html">Dokumen</a>
-                <a href="maintenance.html">Peraturan</a>
-                <a href="maintenance.html">Foto Kegiatan</a>
-                <a href="maintenance.html">Video Kegiatan</a>
-            </div>
-            
-            <a href="#contact">Kontak</a>
+        <nav class="mobile-nav" id="mobileNav">
+            <!-- Dinamis dari JavaScript -->
         </nav>
     </div>
 
-    <!-- JavaScript -->
+    <!-- ============================================
+    JAVASCRIPT - MAIN (TANPA UPDATE META TAG)
+    ============================================ -->
     <script>
-        // ================= MUSIK AUTO PLAY =================
-        let bgMusic;
-        let musicStarted = false;
-        
-        function startMusic() {
-            if (musicStarted) return;
-            
-            bgMusic = new Audio('data/sound/alamwalker.mp3');
-            bgMusic.loop = true;
-            bgMusic.volume = 0.4;
-            
-            const playPromise = bgMusic.play();
-            
-            if (playPromise !== undefined) {
-                playPromise
-                    .then(() => {
-                        console.log('✅ Musik berhasil diputar otomatis');
-                        musicStarted = true;
-                    })
-                    .catch(error => {
-                        console.log('⚠️ Menunggu interaksi user...');
-                        window.musicToPlay = bgMusic;
-                        window.musicStarted = false;
-                    });
-            }
-            
-            musicStarted = true;
-        }
-        
-        const playMusicOnInteraction = () => {
-            if (window.musicToPlay && !window.musicStarted) {
-                window.musicToPlay.play()
-                    .then(() => {
-                        console.log('🎵 Musik diputar setelah interaksi user');
-                        window.musicStarted = true;
-                    })
-                    .catch(error => {
-                        console.log('❌ Gagal memutar musik:', error);
-                    });
-                
-                document.removeEventListener('click', playMusicOnInteraction);
-                document.removeEventListener('touchstart', playMusicOnInteraction);
-                document.removeEventListener('scroll', playMusicOnInteraction);
-                document.removeEventListener('keydown', playMusicOnInteraction);
-                document.removeEventListener('mousemove', playMusicOnInteraction);
-            }
+        // ============================================
+        // KONFIGURASI
+        // ============================================
+        const CONFIG = {
+            API_URL: 'https://script.google.com/macros/s/AKfycbxGDy8P6dFZQhpVal5lPtRsKXI4cP-BY8sdcIbtbrGBVcvHshbZ-viE87KsgzLmJEXzJA/exec',
+            API_KEY: 'KELURAHAN2026',
+            DEFAULT_SHEET: 'Kampung_Bandar'  // ← UBAH PER KELURAHAN!
         };
-        
-        document.addEventListener('click', playMusicOnInteraction);
-        document.addEventListener('touchstart', playMusicOnInteraction);
-        document.addEventListener('scroll', playMusicOnInteraction);
-        document.addEventListener('keydown', playMusicOnInteraction);
-        document.addEventListener('mousemove', playMusicOnInteraction);
-        
-        window.addEventListener('load', () => {
-            startMusic();
+
+        // Mapping parameter URL ke sheet name
+        const SHEET_MAPPING = {
+            'kampung_baru': 'Kampung_Baru',
+            'kampung_bandar': 'Kampung_Bandar',
+            'kampung_dalam': 'Kampung_Dalam',
+            'padang_bulan': 'Padang_Bulan',
+            'padang_terubuk': 'Padang_Terubuk',
+            'sago': 'Sago'
+        };
+
+        // ============================================
+        // 1. AMBIL PARAMETER URL
+        // ============================================
+        function getParameter() {
+            const params = new URLSearchParams(window.location.search);
+            const kelurahan = params.get('kelurahan');
             
-            setTimeout(() => {
-                if (!musicStarted && !window.musicStarted) {
-                    console.log('🔄 Mencoba memutar musik lagi...');
-                    startMusic();
+            if (kelurahan && SHEET_MAPPING[kelurahan.toLowerCase()]) {
+                return SHEET_MAPPING[kelurahan.toLowerCase()];
+            }
+            
+            return CONFIG.DEFAULT_SHEET;
+        }
+
+        // ============================================
+        // 2. AMBIL DATA DARI API
+        // ============================================
+        async function fetchData(sheetName) {
+            try {
+                const url = `${CONFIG.API_URL}?api_key=${CONFIG.API_KEY}&cmd=getData&sheet=${encodeURIComponent(sheetName)}`;
+                console.log('📡 Fetching:', url);
+                
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            }, 1000);
+                
+                const result = await response.json();
+                
+                if (!result.success) {
+                    throw new Error(result.message || 'Gagal mengambil data');
+                }
+                
+                return result.data;
+                
+            } catch (error) {
+                console.error('❌ Error fetch data:', error);
+                throw error;
+            }
+        }
+
+        // ============================================
+        // 3. FUNGSI MUSIK - SAMA PERSIS ORIGINAL
+        // ============================================
+        document.addEventListener("click", function() {
+            const music = document.getElementById("bgMusic");
+            if (music) {
+                music.play().catch(e => console.log('⚠️ Gagal play musik:', e));
+            }
+        }, { once: true });
+
+        function initMusic(data) {
+            const get = (key, defaultValue = '') => {
+                return data[key] ? data[key].value : defaultValue;
+            };
+            
+            const musicList = [];
+            for (let i = 1; i <= 10; i++) {
+                const url = get(`music_${i}_url`);
+                const title = get(`music_${i}_title`, `Musik ${i}`);
+                if (url && url !== '') {
+                    musicList.push({ url, title, index: i });
+                }
+            }
+            
+            if (musicList.length === 0) {
+                console.log('🎵 Tidak ada musik di spreadsheet, pakai default');
+                document.getElementById('bgMusicSource').src = 'data/sound/alamwalker.mp3';
+                document.getElementById('bgMusic').load();
+                document.getElementById('loadingText').textContent = '🎵 Memutar: Alam Walker';
+                return;
+            }
+            
+            const randomIndex = Math.floor(Math.random() * musicList.length);
+            const selectedMusic = musicList[randomIndex];
+            console.log(`🎵 Musik terpilih: ${selectedMusic.title} (${selectedMusic.url})`);
+            
+            const audio = document.getElementById('bgMusic');
+            const source = document.getElementById('bgMusicSource');
+            source.src = selectedMusic.url;
+            audio.load();
+            
+            const volume = parseFloat(get('music_volume', '0.4'));
+            const loop = get('music_loop', 'true') === 'true';
+            audio.volume = volume;
+            audio.loop = loop;
+            
+            document.getElementById('loadingText').textContent = `🎵 Memutar: ${selectedMusic.title}`;
+        }
+
+        // ============================================
+        // 4. RENDER HERO
+        // ============================================
+        function renderHero(data) {
+            const get = (key, defaultValue = '') => {
+                return data[key] ? data[key].value : defaultValue;
+            };
+            
+            const heroLine1 = get('hero_title_line1', 'SELAMAT DATANG DI');
+            const heroLine2 = get('hero_title_line2', 'KELURAHAN KAMPUNG BANDAR');
+            const subLine1 = get('hero_subtitle_line1', '');
+            const subLine2 = get('hero_subtitle_line2', '');
+            const cta1Text = get('hero_cta_primary_text', 'Buka Pelayanan');
+            const cta1Url = get('hero_cta_primary_url', '#services');
+            const cta2Text = get('hero_cta_secondary_text', 'Kenali Kami');
+            const cta2Url = get('hero_cta_secondary_url', '#profile');
+            
+            const videoSrc = get('hero_video_url');
+            if (videoSrc) {
+                document.getElementById('heroVideoSource').src = videoSrc;
+                document.getElementById('heroVideo').load();
+            }
+            
+            const heroTitle = document.getElementById('heroTitle');
+            heroTitle.innerHTML = '';
+            
+            const line1 = document.createElement('span');
+            line1.className = 'line1';
+            line1.textContent = heroLine1;
+            
+            const line2 = document.createElement('span');
+            line2.className = 'line2';
+            line2.textContent = heroLine2;
+            
+            heroTitle.appendChild(line1);
+            heroTitle.appendChild(line2);
+            
+            const heroSubtitle = document.getElementById('heroSubtitle');
+            heroSubtitle.innerHTML = '';
+            
+            if (subLine1) {
+                const sub1 = document.createElement('span');
+                sub1.textContent = subLine1;
+                sub1.style.display = 'block';
+                heroSubtitle.appendChild(sub1);
+            }
+            
+            if (subLine2) {
+                const sub2 = document.createElement('span');
+                sub2.textContent = subLine2;
+                sub2.style.display = 'block';
+                heroSubtitle.appendChild(sub2);
+            }
+            
+            const heroCta = document.getElementById('heroCta');
+            heroCta.innerHTML = `
+                <a href="${cta1Url}" class="btn btn-primary">${cta1Text}</a>
+                <a href="${cta2Url}" class="btn btn-secondary">${cta2Text}</a>
+            `;
+        }
+
+        // ============================================
+        // 5. RENDER NAVIGASI
+        // ============================================
+        function renderNavigation(data) {
+            const get = (key, defaultValue = '') => {
+                return data[key] ? data[key].value : defaultValue;
+            };
+            
+            const getUrl = (key, defaultValue = '#') => {
+                const val = get(key, defaultValue);
+                return val && val !== '-' ? val : '#';
+            };
+            
+            const serviceItems = [];
+            for (let i = 1; i <= 10; i++) {
+                const text = get(`dropdown_service_${i}_text`);
+                const url = get(`dropdown_service_${i}_url`);
+                if (text && text !== '') {
+                    serviceItems.push({ text, url });
+                }
+            }
+            
+            const institutionItems = [];
+            for (let i = 1; i <= 10; i++) {
+                const text = get(`dropdown_institution_${i}_text`);
+                const url = get(`dropdown_institution_${i}_url`);
+                if (text && text !== '') {
+                    institutionItems.push({ text, url });
+                }
+            }
+            
+            const publicationItems = [];
+            for (let i = 1; i <= 10; i++) {
+                const text = get(`dropdown_publication_${i}_text`);
+                const url = get(`dropdown_publication_${i}_url`);
+                if (text && text !== '') {
+                    publicationItems.push({ text, url });
+                }
+            }
+            
+            const navDesktop = document.getElementById('navDesktop');
+            let navHTML = '';
+            
+            navHTML += `<a href="${getUrl('nav_home_url')}" class="nav-link">${get('nav_home_text', 'Beranda')}</a>`;
+            
+            if (serviceItems.length > 0) {
+                navHTML += `<div class="dropdown-container">
+                    <a href="${getUrl('nav_services_url')}" class="nav-link">${get('nav_services_text', 'Pelayanan')} ▾</a>
+                    <div class="dropdown-menu">`;
+                serviceItems.forEach(item => {
+                    navHTML += `<a href="${item.url}" class="dropdown-item">${item.text}</a>`;
+                });
+                navHTML += `</div></div>`;
+            }
+            
+            if (institutionItems.length > 0) {
+                navHTML += `<div class="dropdown-container">
+                    <a href="${getUrl('nav_institution_url')}" class="nav-link">${get('nav_institution_text', 'Lembaga')} ▾</a>
+                    <div class="dropdown-menu">`;
+                institutionItems.forEach(item => {
+                    navHTML += `<a href="${item.url}" class="dropdown-item">${item.text}</a>`;
+                });
+                navHTML += `</div></div>`;
+            }
+            
+            navHTML += `<a href="${getUrl('nav_profile_url')}" class="nav-link">${get('nav_profile_text', 'Profil')}</a>`;
+            
+            if (publicationItems.length > 0) {
+                navHTML += `<div class="dropdown-container">
+                    <a href="${getUrl('nav_publication_url')}" class="nav-link">${get('nav_publication_text', 'Publikasi')} ▾</a>
+                    <div class="dropdown-menu">`;
+                publicationItems.forEach(item => {
+                    navHTML += `<a href="${item.url}" class="dropdown-item">${item.text}</a>`;
+                });
+                navHTML += `</div></div>`;
+            }
+            
+            navHTML += `<a href="${getUrl('nav_contact_url')}" class="nav-link">${get('nav_contact_text', 'Kontak')}</a>`;
+            
+            navDesktop.innerHTML = navHTML;
+            
+            const mobileNav = document.getElementById('mobileNav');
+            let mobileHTML = '';
+            
+            mobileHTML += `<a href="${getUrl('nav_home_url')}">${get('nav_home_text', 'Beranda')}</a>`;
+            
+            if (serviceItems.length > 0) {
+                mobileHTML += `<a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('mobileServices')">${get('nav_services_text', 'Pelayanan')}</a>
+                    <div class="mobile-dropdown" id="mobileServices">`;
+                serviceItems.forEach(item => {
+                    mobileHTML += `<a href="${item.url}">${item.text}</a>`;
+                });
+                mobileHTML += `</div>`;
+            }
+            
+            if (institutionItems.length > 0) {
+                mobileHTML += `<a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('mobileInstitution')">${get('nav_institution_text', 'Lembaga')}</a>
+                    <div class="mobile-dropdown" id="mobileInstitution">`;
+                institutionItems.forEach(item => {
+                    mobileHTML += `<a href="${item.url}">${item.text}</a>`;
+                });
+                mobileHTML += `</div>`;
+            }
+            
+            mobileHTML += `<a href="${getUrl('nav_profile_url')}">${get('nav_profile_text', 'Profil')}</a>`;
+            
+            if (publicationItems.length > 0) {
+                mobileHTML += `<a href="javascript:void(0)" class="has-dropdown" onclick="toggleMobileDropdown('mobilePublication')">${get('nav_publication_text', 'Publikasi')}</a>
+                    <div class="mobile-dropdown" id="mobilePublication">`;
+                publicationItems.forEach(item => {
+                    mobileHTML += `<a href="${item.url}">${item.text}</a>`;
+                });
+                mobileHTML += `</div>`;
+            }
+            
+            mobileHTML += `<a href="${getUrl('nav_contact_url')}">${get('nav_contact_text', 'Kontak')}</a>`;
+            
+            mobileNav.innerHTML = mobileHTML;
+        }
+
+        // ============================================
+        // 6. RENDER HALAMAN (TANPA RENDER META TAG!)
+        // ============================================
+        function renderPage(data, sheetName) {
+            console.log('📊 Rendering data untuk:', sheetName);
+            
+            const get = (key, defaultValue = '') => {
+                return data[key] ? data[key].value : defaultValue;
+            };
+            
+            const getUrl = (key, defaultValue = '#') => {
+                const val = get(key, defaultValue);
+                return val && val !== '-' ? val : '#';
+            };
+            
+            // ==========================================
+            // ⚠️ META TAG TIDAK DIUPDATE!
+            // Karena meta tag sudah statis di HTML per kelurahan
+            // ==========================================
+            
+            // Header
+            document.getElementById('logoImage').src = get('logo_image_url', '');
+            document.getElementById('headerTitle').textContent = get('header_title', 'Kampung Bandar');
+            document.getElementById('headerSubtitle').textContent = get('header_subtitle', 'Website Kelurahan');
+            
+            // Navigasi
+            renderNavigation(data);
+            
+            // Hero
+            renderHero(data);
+            
+            // Profile
+            document.getElementById('profileImage').src = get('profile_image_url', '');
+            document.getElementById('profileBadge').textContent = get('profile_badge_text', 'Lurah');
+            document.getElementById('profileTitle').textContent = get('profile_title', 'Selamat Datang');
+            document.getElementById('profilePosition').textContent = get('profile_position', 'Lurah Kampung Bandar');
+            document.getElementById('profileName').textContent = get('profile_name', 'NOPRI ANUGRAH PUTRA, S.STP');
+            document.getElementById('profileMessage').textContent = get('profile_message', '');
+            
+            // Schedule
+            document.getElementById('scheduleTitle').textContent = get('schedule_title', 'Jadwal Pelayanan');
+            
+            const scheduleList = document.getElementById('scheduleList');
+            let scheduleHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const day = get(`schedule_day_${i}`);
+                const time = get(`schedule_time_${i}`);
+                if (day && day !== '') {
+                    scheduleHTML += `
+                        <li class="schedule-item">
+                            <span class="schedule-day">${day}</span>
+                            <span class="schedule-time">${time}</span>
+                        </li>
+                    `;
+                }
+            }
+            scheduleList.innerHTML = scheduleHTML;
+            
+            // Services
+            document.getElementById('serviceTitle').textContent = get('service_title', 'Layanan Digital');
+            document.getElementById('serviceSubtitle').textContent = get('service_subtitle', '');
+            
+            const servicesGrid = document.getElementById('servicesGrid');
+            let servicesHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const icon = get(`service_${i}_icon_url`);
+                const title = get(`service_${i}_title`);
+                const desc = get(`service_${i}_desc`);
+                const url = get(`service_${i}_url`);
+                
+                if (title && title !== '') {
+                    servicesHTML += `
+                        <a href="${url}" class="service-card">
+                            <div class="service-icon">
+                                <img src="${icon}" alt="${title}">
+                            </div>
+                            <h3 class="service-title">${title}</h3>
+                            <p class="service-desc">${desc}</p>
+                        </a>
+                    `;
+                }
+            }
+            servicesGrid.innerHTML = servicesHTML;
+            
+            // Contact
+            document.getElementById('contactTitle').textContent = get('contact_title', 'Kontak Kami');
+            document.getElementById('contactIcon').src = get('contact_icon_url', '');
+            document.getElementById('contactName').textContent = get('contact_name', 'Kelurahan Kampung Bandar');
+            document.getElementById('contactSubname').textContent = get('contact_subname', 'Kecamatan Senapelan');
+            document.getElementById('contactAddress').textContent = get('contact_address', '-');
+            document.getElementById('contactPhone').textContent = get('contact_phone', '-');
+            document.getElementById('contactEmail').textContent = get('contact_email', '-');
+            document.getElementById('contactWhatsapp').textContent = get('contact_whatsapp', '-');
+            
+            // Quick Links
+            document.getElementById('infoTitle').textContent = get('info_title', 'Informasi');
+            
+            const quickLinks = document.getElementById('quickLinks');
+            let quickHTML = '';
+            for (let i = 1; i <= 10; i++) {
+                const text = get(`info_link_${i}_text`);
+                const url = get(`info_link_${i}_url`);
+                if (text && text !== '') {
+                    quickHTML += `
+                        <li class="quick-link">
+                            <a href="${url}">${text}</a>
+                        </li>
+                    `;
+                }
+            }
+            quickLinks.innerHTML = quickHTML;
+            
+            // Map
+            document.getElementById('mapTitle').textContent = get('map_title', 'Lokasi Kantor');
+            document.getElementById('mapIframe').src = get('map_embed_url', '');
+            
+            // Footer
+            document.getElementById('footerCopyright').textContent = get('footer_copyright', '© 2026 Kelurahan Kampung Bandar. Hak Cipta Dilindungi.');
+            document.getElementById('footerCredits').textContent = get('footer_credits', 'Website Modern | Teknologi 2026 | Sub - Senapelan Satu Pintu');
+            
+            // Mobile Menu
+            document.getElementById('mobileLogo').src = get('logo_image_url', '');
+            document.getElementById('mobileHeaderTitle').textContent = get('mobile_header_title', get('header_title', 'Kampung Bandar'));
+            document.getElementById('mobileHeaderSubtitle').textContent = get('mobile_header_subtitle', 'Kelurahan Modern');
+            
+            // 🎵 MUSIK
+            initMusic(data);
+            
+            // Animasi On Scroll
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.profile-card, .service-card, .contact-card').forEach(el => {
+                observer.observe(el);
+            });
+            
+            // Hilangkan Loading
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 500);
+        }
+
+        // ============================================
+        // 7. MOBILE DROPDOWN TOGGLE
+        // ============================================
+        function toggleMobileDropdown(id) {
+            const dropdown = document.getElementById(id);
+            const button = event.currentTarget;
+            
+            document.querySelectorAll('.mobile-dropdown').forEach(d => {
+                if (d.id !== id) d.classList.remove('active');
+            });
+            document.querySelectorAll('.mobile-nav a.has-dropdown').forEach(b => {
+                if (b !== button) b.classList.remove('active');
+            });
+            
+            dropdown.classList.toggle('active');
+            button.classList.toggle('active');
+        }
+
+        // ============================================
+        // 8. MOBILE MENU TOGGLE
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.getElementById('mobileToggle');
+            const mobileMenu = document.getElementById('mobileMenu');
+            const mobileOverlay = document.getElementById('mobileOverlay');
+            
+            mobileToggle.addEventListener('click', () => {
+                mobileMenu.classList.add('active');
+                mobileOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            
+            mobileOverlay.addEventListener('click', () => {
+                mobileMenu.classList.remove('active');
+                mobileOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+                document.querySelectorAll('.mobile-dropdown').forEach(d => d.classList.remove('active'));
+                document.querySelectorAll('.mobile-nav a.has-dropdown').forEach(b => b.classList.remove('active'));
+            });
+            
+            document.querySelectorAll('.mobile-nav a').forEach(link => {
+                if (!link.classList.contains('has-dropdown')) {
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.remove('active');
+                        mobileOverlay.classList.remove('active');
+                        document.body.style.overflow = '';
+                        document.querySelectorAll('.mobile-dropdown').forEach(d => d.classList.remove('active'));
+                        document.querySelectorAll('.mobile-nav a.has-dropdown').forEach(b => b.classList.remove('active'));
+                    });
+                }
+            });
         });
-        
-        // ================= HEADER SCROLL EFFECT =================
+
+        // ============================================
+        // 9. HEADER SCROLL EFFECT
+        // ============================================
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
             if (window.scrollY > 50) {
@@ -1862,70 +2241,32 @@
                 header.classList.remove('scrolled');
             }
         });
-        
-        // ================= MOBILE MENU =================
-        const mobileToggle = document.getElementById('mobileToggle');
-        const mobileMenu = document.getElementById('mobileMenu');
-        const mobileOverlay = document.getElementById('mobileOverlay');
-        
-        mobileToggle.addEventListener('click', () => {
-            mobileMenu.classList.add('active');
-            mobileOverlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        });
-        
-        mobileOverlay.addEventListener('click', () => {
-            mobileMenu.classList.remove('active');
-            mobileOverlay.classList.remove('active');
-            document.body.style.overflow = '';
-            closeAllMobileDropdowns();
-        });
-        
-        // Mobile dropdown function
-        function toggleMobileDropdown(id) {
-            const dropdown = document.getElementById(id);
-            const button = event.currentTarget;
-            
-            document.querySelectorAll('.mobile-dropdown').forEach(d => {
-                if (d.id !== id) {
-                    d.classList.remove('active');
+
+        // ============================================
+        // 10. SMOOTH SCROLL
+        // ============================================
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
                 }
             });
-            
-            document.querySelectorAll('.mobile-nav a.has-dropdown').forEach(b => {
-                if (b !== button) {
-                    b.classList.remove('active');
-                }
-            });
-            
-            dropdown.classList.toggle('active');
-            button.classList.toggle('active');
-        }
-        
-        function closeAllMobileDropdowns() {
-            document.querySelectorAll('.mobile-dropdown').forEach(d => {
-                d.classList.remove('active');
-            });
-            document.querySelectorAll('.mobile-nav a.has-dropdown').forEach(b => {
-                b.classList.remove('active');
-            });
-        }
-        
-        document.querySelectorAll('.mobile-nav a').forEach(link => {
-            if (!link.classList.contains('has-dropdown')) {
-                link.addEventListener('click', () => {
-                    mobileMenu.classList.remove('active');
-                    mobileOverlay.classList.remove('active');
-                    document.body.style.overflow = '';
-                    closeAllMobileDropdowns();
-                });
-            }
         });
-        
-        // ================= 3D BACKGROUND =================
+
+        // ============================================
+        // 11. 3D BACKGROUND
+        // ============================================
         function init3DBackground() {
             const canvas = document.getElementById('bg-canvas');
-            if (!canvas) return;
+            if (!canvas || typeof THREE === 'undefined') return;
             
             const scene = new THREE.Scene();
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -1938,7 +2279,6 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
             
-            // Create floating particles
             const particlesGeometry = new THREE.BufferGeometry();
             const particlesCount = 300;
             const posArray = new Float32Array(particlesCount * 3);
@@ -1962,7 +2302,6 @@
             
             camera.position.z = 3;
             
-            // Mouse movement effect
             let mouseX = 0;
             let mouseY = 0;
             
@@ -1971,14 +2310,12 @@
                 mouseY = -(event.clientY / window.innerHeight) * 2 + 1;
             });
             
-            // Animation
             function animate() {
                 requestAnimationFrame(animate);
                 
                 particlesMesh.rotation.x += 0.0005;
                 particlesMesh.rotation.y += 0.0005;
                 
-                // Smooth mouse follow
                 camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
                 camera.position.y += (mouseY * 0.5 - camera.position.y) * 0.05;
                 
@@ -1987,83 +2324,55 @@
             
             animate();
             
-            // Handle resize
             window.addEventListener('resize', () => {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
                 renderer.setSize(window.innerWidth, window.innerHeight);
             });
         }
-        
-        // Initialize 3D background if Three.js is available
-        if (typeof THREE !== 'undefined') {
-            window.addEventListener('load', init3DBackground);
-        }
-        
-        // ================= SMOOTH SCROLL =================
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const targetId = this.getAttribute('href');
-                if (targetId === '#') return;
+
+        // ============================================
+        // 12. MAIN EXECUTION
+        // ============================================
+        async function main() {
+            try {
+                const sheetName = getParameter();
+                console.log('📋 Sheet yang diminta:', sheetName);
                 
-                const targetElement = document.querySelector(targetId);
-                if (targetElement) {
-                    window.scrollTo({
-                        top: targetElement.offsetTop - 80,
-                        behavior: 'smooth'
-                    });
-                }
-            });
-        });
-        
-        // ================= ANIMATE ON SCROLL =================
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -100px 0px'
-        };
-        
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        }, observerOptions);
-        
-        // Observe elements to animate
-        document.querySelectorAll('.service-card, .contact-card, .profile-card').forEach(el => {
-            el.style.opacity = '0';
-            el.style.transform = 'translateY(30px)';
-            el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-            observer.observe(el);
-        });
-        
-        // ================= ADDITIONAL HERO TEXT FIX FOR MOBILE =================
-        function checkHeroText() {
-            const heroTitle = document.querySelector('.hero-title');
-            if (!heroTitle) return;
-            
-            const isMobile = window.innerWidth <= 768;
-            const titleSpan = heroTitle.querySelector('span');
-            
-            if (isMobile && titleSpan) {
-                // Ensure text wraps properly on mobile
-                heroTitle.style.whiteSpace = 'normal';
-                titleSpan.style.whiteSpace = 'normal';
-                titleSpan.style.wordBreak = 'break-word';
+                const displayName = sheetName.replace('_', ' ');
+                document.getElementById('loadingText').textContent = `🔄 Memuat ${displayName}...`;
                 
-                // Check if text is still too wide
-                if (titleSpan.offsetWidth > window.innerWidth * 0.9) {
-                    titleSpan.style.fontSize = '1.6rem';
-                }
+                const data = await fetchData(sheetName);
+                renderPage(data, sheetName);
+                
+                setTimeout(init3DBackground, 500);
+                
+            } catch (error) {
+                console.error('❌ Error:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="color: #ff6b6b; font-size: 48px; margin-bottom: 20px;">❌</div>
+                    <div style="color: white; font-size: 18px; max-width: 400px; text-align: center;">
+                        Gagal memuat data kelurahan.<br>
+                        <span style="font-size: 14px; opacity: 0.7;">${error.message}</span>
+                        <br><br>
+                        <button onclick="location.reload()" style="
+                            padding: 12px 30px;
+                            background: #1e6bff;
+                            color: white;
+                            border: none;
+                            border-radius: 10px;
+                            font-size: 16px;
+                            cursor: pointer;
+                        ">🔄 Coba Lagi</button>
+                    </div>
+                `;
             }
         }
-        
-        // Run on load and resize
-        window.addEventListener('load', checkHeroText);
-        window.addEventListener('resize', checkHeroText);
+
+        // ============================================
+        // 13. START
+        // ============================================
+        document.addEventListener('DOMContentLoaded', main);
     </script>
 </body>
 </html>
