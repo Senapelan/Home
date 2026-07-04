@@ -896,49 +896,160 @@
         }
 
         /* ============================================
-           LOADING
+           LOADING - PREMIUM VERSION
            ============================================ */
-        #loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: var(--dark);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.8s ease;
-        }
+#loading {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--dark);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.8s ease;
+}
 
-        #loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+#loading.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
 
-        .loader {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(255,255,255,0.1);
-            border-top: 4px solid var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
+.loader-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 30px;
+    position: relative;
+}
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+/* GLOW EFFECT - PREMIUM */
+.loader-glow {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 102, 255, 0.2) 0%, transparent 70%);
+    animation: glowPulse 3s ease-in-out infinite;
+    filter: blur(40px);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
 
-        .loader-text {
-            color: white;
-            font-size: 16px;
-            font-weight: 500;
-            opacity: 0.8;
-        }
-    </style>
+@keyframes glowPulse {
+    0%, 100% { 
+        opacity: 0.3;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    50% { 
+        opacity: 0.7;
+        transform: translate(-50%, -50%) scale(1.2);
+    }
+}
+
+/* LOGO - FLOAT EFFECT (TANPA BORDER) */
+.loader-logo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: contain;
+    background: transparent;
+    padding: 10px;
+    border: none;
+    position: relative;
+    z-index: 2;
+    animation: float 3s ease-in-out infinite;
+    box-shadow: none;
+}
+
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px);
+    }
+    50% { 
+        transform: translateY(-18px);
+    }
+}
+
+/* LOADING BAR */
+.loader-bar {
+    width: 280px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    position: relative;
+    z-index: 2;
+}
+
+.loader-bar-fill {
+    height: 100%;
+    width: 0%;
+    background: var(--gradient);
+    border-radius: 2px;
+    animation: barProgress 2.5s ease-in-out infinite;
+    box-shadow: 0 0 20px rgba(0, 102, 255, 0.3);
+}
+
+@keyframes barProgress {
+    0% { width: 0%; }
+    50% { width: 75%; }
+    100% { width: 100%; }
+}
+
+/* TEKS */
+.loader-text {
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    opacity: 0.9;
+    position: relative;
+    z-index: 2;
+    letter-spacing: 1px;
+}
+
+.loader-status {
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 13px;
+    font-weight: 300;
+    position: relative;
+    z-index: 2;
+    animation: statusPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes statusPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* RESPONSIVE */
+@media (max-width: 480px) {
+    .loader-logo {
+        width: 80px;
+        height: 80px;
+        padding: 8px;
+    }
+    .loader-bar {
+        width: 220px;
+    }
+    .loader-glow {
+        width: 150px;
+        height: 150px;
+    }
+    .loader-text {
+        font-size: 14px;
+    }
+    .loader-status {
+        font-size: 12px;
+    }
+}    
+
+</style>
 </head>
 <body>
 
@@ -947,10 +1058,17 @@
     <source id="bgMusicSource" src="" type="audio/mpeg">
 </audio>
 
-<!-- LOADING -->
+<!-- LOADING - PREMIUM VERSION -->
 <div id="loading">
-    <div class="loader"></div>
-    <div class="loader-text" id="loadingText">🔄 Memuat Portal Senapelan...</div>
+    <div class="loader-container">
+        <div class="loader-glow"></div>
+        <img class="loader-logo" src="https://senapelan.github.io/Home/data/foto/favico/favico.png" alt="Senapelan Satu Pintu">
+        <div class="loader-bar">
+            <div class="loader-bar-fill" id="loaderBarFill"></div>
+        </div>
+        <div class="loader-text" id="loadingText">🔄 Memuat Portal Senapelan...</div>
+        <div class="loader-status" id="loaderStatus">Memuat data...</div>
+    </div>
 </div>
 
 <!-- BACKGROUND -->
@@ -1066,11 +1184,16 @@ JAVASCRIPT - MAIN (DENGAN MUSIK SAMA PERSIS ORIGINAL)
             const url = `${CONFIG.API_URL}?action=getData`;
             console.log('📡 Fetching portal data...');
             
+            // Update status loading
+            document.getElementById('loaderStatus').textContent = 'Menghubungi server...';
+            
             const controller = new AbortController();
             const timeout = setTimeout(() => controller.abort(), 5000);
             
             const response = await fetch(url, { signal: controller.signal });
             clearTimeout(timeout);
+            
+            document.getElementById('loaderStatus').textContent = 'Memproses data...';
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -1082,10 +1205,13 @@ JAVASCRIPT - MAIN (DENGAN MUSIK SAMA PERSIS ORIGINAL)
                 throw new Error(result.message || 'Gagal mengambil data');
             }
             
+            document.getElementById('loaderStatus').textContent = 'Data siap, menyusun halaman...';
+            
             return result.data;
             
         } catch (error) {
             console.error('❌ Error fetch data:', error);
+            document.getElementById('loaderStatus').textContent = 'Menggunakan data lokal...';
             return getDefaultData();
         }
     }
@@ -1382,10 +1508,13 @@ JAVASCRIPT - MAIN (DENGAN MUSIK SAMA PERSIS ORIGINAL)
             setMusicFromData(data);
         }, 100);
         
-        // Hilangkan loading
+        // Hilangkan loading dengan efek halus
         setTimeout(() => {
-            document.getElementById('loading').classList.add('hidden');
-        }, 800);
+            document.getElementById('loaderStatus').textContent = '✅ Selesai!';
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 500);
+        }, 600);
     }
 
     // ============================================
@@ -1655,6 +1784,7 @@ JAVASCRIPT - MAIN (DENGAN MUSIK SAMA PERSIS ORIGINAL)
     async function main() {
         try {
             document.getElementById('loadingText').textContent = '🔄 Memuat Portal Senapelan...';
+            document.getElementById('loaderStatus').textContent = 'Menyiapkan data...';
             
             const data = await fetchPortalData();
             renderPortal(data);
