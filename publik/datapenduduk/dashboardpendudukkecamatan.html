@@ -1,1882 +1,2861 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <!-- Open Graph utama -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://senapelan.github.io/Home/publik/datapenduduk/dashboardpendudukkecamatan.html">
-    <meta property="og:title" content="DASHBOARD DATA PENDUDUK KECAMATAN.">
-    <meta property="og:description" content="DATA PENDUDUK | 2026">
-    <meta property="og:site_name" content="SENAPELAN SATU PINTU">
-    
-    <!-- Gambar preview -->
-    <meta property="og:image" content="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png">
-    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="1200">
-    
-    <!-- Twitter / X -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="DASHBOARD DATA PENDUDUK KECAMATAN.">
-    <meta name="twitter:description" content="DATA PENDUDUK | 2026">
-    <meta name="twitter:image" content="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
+    <title>Dashboard Kependudukan Kecamatan Senapelan</title>
 
-    <!-- FAVICON -->
-    <link rel="icon" type="image/png" sizes="32x32" href="https://senapelan.github.io/Home/data/foto/favico/favico.png">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
+    </script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Monografi Kecamatan Senapelan</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
+        /* ============================================================
+           ROOT & RESET
+           ============================================================ */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+        }
+
+        :root {
+            --primary: #0b1120;
+            --primary-light: #141e33;
+            --secondary: #1a3a5c;
+            --accent: #4facfe;
+            --accent2: #00d4ff;
+            --accent-glow: rgba(79, 172, 254, 0.15);
+            --success: #2ecc71;
+            --danger: #e74c3c;
+            --warning: #f1c40f;
+            --purple: #9b59b6;
+            --pink: #fd79a8;
+            --orange: #e67e22;
+            --teal: #1abc9c;
+            --glass: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(255, 255, 255, 0.06);
+            --glass-hover: rgba(255, 255, 255, 0.08);
+            --shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        html {
+            font-size: 16px;
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--primary);
+            color: #e8edf2;
             min-height: 100vh;
-            padding: 20px;
+            padding: 12px;
+            background-image:
+                radial-gradient(ellipse at 10% 0%, rgba(79, 172, 254, 0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 90% 100%, rgba(0, 212, 255, 0.04) 0%, transparent 60%);
         }
 
-        .container {
-            max-width: 1400px;
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
+
+        .dashboard-container {
+            max-width: 1440px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            overflow: hidden;
-            backdrop-filter: blur(10px);
         }
 
-        /* Header */
-        .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
+        /* ============================================================
+           HEADER PREMIUM
+           ============================================================ */
+        .dashboard-header {
+            background: linear-gradient(135deg, rgba(20, 30, 51, 0.9), rgba(26, 58, 92, 0.7));
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 18px;
+            backdrop-filter: blur(20px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dashboard-header::before {
+            content: '';
+            position: absolute;
+            top: -60%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(79, 172, 254, 0.06), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .dashboard-header::after {
+            content: '';
+            position: absolute;
+            bottom: -40%;
+            left: -5%;
+            width: 250px;
+            height: 250px;
+            background: radial-gradient(circle, rgba(0, 212, 255, 0.04), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .dashboard-header .header-content {
+            position: relative;
+            z-index: 1;
             display: flex;
             justify-content: space-between;
             align-items: center;
-        }
-
-        .header-content {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .header-content img {
-            height: 50px;
-            width: auto;
-            background: white;
-            border-radius: 0 0 30px 30px;
-            padding: 2px;
-        }
-
-        .header-content h1 {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-
-        .header-content p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
-        .date-display {
-            background: rgba(255,255,255,0.2);
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 14px;
-        }
-
-        /* Tab Bar */
-        .tab-bar {
-            background: #f0f2f5;
-            padding: 10px 10px 0 10px;
-            display: flex;
             flex-wrap: wrap;
-            gap: 5px;
-            border-bottom: 2px solid #667eea;
-        }
-
-        .tab-item {
-            background: #e4e6e9;
-            padding: 10px 20px;
-            border-radius: 8px 8px 0 0;
-            font-size: 13px;
-            font-weight: 500;
-            color: #666;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            border: 1px solid transparent;
-            border-bottom: none;
-        }
-
-        .tab-item i {
-            font-size: 12px;
-            color: #999;
-        }
-
-        .tab-item:hover {
-            background: #d8dadf;
-            color: #333;
-        }
-
-        .tab-item.active {
-            background: white;
-            color: #667eea;
-            border-color: #667eea;
-            border-bottom: 2px solid white;
-            margin-bottom: -2px;
-            font-weight: 600;
-        }
-
-        .tab-item.active i {
-            color: #667eea;
-        }
-
-        .tab-item .close-tab {
-            margin-left: 5px;
-            opacity: 0.5;
-            transition: opacity 0.3s;
-        }
-
-        .tab-item .close-tab:hover {
-            opacity: 1;
-            color: #e74c3c;
-        }
-
-        .add-tab {
-            background: transparent;
-            padding: 10px 15px;
-            border-radius: 8px 8px 0 0;
-            font-size: 13px;
-            color: #667eea;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            border: 1px dashed #667eea;
-            border-bottom: none;
-        }
-
-        .add-tab:hover {
-            background: rgba(102, 126, 234, 0.1);
-        }
-
-        /* Tab Content */
-        .tab-content {
-            padding: 25px;
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        /* Filter Kecamatan (Global) */
-        .kecamatan-filter {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%);
-            border-radius: 15px;
-            padding: 20px 25px;
-            margin-bottom: 20px;
-            color: white;
-        }
-
-        .kecamatan-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
             gap: 10px;
         }
 
-        .kecamatan-title i {
-            font-size: 20px;
-        }
-
-        .kecamatan-row {
+        .dashboard-header .header-left {
             display: flex;
-            gap: 15px;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .dashboard-header .header-left .header-icon {
+            font-size: 1.8rem;
+            margin-bottom: 0;
+        }
+
+        .dashboard-header h1 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #ffffff 40%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .dashboard-header .subtitle {
+            font-size: 0.78rem;
+            color: #8899aa;
+            font-weight: 400;
+            -webkit-text-fill-color: #8899aa;
+            display: flex;
+            align-items: center;
             flex-wrap: wrap;
-            align-items: flex-end;
+            gap: 4px 8px;
         }
 
-        .kecamatan-group {
-            flex: 1;
-            min-width: 300px;
+        .dashboard-header .subtitle i {
+            font-size: 0.65rem;
+            color: var(--accent);
         }
 
-        .kecamatan-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0.9;
+        .dashboard-header .header-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
 
-        .btn-kecamatan {
-            background: white;
-            color: #ee5a24;
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 12px;
+            background: var(--accent-glow);
+            border: 1px solid rgba(79, 172, 254, 0.15);
+            border-radius: 20px;
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            -webkit-text-fill-color: var(--accent);
+            white-space: nowrap;
+        }
+
+        .header-badge i {
+            font-size: 0.5rem;
+        }
+
+        .header-update {
+            font-size: 0.65rem;
+            color: #667788;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            -webkit-text-fill-color: #667788;
+            white-space: nowrap;
+        }
+
+        .header-update i {
+            font-size: 0.6rem;
+        }
+
+        /* ============================================================
+           FILTERS
+           ============================================================ */
+        .filters-section {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 14px 16px 18px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+        }
+
+        .filters-section:hover {
+            border-color: var(--glass-hover);
+        }
+
+        .filters-section .filter-label {
+            font-size: 0.6rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: #667788;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filters-section .filter-label i {
+            color: var(--accent);
+            font-size: 0.75rem;
+        }
+
+        .filter-mode-toggle {
+            display: flex;
+            gap: 4px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--radius-sm);
+            padding: 3px;
+            margin-bottom: 10px;
+            border: 1px solid var(--glass-border);
+            flex-wrap: wrap;
+        }
+
+        .filter-mode-btn {
+            padding: 6px 14px;
             border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
             font-weight: 600;
-            font-size: 14px;
             cursor: pointer;
+            transition: var(--transition);
+            background: transparent;
+            color: #667788;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            height: 45px;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+            min-width: 100px;
         }
 
-        .btn-kecamatan:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        .filter-mode-btn:hover {
+            color: #e8edf2;
+            background: rgba(255, 255, 255, 0.03);
         }
 
-        /* Filter Wilayah (Kelurahan, RW, RT) */
-        .wilayah-filter {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 15px;
-            padding: 20px 25px;
-            margin-bottom: 25px;
-            color: white;
+        .filter-mode-btn.active {
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(79, 172, 254, 0.2);
         }
 
-        .wilayah-title {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 15px;
+        .filter-mode-btn .mode-icon {
+            font-size: 0.75rem;
+        }
+
+        .filters-row {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .wilayah-title i {
-            font-size: 20px;
-        }
-
-        .filter-row {
-            display: flex;
-            gap: 15px;
             flex-wrap: wrap;
+            gap: 8px 12px;
             align-items: flex-end;
         }
 
         .filter-group {
             flex: 1;
-            min-width: 200px;
+            min-width: 120px;
         }
 
         .filter-group label {
             display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 500;
-            opacity: 0.9;
-        }
-
-        .select-wrapper {
-            position: relative;
-        }
-
-        .select-wrapper select {
-            width: 100%;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 500;
-            color: #333;
-            background: white;
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-
-        .select-wrapper i {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #667eea;
-            pointer-events: none;
-        }
-
-        .select-wrapper select:disabled {
-            background: #e0e0e0;
-            cursor: not-allowed;
-            opacity: 0.7;
-        }
-
-        .btn-filter {
-            background: white;
-            color: #667eea;
-            border: none;
-            border-radius: 10px;
-            padding: 12px 30px;
+            font-size: 0.55rem;
             font-weight: 600;
-            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #667788;
+            margin-bottom: 3px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 7px 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            color: #e8edf2;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
             cursor: pointer;
+            transition: var(--transition);
+            min-height: 36px;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.08);
+        }
+
+        .filter-group select:hover,
+        .filter-group input:hover {
+            border-color: rgba(79, 172, 254, 0.2);
+        }
+
+        .filter-group select option {
+            background: var(--primary);
+            color: #e8edf2;
+            padding: 4px;
+        }
+
+        .filter-group input::placeholder {
+            color: #445566;
+            font-size: 0.7rem;
+        }
+
+        .filter-group select:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .btn-reset-filter {
+            padding: 7px 16px;
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.15);
+            border-radius: var(--radius-sm);
+            color: var(--danger);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 36px;
+            align-self: flex-end;
             display: flex;
             align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-            height: 45px;
-            margin-top: 24px;
+            gap: 6px;
+            white-space: nowrap;
         }
 
-        .btn-filter:hover {
+        .btn-reset-filter:hover {
+            background: rgba(231, 76, 60, 0.2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(231, 76, 60, 0.08);
+        }
+
+        /* ============================================================
+           CARDS RINGKAS
+           ============================================================ */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 10px;
+            margin-bottom: 18px;
+        }
+
+        .card-item {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 12px 12px 10px;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent), var(--accent2));
+            opacity: 0.5;
+        }
+
+        .card-item:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            border-color: rgba(79, 172, 254, 0.12);
+            box-shadow: var(--shadow);
         }
 
-        .btn-filter i {
-            font-size: 16px;
+        .card-item .card-icon {
+            font-size: 1.1rem;
+            margin-bottom: 2px;
         }
 
-        /* Summary Cards */
-        .summary-cards {
+        .card-item .card-label {
+            font-size: 0.5rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            color: #667788;
+            line-height: 1.2;
+        }
+
+        .card-item .card-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-top: 1px;
+            background: linear-gradient(135deg, #fff 30%, var(--accent2) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.2;
+        }
+
+        .card-item .card-sub {
+            font-size: 0.55rem;
+            color: #667788;
+            margin-top: 1px;
+            line-height: 1.2;
+        }
+
+        .card-border-1::before {
+            background: linear-gradient(90deg, #4facfe, #00d4ff);
+        }
+        .card-border-2::before {
+            background: linear-gradient(90deg, #2ecc71, #1abc9c);
+        }
+        .card-border-3::before {
+            background: linear-gradient(90deg, #e74c3c, #fd79a8);
+        }
+        .card-border-4::before {
+            background: linear-gradient(90deg, #f1c40f, #e67e22);
+        }
+        .card-border-5::before {
+            background: linear-gradient(90deg, #9b59b6, #8e44ad);
+        }
+        .card-border-6::before {
+            background: linear-gradient(90deg, #1abc9c, #16a085);
+        }
+        .card-border-7::before {
+            background: linear-gradient(90deg, #e67e22, #d35400);
+        }
+        .card-border-8::before {
+            background: linear-gradient(90deg, #fd79a8, #e84393);
+        }
+        .card-border-9::before {
+            background: linear-gradient(90deg, #6c5ce7, #a29bfe);
+        }
+        .card-border-10::before {
+            background: linear-gradient(90deg, #00d4ff, #4facfe);
+        }
+        .card-border-11::before {
+            background: linear-gradient(90deg, #1abc9c, #2ecc71);
+        }
+
+        /* ============================================================
+           DETAIL CARDS (Analitik Lanjutan)
+           ============================================================ */
+        .detail-cards-section {
+            margin-bottom: 18px;
+        }
+
+        .detail-cards-section .section-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            align-items: center;
+            gap: 10px;
+            color: #e8edf2;
             flex-wrap: wrap;
         }
 
-        .summary-card {
+        .detail-cards-section .section-title .title-line {
             flex: 1;
-            min-width: 150px;
-            background: white;
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            border-left: 4px solid #667eea;
+            height: 1px;
+            background: linear-gradient(90deg, var(--glass-border), transparent);
+            min-width: 30px;
         }
 
-        .summary-card .label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .summary-card .value {
-            font-size: 24px;
-            font-weight: 700;
-            color: #667eea;
-        }
-
-        /* Info Data */
-        .data-info {
-            background: #f8f9ff;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-weight: 500;
-            color: #333;
-        }
-
-        .data-info span:first-child {
-            background: #667eea;
-            color: white;
-            padding: 5px 15px;
+        .detail-cards-section .section-title .title-badge {
+            font-size: 0.6rem;
+            font-weight: 600;
+            color: #667788;
+            background: var(--glass);
+            padding: 3px 12px;
             border-radius: 20px;
-            font-size: 14px;
-        }
-
-        .data-info span:last-child {
-            font-size: 16px;
-            color: #667eea;
-        }
-
-        /* Tabel Container */
-        .table-container {
-            overflow-x: auto;
-            border-radius: 10px;
-            border: 1px solid #e0e0e0;
-            background: white;
-            margin-bottom: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-
-        th {
-            background: #667eea;
-            color: white;
-            font-weight: 500;
-            font-size: 12px;
-            padding: 12px 8px;
+            border: 1px solid var(--glass-border);
             white-space: nowrap;
+        }
+
+        .detail-cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+        }
+
+        .detail-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 12px 14px 10px;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+            max-height: 340px;
+            overflow-y: auto;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .detail-card:hover {
+            border-color: rgba(79, 172, 254, 0.12);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        .detail-card::-webkit-scrollbar {
+            width: 3px;
+        }
+        .detail-card::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .detail-card::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+
+        .detail-card .detail-card-header {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 6px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid var(--glass-border);
             position: sticky;
             top: 0;
+            background: var(--primary);
+            z-index: 5;
+            flex-wrap: wrap;
         }
 
-        td {
-            padding: 10px 8px;
-            border-bottom: 1px solid #eee;
-            font-size: 12px;
-            color: #333;
-            text-align: center;
+        .detail-card .detail-card-header .dc-icon {
+            font-size: 1rem;
         }
 
-        td:first-child {
+        .detail-card .detail-card-header .dc-title {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #e8edf2;
+        }
+
+        .detail-card .detail-card-header .dc-badge {
+            margin-left: auto;
+            font-size: 0.5rem;
             font-weight: 600;
-            background: #f8f9ff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(79, 172, 254, 0.1);
+            white-space: nowrap;
         }
 
-        tr:last-child {
-            background: #f8f9ff;
+        .detail-card .category-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 2px 4px;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            font-size: 0.65rem;
+        }
+
+        .detail-card .category-row.header-row {
             font-weight: 600;
+            color: #667788;
+            font-size: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 4px;
+            margin-bottom: 2px;
         }
 
-        tr:last-child td {
-            border-bottom: none;
-            border-top: 2px solid #667eea;
+        .detail-card .category-row .cat-name {
+            font-weight: 500;
+            color: #e8edf2;
+            font-size: 0.65rem;
+            word-break: break-word;
         }
 
-        tr:hover {
-            background: #f5f5f5;
-        }
-
-        .empty-table {
+        .detail-card .category-row .cat-value {
             text-align: center;
-            padding: 50px !important;
-            color: #999;
+            font-weight: 500;
+            font-size: 0.65rem;
         }
 
-        /* Footer */
-        .footer {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px 30px;
+        .detail-card .category-row .cat-value.laki {
+            color: var(--accent);
+        }
+        .detail-card .category-row .cat-value.perempuan {
+            color: var(--pink);
+        }
+        .detail-card .category-row .cat-value.total {
+            color: var(--warning);
+            font-weight: 700;
+        }
+        .detail-card .category-row .cat-value.zero {
+            color: #445566;
+        }
+
+        .detail-card .category-total {
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid var(--glass-border);
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            color: #e8edf2;
+            font-size: 0.65rem;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .detail-card .category-total .total-label {
+            color: #667788;
+            font-weight: 400;
+        }
+
+        .detail-card .click-hint {
             text-align: center;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            font-size: 0.5rem;
+            color: #445566;
+            margin-top: 4px;
+            padding-top: 4px;
+            border-top: 1px solid var(--glass-border);
         }
 
-        .footer-content {
-            font-size: 14px;
-            opacity: 0.9;
+        .detail-card .click-hint i {
+            margin-right: 3px;
         }
 
-        /* Loading Spinner */
-        .loading-spinner-container {
+        /* ============================================================
+           MODAL PREVIEW
+           ============================================================ */
+        .modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(16px);
+            z-index: 10000;
             display: none;
             justify-content: center;
             align-items: center;
-            z-index: 9999;
+            padding: 16px;
+            animation: fadeIn 0.25s ease;
         }
 
-        .spinner-wrapper {
-            background: white;
-            padding: 30px 40px;
-            border-radius: 30px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
-        }
-
-        .circular-spinner {
-            position: relative;
-            width: 160px;
-            height: 160px;
-            margin: 10px auto 25px;
-        }
-
-        .progress-ring svg {
-            width: 160px;
-            height: 160px;
-            transform: rotate(-90deg);
-        }
-
-        .progress-ring-bg {
-            stroke: #e0e0e0;
-            stroke-width: 8;
-            fill: none;
-        }
-
-        .progress-ring-fill {
-            stroke: url(#gradient);
-            stroke-width: 8;
-            fill: none;
-            stroke-dasharray: 377;
-            stroke-dashoffset: 377;
-            transition: stroke-dashoffset 0.3s;
-        }
-
-        .spinner-percentage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 36px;
-            font-weight: 800;
-            color: #667eea;
-            background: rgba(255, 255, 255, 0.9);
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+        .modal-overlay.active {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
 
-        .spinner-status {
-            font-size: 18px;
-            color: #333;
-            margin: 15px 0 5px;
+        .modal-content {
+            background: var(--primary);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 20px 22px 24px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: var(--shadow);
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .modal-content::-webkit-scrollbar-thumb {
+            background: var(--secondary);
+            border-radius: 10px;
+        }
+
+        .modal-content .modal-close {
+            position: sticky;
+            top: 0;
+            float: right;
+            background: rgba(231, 76, 60, 0.1);
+            border: 1px solid rgba(231, 76, 60, 0.15);
+            border-radius: 8px;
+            color: var(--danger);
+            padding: 5px 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            font-family: 'Inter', sans-serif;
+            z-index: 10;
+        }
+
+        .modal-content .modal-close:hover {
+            background: rgba(231, 76, 60, 0.2);
+        }
+
+        .modal-content .modal-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: #e8edf2;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-right: 60px;
+        }
+
+        .modal-content .modal-title .modal-icon {
+            font-size: 1.3rem;
+        }
+
+        .modal-content .category-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 3px 10px;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.8rem;
+        }
+
+        .modal-content .category-row.header-row {
+            font-weight: 600;
+            color: #667788;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--glass-border);
+            padding-bottom: 6px;
+            margin-bottom: 2px;
+        }
+
+        .modal-content .category-row .cat-name {
+            font-weight: 500;
+            color: #e8edf2;
+            word-break: break-word;
+        }
+
+        .modal-content .category-row .cat-value {
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .modal-content .category-row .cat-value.laki {
+            color: var(--accent);
+        }
+        .modal-content .category-row .cat-value.perempuan {
+            color: var(--pink);
+        }
+        .modal-content .category-row .cat-value.total {
+            color: var(--warning);
             font-weight: 700;
         }
 
-        .spinner-substatus {
-            font-size: 14px;
-            color: #666;
+        .modal-content .category-total {
+            margin-top: 8px;
+            padding-top: 8px;
+            border-top: 1px solid var(--glass-border);
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            color: #e8edf2;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 4px;
         }
 
-        /* Notification */
-        .notification {
+        /* ============================================================
+           CHARTS
+           ============================================================ */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .charts-grid.full {
+            grid-template-columns: 1fr;
+        }
+
+        .charts-grid.third {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .charts-grid.fourth {
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        .chart-wrapper {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 14px 14px 10px;
+            backdrop-filter: blur(20px);
+            transition: var(--transition);
+        }
+
+        .chart-wrapper:hover {
+            border-color: rgba(79, 172, 254, 0.08);
+        }
+
+        .chart-wrapper .chart-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            color: #e8edf2;
+        }
+
+        .chart-wrapper .chart-container {
+            position: relative;
+            height: 200px;
+        }
+
+        /* ============================================================
+           TABLE
+           ============================================================ */
+        .table-wrapper {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 14px 14px 10px;
+            backdrop-filter: blur(20px);
+            margin-bottom: 18px;
+            overflow-x: auto;
+        }
+
+        .table-wrapper .table-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #e8edf2;
+            flex-wrap: wrap;
+        }
+
+        .table-wrapper .table-title .search-box {
+            margin-left: auto;
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .table-wrapper .table-title .search-box input {
+            padding: 4px 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            color: #e8edf2;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            min-height: 28px;
+            width: 200px;
+        }
+
+        .table-wrapper .table-title .search-box input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .table-wrapper .table-title .search-box input::placeholder {
+            color: #445566;
+        }
+
+        .table-wrapper .table-title .search-box select {
+            padding: 4px 8px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            color: #e8edf2;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            min-height: 28px;
+        }
+
+        .table-wrapper .table-title .search-box select:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+
+        .table-wrapper .table-title .search-box .btn-search {
+            padding: 4px 16px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            min-height: 28px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .table-wrapper .table-title .search-box .btn-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+        }
+
+        .table-wrapper table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.7rem;
+            min-width: 700px;
+        }
+
+        .table-wrapper table th {
+            background: rgba(255, 255, 255, 0.03);
+            color: #667788;
+            padding: 8px 10px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border-bottom: 1px solid var(--glass-border);
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 2;
+        }
+
+        .table-wrapper table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+            word-break: break-word;
+            vertical-align: middle;
+        }
+
+        .table-wrapper table tr:hover td {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .table-wrapper table .btn-keluarga {
+            padding: 3px 10px;
+            background: linear-gradient(135deg, var(--accent), var(--accent2));
+            border: none;
+            border-radius: var(--radius-sm);
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .table-wrapper table .btn-keluarga:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+        }
+
+        /* ============================================================
+           MODAL KELUARGA
+           ============================================================ */
+        .family-member-card {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius-sm);
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            transition: var(--transition);
+        }
+
+        .family-member-card:hover {
+            border-color: rgba(79, 172, 254, 0.2);
+        }
+
+        .family-member-card .member-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .family-member-card .member-name {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: #e8edf2;
+        }
+
+        .family-member-card .member-status {
+            font-size: 0.6rem;
+            font-weight: 600;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(79, 172, 254, 0.1);
+        }
+
+        .family-member-card .member-status.kepala {
+            background: rgba(46, 204, 113, 0.15);
+            color: var(--success);
+            border-color: rgba(46, 204, 113, 0.15);
+        }
+        .family-member-card .member-status.istri {
+            background: rgba(253, 121, 168, 0.15);
+            color: var(--pink);
+            border-color: rgba(253, 121, 168, 0.15);
+        }
+        .family-member-card .member-status.anak {
+            background: rgba(241, 196, 15, 0.15);
+            color: var(--warning);
+            border-color: rgba(241, 196, 15, 0.15);
+        }
+
+        .family-member-card .member-detail {
+            font-size: 0.65rem;
+            color: #667788;
+            margin-top: 4px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 12px;
+        }
+
+        .family-member-card .member-detail span {
+            display: inline-flex;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .family-member-card .member-detail i {
+            font-size: 0.5rem;
+            color: var(--accent);
+        }
+
+        .family-empty {
+            text-align: center;
+            padding: 30px;
+            color: #667788;
+        }
+
+        .family-empty i {
+            font-size: 2rem;
+            display: block;
+            margin-bottom: 10px;
+            color: #445566;
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .dashboard-footer {
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--radius);
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 0.65rem;
+            color: #667788;
+            backdrop-filter: blur(20px);
+        }
+
+        .dashboard-footer strong {
+            color: #8899aa;
+        }
+
+        /* ============================================================
+           LOADING
+           ============================================================ */
+        .loading {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+            gap: 16px;
+        }
+
+        .loading .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid var(--glass-border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading .loading-text {
+            color: #667788;
+            font-size: 0.85rem;
+        }
+
+        /* ============================================================
+           TOAST
+           ============================================================ */
+        .toast-container {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            padding: 15px 25px;
-            background: #27ae60;
-            color: white;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transform: translateX(400px);
-            transition: transform 0.3s;
-            z-index: 1001;
+            top: 12px;
+            right: 12px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-width: 90%;
         }
 
-        .notification.show {
-            transform: translateX(0);
+        .toast {
+            padding: 10px 18px;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 500;
+            backdrop-filter: blur(20px);
+            animation: slideIn 0.35s ease;
+            min-width: 160px;
+            max-width: 340px;
         }
 
-        .notification.error {
-            background: #e74c3c;
+        .toast.success {
+            background: rgba(46, 204, 113, 0.15);
+            border: 1px solid rgba(46, 204, 113, 0.15);
+            color: var(--success);
+        }
+        .toast.error {
+            background: rgba(231, 76, 60, 0.15);
+            border: 1px solid rgba(231, 76, 60, 0.15);
+            color: var(--danger);
+        }
+        .toast.info {
+            background: rgba(79, 172, 254, 0.15);
+            border: 1px solid rgba(79, 172, 254, 0.15);
+            color: var(--accent);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .charts-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .charts-grid.third {
+                grid-template-columns: 1fr 1fr;
+            }
+            .charts-grid.fourth {
+                grid-template-columns: 1fr 1fr;
+            }
+            .detail-cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            }
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            }
         }
 
         @media (max-width: 768px) {
-            .tab-item {
-                padding: 8px 12px;
-                font-size: 12px;
+            body {
+                padding: 8px;
             }
-            
-            .header {
+            .dashboard-header {
+                padding: 14px 16px;
+                margin-bottom: 12px;
+            }
+            .dashboard-header h1 {
+                font-size: 1.1rem;
+            }
+            .dashboard-header .header-content {
                 flex-direction: column;
-                text-align: center;
+                align-items: flex-start;
+                gap: 6px;
+            }
+            .dashboard-header .header-right {
+                width: 100%;
+                justify-content: flex-start;
+                flex-wrap: wrap;
+            }
+            .filters-row {
+                flex-direction: column;
+                gap: 6px;
+            }
+            .filter-group {
+                min-width: 100%;
+            }
+            .cards-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+                gap: 8px;
+            }
+            .card-item .card-value {
+                font-size: 1rem;
+            }
+            .detail-cards-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 8px;
+            }
+            .detail-card {
+                max-height: 280px;
+                padding: 10px 10px 8px;
+            }
+            .detail-card .category-row {
+                font-size: 0.55rem;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
                 gap: 10px;
             }
-            
-            .filter-row {
-                flex-direction: column;
+            .charts-grid.third {
+                grid-template-columns: 1fr;
             }
-            
-            .filter-group {
-                width: 100%;
+            .charts-grid.fourth {
+                grid-template-columns: 1fr;
             }
-            
-            .btn-filter {
-                width: 100%;
-                margin-top: 0;
+            .chart-wrapper .chart-container {
+                height: 180px;
+            }
+            .table-wrapper table {
+                font-size: 0.6rem;
+                min-width: 500px;
+            }
+            .table-wrapper .table-title .search-box input {
+                width: 120px;
+            }
+            .modal-content {
+                padding: 14px 16px 18px;
+                max-height: 90vh;
+            }
+            .modal-content .category-row {
+                font-size: 0.7rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 6px;
+            }
+            .dashboard-header h1 {
+                font-size: 0.95rem;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 6px;
+            }
+            .card-item .card-value {
+                font-size: 0.9rem;
+            }
+            .detail-cards-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+            .detail-card {
+                max-height: 240px;
+                padding: 8px 8px 6px;
+            }
+            .detail-card .category-row {
+                font-size: 0.5rem;
+            }
+            .filter-group select,
+            .filter-group input {
+                font-size: 0.65rem;
+                padding: 5px 8px;
+                min-height: 28px;
+            }
+            .chart-wrapper .chart-container {
+                height: 150px;
+            }
+            .table-wrapper table {
+                font-size: 0.5rem;
+                min-width: 400px;
+            }
+            .table-wrapper .table-title .search-box input {
+                width: 100px;
+                font-size: 0.55rem;
+            }
+            .table-wrapper .table-title .search-box select {
+                font-size: 0.55rem;
+            }
+            .modal-content {
+                padding: 10px 12px 14px;
+            }
+            .modal-content .category-row {
+                font-size: 0.6rem;
+            }
+            .modal-content .modal-title {
+                font-size: 0.8rem;
             }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <div class="header-content">
-                <img src="https://senapelan.github.io/Home/data/foto/LOGOPEMKOT.png" alt="Logo Kota Pekanbaru">
-                <div>
-                    <h1>Dashboard Monografi Kependudukan</h1>
-                    <p>Kecamatan Senapelan - Tahun 2026</p>
-                </div>
-            </div>
-            <div class="date-display" id="currentDate"></div>
+
+    <div class="dashboard-container" id="app">
+
+        <!-- LOADING -->
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <div class="loading-text">Memuat Data Dashboard...</div>
         </div>
 
-        <!-- Tab Bar -->
-        <div class="tab-bar" id="tabBar"></div>
+        <!-- DASHBOARD CONTENT -->
+        <div id="dashboardContent" style="display:none;">
 
-        <!-- Tab Content Container -->
-        <div id="tab-contents-container"></div>
+            <!-- HEADER -->
+            <div id="headerContainer"></div>
 
-        <!-- Footer -->
-        <div class="footer">
-            <div class="footer-content">
-                <p>© 2026 Dashboard Monografi Kependudukan - Kecamatan Senapelan</p>
-                <p style="font-size: 12px; margin-top: 5px;">Data diperbarui secara real-time dari Data Base Senapelan</p>
-            </div>
-        </div>
-    </div>
+            <!-- FILTER WILAYAH -->
+            <div id="filterContainer"></div>
 
-    <!-- Loading Spinner -->
-    <div class="loading-spinner-container" id="loadingSpinner">
-        <div class="spinner-wrapper">
-            <svg width="0" height="0">
-                <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#667eea"/>
-                        <stop offset="100%" stop-color="#764ba2"/>
-                    </linearGradient>
-                </defs>
-            </svg>
-            <div class="circular-spinner">
-                <div class="progress-ring">
-                    <svg viewBox="0 0 200 200">
-                        <circle class="progress-ring-bg" cx="100" cy="100" r="60"/>
-                        <circle class="progress-ring-fill" cx="100" cy="100" r="60" id="progressCircle"/>
-                    </svg>
-                </div>
-                <div class="spinner-percentage" id="spinnerPercent">0</div>
-            </div>
-            <div class="spinner-status" id="spinnerStatus">Memuat Data</div>
-            <div class="spinner-substatus" id="spinnerSubStatus">Mengambil data dari server...</div>
+            <!-- CARDS RINGKAS -->
+            <div id="cardsContainer"></div>
+
+            <!-- ANALITIK LANJUTAN -->
+            <div id="detailCardsContainer"></div>
+
+            <!-- CHARTS -->
+            <div id="chartsContainer"></div>
+
+            <!-- TABLE -->
+            <div id="tableContainer"></div>
+
+            <!-- FOOTER -->
+            <div id="footerContainer"></div>
+
         </div>
     </div>
 
-    <!-- Notification -->
-    <div id="notification" class="notification">
-        <span id="notificationMessage">Data berhasil dimuat!</span>
+    <!-- MODAL PREVIEW -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+        <div class="modal-content" id="modalContent" onclick="event.stopPropagation()">
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i> Tutup</button>
+            <div id="modalBody"></div>
+        </div>
     </div>
+
+    <!-- MODAL KELUARGA -->
+    <div class="modal-overlay" id="modalKeluargaOverlay" onclick="closeKeluargaModal(event)">
+        <div class="modal-content" id="modalKeluargaContent" onclick="event.stopPropagation()" style="max-width:800px;">
+            <button class="modal-close" onclick="closeKeluargaModal()"><i class="fas fa-times"></i> Tutup</button>
+            <div id="modalKeluargaBody"></div>
+        </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
-        // Konfigurasi
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwD3F62WWNXO98bBYyoLx2GbrRLu8L8J0ywejgnndACU8WMAKQlMnbCOPu43NeRrXxi/exec';
-        
-        // Variabel global
-        let allData = [];
-        let kelurahanList = [];
-        let kecamatanList = [];
-        let activeTabs = ['penduduk'];
-
-        // Mapping header spreadsheet ke key yang digunakan
-        const HEADER_MAP = {
-            'TIMESTAMP': 'TIMESTAMP',
-            'KODE KELUARGA': 'KODE_KELUARGA',
-            'NOMOR KK': 'NOMOR_KK',
-            'NAMA KEPALA KELUARGA': 'NAMA_KEPALA_KELUARGA',
-            'ALAMAT': 'ALAMAT',
-            'RT': 'RT',
-            'RW': 'RW',
-            'KELURAHAN/DESA': 'KELURAHAN',
-            'KECAMATAN': 'KECAMATAN',
-            'KABUPATEN/KOTA': 'KABUPATEN',
-            'KODE POS': 'KODE_POS',
-            'PROVINSI': 'PROVINSI',
-            'KODE ANGGOTA KELUARGA': 'KODE_ANGGOTA',
-            'NAMA LENGKAP': 'NAMA_LENGKAP',
-            'NIK': 'NIK',
-            'JENIS KELAMIN': 'JENIS_KELAMIN',
-            'TEMPAT LAHIR': 'TEMPAT_LAHIR',
-            'TANGGAL LAHIR': 'TANGGAL_LAHIR',
-            'AGAMA': 'AGAMA',
-            'PENDIDIKAN': 'PENDIDIKAN',
-            'PEKERJAAN': 'PEKERJAAN',
-            'STATUS PERKAWINAN': 'STATUS_PERKAWINAN',
-            'STATUS HUBUNGAN DALAM KELUARGA': 'STATUS_HUBUNGAN',
-            'KEWARGANEGARAAN': 'KEWARGANEGARAAN',
-            'NO PASPOR': 'NO_PASPOR',
-            'NO KITAS/KITAP': 'NO_KITAS',
-            'NAMA AYAH': 'NAMA_AYAH',
-            'NAMA IBU': 'NAMA_IBU',
-            'SUKU': 'SUKU',
-            'STATUS KEKAYAAN': 'STATUS_KEKAYAAN',
-            'STATUS KESEHATAN': 'STATUS_KESEHATAN',
-            'RIWAYAT PENYAKIT': 'RIWAYAT_PENYAKIT',
-            'JENIS PENYAKIT': 'JENIS_PENYAKIT',
-            'STATUS KEBERSIHAN': 'STATUS_KEBERSIHAN',
-            'NOMOR TELEPON': 'NOMOR_TELEPON',
-            'ALAMAT EMAIL': 'EMAIL',
-            // Tambahan untuk status domisili, pindah, meninggal (akan ditambahkan nanti)
-            'STATUS DOMISILI': 'STATUS_DOMISILI',
-            'STATUS PINDAH': 'STATUS_PINDAH',
-            'STATUS MENINGGAL': 'STATUS_MENINGGAL'
+        // ============================================================
+        // KONFIGURASI
+        // ============================================================
+        const CONFIG = {
+            API_URL: 'https://script.google.com/macros/s/AKfycbxcXGrG-MwbDzZwOau4nlRy9kieN79hmpDrsQJsbopS21220ATKxWSqeGDA1vwdmzD5/exec',
+            SPREADSHEET_ID: '1k-03Zqm5O7n2Kk2Kf9zozfmAlhn7nLdQhDzgjQobazw'
         };
 
-        // Daftar kelurahan tetap di Kecamatan Senapelan
-        const KELURAHAN_SENAPELAN = [
-            'SENAPELAN',
-            'KAMPUNG BANDAR',
-            'KAMPUNG BARU',
-            'KAMPUNG DALAM',
-            'PADANG BULAN',
-            'PADANG TERUBUK',
-            'SAGO'
+        // 6 Kelurahan tetap Senapelan
+        const FIXED_KELURAHAN = [
+            'Kampung Baru',
+            'Kampung Bandar',
+            'Kampung Dalam',
+            'Padang Bulan',
+            'Padang Terubuk',
+            'Sago'
         ];
 
-        // Fungsi untuk format RT/RW ke 3 digit (001)
-        function formatRTRW(value) {
-            if (!value) return '000';
-            // Hapus karakter non-digit
-            const digits = value.toString().replace(/\D/g, '');
-            // Format ke 3 digit
-            return digits.padStart(3, '0');
-        }
+        // Urutan status hubungan dalam keluarga
+        const STATUS_URUTAN = [
+            'KEPALA KELUARGA',
+            'ISTRI',
+            'ANAK',
+            'ORANG TUA',
+            'CUCU',
+            'MERTUA',
+            'MENANTU',
+            'FAMILI LAIN',
+            'PEMBANTU'
+        ];
 
-        // Fungsi untuk membersihkan dan memformat data
-        function cleanData(data) {
-            return data.map(row => {
-                const cleanRow = {};
-                
-                // Mapping semua field
-                for (let key in HEADER_MAP) {
-                    const value = row[key] || '';
-                    const cleanKey = HEADER_MAP[key];
-                    
-                    if (key === 'RT' || key === 'RW') {
-                        // Format RT dan RW ke 3 digit
-                        cleanRow[cleanKey] = formatRTRW(value);
-                    } else {
-                        cleanRow[cleanKey] = value;
-                    }
-                }
-                
-                // Set default values untuk status yang belum ada di database
-                cleanRow['STATUS_DOMISILI'] = cleanRow['STATUS_DOMISILI'] || 'DOMISILI';
-                cleanRow['STATUS_PINDAH'] = cleanRow['STATUS_PINDAH'] || 'TIDAK';
-                cleanRow['STATUS_MENINGGAL'] = cleanRow['STATUS_MENINGGAL'] || 'TIDAK';
-                
-                return cleanRow;
-            });
-        }
-
-        // Update tanggal
-        function updateCurrentDate() {
-            const now = new Date();
-            const options = { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric'
-            };
-            document.getElementById('currentDate').innerHTML = 
-                '<i class="fas fa-calendar-alt"></i> ' + now.toLocaleDateString('id-ID', options);
-        }
-
-        // Show notification
-        function showNotification(message, isError = false) {
-            const notification = document.getElementById('notification');
-            const messageSpan = document.getElementById('notificationMessage');
-            
-            messageSpan.textContent = message;
-            
-            if (isError) {
-                notification.classList.add('error');
-            } else {
-                notification.classList.remove('error');
-            }
-            
-            notification.classList.add('show');
-            
-            setTimeout(() => {
-                notification.classList.remove('show');
-            }, 3000);
-        }
-
-        // Show loading spinner
-        function showLoader(status, subStatus) {
-            const spinner = document.getElementById('loadingSpinner');
-            document.getElementById('spinnerStatus').textContent = status || 'Memuat Data';
-            document.getElementById('spinnerSubStatus').textContent = subStatus || 'Mohon tunggu...';
-            document.getElementById('spinnerPercent').textContent = '0';
-            
-            const circle = document.getElementById('progressCircle');
-            const circumference = 2 * Math.PI * 60;
-            circle.style.strokeDasharray = circumference;
-            circle.style.strokeDashoffset = circumference;
-            
-            spinner.style.display = 'flex';
-            
-            // Animasi progress
-            let progress = 0;
-            const interval = setInterval(() => {
-                if (progress < 90) {
-                    progress += Math.random() * 15;
-                    if (progress > 90) progress = 90;
-                    
-                    const offset = circumference - (progress / 100) * circumference;
-                    circle.style.strokeDashoffset = offset;
-                    document.getElementById('spinnerPercent').textContent = Math.floor(progress);
-                }
-            }, 300);
-            
-            window.loaderInterval = interval;
-        }
-
-        // Hide loading spinner
-        function hideLoader(success = true) {
-            const circle = document.getElementById('progressCircle');
-            const circumference = 2 * Math.PI * 60;
-            
-            circle.style.strokeDashoffset = 0;
-            document.getElementById('spinnerPercent').textContent = '100';
-            document.getElementById('spinnerStatus').textContent = success ? '✅ Selesai!' : '❌ Gagal!';
-            document.getElementById('spinnerSubStatus').textContent = success ? 'Data berhasil dimuat' : 'Silahkan coba lagi';
-            
-            clearInterval(window.loaderInterval);
-            
-            setTimeout(() => {
-                document.getElementById('loadingSpinner').style.display = 'none';
-            }, 1000);
-        }
-
-        // Buat tab content
-        function createTabContent(tabId, tabName) {
-            const tabDiv = document.createElement('div');
-            tabDiv.className = 'tab-content';
-            tabDiv.id = `tab-${tabId}`;
-            
-            // Filter Kecamatan (untuk seluruh kecamatan) - HANYA untuk tab selain DOMISILI
-            if (tabId !== 'domisili') {
-                const kecamatanFilter = document.createElement('div');
-                kecamatanFilter.className = 'kecamatan-filter';
-                kecamatanFilter.innerHTML = `
-                    <div class="kecamatan-title">
-                        <i class="fas fa-globe"></i>
-                        FILTER KECAMATAN
-                    </div>
-                    <div class="kecamatan-row">
-                        <div class="kecamatan-group">
-                            <label><i class="fas fa-city"></i> Pilih Kecamatan</label>
-                            <div class="select-wrapper">
-                                <select id="kecamatan-${tabId}" class="kecamatan-select">
-                                    <option value="">-- Pilih Kecamatan --</option>
-                                </select>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                        </div>
-                        <button class="btn-kecamatan" onclick="applyKecamatanFilter('${tabId}')">
-                            <i class="fas fa-eye"></i> TAMPILKAN DATA KECAMATAN
-                        </button>
-                    </div>
-                `;
-                tabDiv.appendChild(kecamatanFilter);
-            }
-            
-            // Filter Wilayah (Kelurahan, RW, RT) - HANYA untuk tab selain DOMISILI
-            if (tabId !== 'domisili') {
-                const wilayahFilter = document.createElement('div');
-                wilayahFilter.className = 'wilayah-filter';
-                wilayahFilter.innerHTML = `
-                    <div class="wilayah-title">
-                        <i class="fas fa-filter"></i>
-                        FILTER PER WILAYAH
-                    </div>
-                    <div class="filter-row">
-                        <div class="filter-group">
-                            <label><i class="fas fa-map-marker-alt"></i> Kelurahan</label>
-                            <div class="select-wrapper">
-                                <select id="kelurahan-${tabId}" class="kelurahan-select">
-                                    <option value="">-- Pilih Kelurahan --</option>
-                                </select>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <label><i class="fas fa-road"></i> RW</label>
-                            <div class="select-wrapper">
-                                <select id="rw-${tabId}" class="rw-select" disabled>
-                                    <option value="ALL">-- SEMUA RW --</option>
-                                </select>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                        </div>
-                        <div class="filter-group">
-                            <label><i class="fas fa-home"></i> RT</label>
-                            <div class="select-wrapper">
-                                <select id="rt-${tabId}" class="rt-select" disabled>
-                                    <option value="ALL">-- SEMUA RT --</option>
-                                </select>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                        </div>
-                        <button class="btn-filter" onclick="applyFilter('${tabId}')">
-                            <i class="fas fa-search"></i> TAMPILKAN DATA
-                        </button>
-                    </div>
-                `;
-                tabDiv.appendChild(wilayahFilter);
-            }
-            
-            // Summary Cards
-            const summaryCards = document.createElement('div');
-            summaryCards.className = 'summary-cards';
-            summaryCards.id = `summary-${tabId}`;
-            summaryCards.style.display = 'none';
-            
-            if (tabId === 'penduduk') {
-                summaryCards.innerHTML = `
-                    <div class="summary-card">
-                        <div class="label">Jumlah KK</div>
-                        <div class="value" id="summary-kk-${tabId}">0</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Jumlah Jiwa</div>
-                        <div class="value" id="summary-jiwa-${tabId}">0</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Laki-laki</div>
-                        <div class="value" id="summary-laki-${tabId}">0</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Perempuan</div>
-                        <div class="value" id="summary-perempuan-${tabId}">0</div>
-                    </div>
-                `;
-            } else if (tabId === 'domisili') {
-                summaryCards.innerHTML = `
-                    <div class="summary-card">
-                        <div class="label">Total Kelurahan</div>
-                        <div class="value" id="summary-total-kelurahan">7</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Total Penduduk</div>
-                        <div class="value" id="summary-total-penduduk">0</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Total Domisili</div>
-                        <div class="value" id="summary-total-domisili">0</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Non Domisili</div>
-                        <div class="value" id="summary-total-non-domisili">0</div>
-                    </div>
-                `;
-            } else {
-                summaryCards.innerHTML = `
-                    <div class="summary-card">
-                        <div class="label">Jumlah KK</div>
-                        <div class="value" id="summary-kk-${tabId}">0</div>
-                    </div>
-                    <div class="summary-card">
-                        <div class="label">Jumlah Jiwa</div>
-                        <div class="value" id="summary-jiwa-${tabId}">0</div>
-                    </div>
-                `;
-            }
-            tabDiv.appendChild(summaryCards);
-            
-            // Info Data (kecuali untuk tab domisili)
-            if (tabId !== 'domisili') {
-                const dataInfo = document.createElement('div');
-                dataInfo.className = 'data-info';
-                dataInfo.id = `info-${tabId}`;
-                dataInfo.style.display = 'none';
-                dataInfo.innerHTML = `
-                    <span id="lokasi-${tabId}"></span>
-                    <span id="total-jiwa-${tabId}">0 Jiwa</span>
-                `;
-                tabDiv.appendChild(dataInfo);
-            }
-            
-            // Table Container
-            const tableContainer = document.createElement('div');
-            tableContainer.className = 'table-container';
-            tableContainer.id = `table-${tabId}`;
-            tableContainer.style.display = 'none';
-            
-            if (tabId === 'penduduk') {
-                tableContainer.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>NO</th>
-                                <th>NIK</th>
-                                <th>NAMA LENGKAP</th>
-                                <th>JENIS KELAMIN</th>
-                                <th>TEMPAT LAHIR</th>
-                                <th>TANGGAL LAHIR</th>
-                                <th>UMUR</th>
-                                <th>STATUS HUBUNGAN</th>
-                                <th>RW</th>
-                                <th>RT</th>
-                                <th>KELURAHAN</th>
-                                <th>STATUS DOMISILI</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-${tabId}"></tbody>
-                    </table>
-                `;
-            } else if (tabId === 'domisili') {
-    tableContainer.innerHTML = `
-        <table>
-            <thead>
-                <tr>
-                    <th>NO</th>
-                    <th>KELURAHAN</th>
-                    <th>DOMISILI</th>
-                    <th>PINDAH</th>
-                    <th>MENINGGAL</th>
-                    <th>TOTAL</th>
-                </tr>
-            </thead>
-            <tbody id="tbody-${tabId}"></tbody>
-        </table>
-    `;
-            } else {
-                tableContainer.innerHTML = `
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>KATEGORI</th>
-                                <th>JUMLAH</th>
-                                <th>PERSENTASE</th>
-                            </tr>
-                        </thead>
-                        <tbody id="tbody-${tabId}"></tbody>
-                    </table>
-                `;
-            }
-            tabDiv.appendChild(tableContainer);
-            
-            return tabDiv;
-        }
-
-        // Inisialisasi tab
-        function initializeTabs() {
-            const tabBar = document.getElementById('tabBar');
-            const container = document.getElementById('tab-contents-container');
-            
-            const tabs = [
-                { id: 'penduduk', name: 'JUMLAH PENDUDUK', icon: 'fa-users' },
-                { id: 'agama', name: 'AGAMA', icon: 'fa-pray' },
-                { id: 'pendidikan', name: 'PENDIDIKAN', icon: 'fa-graduation-cap' },
-                { id: 'status', name: 'STATUS WARGA', icon: 'fa-heart' },
-                { id: 'umur', name: 'UMUR', icon: 'fa-calendar-alt' },
-                { id: 'kekayaan', name: 'KEKAYAAN', icon: 'fa-wallet' },
-                { id: 'kesehatan', name: 'JAMINAN KESEHATAN', icon: 'fa-heartbeat' },
-                { id: 'pekerjaan', name: 'PEKERJAAN', icon: 'fa-briefcase' },
-                { id: 'domisili', name: 'DATA DOMISILI', icon: 'fa-home' }
-            ];
-            
-            // Buat tab bar
-            tabBar.innerHTML = '';
-            tabs.forEach((tab, index) => {
-                const tabItem = document.createElement('div');
-                tabItem.className = `tab-item ${index === 0 ? 'active' : ''}`;
-                tabItem.dataset.tab = tab.id;
-                tabItem.onclick = () => switchTab(tab.id);
-                tabItem.innerHTML = `
-                    <i class="fas ${tab.icon}"></i>
-                    ${tab.name}
-                    <i class="fas fa-times close-tab" onclick="closeTab('${tab.id}', event)"></i>
-                `;
-                tabBar.appendChild(tabItem);
-            });
-            
-            // Add "Tampilkan Semua" button
-            const addDiv = document.createElement('div');
-            addDiv.className = 'add-tab';
-            addDiv.onclick = showAllTabs;
-            addDiv.innerHTML = '<i class="fas fa-plus"></i> Tampilkan Semua';
-            tabBar.appendChild(addDiv);
-            
-            // Buat tab content
-            container.innerHTML = '';
-            tabs.forEach(tab => {
-                const content = createTabContent(tab.id, tab.name);
-                container.appendChild(content);
-            });
-            
-            // Aktifkan tab pertama
-            switchTab('penduduk');
-            
-            // Populate dropdown
-            populateKelurahanDropdowns();
-            populateKecamatanDropdowns();
-        }
-
-        // Populate kecamatan dropdowns
-        function populateKecamatanDropdowns() {
-            kecamatanList.forEach(kec => {
-                document.querySelectorAll('.kecamatan-select').forEach(select => {
-                    const option = document.createElement('option');
-                    option.value = kec;
-                    option.textContent = kec;
-                    select.appendChild(option);
-                });
-            });
-        }
-
-        // Switch tab
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            
-            document.querySelectorAll('.tab-item').forEach(tab => {
-                if (tab.dataset.tab === tabId) {
-                    tab.classList.add('active');
-                } else if (!tab.classList.contains('add-tab')) {
-                    tab.classList.remove('active');
-                }
-            });
-            
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            
-            // Jika tab domisili, langsung tampilkan data
-            if (tabId === 'domisili') {
-                displayDomisiliData();
-            }
-        }
-
-        // Close tab
-        function closeTab(tabId, event) {
-            event.stopPropagation();
-            
-            if (activeTabs.length <= 1) {
-                showNotification('Minimal harus ada 1 tab yang terbuka!', true);
-                return;
-            }
-            
-            const index = activeTabs.indexOf(tabId);
-            if (index > -1) {
-                activeTabs.splice(index, 1);
-            }
-            
-            const tabItem = document.querySelector(`.tab-item[data-tab="${tabId}"]`);
-            if (tabItem) {
-                tabItem.remove();
-            }
-            
-            const tabContent = document.getElementById(`tab-${tabId}`);
-            if (tabContent) {
-                tabContent.remove();
-            }
-            
-            if (activeTabs.length > 0) {
-                switchTab(activeTabs[0]);
-            }
-        }
-
-        // Show all tabs
-        function showAllTabs() {
-            activeTabs = ['penduduk', 'agama', 'pendidikan', 'status', 'umur', 'kekayaan', 'kesehatan', 'pekerjaan', 'domisili'];
-            initializeTabs();
-        }
-
-        // Populate kelurahan dropdowns
-        function populateKelurahanDropdowns() {
-            kelurahanList.forEach(kel => {
-                document.querySelectorAll('.kelurahan-select').forEach(select => {
-                    const option = document.createElement('option');
-                    option.value = kel;
-                    option.textContent = kel;
-                    select.appendChild(option);
-                });
-            });
-            
-            // Add event listeners untuk cascade
-            document.querySelectorAll('.kelurahan-select').forEach(select => {
-                select.addEventListener('change', function() {
-                    const tabId = this.id.replace('kelurahan-', '');
-                    loadRW(tabId);
-                });
-            });
-            
-            document.querySelectorAll('.rw-select').forEach(select => {
-                select.addEventListener('change', function() {
-                    const tabId = this.id.replace('rw-', '');
-                    loadRT(tabId);
-                });
-            });
-        }
-
-        // Load RW berdasarkan kelurahan
-        function loadRW(tabId) {
-            const kelurahanSelect = document.getElementById(`kelurahan-${tabId}`);
-            const rwSelect = document.getElementById(`rw-${tabId}`);
-            const rtSelect = document.getElementById(`rt-${tabId}`);
-            
-            const kelurahan = kelurahanSelect.value;
-            
-            // Reset RW dan RT
-            rwSelect.innerHTML = '<option value="ALL">-- SEMUA RW --</option>';
-            rtSelect.innerHTML = '<option value="ALL">-- SEMUA RT --</option>';
-            rwSelect.disabled = true;
-            rtSelect.disabled = true;
-            
-            // Sembunyikan hasil sebelumnya
-            document.getElementById(`summary-${tabId}`).style.display = 'none';
-            document.getElementById(`info-${tabId}`).style.display = 'none';
-            document.getElementById(`table-${tabId}`).style.display = 'none';
-            
-            if (!kelurahan) return;
-            
-            // Filter data untuk kelurahan tersebut
-            const filtered = allData.filter(row => 
-                row['KELURAHAN'] === kelurahan
-            );
-            
-            // Kumpulkan RW unik (sudah dalam format 3 digit)
-            const rwSet = new Set();
-            filtered.forEach(row => {
-                if (row['RW'] && row['RW'] !== '000') {
-                    rwSet.add(row['RW']);
-                }
-            });
-            
-            const rwList = Array.from(rwSet).sort();
-            
-            if (rwList.length > 0) {
-                rwList.forEach(rw => {
-                    const option = document.createElement('option');
-                    option.value = rw;
-                    option.textContent = `RW ${rw}`;
-                    rwSelect.appendChild(option);
-                });
-                rwSelect.disabled = false;
-            }
-        }
-
-        // Load RT berdasarkan RW
-        function loadRT(tabId) {
-            const kelurahanSelect = document.getElementById(`kelurahan-${tabId}`);
-            const rwSelect = document.getElementById(`rw-${tabId}`);
-            const rtSelect = document.getElementById(`rt-${tabId}`);
-            
-            const kelurahan = kelurahanSelect.value;
-            const rw = rwSelect.value;
-            
-            // Reset RT
-            rtSelect.innerHTML = '<option value="ALL">-- SEMUA RT --</option>';
-            rtSelect.disabled = true;
-            
-            // Sembunyikan hasil sebelumnya
-            document.getElementById(`summary-${tabId}`).style.display = 'none';
-            document.getElementById(`info-${tabId}`).style.display = 'none';
-            document.getElementById(`table-${tabId}`).style.display = 'none';
-            
-            if (!kelurahan || !rw || rw === 'ALL') return;
-            
-            // Filter data untuk kelurahan dan RW tersebut
-            const filtered = allData.filter(row => 
-                row['KELURAHAN'] === kelurahan && 
-                row['RW'] === rw
-            );
-            
-            // Kumpulkan RT unik (sudah dalam format 3 digit)
-            const rtSet = new Set();
-            filtered.forEach(row => {
-                if (row['RT'] && row['RT'] !== '000') {
-                    rtSet.add(row['RT']);
-                }
-            });
-            
-            const rtList = Array.from(rtSet).sort();
-            
-            if (rtList.length > 0) {
-                rtList.forEach(rt => {
-                    const option = document.createElement('option');
-                    option.value = rt;
-                    option.textContent = `RT ${rt}`;
-                    rtSelect.appendChild(option);
-                });
-                rtSelect.disabled = false;
-            }
-        }
-
-        // Apply filter kecamatan (seluruh kecamatan)
-        function applyKecamatanFilter(tabId) {
-            const kecamatanSelect = document.getElementById(`kecamatan-${tabId}`);
-            const kecamatan = kecamatanSelect.value;
-            
-            if (!kecamatan) {
-                showNotification('Pilih Kecamatan terlebih dahulu!', true);
-                return;
-            }
-            
-            showLoader('Memproses Data', `Mengambil data untuk ${kecamatan}...`);
-            
-            // Filter data untuk kecamatan yang dipilih
-            const filteredData = allData.filter(row => row['KECAMATAN'] === kecamatan);
-            
-            if (filteredData.length === 0) {
-                showNotification('Tidak ada data untuk kecamatan ini', true);
-                hideLoader(false);
-                return;
-            }
-            
-            displayData(tabId, filteredData, `KECAMATAN ${kecamatan}`);
-        }
-
-        // Apply filter per wilayah
-        function applyFilter(tabId) {
-            const kelurahanSelect = document.getElementById(`kelurahan-${tabId}`);
-            const rwSelect = document.getElementById(`rw-${tabId}`);
-            const rtSelect = document.getElementById(`rt-${tabId}`);
-            
-            const kelurahan = kelurahanSelect.value;
-            const rw = rwSelect.value;
-            const rt = rtSelect.value;
-            
-            if (!kelurahan) {
-                showNotification('Pilih Kelurahan terlebih dahulu!', true);
-                return;
-            }
-            
-            showLoader('Memproses Data', `Mengambil data untuk ${kelurahan}...`);
-            
-            // Filter data
-            let filteredData = allData.filter(row => row['KELURAHAN'] === kelurahan);
-            
-            let lokasiText = kelurahan;
-            
-            // Filter berdasarkan RW jika bukan "ALL"
-            if (rw && rw !== 'ALL') {
-                filteredData = filteredData.filter(row => row['RW'] === rw);
-                lokasiText += ` - RW ${rw}`;
-            }
-            
-            // Filter berdasarkan RT jika bukan "ALL"
-            if (rt && rt !== 'ALL' && rw && rw !== 'ALL') {
-                filteredData = filteredData.filter(row => row['RT'] === rt);
-                lokasiText += ` - RT ${rt}`;
-            } else if (rt && rt !== 'ALL' && (!rw || rw === 'ALL')) {
-                showNotification('Pilih RW terlebih dahulu sebelum memilih RT!', true);
-                hideLoader(false);
-                return;
-            }
-            
-            displayData(tabId, filteredData, lokasiText);
-        }
-
-        // Fungsi untuk menampilkan data domisili - REVISI FINAL
-function displayDomisiliData() {
-    const tabId = 'domisili';
-    
-    showLoader('Memproses Data', 'Mengambil data domisili...');
-    
-    // 6 Kelurahan di Senapelan (tanpa SENAPELAN sebagai kelurahan)
-    const KELURAHAN_LIST = [
-        'KAMPUNG BANDAR',
-        'KAMPUNG BARU',
-        'KAMPUNG DALAM',
-        'PADANG BULAN',
-        'PADANG TERUBUK',
-        'SAGO'
-    ];
-    
-    // Inisialisasi data per kelurahan
-    const kelurahanData = {};
-    KELURAHAN_LIST.forEach(kel => {
-        kelurahanData[kel] = {
-            domisili: 0,
-            pindah: 0,
-            meninggal: 0,
-            total: 0
+        // ============================================================
+        // STATE
+        // ============================================================
+        let state = {
+            rawData: [],
+            headers: [],
+            filteredData: [],
+            filters: {},
+            charts: {},
+            isLoaded: false,
+            searchTerm: '',
+            searchColumn: 'SEMUA KOLOM',
+            modeWilayah: 'senapelan'
         };
-    });
-    
-    // Variabel untuk total kecamatan
-    let totalKecamatanDomisili = 0;
-    let totalKecamatanPindah = 0;
-    let totalKecamatanMeninggal = 0;
-    let totalKecamatanJiwa = 0;
-    
-    // Variabel untuk BUKAN DOMISILI
-    let totalBukanDomisili = 0;
-    let totalBukanDomisiliPindah = 0;
-    let totalBukanDomisiliMeninggal = 0;
-    let totalBukanDomisiliJiwa = 0;
-    
-    // Loop semua data
-    allData.forEach(row => {
-        const kecamatan = row['KECAMATAN'] || '';
-        const kelurahan = row['KELURAHAN'] || '';
-        const statusMeninggal = row['STATUS_MENINGGAL'] || 'TIDAK';
-        const statusPindah = row['STATUS_PINDAH'] || 'TIDAK';
-        const statusDomisili = row['STATUS_DOMISILI'] || 'DOMISILI';
-        
-        // CEK: Apakah ini DOMISILI SENAPELAN? (Kecamatan SENAPELAN dan Kelurahan termasuk 6 daftar)
-        const isKecamatanSenapelan = kecamatan.toUpperCase().includes('SENAPELAN');
-        const isKelurahanSenapelan = KELURAHAN_LIST.includes(kelurahan);
-        
-        if (isKecamatanSenapelan && isKelurahanSenapelan) {
-            // ===== DOMISILI SENAPELAN (masuk ke kelurahan masing-masing) =====
-            totalKecamatanJiwa++;
-            kelurahanData[kelurahan].total++;
-            
-            if (statusMeninggal === 'YA') {
-                totalKecamatanMeninggal++;
-                kelurahanData[kelurahan].meninggal++;
-            } else if (statusPindah === 'YA') {
-                totalKecamatanPindah++;
-                kelurahanData[kelurahan].pindah++;
-            } else if (statusDomisili === 'DOMISILI') {
-                totalKecamatanDomisili++;
-                kelurahanData[kelurahan].domisili++;
-            } else {
-                // Status DOMISILI = TIDAK, tetap dihitung sebagai domisili? 
-                // Anggap saja tetap domisili karena kecamatannya SENAPELAN
-                totalKecamatanDomisili++;
-                kelurahanData[kelurahan].domisili++;
-            }
-        } else {
-            // ===== BUKAN DOMISILI SENAPELAN =====
-            totalBukanDomisiliJiwa++;
-            
-            if (statusMeninggal === 'YA') {
-                totalBukanDomisiliMeninggal++;
-            } else if (statusPindah === 'YA') {
-                totalBukanDomisiliPindah++;
-            } else {
-                totalBukanDomisili++;
-            }
-        }
-    });
-    
-    // Update summary cards
-    document.getElementById('summary-total-kelurahan').textContent = '6 Kelurahan';
-    document.getElementById('summary-total-penduduk').textContent = totalKecamatanJiwa + totalBukanDomisiliJiwa;
-    document.getElementById('summary-total-domisili').textContent = totalKecamatanJiwa;
-    document.getElementById('summary-total-non-domisili').textContent = totalBukanDomisiliJiwa;
-    
-    document.getElementById(`summary-${tabId}`).style.display = 'flex';
-    
-    // Tampilkan tabel
-    const tbody = document.getElementById(`tbody-${tabId}`);
-    tbody.innerHTML = '';
-    
-    let no = 1;
-    
-    // Baris 1: KECAMATAN SENAPELAN (total)
-    const trKec = document.createElement('tr');
-    trKec.style.background = '#e8f4fd';
-    trKec.style.fontWeight = '600';
-    trKec.innerHTML = `
-        <td>${no++}</td>
-        <td style="text-align: left; font-weight: 700;">KECAMATAN SENAPELAN</td>
-        <td>${totalKecamatanDomisili + totalKecamatanPindah + totalKecamatanMeninggal}</td>
-        <td>${totalKecamatanPindah}</td>
-        <td>${totalKecamatanMeninggal}</td>
-        <td>${totalKecamatanJiwa}</td>
-    `;
-    tbody.appendChild(trKec);
-    
-    // Baris 2-7: 6 Kelurahan
-    KELURAHAN_LIST.forEach(kel => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${no++}</td>
-            <td style="text-align: left;">${kel}</td>
-            <td>${kelurahanData[kel].domisili}</td>
-            <td>${kelurahanData[kel].pindah}</td>
-            <td>${kelurahanData[kel].meninggal}</td>
-            <td>${kelurahanData[kel].total}</td>
-        `;
-        tbody.appendChild(tr);
-    });
-    
-    // Baris 8: BUKAN DOMISILI KECAMATAN SENAPELAN
-    const trBukan = document.createElement('tr');
-    trBukan.style.background = '#fff0f0';
-    trBukan.style.color = '#c0392b';
-    trBukan.innerHTML = `
-        <td>${no++}</td>
-        <td style="text-align: left; font-weight: 600;">BUKAN DOMISILI KECAMATAN SENAPELAN</td>
-        <td>${totalBukanDomisili}</td>
-        <td>${totalBukanDomisiliPindah}</td>
-        <td>${totalBukanDomisiliMeninggal}</td>
-        <td>${totalBukanDomisiliJiwa}</td>
-    `;
-    tbody.appendChild(trBukan);
-    
-    // Baris TOTAL
-    const totalTr = document.createElement('tr');
-    totalTr.innerHTML = `
-        <td colspan="2">TOTAL</td>
-        <td>${totalKecamatanDomisili + totalKecamatanPindah + totalKecamatanMeninggal + totalBukanDomisili}</td>
-        <td>${totalKecamatanPindah + totalBukanDomisiliPindah}</td>
-        <td>${totalKecamatanMeninggal + totalBukanDomisiliMeninggal}</td>
-        <td>${totalKecamatanJiwa + totalBukanDomisiliJiwa}</td>
-    `;
-    tbody.appendChild(totalTr);
-    
-    document.getElementById(`table-${tabId}`).style.display = 'block';
-    hideLoader(true);
-    
-    // Debug
-    console.log('=== DOMISILI REPORT ===');
-    console.log('Total Kecamatan Senapelan:', totalKecamatanJiwa);
-    console.log('Total Bukan Domisili:', totalBukanDomisiliJiwa);
-    KELURAHAN_LIST.forEach(kel => {
-        console.log(`${kel}: ${kelurahanData[kel].total} data`);
-    });
-}
 
-        // Fungsi untuk menampilkan data
-        function displayData(tabId, filteredData, lokasiText) {
-            // Hitung statistik
-            const jumlahKK = filteredData.filter(row => 
-                row['STATUS_HUBUNGAN'] === 'KEPALA KELUARGA'
-            ).length;
-            
-            const jumlahJiwa = filteredData.length;
-            const jumlahLaki = filteredData.filter(row => row['JENIS_KELAMIN'] === 'LAKI - LAKI').length;
-            const jumlahPerempuan = filteredData.filter(row => row['JENIS_KELAMIN'] === 'PEREMPUAN').length;
-            
-            // Update summary cards
-            document.getElementById(`summary-kk-${tabId}`).textContent = jumlahKK;
-            document.getElementById(`summary-jiwa-${tabId}`).textContent = jumlahJiwa;
-            
-            if (tabId === 'penduduk') {
-                document.getElementById(`summary-laki-${tabId}`).textContent = jumlahLaki;
-                document.getElementById(`summary-perempuan-${tabId}`).textContent = jumlahPerempuan;
-            }
-            
-            document.getElementById(`summary-${tabId}`).style.display = 'flex';
-            
-            // Update info lokasi
-            document.getElementById(`lokasi-${tabId}`).textContent = lokasiText;
-            document.getElementById(`total-jiwa-${tabId}`).textContent = `${jumlahJiwa} Jiwa`;
-            document.getElementById(`info-${tabId}`).style.display = 'flex';
-            
-            // Tampilkan data di tabel
-            const tbody = document.getElementById(`tbody-${tabId}`);
-            tbody.innerHTML = '';
-            
-            if (tabId === 'penduduk') {
-                // Tabel detail penduduk
-                filteredData.sort((a, b) => {
-                    if (a['STATUS_HUBUNGAN'] === 'KEPALA KELUARGA') return -1;
-                    if (b['STATUS_HUBUNGAN'] === 'KEPALA KELUARGA') return 1;
-                    return 0;
-                });
-                
-                filteredData.forEach((row, index) => {
-                    const umur = hitungUmur(row['TANGGAL_LAHIR']);
-                    const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td>${index + 1}</td>
-                        <td>${row['NIK'] || '-'}</td>
-                        <td style="text-align: left;">${row['NAMA_LENGKAP'] || '-'}</td>
-                        <td>${row['JENIS_KELAMIN'] || '-'}</td>
-                        <td>${row['TEMPAT_LAHIR'] || '-'}</td>
-                        <td>${row['TANGGAL_LAHIR'] || '-'}</td>
-                        <td>${umur >= 0 ? umur + ' Tahun' : '-'}</td>
-                        <td>${row['STATUS_HUBUNGAN'] || '-'}</td>
-                        <td>${row['RW'] || '-'}</td>
-                        <td>${row['RT'] || '-'}</td>
-                        <td>${row['KELURAHAN'] || '-'}</td>
-                        <td>${row['STATUS_DOMISILI'] || 'DOMISILI'}</td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            } else {
-                // Tabel agregasi
-                let counts = {};
-                
-                if (tabId === 'agama') {
-                    const agamaList = ['ISLAM', 'KRISTEN', 'KATHOLIK', 'HINDU', 'BUDDHA', 'KONGHUCU'];
-                    agamaList.forEach(agama => counts[agama] = 0);
-                    
-                    filteredData.forEach(row => {
-                        const agama = row['AGAMA'];
-                        if (counts.hasOwnProperty(agama)) counts[agama]++;
-                    });
-                } else if (tabId === 'pendidikan') {
-                    const pendidikanList = [
-                        'TIDAK / BELUM SEKOLAH', 'BELUM TAMAT SD / SEDERAJAT', 'TIDAK TAMAT SD / SEDERAJAT',
-                        'TAMAT SD / SEDERAJAT', 'SLTP / SEDERAJAT', 'TIDAK TAMAT SLTP / SEDERAJAT',
-                        'SLTA / SEDERAJAT', 'TIDAK TAMAT SLTA / SEDERAJAT', 'DIPLOMA I (D1)',
-                        'DIPLOMA II (D2)', 'DIPLOMA III (D3)', 'DIPLOMA IV (D4)', 'STRATA I (S1)',
-                        'STRATA II (S2)', 'STRATA III (S3)', 'PAKET A', 'PAKET B', 'PAKET C',
-                        'PONDOK PESANTREN', 'PUTUS SEKOLAH'
-                    ];
-                    pendidikanList.forEach(pend => counts[pend] = 0);
-                    
-                    filteredData.forEach(row => {
-                        const pendidikan = row['PENDIDIKAN'];
-                        if (counts.hasOwnProperty(pendidikan)) counts[pendidikan]++;
-                    });
-                } else if (tabId === 'status') {
-                    const statusList = ['KAWIN TERCATAT', 'KAWIN BELUM TERCATAT', 'BELUM KAWIN', 'CERAI HIDUP', 'CERAI MATI'];
-                    statusList.forEach(status => counts[status] = 0);
-                    
-                    filteredData.forEach(row => {
-                        const status = row['STATUS_PERKAWINAN'];
-                        if (counts.hasOwnProperty(status)) counts[status]++;
-                    });
-                } else if (tabId === 'umur') {
-                    const kategoriUmur = [
-                        '0-4 TAHUN (BAYI)', '5-9 TAHUN (ANAK-ANAK)', '10-14 TAHUN (ANAK-ANAK)',
-                        '15-19 TAHUN (REMAJA)', '20-24 TAHUN (REMAJA)', '25-29 TAHUN (REMAJA)',
-                        '30-34 TAHUN (DEWASA)', '35-39 TAHUN (DEWASA)', '40-44 TAHUN (DEWASA)',
-                        '45-49 TAHUN (DEWASA)', '50-54 TAHUN (DEWASA)', '55-59 TAHUN (LANSIA)',
-                        '60-64 TAHUN (LANSIA)', '65-69 TAHUN (LANSIA)', '70-74 TAHUN (LANSIA)',
-                        '75-79 TAHUN (LANSIA)', '80-84 TAHUN (LANSIA)', '85-90 TAHUN (LANSIA)',
-                        '90-100+ TAHUN (LANSIA)'
-                    ];
-                    kategoriUmur.forEach(kat => counts[kat] = 0);
-                    
-                    filteredData.forEach(row => {
-                        const umur = hitungUmur(row['TANGGAL_LAHIR']);
-                        const kategori = getKategoriUmur(umur);
-                        if (counts.hasOwnProperty(kategori)) counts[kategori]++;
-                    });
-                } else if (tabId === 'kekayaan') {
-                    const kekayaanList = ['TIDAK DIKETAHUI', 'MAMPU', 'TIDAK MAMPU', 'MISKIN EKSTREM'];
-                    kekayaanList.forEach(kek => counts[kek] = 0);
-                    
-                    filteredData.forEach(row => {
-                        const kekayaan = row['STATUS_KEKAYAAN'];
-                        if (counts.hasOwnProperty(kekayaan)) counts[kekayaan]++;
-                    });
-                } else if (tabId === 'kesehatan') {
-                    const kesehatanList = [
-                        'TIDAK DIKETAHUI', 'PESERTA BPJS KELAS 1', 'PESERTA BPJS KELAS 2',
-                        'PESERTA BPJS KELAS 3', 'PESERTA BPJS PEMERINTAH', 'PESERTA BPJS TENAGA KERJA',
-                        'TIDAK MEMILIKI BPJS'
-                    ];
-                    kesehatanList.forEach(kes => counts[kes] = 0);
-                    
-                    filteredData.forEach(row => {
-                        const kesehatan = row['STATUS_KESEHATAN'];
-                        if (counts.hasOwnProperty(kesehatan)) counts[kesehatan]++;
-                    });
-                } else if (tabId === 'pekerjaan') {
-    // Daftar pekerjaan STANDAR dari dropdown pendataan
-    const DROPDOWN_PEKERJAAN = [
-        'PNS', 'PPPK PENUH WAKTU', 'PPPK PARUH WAKTU', 'TNI', 'POLRI',
-        'PEGAWAI BUMN', 'PEGAWAI BUMD', 'PEGAWAI SWASTA', 'HONORER', 'WIRAUSAHA',
-        'PEDAGANG', 'UMKM', 'PENGUSAHA', 'DISTRIBUTOR', 'AGEN', 'GURU', 'DOSEN',
-        'DOKTER', 'PERAWAT', 'BIDAN', 'PSIKIATER', 'DOKTER SPESIALIS', 'PSIKOLOG',
-        'TERAPI', 'TUKANG URUT', 'APOTEKER', 'SOPIR', 'OJEK / DRIVER ONLINE',
-        'TUKANG', 'MONTIR', 'PENJAHIT', 'BARISTA', 'SECURITY', 'PETANI', 'PEKEBUN',
-        'PETERNAK', 'NELAYAN', 'BURUH TANI', 'BURUH HARIAN LEPAS', 'BURUH BANGUNAN',
-        'PENENUN', 'PERAJIN', 'KARYAWAN KONTRAK', 'CLEANING SERVICE',
-        'PELAJAR / MAHASISWA', 'IBU RUMAH TANGGA', 'TIDAK BEKERJA', 'PENCARI KERJA',
-        'PENSIUNAN', 'DISABILITAS TIDAK BEKERJA', 'PEKERJA DISABILITAS'
-    ];
-    
-    // Inisialisasi counts dengan semua pekerjaan dropdown = 0
-    const counts = {};
-    DROPDOWN_PEKERJAAN.forEach(pek => {
-        counts[pek] = 0;
-    });
-    
-    // Set untuk menyimpan pekerjaan lain yang ditemukan
-    const pekerjaanLainSet = new Set();
-    
-    // Hitung data dari filteredData
-    filteredData.forEach(row => {
-        const pekerjaan = row['PEKERJAAN'];
-        if (pekerjaan) {
-            if (counts.hasOwnProperty(pekerjaan)) {
-                // Pekerjaan ada di dropdown
-                counts[pekerjaan]++;
-            } else {
-                // Pekerjaan TIDAK ada di dropdown (pekerjaan lain)
-                pekerjaanLainSet.add(pekerjaan);
+        // ============================================================
+        // TOAST
+        // ============================================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // ============================================================
+        // AMBIL DATA
+        // ============================================================
+        async function fetchDashboardData() {
+            try {
+                const response = await fetch(`${CONFIG.API_URL}?action=full`);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const result = await response.json();
+                if (result.status === 'error') throw new Error(result.message || 'Gagal mengambil data');
+                if (result.data && result.data.status === 'success') {
+                    state.headers = result.data.headers || [];
+                    state.rawData = result.data.data || [];
+                    state.filteredData = [...state.rawData];
+                } else {
+                    throw new Error(result.data?.message || 'Gagal mengambil data penduduk');
+                }
+                state.isLoaded = true;
+                return true;
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').innerHTML = `
+                    <div style="text-align:center;color:#e74c3c;">
+                        <i class="fas fa-exclamation-circle" style="font-size:2.5rem;display:block;margin-bottom:12px;"></i>
+                        <h3 style="color:#e8edf2;font-size:1.1rem;">Gagal Memuat Data</h3>
+                        <p style="color:#667788;margin-top:8px;font-size:0.85rem;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top:14px;padding:10px 28px;background:linear-gradient(135deg,#4facfe,#00d4ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
+                            <i class="fas fa-sync"></i> Muat Ulang
+                        </button>
+                    </div>
+                `;
+                return false;
             }
         }
-    });
-    
-    // Ubah Set ke Array dan urutkan
-    const pekerjaanLainList = Array.from(pekerjaanLainSet).sort();
-    
-    // Tampilkan SEMUA pekerjaan dari dropdown (termasuk yang 0)
-    // Urutkan berdasarkan abjad
-    const sortedDropdown = [...DROPDOWN_PEKERJAAN].sort();
-    
-    sortedDropdown.forEach(pek => {
-        const value = counts[pek];
-        const persen = jumlahJiwa > 0 ? ((value / jumlahJiwa) * 100).toFixed(1) : '0.0';
-        
-        // Beri highlight jika value > 0
-        const tr = document.createElement('tr');
-        if (value > 0) {
-            tr.style.background = '#e8f4fd';
-            tr.style.fontWeight = '500';
+
+        // ============================================================
+        // RENDER DASHBOARD
+        // ============================================================
+        function renderDashboard() {
+            if (!state.isLoaded) return;
+
+            document.getElementById('loading').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+
+            renderHeader();
+            renderFilters();
+            renderSummaryCards();
+            renderDetailCards();
+            renderCharts();
+            renderTables();
+            renderFooter();
         }
-        
-        tr.innerHTML = `
-            <td style="text-align: left;">${pek}</td>
-            <td>${value}</td>
-            <td>${persen}%</td>
-        `;
-        tbody.appendChild(tr);
-    });
-    
-    // Tampilkan PEKERJAAN LAIN (di luar dropdown) jika ada
-    if (pekerjaanLainList.length > 0) {
-        // Baris separator
-        const separatorTr = document.createElement('tr');
-        separatorTr.innerHTML = `
-            <td colspan="3" style="background: #ffd700; color: #333; font-weight: 700; text-align: center;">
-                ⚠️ PEKERJAAN LAIN (DI LUAR DROPDOWN)
-            </td>
-        `;
-        tbody.appendChild(separatorTr);
-        
-        // Hitung dan tampilkan pekerjaan lain
-        pekerjaanLainList.forEach(pek => {
-            // Hitung ulang jumlah untuk pekerjaan lain ini
-            const value = filteredData.filter(row => row['PEKERJAAN'] === pek).length;
-            const persen = jumlahJiwa > 0 ? ((value / jumlahJiwa) * 100).toFixed(1) : '0.0';
-            
-            const tr = document.createElement('tr');
-            tr.style.background = '#fff0f0';
-            tr.innerHTML = `
-                <td style="text-align: left; font-style: italic; color: #c0392b;">${pek}</td>
-                <td>${value}</td>
-                <td>${persen}%</td>
+
+        // ============================================================
+        // FUNGSI BANTU
+        // ============================================================
+        function getColumnIndex(columnName) {
+            return state.headers.indexOf(columnName);
+        }
+
+        function getColumnData(columnName, dataArray = state.filteredData) {
+            const index = getColumnIndex(columnName);
+            if (index === -1) return [];
+            return dataArray.map(row => row[index]);
+        }
+
+        function countUnique(arr) {
+            return new Set(arr).size;
+        }
+
+        function getDistribution(arr) {
+            const counts = {};
+            arr.forEach(val => {
+                if (val !== undefined && val !== null && val.toString().trim() !== '') {
+                    const key = val.toString().trim();
+                    counts[key] = (counts[key] || 0) + 1;
+                }
+            });
+            return counts;
+        }
+
+        function formatNumber(num) {
+            if (num === undefined || num === null) return '0';
+            if (typeof num === 'string' && isNaN(parseFloat(num))) return num;
+            return new Intl.NumberFormat('id-ID').format(num);
+        }
+
+        function generateColors(count) {
+            const palette = ['#4facfe', '#2ecc71', '#e74c3c', '#f1c40f', '#9b59b6', '#1abc9c', '#e67e22', '#fd79a8', '#00d4ff',
+                '#6c5ce7'
+            ];
+            const colors = [];
+            for (let i = 0; i < count; i++) {
+                colors.push(palette[i % palette.length]);
+            }
+            return colors;
+        }
+
+        // ============================================================
+        // DETEKSI GENDER - VERSI SUPER LUAS
+        // ============================================================
+        function isLakiLaki(value) {
+            if (!value) return false;
+            const str = value.toString().trim().toUpperCase();
+            const lakiVariants = [
+                'LAKI-LAKI', 'LAKI - LAKI', 'LAKI LAKI',
+                'LAKI', 'L', 'L.',
+                'Laki-laki', 'Laki - Laki', 'Laki Laki',
+                'laki-laki', 'laki - laki', 'laki laki'
+            ];
+            return lakiVariants.some(v => str === v.toUpperCase()) ||
+                str.includes('LAKI') ||
+                (str === 'L') ||
+                (str === 'L.');
+        }
+
+        function isPerempuan(value) {
+            if (!value) return false;
+            const str = value.toString().trim().toUpperCase();
+            const perempuanVariants = [
+                'PEREMPUAN', 'PEREMPUAN',
+                'P', 'P.',
+                'Perempuan', 'perempuan'
+            ];
+            return perempuanVariants.some(v => str === v.toUpperCase()) ||
+                str.includes('PEREMPUAN') ||
+                (str === 'P') ||
+                (str === 'P.');
+        }
+
+        // ============================================================
+        // DETEKSI PENGANGGURAN
+        // ============================================================
+        function isPengangguran(value) {
+            if (!value) return true;
+            const str = value.toString().trim().toUpperCase();
+            const pengangguranKeywords = [
+                'TIDAK BEKERJA', 'BELUM BEKERJA', 'BELUM MEMILIKI PEKERJAAN',
+                'BELUM ADA PEKERJAAN', 'BELUM / TIDAK BEKERJA',
+                'PELAJAR', 'MAHASISWA', 'IBU RUMAH TANGGA',
+                'MENGURUS RUMAH TANGGA', 'PENSIUNAN', 'PENSIUN',
+                'TIDAK ADA', 'N/A', '-'
+            ];
+            return pengangguranKeywords.some(kw => str.includes(kw));
+        }
+
+        function isBekerja(value) {
+            return !isPengangguran(value);
+        }
+
+        // ============================================================
+        // HITUNG UMUR
+        // ============================================================
+        function calculateAge(dateStr) {
+            if (!dateStr) return null;
+            try {
+                const parts = dateStr.split('/');
+                if (parts.length !== 3) return null;
+                const day = parseInt(parts[0]);
+                const month = parseInt(parts[1]) - 1;
+                const year = parseInt(parts[2]);
+                if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
+                const birthDate = new Date(year, month, day);
+                const today = new Date();
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
+                return age;
+            } catch (e) { return null; }
+        }
+
+        function getAgeGroup(age) {
+            if (age === null || age === undefined) return 'Tidak Diketahui';
+            if (age >= 0 && age <= 4) return '0-4 TAHUN';
+            if (age >= 5 && age <= 9) return '5-9 TAHUN';
+            if (age >= 10 && age <= 14) return '10-14 TAHUN';
+            if (age >= 15 && age <= 19) return '15-19 TAHUN';
+            if (age >= 20 && age <= 24) return '20-24 TAHUN';
+            if (age >= 25 && age <= 29) return '25-29 TAHUN';
+            if (age >= 30 && age <= 34) return '30-34 TAHUN';
+            if (age >= 35 && age <= 39) return '35-39 TAHUN';
+            if (age >= 40 && age <= 44) return '40-44 TAHUN';
+            if (age >= 45 && age <= 49) return '45-49 TAHUN';
+            if (age >= 50 && age <= 54) return '50-54 TAHUN';
+            if (age >= 55 && age <= 59) return '55-59 TAHUN';
+            if (age >= 60 && age <= 64) return '60-64 TAHUN';
+            if (age >= 65 && age <= 69) return '65-69 TAHUN';
+            if (age >= 70 && age <= 74) return '70-74 TAHUN';
+            if (age >= 75 && age <= 79) return '75-79 TAHUN';
+            if (age >= 80 && age <= 84) return '80-84 TAHUN';
+            if (age >= 85 && age <= 90) return '85-90 TAHUN';
+            return '> 90 TAHUN';
+        }
+
+        // ============================================================
+        // RENDER: HEADER
+        // ============================================================
+        function renderHeader() {
+            const container = document.getElementById('headerContainer');
+            const total = state.filteredData.length;
+
+            container.innerHTML = `
+                <div class="dashboard-header">
+                    <div class="header-content">
+                        <div class="header-left">
+                            <div class="header-icon">📊</div>
+                            <h1>DASHBOARD KEPENDUDUKAN KECAMATAN SENAPELAN</h1>
+                            <div class="subtitle">
+                                <i class="fas fa-map-pin"></i> Kota Pekanbaru - Provinsi Riau
+                                <span style="margin:0 6px;color:#445566;">|</span>
+                                <i class="fas fa-database"></i> ${formatNumber(total)} data ditampilkan
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <span class="header-badge"><i class="fas fa-circle" style="font-size:0.35rem;color:#2ecc71;"></i> Live Data</span>
+                            <span class="header-update">
+                                <i class="fas fa-clock"></i>
+                                Update: ${new Date().toLocaleString('id-ID')}
+                            </span>
+                        </div>
+                    </div>
+                </div>
             `;
-            tbody.appendChild(tr);
-        });
-    }
-}
-                
-                // Tampilkan data yang memiliki nilai > 0
-                for (let [key, value] of Object.entries(counts)) {
-                    if (value > 0) {
-                        const persen = ((value / jumlahJiwa) * 100).toFixed(1);
-                        const tr = document.createElement('tr');
-                        tr.innerHTML = `
-                            <td style="text-align: left;">${key}</td>
-                            <td>${value}</td>
-                            <td>${persen}%</td>
-                        `;
-                        tbody.appendChild(tr);
+        }
+
+        // ============================================================
+        // RENDER: FILTERS dengan Mode Wilayah
+        // ============================================================
+        function renderFilters() {
+            const container = document.getElementById('filterContainer');
+
+            const isSenapelan = state.modeWilayah === 'senapelan';
+
+            // Ambil data unik untuk filter dari ID_PETUGAS (kolom AM)
+            const allPetugas = [...new Set(getColumnData('ID_PETUGAS', state.rawData))].filter(v => v).sort();
+
+            // Filter kelurahan dari ID_PETUGAS
+            let allKelurahan = [];
+            if (isSenapelan) {
+                allKelurahan = allPetugas.filter(v => {
+                    const upper = v.toString().toUpperCase();
+                    return FIXED_KELURAHAN.some(fixed =>
+                        upper === fixed.toUpperCase() ||
+                        upper.includes(fixed.toUpperCase()) ||
+                        fixed.toUpperCase().includes(upper)
+                    );
+                });
+            } else {
+                allKelurahan = allPetugas;
+            }
+
+            const allRT = [...new Set(getColumnData('RT', state.rawData))].filter(v => v).sort((a, b) => parseInt(a) - parseInt(
+            b));
+            const allRW = [...new Set(getColumnData('RW', state.rawData))].filter(v => v).sort((a, b) => parseInt(a) - parseInt(
+            b));
+            const allGender = [...new Set(getColumnData('JENIS KELAMIN', state.rawData))].filter(v => v).sort();
+            const allStatusKawin = [...new Set(getColumnData('STATUS PERKAWINAN', state.rawData))].filter(v => v).sort();
+            const allAgama = [...new Set(getColumnData('AGAMA', state.rawData))].filter(v => v).sort();
+            const allPendidikan = [...new Set(getColumnData('PENDIDIKAN', state.rawData))].filter(v => v).sort();
+            const allPekerjaan = [...new Set(getColumnData('PEKERJAAN', state.rawData))].filter(v => v).sort();
+            const allKesehatan = [...new Set(getColumnData('STATUS KESEHATAN', state.rawData))].filter(v => v).sort();
+            const allKebersihan = [...new Set(getColumnData('STATUS KEBERSIHAN', state.rawData))].filter(v => v).sort();
+
+            const kelurahanOptions = allKelurahan.map(v => `<option value="${v}">${v}</option>`).join('');
+
+            container.innerHTML = `
+                <div class="filters-section">
+                    <div class="filter-label">
+                        <i class="fas fa-sliders-h"></i> FILTER DATA
+                    </div>
+
+                    <div class="filter-mode-toggle">
+                        <button class="filter-mode-btn ${isSenapelan ? 'active' : ''}" onclick="switchWilayahMode('senapelan')">
+                            <span class="mode-icon">📍</span> Senapelan (6 Kelurahan)
+                        </button>
+                        <button class="filter-mode-btn ${!isSenapelan ? 'active' : ''}" onclick="switchWilayahMode('semua')">
+                            <span class="mode-icon">🌍</span> Semua Wilayah
+                        </button>
+                    </div>
+
+                    <div class="filters-row">
+                        ${!isSenapelan ? `
+                        <div class="filter-group">
+                            <label>Kecamatan</label>
+                            <select id="filter_kecamatan" data-column="KECAMATAN">
+                                <option value="">-- Semua --</option>
+                                ${[...new Set(getColumnData('KECAMATAN', state.rawData))].filter(v => v).sort().map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        ` : `
+                        <div class="filter-group">
+                            <label>Kecamatan <span style="color:var(--accent);font-size:0.5rem;">(Senapelan)</span></label>
+                            <select disabled>
+                                <option value="SENAPELAN" selected>SENAPELAN</option>
+                            </select>
+                        </div>
+                        `}
+                        <div class="filter-group">
+                            <label>Kelurahan ${isSenapelan ? '<span style="color:var(--accent);font-size:0.5rem;">(6 Kelurahan)</span>' : ''}</label>
+                            <select id="filter_kelurahan" data-column="KELURAHAN/DESA">
+                                <option value="">-- Semua --</option>
+                                ${kelurahanOptions}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>RT</label>
+                            <select id="filter_rt" data-column="RT">
+                                <option value="">-- Semua --</option>
+                                ${allRT.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>RW</label>
+                            <select id="filter_rw" data-column="RW">
+                                <option value="">-- Semua --</option>
+                                ${allRW.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Jenis Kelamin</label>
+                            <select id="filter_gender" data-column="JENIS KELAMIN">
+                                <option value="">-- Semua --</option>
+                                ${allGender.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status Perkawinan</label>
+                            <select id="filter_status_kawin" data-column="STATUS PERKAWINAN">
+                                <option value="">-- Semua --</option>
+                                ${allStatusKawin.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Agama</label>
+                            <select id="filter_agama" data-column="AGAMA">
+                                <option value="">-- Semua --</option>
+                                ${allAgama.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Pendidikan</label>
+                            <select id="filter_pendidikan" data-column="PENDIDIKAN">
+                                <option value="">-- Semua --</option>
+                                ${allPendidikan.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Pekerjaan</label>
+                            <select id="filter_pekerjaan" data-column="PEKERJAAN">
+                                <option value="">-- Semua --</option>
+                                ${allPekerjaan.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status Kesehatan</label>
+                            <select id="filter_kesehatan" data-column="STATUS KESEHATAN">
+                                <option value="">-- Semua --</option>
+                                ${allKesehatan.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label>Status Kebersihan</label>
+                            <select id="filter_kebersihan" data-column="STATUS KEBERSIHAN">
+                                <option value="">-- Semua --</option>
+                                ${allKebersihan.map(v => `<option value="${v}">${v}</option>`).join('')}
+                            </select>
+                        </div>
+                        <button class="btn-reset-filter" onclick="resetFilters()">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            document.querySelectorAll('#filterContainer .filter-group select').forEach(select => {
+                select.addEventListener('change', function() {
+                    if (this.disabled) return;
+                    const column = this.dataset.column;
+                    const value = this.value;
+                    if (value) {
+                        state.filters[column] = value;
+                    } else {
+                        delete state.filters[column];
+                    }
+                    applyAllFilters();
+                });
+            });
+        }
+
+        // ============================================================
+        // SWITCH MODE WILAYAH
+        // ============================================================
+        function switchWilayahMode(mode) {
+            state.modeWilayah = mode;
+            delete state.filters['KELURAHAN/DESA'];
+            delete state.filters['KECAMATAN'];
+            renderFilters();
+            applyAllFilters();
+            showToast(`Mode: ${mode === 'senapelan' ? 'Senapelan (6 Kelurahan)' : 'Semua Wilayah'}`, 'info');
+        }
+
+        // ============================================================
+        // RESET FILTERS
+        // ============================================================
+        function resetFilters() {
+            state.filters = {};
+            document.querySelectorAll('#filterContainer .filter-group select').forEach(select => {
+                if (!select.disabled) select.value = '';
+            });
+            applyAllFilters();
+            showToast('Filter direset', 'info');
+        }
+
+        // ============================================================
+        // APPLY ALL FILTERS
+        // ============================================================
+        function applyAllFilters() {
+            let filtered = [...state.rawData];
+
+            // Filter Mode Wilayah Senapelan
+            if (state.modeWilayah === 'senapelan') {
+                const petugasIndex = getColumnIndex('ID_PETUGAS');
+                if (petugasIndex !== -1) {
+                    const selectedKelurahan = state.filters['KELURAHAN/DESA'];
+
+                    if (selectedKelurahan) {
+                        filtered = filtered.filter(row => {
+                            const petugas = row[petugasIndex];
+                            if (!petugas) return false;
+                            return petugas.toString().toUpperCase() === selectedKelurahan.toString().toUpperCase();
+                        });
+                    } else {
+                        filtered = filtered.filter(row => {
+                            const petugas = row[petugasIndex];
+                            if (!petugas) return false;
+                            const petugasUpper = petugas.toString().toUpperCase();
+                            return FIXED_KELURAHAN.some(fixed =>
+                                petugasUpper === fixed.toUpperCase() ||
+                                petugasUpper.includes(fixed.toUpperCase()) ||
+                                fixed.toUpperCase().includes(petugasUpper)
+                            );
+                        });
                     }
                 }
             }
-            
-            document.getElementById(`table-${tabId}`).style.display = 'block';
-            hideLoader(true);
-        }
 
-        // Helper functions untuk umur
-        function hitungUmur(tanggalLahirStr) {
-            if (!tanggalLahirStr) return -1;
-            
-            const parts = tanggalLahirStr.split('/');
-            if (parts.length !== 3) return -1;
-            
-            const tgl = parseInt(parts[0]);
-            const bln = parseInt(parts[1]) - 1;
-            const thn = parseInt(parts[2]);
-            
-            const tanggalLahir = new Date(thn, bln, tgl);
-            const today = new Date();
-            
-            let umur = today.getFullYear() - tanggalLahir.getFullYear();
-            const bulanIni = today.getMonth();
-            const tanggalIni = today.getDate();
-            
-            if (bulanIni < bln || (bulanIni === bln && tanggalIni < tgl)) {
-                umur--;
+            // Filter berdasarkan pilihan dropdown
+            Object.keys(state.filters).forEach(column => {
+                if (column === 'KELURAHAN/DESA' && state.modeWilayah === 'senapelan') return;
+                const colIndex = getColumnIndex(column);
+                if (colIndex !== -1) {
+                    const filterValue = state.filters[column];
+                    filtered = filtered.filter(row => {
+                        const cellValue = row[colIndex];
+                        return cellValue && cellValue.toString() === filterValue.toString();
+                    });
+                }
+            });
+
+            // Filter berdasarkan search
+            if (state.searchTerm) {
+                const searchLower = state.searchTerm.toLowerCase().trim();
+                if (state.searchColumn === 'SEMUA KOLOM') {
+                    filtered = filtered.filter(row => {
+                        return row.some(cell => {
+                            if (!cell) return false;
+                            return cell.toString().toLowerCase().includes(searchLower);
+                        });
+                    });
+                } else {
+                    const colIndex = getColumnIndex(state.searchColumn);
+                    if (colIndex !== -1) {
+                        filtered = filtered.filter(row => {
+                            const cellValue = row[colIndex];
+                            return cellValue && cellValue.toString().toLowerCase().includes(searchLower);
+                        });
+                    }
+                }
             }
-            
-            return umur;
+
+            state.filteredData = filtered;
+
+            renderSummaryCards();
+            renderDetailCards();
+            renderCharts();
+            renderTables();
+            renderFooter();
+            updateDataCount();
         }
 
-        function getKategoriUmur(umur) {
-            if (umur < 0) return 'TIDAK DIKETAHUI';
-            if (umur >= 0 && umur <= 4) return '0-4 TAHUN (BAYI)';
-            if (umur >= 5 && umur <= 9) return '5-9 TAHUN (ANAK-ANAK)';
-            if (umur >= 10 && umur <= 14) return '10-14 TAHUN (ANAK-ANAK)';
-            if (umur >= 15 && umur <= 19) return '15-19 TAHUN (REMAJA)';
-            if (umur >= 20 && umur <= 24) return '20-24 TAHUN (REMAJA)';
-            if (umur >= 25 && umur <= 29) return '25-29 TAHUN (REMAJA)';
-            if (umur >= 30 && umur <= 34) return '30-34 TAHUN (DEWASA)';
-            if (umur >= 35 && umur <= 39) return '35-39 TAHUN (DEWASA)';
-            if (umur >= 40 && umur <= 44) return '40-44 TAHUN (DEWASA)';
-            if (umur >= 45 && umur <= 49) return '45-49 TAHUN (DEWASA)';
-            if (umur >= 50 && umur <= 54) return '50-54 TAHUN (DEWASA)';
-            if (umur >= 55 && umur <= 59) return '55-59 TAHUN (LANSIA)';
-            if (umur >= 60 && umur <= 64) return '60-64 TAHUN (LANSIA)';
-            if (umur >= 65 && umur <= 69) return '65-69 TAHUN (LANSIA)';
-            if (umur >= 70 && umur <= 74) return '70-74 TAHUN (LANSIA)';
-            if (umur >= 75 && umur <= 79) return '75-79 TAHUN (LANSIA)';
-            if (umur >= 80 && umur <= 84) return '80-84 TAHUN (LANSIA)';
-            if (umur >= 85 && umur <= 90) return '85-90 TAHUN (LANSIA)';
-            if (umur >= 91) return '90-100+ TAHUN (LANSIA)';
-            return 'TIDAK DIKETAHUI';
+        function updateDataCount() {
+            const total = state.filteredData.length;
+            const badge = document.querySelector('.header-badge');
+            if (badge) {
+                badge.innerHTML =
+                    `<i class="fas fa-circle" style="font-size:0.35rem;color:#2ecc71;"></i> ${formatNumber(total)} data ditampilkan`;
+            }
         }
 
-        // Load data dari server
-        function loadInitialData() {
-            showLoader('Memuat Data Tunggu Kejap', 'Mengambil data dari Database...');
-            
-            fetch(`${SCRIPT_URL}?action=get`)
-                .then(response => response.json())
-                .then(result => {
-                    if (result.success) {
-                        // Bersihkan dan format data
-                        allData = cleanData(result.data);
-                        
-                        // Ambil daftar kelurahan unik
-                        const kelSet = new Set();
-                        // Ambil daftar kecamatan unik
-                        const kecSet = new Set();
-                        
-                        allData.forEach(row => {
-                            if (row['KELURAHAN']) {
-                                kelSet.add(row['KELURAHAN']);
-                            }
-                            if (row['KECAMATAN']) {
-                                kecSet.add(row['KECAMATAN']);
+        // ============================================================
+        // RENDER: SUMMARY CARDS
+        // ============================================================
+        function renderSummaryCards() {
+            const container = document.getElementById('cardsContainer');
+            const data = state.filteredData;
+            const total = data.length;
+
+            const nikData = getColumnData('NIK');
+            const kkData = getColumnData('NOMOR KK');
+            const genderData = getColumnData('JENIS KELAMIN');
+
+            const laki = genderData.filter(v => isLakiLaki(v)).length;
+            const perempuan = genderData.filter(v => isPerempuan(v)).length;
+
+            const pekerjaanData = getColumnData('PEKERJAAN');
+            const bekerja = pekerjaanData.filter(v => isBekerja(v)).length;
+            const pengangguran = total - bekerja;
+
+            const sukuData = getColumnData('SUKU');
+            const totalSuku = countUnique(sukuData);
+            const rasio = perempuan > 0 ? (laki / perempuan) : laki;
+
+            // Status Kesehatan & Kebersihan - Total Terdaftar
+            const kesehatanData = getColumnData('STATUS KESEHATAN');
+            const kesehatanTerdaftar = kesehatanData.filter(v => v && v.toString().trim() !== '').length;
+
+            const kebersihanData = getColumnData('STATUS KEBERSIHAN');
+            const kebersihanTerdaftar = kebersihanData.filter(v => v && v.toString().trim() !== '').length;
+
+            const cards = [
+                { icon: '👨‍👩‍👧‍👦', label: 'Total Jiwa', value: total, sub: 'Jiwa', border: 1 },
+                { icon: '🏠', label: 'Kepala Keluarga', value: countUnique(kkData), sub: 'KK', border: 2 },
+                { icon: '👨', label: 'Laki-laki', value: laki, sub: `dari ${formatNumber(total)} jiwa`, border: 3 },
+                { icon: '👩', label: 'Perempuan', value: perempuan, sub: `dari ${formatNumber(total)} jiwa`,
+                border: 4 },
+                { icon: '⚥', label: 'Rasio L:P', value: rasio.toFixed(2), sub: `${laki} : ${perempuan}`, border: 5 },
+                { icon: '💼', label: 'Bekerja', value: bekerja, sub: `dari ${formatNumber(total)} jiwa`, border: 6 },
+                { icon: '📋', label: 'Pengangguran', value: pengangguran, sub: `dari ${formatNumber(total)} jiwa`,
+                    border: 7 },
+                { icon: '🌾', label: 'Total Suku', value: totalSuku, sub: 'Jumlah Suku', border: 8 },
+                { icon: '🕌', label: 'Total Agama', value: countUnique(getColumnData('AGAMA')), sub: 'Jumlah Agama',
+                    border: 9 },
+                { icon: '🏥', label: 'Status Kesehatan', value: kesehatanTerdaftar,
+                    sub: `dari ${formatNumber(total)} terdaftar`, border: 10 },
+                { icon: '🧹', label: 'Status Kebersihan', value: kebersihanTerdaftar,
+                    sub: `dari ${formatNumber(total)} terdaftar`, border: 11 }
+            ];
+
+            let html = `<div class="cards-grid">`;
+            cards.forEach((card) => {
+                const colorClass = `card-border-${card.border}`;
+                html += `
+                    <div class="card-item ${colorClass}">
+                        <div class="card-icon">${card.icon}</div>
+                        <div class="card-label">${card.label}</div>
+                        <div class="card-value">${typeof card.value === 'string' ? card.value : formatNumber(card.value)}</div>
+                        ${card.sub ? `<div class="card-sub">${card.sub}</div>` : ''}
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // RENDER: DETAIL CARDS (Analitik Lanjutan)
+        // ============================================================
+        function renderDetailCards() {
+            const container = document.getElementById('detailCardsContainer');
+            const data = state.filteredData;
+            const total = data.length;
+
+            if (total === 0) {
+                container.innerHTML = `
+                    <div class="detail-cards-section">
+                        <div class="section-title">
+                            📊 ANALITIK LANJUTAN KEPENDUDUKAN
+                            <span class="title-line"></span>
+                            <span class="title-badge">0 data</span>
+                        </div>
+                        <div style="text-align:center;padding:24px;color:#667788;background:var(--glass);border-radius:var(--radius);border:1px solid var(--glass-border);">
+                            <i class="fas fa-inbox" style="font-size:1.2rem;display:block;margin-bottom:6px;"></i>
+                            Tidak ada data setelah filter
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            const kkData = getColumnData('NOMOR KK');
+            const genderData = getColumnData('JENIS KELAMIN');
+            const laki = genderData.filter(v => isLakiLaki(v)).length;
+            const perempuan = genderData.filter(v => isPerempuan(v)).length;
+
+            // Kumpulkan semua distribusi
+            const agamaDist = getDistribution(getColumnData('AGAMA'));
+            const pendidikanDist = getDistribution(getColumnData('PENDIDIKAN'));
+            const tglLahirData = getColumnData('TANGGAL LAHIR');
+            const ageGroups = {};
+            tglLahirData.forEach(tgl => {
+                const age = calculateAge(tgl);
+                const group = getAgeGroup(age);
+                if (!ageGroups[group]) ageGroups[group] = [];
+                ageGroups[group].push(age);
+            });
+            const statusKawinDist = getDistribution(getColumnData('STATUS PERKAWINAN'));
+            const pekerjaanDist = getDistribution(getColumnData('PEKERJAAN'));
+            const domisiliDist = getDistribution(getColumnData('STATUS WARGA'));
+            const kekayaanDist = getDistribution(getColumnData('STATUS KEKAYAAN'));
+            const kesehatanDist = getDistribution(getColumnData('STATUS KESEHATAN'));
+            const kebersihanDist = getDistribution(getColumnData('STATUS KEBERSIHAN'));
+            const wargaNegaraDist = getDistribution(getColumnData('KEWARGANEGARAAN'));
+            const sukuDist = getDistribution(getColumnData('SUKU'));
+
+            function getGenderBreakdown(columnName, categoryValue) {
+                const colIndex = getColumnIndex(columnName);
+                if (colIndex === -1) return { laki: 0, perempuan: 0, total: 0 };
+                const genderColIndex = getColumnIndex('JENIS KELAMIN');
+                if (genderColIndex === -1) return { laki: 0, perempuan: 0, total: 0 };
+                let laki = 0,
+                    perempuan = 0;
+                state.filteredData.forEach(row => {
+                    if (row[colIndex] === categoryValue) {
+                        const gender = row[genderColIndex];
+                        if (isLakiLaki(gender)) {
+                            laki++;
+                        } else if (isPerempuan(gender)) {
+                            perempuan++;
+                        }
+                    }
+                });
+                return { laki, perempuan, total: laki + perempuan };
+            }
+
+            function getGenderBreakdownForAge(ageGroup) {
+                const genderColIndex = getColumnIndex('JENIS KELAMIN');
+                const tglColIndex = getColumnIndex('TANGGAL LAHIR');
+                if (genderColIndex === -1 || tglColIndex === -1) return { laki: 0, perempuan: 0, total: 0 };
+                let laki = 0,
+                    perempuan = 0;
+                state.filteredData.forEach(row => {
+                    const tgl = row[tglColIndex];
+                    const age = calculateAge(tgl);
+                    const group = getAgeGroup(age);
+                    if (group === ageGroup) {
+                        const gender = row[genderColIndex];
+                        if (isLakiLaki(gender)) {
+                            laki++;
+                        } else if (isPerempuan(gender)) {
+                            perempuan++;
+                        }
+                    }
+                });
+                return { laki, perempuan, total: laki + perempuan };
+            }
+
+            function renderCategoryRows(dist, columnName, isAge = false) {
+                let html = '';
+                if (isAge) {
+                    const ageOrder = [
+                        '0-4 TAHUN', '5-9 TAHUN', '10-14 TAHUN', '15-19 TAHUN',
+                        '20-24 TAHUN', '25-29 TAHUN', '30-34 TAHUN', '35-39 TAHUN',
+                        '40-44 TAHUN', '45-49 TAHUN', '50-54 TAHUN', '55-59 TAHUN',
+                        '60-64 TAHUN', '65-69 TAHUN', '70-74 TAHUN', '75-79 TAHUN',
+                        '80-84 TAHUN', '85-90 TAHUN'
+                    ];
+                    ageOrder.forEach(group => {
+                        const breakdown = getGenderBreakdownForAge(group);
+                        html += `
+                            <div class="category-row">
+                                <span class="cat-name">${group}</span>
+                                <span class="cat-value laki ${breakdown.total === 0 ? 'zero' : ''}">${formatNumber(breakdown.laki)}</span>
+                                <span class="cat-value perempuan ${breakdown.total === 0 ? 'zero' : ''}">${formatNumber(breakdown.perempuan)}</span>
+                                <span class="cat-value total ${breakdown.total === 0 ? 'zero' : ''}">${formatNumber(breakdown.total)}</span>
+                            </div>
+                        `;
+                    });
+                    return html;
+                }
+                const sorted = Object.keys(dist).sort();
+                sorted.forEach(cat => {
+                    if (!cat) return;
+                    const breakdown = getGenderBreakdown(columnName, cat);
+                    const hasData = breakdown.total > 0;
+                    html += `
+                        <div class="category-row">
+                            <span class="cat-name">${cat}</span>
+                            <span class="cat-value laki ${!hasData ? 'zero' : ''}">${formatNumber(breakdown.laki)}</span>
+                            <span class="cat-value perempuan ${!hasData ? 'zero' : ''}">${formatNumber(breakdown.perempuan)}</span>
+                            <span class="cat-value total ${!hasData ? 'zero' : ''}">${formatNumber(breakdown.total)}</span>
+                        </div>
+                    `;
+                });
+                return html;
+            }
+
+            // Simpan data untuk modal
+            window._detailData = {
+                jumlahPenduduk: {
+                    title: 'JUMLAH PENDUDUK',
+                    icon: '👨‍👩‍👧‍👦',
+                    total: total,
+                    laki: laki,
+                    perempuan: perempuan,
+                    kk: countUnique(kkData)
+                },
+                agama: { dist: agamaDist, column: 'AGAMA', title: 'AGAMA', icon: '🕌', isAge: false },
+                pendidikan: { dist: pendidikanDist, column: 'PENDIDIKAN', title: 'PENDIDIKAN', icon: '📚',
+                isAge: false },
+                umur: { dist: ageGroups, column: 'TANGGAL LAHIR', title: 'UMUR', icon: '🎂', isAge: true },
+                statusKawin: { dist: statusKawinDist, column: 'STATUS PERKAWINAN', title: 'STATUS PERKAWINAN',
+                    icon: '💍', isAge: false },
+                pekerjaan: { dist: pekerjaanDist, column: 'PEKERJAAN', title: 'PEKERJAAN', icon: '💼', isAge: false },
+                domisili: { dist: domisiliDist, column: 'STATUS WARGA', title: 'STATUS DOMISILI', icon: '🏠',
+                    isAge: false },
+                kekayaan: { dist: kekayaanDist, column: 'STATUS KEKAYAAN', title: 'KEKAYAAN', icon: '💰',
+                    isAge: false },
+                kesehatan: { dist: kesehatanDist, column: 'STATUS KESEHATAN', title: 'KESEHATAN', icon: '🏥',
+                    isAge: false },
+                kebersihan: { dist: kebersihanDist, column: 'STATUS KEBERSIHAN', title: 'KEBERSIHAN', icon: '🧹',
+                    isAge: false },
+                wargaNegara: { dist: wargaNegaraDist, column: 'KEWARGANEGARAAN', title: 'WARGA NEGARA', icon: '🌍',
+                    isAge: false },
+                suku: { dist: sukuDist, column: 'SUKU', title: 'SUKU', icon: '🌾', isAge: false }
+            };
+
+            let html = `
+                <div class="detail-cards-section">
+                    <div class="section-title">
+                        📊 ANALITIK LANJUTAN KEPENDUDUKAN
+                        <span class="title-line"></span>
+                        <span class="title-badge">${formatNumber(total)} data</span>
+                    </div>
+                    <div class="detail-cards-grid">
+            `;
+
+            // Card Jumlah Penduduk
+            html += `
+                <div class="detail-card" onclick="openDetailModal('jumlahPenduduk')">
+                    <div class="detail-card-header">
+                        <span class="dc-icon">👨‍👩‍👧‍👦</span>
+                        <span class="dc-title">JUMLAH PENDUDUK</span>
+                        <span class="dc-badge">${formatNumber(total)} Jiwa</span>
+                    </div>
+                    <div class="category-row header-row">
+                        <span>Kategori</span><span>Laki</span><span>Perempuan</span><span>Total</span>
+                    </div>
+                    <div class="category-row">
+                        <span class="cat-name">Total Jiwa</span>
+                        <span class="cat-value laki">${formatNumber(laki)}</span>
+                        <span class="cat-value perempuan">${formatNumber(perempuan)}</span>
+                        <span class="cat-value total">${formatNumber(total)}</span>
+                    </div>
+                    <div class="category-row">
+                        <span class="cat-name">Kepala Keluarga</span>
+                        <span class="cat-value laki">-</span>
+                        <span class="cat-value perempuan">-</span>
+                        <span class="cat-value total">${formatNumber(countUnique(kkData))}</span>
+                    </div>
+                    <div class="category-total">
+                        <span>Total KK: <strong>${formatNumber(countUnique(kkData))}</strong></span>
+                        <span>Rasio L:P: <strong>${(laki / (perempuan || 1)).toFixed(2)}</strong></span>
+                    </div>
+                    <div class="click-hint"><i class="fas fa-expand"></i> Klik untuk preview</div>
+                </div>
+            `;
+
+            // Card lainnya
+            const cardConfigs = [
+                { key: 'agama', label: 'AGAMA', icon: '🕌' },
+                { key: 'pendidikan', label: 'PENDIDIKAN', icon: '📚' },
+                { key: 'umur', label: 'UMUR', icon: '🎂' },
+                { key: 'statusKawin', label: 'STATUS PERKAWINAN', icon: '💍' },
+                { key: 'pekerjaan', label: 'PEKERJAAN', icon: '💼' },
+                { key: 'domisili', label: 'STATUS DOMISILI', icon: '🏠' },
+                { key: 'kekayaan', label: 'KEKAYAAN', icon: '💰' },
+                { key: 'kesehatan', label: 'KESEHATAN', icon: '🏥' },
+                { key: 'kebersihan', label: 'KEBERSIHAN', icon: '🧹' },
+                { key: 'wargaNegara', label: 'WARGA NEGARA', icon: '🌍' },
+                { key: 'suku', label: 'SUKU', icon: '🌾' }
+            ];
+
+            cardConfigs.forEach(cfg => {
+                const d = window._detailData[cfg.key];
+                if (!d || !d.dist || Object.keys(d.dist).length === 0) {
+                    html += `
+                        <div class="detail-card" style="opacity:0.5;cursor:default;" onclick="openDetailModal('${cfg.key}')">
+                            <div class="detail-card-header">
+                                <span class="dc-icon">${cfg.icon}</span>
+                                <span class="dc-title">${cfg.label}</span>
+                                <span class="dc-badge">0 Kategori</span>
+                            </div>
+                            <div style="text-align:center;padding:12px;color:#445566;font-size:0.6rem;">
+                                Tidak ada data
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                const keys = Object.keys(d.dist).filter(k => k);
+                let previewRows = renderCategoryRows(d.dist, d.column, d.isAge);
+                html += `
+                    <div class="detail-card" onclick="openDetailModal('${cfg.key}')">
+                        <div class="detail-card-header">
+                            <span class="dc-icon">${cfg.icon}</span>
+                            <span class="dc-title">${cfg.label}</span>
+                            <span class="dc-badge">${keys.length} Kategori</span>
+                        </div>
+                        <div class="category-row header-row">
+                            <span>Kategori</span><span>Laki</span><span>Perempuan</span><span>Total</span>
+                        </div>
+                        ${previewRows}
+                        <div class="click-hint"><i class="fas fa-expand"></i> Klik untuk preview</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // MODAL PREVIEW DETAIL
+        // ============================================================
+        function openDetailModal(type) {
+            const overlay = document.getElementById('modalOverlay');
+            const body = document.getElementById('modalBody');
+
+            const detail = window._detailData[type];
+            if (!detail) {
+                showToast('Data tidak ditemukan', 'error');
+                return;
+            }
+
+            if (type === 'jumlahPenduduk') {
+                body.innerHTML = `
+                    <div class="modal-title">
+                        <span class="modal-icon">👨‍👩‍👧‍👦</span>
+                        JUMLAH PENDUDUK
+                    </div>
+                    <div class="category-row header-row">
+                        <span>Kategori</span><span>Laki-laki</span><span>Perempuan</span><span>Total</span>
+                    </div>
+                    <div class="category-row">
+                        <span class="cat-name">Total Jiwa</span>
+                        <span class="cat-value laki">${formatNumber(detail.laki)}</span>
+                        <span class="cat-value perempuan">${formatNumber(detail.perempuan)}</span>
+                        <span class="cat-value total">${formatNumber(detail.total)}</span>
+                    </div>
+                    <div class="category-row">
+                        <span class="cat-name">Kepala Keluarga</span>
+                        <span class="cat-value laki">-</span>
+                        <span class="cat-value perempuan">-</span>
+                        <span class="cat-value total">${formatNumber(detail.kk)}</span>
+                    </div>
+                    <div class="category-total">
+                        <span>Total KK: <strong>${formatNumber(detail.kk)}</strong></span>
+                        <span>Rasio L:P: <strong>${(detail.laki / (detail.perempuan || 1)).toFixed(2)}</strong></span>
+                    </div>
+                `;
+            } else {
+                const d = detail;
+                let rows = '';
+                if (d.isAge) {
+                    const ageOrder = [
+                        '0-4 TAHUN', '5-9 TAHUN', '10-14 TAHUN', '15-19 TAHUN',
+                        '20-24 TAHUN', '25-29 TAHUN', '30-34 TAHUN', '35-39 TAHUN',
+                        '40-44 TAHUN', '45-49 TAHUN', '50-54 TAHUN', '55-59 TAHUN',
+                        '60-64 TAHUN', '65-69 TAHUN', '70-74 TAHUN', '75-79 TAHUN',
+                        '80-84 TAHUN', '85-90 TAHUN'
+                    ];
+                    const genderColIndex = getColumnIndex('JENIS KELAMIN');
+                    const tglColIndex = getColumnIndex('TANGGAL LAHIR');
+                    ageOrder.forEach(group => {
+                        let laki = 0,
+                            perempuan = 0;
+                        state.filteredData.forEach(row => {
+                            const tgl = row[tglColIndex];
+                            const age = calculateAge(tgl);
+                            const ageGroup = getAgeGroup(age);
+                            if (ageGroup === group) {
+                                const gender = row[genderColIndex];
+                                if (isLakiLaki(gender)) laki++;
+                                else if (isPerempuan(gender)) perempuan++;
                             }
                         });
-                        
-                        kelurahanList = Array.from(kelSet).sort();
-                        kecamatanList = Array.from(kecSet).sort();
-                        
-                        // Debug: lihat sample data
-                        console.log('Data loaded:', allData.length, 'records');
-                        console.log('Kecamatan:', kecamatanList);
-                        console.log('Kelurahan:', kelurahanList);
-                        
-                        // Inisialisasi tab
-                        initializeTabs();
-                        
-                        hideLoader(true);
-                        showNotification('Data berhasil dimuat!');
-                    } else {
-                        hideLoader(false);
-                        showNotification('Gagal memuat data: ' + (result.error || 'Unknown error'), true);
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    hideLoader(false);
-                    showNotification('Gagal terhubung ke server', true);
-                });
+                        const total = laki + perempuan;
+                        rows += `
+                            <div class="category-row">
+                                <span class="cat-name">${group}</span>
+                                <span class="cat-value laki ${total === 0 ? 'zero' : ''}">${formatNumber(laki)}</span>
+                                <span class="cat-value perempuan ${total === 0 ? 'zero' : ''}">${formatNumber(perempuan)}</span>
+                                <span class="cat-value total ${total === 0 ? 'zero' : ''}">${formatNumber(total)}</span>
+                            </div>
+                        `;
+                    });
+                } else {
+                    const sorted = Object.keys(d.dist).sort();
+                    sorted.forEach(cat => {
+                        if (!cat) return;
+                        const colIndex = getColumnIndex(d.column);
+                        const genderColIndex = getColumnIndex('JENIS KELAMIN');
+                        let laki = 0,
+                            perempuan = 0;
+                        state.filteredData.forEach(row => {
+                            if (row[colIndex] === cat) {
+                                const gender = row[genderColIndex];
+                                if (isLakiLaki(gender)) laki++;
+                                else if (isPerempuan(gender)) perempuan++;
+                            }
+                        });
+                        const total = laki + perempuan;
+                        rows += `
+                            <div class="category-row">
+                                <span class="cat-name">${cat}</span>
+                                <span class="cat-value laki ${total === 0 ? 'zero' : ''}">${formatNumber(laki)}</span>
+                                <span class="cat-value perempuan ${total === 0 ? 'zero' : ''}">${formatNumber(perempuan)}</span>
+                                <span class="cat-value total ${total === 0 ? 'zero' : ''}">${formatNumber(total)}</span>
+                            </div>
+                        `;
+                    });
+                }
+
+                body.innerHTML = `
+                    <div class="modal-title">
+                        <span class="modal-icon">${d.icon || '📊'}</span>
+                        ${d.title}
+                    </div>
+                    <div class="category-row header-row">
+                        <span>Kategori</span><span>Laki-laki</span><span>Perempuan</span><span>Total</span>
+                    </div>
+                    ${rows}
+                `;
+            }
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
         }
 
-        // Initialize
-        window.onload = function() {
-            updateCurrentDate();
-            setInterval(updateCurrentDate, 1000);
-            loadInitialData();
-        };
+        function closeModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modalOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ============================================================
+        // RENDER: CHARTS
+        // ============================================================
+        function renderCharts() {
+            const container = document.getElementById('chartsContainer');
+
+            const chartConfigs = [
+                { id: 'chart_kelurahan', title: '📊 Sebaran Penduduk per Kelurahan', column: 'KELURAHAN/DESA',
+                    type: 'bar', label: 'Jumlah Jiwa' },
+                { id: 'chart_gender', title: '🍩 Komposisi Jenis Kelamin', column: 'JENIS KELAMIN', type: 'pie',
+                    label: '' },
+                { id: 'chart_status_kawin', title: '📈 Status Perkawinan', column: 'STATUS PERKAWINAN', type: 'bar',
+                    label: 'Jumlah' },
+                { id: 'chart_pendidikan', title: '📊 Sebaran Pendidikan', column: 'PENDIDIKAN', type: 'bar',
+                    label: 'Jumlah' },
+                { id: 'chart_kesehatan', title: '🏥 Status Kesehatan', column: 'STATUS KESEHATAN', type: 'pie',
+                    label: '' },
+                { id: 'chart_kebersihan', title: '🧹 Status Kebersihan', column: 'STATUS KEBERSIHAN', type: 'pie',
+                    label: '' },
+                { id: 'chart_suku', title: '🌾 Sebaran Suku', column: 'SUKU', type: 'bar', label: 'Jumlah' }
+            ];
+
+            let html = `<div class="charts-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">`;
+            chartConfigs.forEach(cfg => {
+                html += `
+                    <div class="chart-wrapper">
+                        <div class="chart-title">
+                            <i class="fas fa-chart-${cfg.type === 'pie' ? 'pie' : 'bar'}" style="color:var(--accent);"></i>
+                            ${cfg.title}
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="${cfg.id}"></canvas>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+            container.innerHTML = html;
+
+            setTimeout(() => {
+                chartConfigs.forEach(cfg => {
+                    const canvas = document.getElementById(cfg.id);
+                    if (!canvas) return;
+
+                    const colData = getColumnData(cfg.column);
+                    const distribution = getDistribution(colData);
+                    const labels = Object.keys(distribution);
+                    const values = Object.values(distribution);
+                    const colors = generateColors(labels.length);
+
+                    if (state.charts[cfg.id]) {
+                        state.charts[cfg.id].destroy();
+                    }
+
+                    state.charts[cfg.id] = new Chart(canvas, {
+                        type: cfg.type,
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: cfg.label || 'Jumlah',
+                                data: values,
+                                backgroundColor: cfg.type === 'pie' ? colors : colors.map(c => c +
+                                    '60'),
+                                borderColor: cfg.type === 'pie' ? colors : colors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    position: cfg.type === 'pie' ? 'right' : 'top',
+                                    labels: {
+                                        font: { size: 9 },
+                                        color: '#8899aa',
+                                        boxWidth: 10,
+                                        padding: 6
+                                    }
+                                }
+                            },
+                            scales: cfg.type !== 'pie' ? {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1,
+                                        color: '#667788',
+                                        font: { size: 8 }
+                                    },
+                                    grid: {
+                                        color: 'rgba(255,255,255,0.03)'
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: '#667788',
+                                        font: { size: 8 }
+                                    },
+                                    grid: {
+                                        display: false
+                                    }
+                                }
+                            } : {}
+                        }
+                    });
+                });
+            }, 150);
+        }
+
+        // ============================================================
+        // RENDER: TABLES dengan SEARCH, Tombol Cari, dan Aksi Keluarga
+        // ============================================================
+        function renderTables() {
+            const container = document.getElementById('tableContainer');
+
+            const columns = [
+                'NO', 'NIK', 'NAMA LENGKAP', 'JENIS KELAMIN', 'TANGGAL LAHIR',
+                'ALAMAT', 'RT', 'RW', 'KELURAHAN/DESA', 'PEKERJAAN', 'STATUS PERKAWINAN', 'AKSI'
+            ];
+
+            const dataToShow = state.filteredData;
+
+            let html = `
+                <div class="table-wrapper">
+                    <div class="table-title">
+                        <i class="fas fa-table" style="color:var(--accent);"></i> 📋 Data Detail Penduduk Senapelan
+                        <div class="search-box">
+                            <select id="searchColumn">
+                                <option value="SEMUA KOLOM">🔍 Semua Kolom</option>
+                                <option value="NAMA LENGKAP">Nama</option>
+                                <option value="NIK">NIK</option>
+                                <option value="NOMOR KK">No. KK</option>
+                                <option value="KELURAHAN/DESA">Kelurahan</option>
+                                <option value="RT">RT</option>
+                                <option value="RW">RW</option>
+                                <option value="ALAMAT">Alamat</option>
+                                <option value="PEKERJAAN">Pekerjaan</option>
+                                <option value="JENIS KELAMIN">Jenis Kelamin</option>
+                            </select>
+                            <input type="text" id="searchInput" placeholder="Masukkan kata kunci..." />
+                            <button class="btn-search" onclick="doSearch()">
+                                <i class="fas fa-search"></i> Cari
+                            </button>
+                            <button class="btn-search" style="background:rgba(231,76,60,0.2);color:var(--danger);" onclick="clearSearch()">
+                                <i class="fas fa-times"></i> Clear
+                            </button>
+                            <span style="font-weight:400;font-size:0.6rem;color:#667788;white-space:nowrap;">
+                                ${formatNumber(dataToShow.length)} data
+                            </span>
+                        </div>
+                    </div>
+                    <div style="overflow-x:auto;max-height:600px;overflow-y:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    ${columns.map(col => `<th>${col}</th>`).join('')}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${dataToShow.slice(0, 100).map((rowData, idx) => {
+                                    const row = [];
+                                    const nik = rowData[getColumnIndex('NIK')] || '-';
+                                    const nama = rowData[getColumnIndex('NAMA LENGKAP')] || '-';
+                                    const noKK = rowData[getColumnIndex('NOMOR KK')] || '-';
+                                    
+                                    columns.forEach(col => {
+                                        if (col === 'NO') {
+                                            row.push(idx + 1);
+                                        } else if (col === 'AKSI') {
+                                            row.push(`
+                                                <button class="btn-keluarga" onclick="openKeluargaModal('${noKK}', '${nama}')">
+                                                    <i class="fas fa-users"></i> Keluarga
+                                                </button>
+                                            `);
+                                        } else {
+                                            const colIndex = getColumnIndex(col);
+                                            row.push(colIndex !== -1 ? (rowData[colIndex] || '-') : '-');
+                                        }
+                                    });
+                                    return `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+                                }).join('')}
+                                ${dataToShow.length > 100 ? `
+                                    <tr>
+                                        <td colspan="${columns.length}" style="text-align:center;color:#445566;font-style:italic;padding:10px;font-size:0.6rem;">
+                                            ... dan ${formatNumber(dataToShow.length - 100)} data lainnya
+                                        </td>
+                                    </tr>
+                                ` : ''}
+                                ${dataToShow.length === 0 ? `
+                                    <tr>
+                                        <td colspan="${columns.length}" style="text-align:center;color:#445566;padding:20px;font-size:0.7rem;">
+                                            <i class="fas fa-search" style="display:block;font-size:1.2rem;margin-bottom:6px;"></i>
+                                            Tidak ada data yang ditemukan
+                                        </td>
+                                    </tr>
+                                ` : ''}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+
+            // Set nilai dari state
+            const searchSelect = document.getElementById('searchColumn');
+            if (searchSelect && state.searchColumn) {
+                searchSelect.value = state.searchColumn;
+            }
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput && state.searchTerm) {
+                searchInput.value = state.searchTerm;
+            }
+
+            // Enter key untuk search
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        doSearch();
+                    }
+                });
+            }
+        }
+
+        // ============================================================
+        // MODAL KELUARGA - Menampilkan Anggota Keluarga
+        // ============================================================
+        function openKeluargaModal(noKK, namaKepala) {
+            const overlay = document.getElementById('modalKeluargaOverlay');
+            const body = document.getElementById('modalKeluargaBody');
+
+            if (!noKK || noKK === '-') {
+                showToast('Data keluarga tidak tersedia', 'error');
+                return;
+            }
+
+            // Cari semua anggota keluarga dengan NOMOR KK yang sama
+            const kkIndex = getColumnIndex('NOMOR KK');
+            const statusIndex = getColumnIndex('STATUS HUBUNGAN DALAM KELUARGA');
+
+            if (kkIndex === -1 || statusIndex === -1) {
+                showToast('Data tidak lengkap', 'error');
+                return;
+            }
+
+            // Ambil semua data dengan KK yang sama dari rawData (bukan filtered)
+            const semuaData = state.rawData;
+            const anggotaKeluarga = semuaData.filter(row => {
+                const kk = row[kkIndex];
+                return kk && kk.toString() === noKK.toString();
+            });
+
+            if (anggotaKeluarga.length === 0) {
+                body.innerHTML = `
+                    <div class="family-empty">
+                        <i class="fas fa-users"></i>
+                        <p>Tidak ada anggota keluarga ditemukan untuk KK: ${noKK}</p>
+                    </div>
+                `;
+                overlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+                return;
+            }
+
+            // Urutkan berdasarkan STATUS HUBUNGAN DALAM KELUARGA
+            const sortedAnggota = [...anggotaKeluarga].sort((a, b) => {
+                const statusA = a[statusIndex] ? a[statusIndex].toString().toUpperCase().trim() : '';
+                const statusB = b[statusIndex] ? b[statusIndex].toString().toUpperCase().trim() : '';
+
+                const idxA = STATUS_URUTAN.indexOf(statusA);
+                const idxB = STATUS_URUTAN.indexOf(statusB);
+
+                if (idxA === -1 && idxB === -1) return 0;
+                if (idxA === -1) return 1;
+                if (idxB === -1) return -1;
+                return idxA - idxB;
+            });
+
+            // Header informasi KK
+            const kelIndex = getColumnIndex('KELURAHAN/DESA');
+            const rtIndex = getColumnIndex('RT');
+            const rwIndex = getColumnIndex('RW');
+            const alamatIndex = getColumnIndex('ALAMAT');
+
+            let infoKK = '';
+            if (sortedAnggota.length > 0) {
+                const first = sortedAnggota[0];
+                const kel = kelIndex !== -1 ? first[kelIndex] || '-' : '-';
+                const rt = rtIndex !== -1 ? first[rtIndex] || '-' : '-';
+                const rw = rwIndex !== -1 ? first[rwIndex] || '-' : '-';
+                const alamat = alamatIndex !== -1 ? first[alamatIndex] || '-' : '-';
+                infoKK = `
+                    <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;">
+                        <div style="display:flex;flex-wrap:wrap;gap:4px 16px;font-size:0.75rem;color:#8899aa;">
+                            <span><strong style="color:#e8edf2;">No. KK:</strong> ${noKK}</span>
+                            <span><strong style="color:#e8edf2;">Kelurahan:</strong> ${kel}</span>
+                            <span><strong style="color:#e8edf2;">RT:</strong> ${rt}</span>
+                            <span><strong style="color:#e8edf2;">RW:</strong> ${rw}</span>
+                            <span><strong style="color:#e8edf2;">Alamat:</strong> ${alamat}</span>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Daftar anggota keluarga
+            let anggotaHtml = '';
+            const namaIndex = getColumnIndex('NAMA LENGKAP');
+            const genderIndex = getColumnIndex('JENIS KELAMIN');
+            const nikIndex = getColumnIndex('NIK');
+            const tglLahirIndex = getColumnIndex('TANGGAL LAHIR');
+            const pekerjaanIndex = getColumnIndex('PEKERJAAN');
+
+            sortedAnggota.forEach((row, idx) => {
+                const status = row[statusIndex] || 'TIDAK DIKETAHUI';
+                const statusDisplay = status.toString().toUpperCase().trim();
+                const nama = namaIndex !== -1 ? row[namaIndex] || '-' : '-';
+                const gender = genderIndex !== -1 ? row[genderIndex] || '-' : '-';
+                const nik = nikIndex !== -1 ? row[nikIndex] || '-' : '-';
+                const tglLahir = tglLahirIndex !== -1 ? row[tglLahirIndex] || '-' : '-';
+                const pekerjaan = pekerjaanIndex !== -1 ? row[pekerjaanIndex] || '-' : '-';
+
+                let statusClass = '';
+                if (statusDisplay === 'KEPALA KELUARGA') statusClass = 'kepala';
+                else if (statusDisplay === 'ISTRI') statusClass = 'istri';
+                else if (statusDisplay === 'ANAK') statusClass = 'anak';
+
+                // Hitung umur
+                let umur = '-';
+                if (tglLahir !== '-') {
+                    const age = calculateAge(tglLahir);
+                    umur = age !== null ? age + ' tahun' : '-';
+                }
+
+                const genderIcon = isLakiLaki(gender) ? '👨' : (isPerempuan(gender) ? '👩' : '👤');
+
+                anggotaHtml += `
+                    <div class="family-member-card">
+                        <div class="member-header">
+                            <span class="member-name">${genderIcon} ${nama}</span>
+                            <span class="member-status ${statusClass}">${status}</span>
+                        </div>
+                        <div class="member-detail">
+                            <span><i class="fas fa-id-card"></i> ${nik}</span>
+                            <span><i class="fas fa-calendar-alt"></i> ${tglLahir} (${umur})</span>
+                            <span><i class="fas fa-briefcase"></i> ${pekerjaan}</span>
+                            <span><i class="fas fa-venus-mars"></i> ${gender}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            const totalAnggota = sortedAnggota.length;
+
+            body.innerHTML = `
+                <div class="modal-title">
+                    <span class="modal-icon">👨‍👩‍👧‍👦</span>
+                    DATA KELUARGA - ${namaKepala || 'Keluarga'}
+                    <span style="font-size:0.6rem;font-weight:400;color:#667788;margin-left:auto;">
+                        ${totalAnggota} Anggota
+                    </span>
+                </div>
+                ${infoKK}
+                <div style="margin-top:8px;">
+                    ${anggotaHtml}
+                </div>
+                <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--glass-border);font-size:0.65rem;color:#667788;text-align:center;">
+                    Total ${totalAnggota} anggota keluarga
+                </div>
+            `;
+
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeKeluargaModal(event) {
+            if (event && event.target !== event.currentTarget) return;
+            document.getElementById('modalKeluargaOverlay').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // ============================================================
+        // SEARCH FUNCTIONS dengan Tombol
+        // ============================================================
+        function doSearch() {
+            const select = document.getElementById('searchColumn');
+            const input = document.getElementById('searchInput');
+
+            if (select) {
+                state.searchColumn = select.value;
+            }
+            if (input) {
+                state.searchTerm = input.value;
+            }
+
+            applyAllFilters();
+            showToast(`Pencarian: "${state.searchTerm || '(kosong)'}" di ${state.searchColumn}`, 'info');
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('searchInput');
+            if (input) {
+                input.value = '';
+            }
+            state.searchTerm = '';
+            state.searchColumn = 'SEMUA KOLOM';
+            const select = document.getElementById('searchColumn');
+            if (select) {
+                select.value = 'SEMUA KOLOM';
+            }
+            applyAllFilters();
+            showToast('Pencarian dibersihkan', 'info');
+        }
+
+        // ============================================================
+        // RENDER: FOOTER
+        // ============================================================
+        function renderFooter() {
+            const container = document.getElementById('footerContainer');
+            const total = state.filteredData.length;
+            const totalAll = state.rawData.length;
+
+            container.innerHTML = `
+                <div class="dashboard-footer">
+                    © 2026 - Dinas Kependudukan Kec. Senapelan
+                    | Menampilkan <strong>${formatNumber(total)}</strong> dari <strong>${formatNumber(totalAll)}</strong> data
+                    | Update: ${new Date().toLocaleString('id-ID')}
+                </div>
+            `;
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        async function init() {
+            const success = await fetchDashboardData();
+            if (success) {
+                renderDashboard();
+                showToast('Dashboard berhasil dimuat!', 'success');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
     </script>
+
 </body>
 </html>
