@@ -3,7 +3,35 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes" />
-    <title>Dashboard Kependudukan Kecamatan Senapelan</title>
+    <title>Sistem Pendataan Penduduk Kecamatan Senapelan - Data Penduduk 2026</title>
+
+    <!-- Open Graph / Facebook / WhatsApp -->
+    <meta property="og:type" content="website">   
+    <meta property="og:url" content="https://senapelan.github.io/Home/publik/datapenduduk/petugaspendataanpenduduk.html">
+    <meta property="og:title" content="Sistem Pendataan Penduduk Kecamatan Senapelan - Data Penduduk 2026">
+    <meta property="og:description" content="Pendataan Penduduk se-Kecamatan Senapelan Tahun 2026. Inovasi Camat Senapelan REIN RIZKA KARVY, S.STP., M.Si. Data penduduk akurat untuk pembangunan Senapelan Hebat - Pekanbaru Maju dan Aman">
+    <meta property="og:site_name" content="Sistem Pendataan Penduduk - Senapelan Kencana">
+    
+    <!-- Gambar preview -->
+    <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/pendataanpenduduk/datapenduduk512.png">
+    <meta property="og:image:secure_url" content="https://senapelan.github.io/Home/assets/metatag/pendataanpenduduk/datapenduduk512.png">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:alt" content="Logo Pendataan Penduduk Senapelan Kencana">
+    
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sistem Pendataan Penduduk Kecamatan Senapelan 2026">
+    <meta name="twitter:description" content="Pendataan Penduduk se-Kecamatan Senapelan Tahun 2026. Data penduduk akurat untuk pembangunan Senapelan Hebat - Pekanbaru Maju">
+    <meta name="twitter:image" content="https://senapelan.github.io/Home/assets/metatag/pendataanpenduduk/datapenduduk512.png">
+    <meta name="twitter:image:alt" content="Logo Pendataan Penduduk Senapelan Kencana">
+    
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" sizes="512x512" href="https://senapelan.github.io/Home/assets/metatag/pendataanpenduduk/datapenduduk512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://senapelan.github.io/Home/assets/metatag/pendataanpenduduk/datapenduduk512.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://senapelan.github.io/Home/assets/metatag/pendataanpenduduk/datapenduduk512.png">
+    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/pendataanpenduduk/datapenduduk512.png">
 
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js">
@@ -13,9 +41,9 @@
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <style>   
+    <style>
         /* ============================================================
-           ROOT & RESETt
+           ROOT & RESET
            ============================================================ */
         * {
             margin: 0;
@@ -82,7 +110,89 @@
         }
 
         /* ============================================================
-           HEADER PREMIUM
+           LOADING SCREEN
+           ============================================================ */
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('https://senapelan.github.io/Home/data/foto/backgroundweb/backgroundpenduduk.jpg') center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            transition: opacity 0.8s ease;
+        }
+
+        .loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-screen .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.65);
+            z-index: 1;
+        }
+
+        .loading-screen .loading-content {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .loading-screen .loading-logo {
+            width: 120px;
+            height: 120px;
+            object-fit: contain;
+            animation: floatLogo 2.5s ease-in-out infinite;
+            filter: drop-shadow(0 8px 30px rgba(0,0,0,0.5));
+        }
+
+        @keyframes floatLogo {
+            0%, 100% { transform: translateY(0px) scale(1); }
+            50% { transform: translateY(-15px) scale(1.03); }
+        }
+
+        .loading-screen .loading-text {
+            color: #ffffff;
+            font-size: 1.2rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+            animation: pulseText 1.8s ease-in-out infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.8; }
+            50% { opacity: 1; }
+        }
+
+        .loading-screen .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.15);
+            border-top-color: #ffffff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================================
+           HEADER PREMIUM - Logo Pemko
            ============================================================ */
         .dashboard-header {
             background: linear-gradient(135deg, rgba(20, 30, 51, 0.9), rgba(26, 58, 92, 0.7));
@@ -130,6 +240,22 @@
         }
 
         .dashboard-header .header-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .dashboard-header .header-left .logo-pemko {
+            width: 48px;
+            height: 48px;
+            object-fit: contain;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            padding: 4px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .dashboard-header .header-left .header-text {
             display: flex;
             flex-direction: column;
             gap: 2px;
@@ -948,16 +1074,16 @@
             width: 100%;
             border-collapse: collapse;
             font-size: 0.7rem;
-            min-width: 700px;
+            min-width: 750px;
         }
 
         .table-wrapper table th {
             background: rgba(255, 255, 255, 0.03);
             color: #667788;
-            padding: 8px 10px;
+            padding: 8px 8px;
             text-align: left;
             font-weight: 600;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             text-transform: uppercase;
             letter-spacing: 0.4px;
             border-bottom: 1px solid var(--glass-border);
@@ -968,10 +1094,11 @@
         }
 
         .table-wrapper table td {
-            padding: 6px 10px;
+            padding: 6px 8px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.02);
             word-break: break-word;
             vertical-align: middle;
+            font-size: 0.65rem;
         }
 
         .table-wrapper table tr:hover td {
@@ -979,25 +1106,75 @@
         }
 
         .table-wrapper table .btn-keluarga {
-            padding: 3px 10px;
+            padding: 3px 8px;
             background: linear-gradient(135deg, var(--accent), var(--accent2));
             border: none;
             border-radius: var(--radius-sm);
             color: #fff;
             font-family: 'Inter', sans-serif;
-            font-size: 0.55rem;
+            font-size: 0.5rem;
             font-weight: 600;
             cursor: pointer;
             transition: var(--transition);
             white-space: nowrap;
             display: inline-flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
         }
 
         .table-wrapper table .btn-keluarga:hover {
             transform: translateY(-1px);
             box-shadow: 0 4px 12px rgba(79, 172, 254, 0.3);
+        }
+
+        .table-wrapper table .col-no {
+            width: 40px;
+            min-width: 40px;
+            text-align: center;
+        }
+        .table-wrapper table .col-aksi {
+            width: 80px;
+            min-width: 80px;
+            text-align: center;
+        }
+        .table-wrapper table .col-nik {
+            width: 130px;
+            min-width: 130px;
+            font-family: monospace;
+            font-size: 0.6rem;
+        }
+        .table-wrapper table .col-nama {
+            min-width: 120px;
+        }
+        .table-wrapper table .col-kelamin {
+            width: 80px;
+            min-width: 80px;
+        }
+        .table-wrapper table .col-tgl {
+            width: 90px;
+            min-width: 90px;
+        }
+        .table-wrapper table .col-alamat {
+            min-width: 120px;
+        }
+        .table-wrapper table .col-rt {
+            width: 40px;
+            min-width: 40px;
+            text-align: center;
+        }
+        .table-wrapper table .col-rw {
+            width: 40px;
+            min-width: 40px;
+            text-align: center;
+        }
+        .table-wrapper table .col-kelurahan {
+            min-width: 100px;
+        }
+        .table-wrapper table .col-pekerjaan {
+            min-width: 100px;
+        }
+        .table-wrapper table .col-status {
+            min-width: 100px;
         }
 
         /* ============================================================
@@ -1108,35 +1285,10 @@
         }
 
         /* ============================================================
-           LOADING
+           LOADING (old - replaced by loading-screen)
            ============================================================ */
         .loading {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 300px;
-            gap: 16px;
-        }
-
-        .loading .spinner {
-            width: 36px;
-            height: 36px;
-            border: 3px solid var(--glass-border);
-            border-top-color: var(--accent);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading .loading-text {
-            color: #667788;
-            font-size: 0.85rem;
+            display: none;
         }
 
         /* ============================================================
@@ -1234,6 +1386,10 @@
                 justify-content: flex-start;
                 flex-wrap: wrap;
             }
+            .dashboard-header .header-left .logo-pemko {
+                width: 36px;
+                height: 36px;
+            }
             .filters-row {
                 flex-direction: column;
                 gap: 6px;
@@ -1273,8 +1429,8 @@
                 height: 180px;
             }
             .table-wrapper table {
-                font-size: 0.6rem;
-                min-width: 500px;
+                font-size: 0.55rem;
+                min-width: 550px;
             }
             .table-wrapper .table-title .search-box input {
                 width: 120px;
@@ -1294,6 +1450,10 @@
             }
             .dashboard-header h1 {
                 font-size: 0.95rem;
+            }
+            .dashboard-header .header-left .logo-pemko {
+                width: 30px;
+                height: 30px;
             }
             .cards-grid {
                 grid-template-columns: 1fr 1fr;
@@ -1324,7 +1484,7 @@
             }
             .table-wrapper table {
                 font-size: 0.5rem;
-                min-width: 400px;
+                min-width: 450px;
             }
             .table-wrapper .table-title .search-box input {
                 width: 100px;
@@ -1347,13 +1507,17 @@
 </head>
 <body>
 
-    <div class="dashboard-container" id="app">
-
-        <!-- LOADING -->
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <div class="loading-text">Memuat Data Dashboard...</div>
+    <!-- LOADING SCREEN -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="overlay"></div>
+        <div class="loading-content">
+            <img src="https://senapelan.github.io/Home/data/logo_pemko/logosenapelan.png" alt="Logo Senapelan" class="loading-logo" />
+            <div class="loading-text">Menampilkan untuk Anda...</div>
+            <div class="loading-spinner"></div>
         </div>
+    </div>
+
+    <div class="dashboard-container" id="app">
 
         <!-- DASHBOARD CONTENT -->
         <div id="dashboardContent" style="display:none;">
@@ -1449,6 +1613,19 @@
         };
 
         // ============================================================
+        // FUNGSI SENSOR NIK & NO KK
+        // ============================================================
+        function maskSensitiveNumber(value) {
+            if (!value) return '-';
+            const str = value.toString().trim();
+            if (str.length <= 4) return str;
+            const first4 = str.substring(0, 4);
+            const last4 = str.substring(str.length - 4);
+            const masked = '*'.repeat(Math.min(str.length - 8, 8));
+            return first4 + masked + last4;
+        }
+
+        // ============================================================
         // TOAST
         // ============================================================
         function showToast(message, type = 'info') {
@@ -1484,12 +1661,13 @@
                 return true;
             } catch (error) {
                 console.error('Error:', error);
-                document.getElementById('loading').innerHTML = `
-                    <div style="text-align:center;color:#e74c3c;">
-                        <i class="fas fa-exclamation-circle" style="font-size:2.5rem;display:block;margin-bottom:12px;"></i>
-                        <h3 style="color:#e8edf2;font-size:1.1rem;">Gagal Memuat Data</h3>
-                        <p style="color:#667788;margin-top:8px;font-size:0.85rem;">${error.message}</p>
-                        <button onclick="location.reload()" style="margin-top:14px;padding:10px 28px;background:linear-gradient(135deg,#4facfe,#00d4ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
+                document.getElementById('loadingScreen').innerHTML = `
+                    <div class="overlay"></div>
+                    <div class="loading-content" style="text-align:center;color:#e74c3c;">
+                        <i class="fas fa-exclamation-circle" style="font-size:3rem;display:block;margin-bottom:16px;color:#e74c3c;"></i>
+                        <h3 style="color:#fff;font-size:1.2rem;">Gagal Memuat Data</h3>
+                        <p style="color:#8899aa;margin-top:8px;font-size:0.9rem;max-width:400px;text-align:center;">${error.message}</p>
+                        <button onclick="location.reload()" style="margin-top:20px;padding:12px 32px;background:linear-gradient(135deg,#4facfe,#00d4ff);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:0.9rem;font-weight:600;">
                             <i class="fas fa-sync"></i> Muat Ulang
                         </button>
                     </div>
@@ -1504,7 +1682,12 @@
         function renderDashboard() {
             if (!state.isLoaded) return;
 
-            document.getElementById('loading').style.display = 'none';
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.classList.add('hidden');
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+            }, 800);
+
             document.getElementById('dashboardContent').style.display = 'block';
 
             renderHeader();
@@ -1602,8 +1785,7 @@
             const pengangguranKeywords = [
                 'TIDAK BEKERJA', 'BELUM BEKERJA', 'BELUM MEMILIKI PEKERJAAN',
                 'BELUM ADA PEKERJAAN', 'BELUM / TIDAK BEKERJA',
-                'PELAJAR', 'MAHASISWA', 'IBU RUMAH TANGGA',
-                'MENGURUS RUMAH TANGGA', 'PENSIUNAN', 'PENSIUN',
+                'PENSIUNAN', 'PENSIUN',
                 'TIDAK ADA', 'N/A', '-'
             ];
             return pengangguranKeywords.some(kw => str.includes(kw));
@@ -1614,24 +1796,44 @@
         }
 
         // ============================================================
-        // HITUNG UMUR
+        // HITUNG UMUR - SUPPORT DD/MM/YYYY DAN ISO FORMAT
         // ============================================================
         function calculateAge(dateStr) {
             if (!dateStr) return null;
-            try {
-                const parts = dateStr.split('/');
-                if (parts.length !== 3) return null;
-                const day = parseInt(parts[0]);
-                const month = parseInt(parts[1]) - 1;
-                const year = parseInt(parts[2]);
-                if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
-                const birthDate = new Date(year, month, day);
-                const today = new Date();
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const m = today.getMonth() - birthDate.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) age--;
-                return age;
-            } catch (e) { return null; }
+            
+            let birthDate = null;
+            const str = dateStr.toString().trim();
+            
+            // Format 1: DD/MM/YYYY (contoh: 28/02/1987)
+            if (str.includes('/')) {
+                const parts = str.split('/');
+                if (parts.length === 3) {
+                    const day = parseInt(parts[0]);
+                    const month = parseInt(parts[1]) - 1;
+                    const year = parseInt(parts[2]);
+                    if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                        birthDate = new Date(year, month, day);
+                    }
+                }
+            } 
+            // Format 2: ISO 8601 (contoh: 1997-10-09T17:00:00.000Z)
+            else if (str.includes('T') || str.includes('-')) {
+                const parsed = new Date(str);
+                if (!isNaN(parsed.getTime())) {
+                    birthDate = parsed;
+                }
+            }
+            
+            if (!birthDate || isNaN(birthDate.getTime())) return null;
+            
+            // Hitung umur
+            const today = new Date();
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            return age;
         }
 
         function getAgeGroup(age) {
@@ -1668,16 +1870,18 @@
                 <div class="dashboard-header">
                     <div class="header-content">
                         <div class="header-left">
-                            <div class="header-icon">📊</div>
-                            <h1>DASHBOARD KEPENDUDUKAN KECAMATAN SENAPELAN</h1>
-                            <div class="subtitle">
-                                <i class="fas fa-map-pin"></i> Kota Pekanbaru - Provinsi Riau
-                                <span style="margin:0 6px;color:#445566;">|</span>
-                                <i class="fas fa-database"></i> ${formatNumber(total)} data ditampilkan
+                            <img src="https://senapelan.github.io/Home/assets/metatag/logopemko/PEMKO%20512px.png" alt="Logo Pemko" class="logo-pemko" />
+                            <div class="header-text">
+                                <h1>DASHBOARD KEPENDUDUKAN KECAMATAN SENAPELAN</h1>
+                                <div class="subtitle">
+                                    <i class="fas fa-map-pin"></i> Kecamatan Senapelan Kota Pekanbaru - Provinsi Riau
+                                    <span style="margin:0 6px;color:#445566;">|</span>
+                                    <i class="fas fa-database"></i> ${formatNumber(total)} data ditampilkan
+                                </div>
                             </div>
                         </div>
                         <div class="header-right">
-                            <span class="header-badge"><i class="fas fa-circle" style="font-size:0.35rem;color:#2ecc71;"></i> Live Data</span>
+                            <span class="header-badge"><i class="fas fa-circle" style="font-size:0.35rem;color:#2ecc71;"></i> Senapelan Satu Pintu</span>
                             <span class="header-update">
                                 <i class="fas fa-clock"></i>
                                 Update: ${new Date().toLocaleString('id-ID')}
@@ -1696,10 +1900,8 @@
 
             const isSenapelan = state.modeWilayah === 'senapelan';
 
-            // Ambil data unik untuk filter dari ID_PETUGAS (kolom AM)
             const allPetugas = [...new Set(getColumnData('ID_PETUGAS', state.rawData))].filter(v => v).sort();
 
-            // Filter kelurahan dari ID_PETUGAS
             let allKelurahan = [];
             if (isSenapelan) {
                 allKelurahan = allPetugas.filter(v => {
@@ -1882,7 +2084,6 @@
         function applyAllFilters() {
             let filtered = [...state.rawData];
 
-            // Filter Mode Wilayah Senapelan
             if (state.modeWilayah === 'senapelan') {
                 const petugasIndex = getColumnIndex('ID_PETUGAS');
                 if (petugasIndex !== -1) {
@@ -1909,7 +2110,6 @@
                 }
             }
 
-            // Filter berdasarkan pilihan dropdown
             Object.keys(state.filters).forEach(column => {
                 if (column === 'KELURAHAN/DESA' && state.modeWilayah === 'senapelan') return;
                 const colIndex = getColumnIndex(column);
@@ -1922,7 +2122,6 @@
                 }
             });
 
-            // Filter berdasarkan search
             if (state.searchTerm) {
                 const searchLower = state.searchTerm.toLowerCase().trim();
                 if (state.searchColumn === 'SEMUA KOLOM') {
@@ -1985,7 +2184,6 @@
             const totalSuku = countUnique(sukuData);
             const rasio = perempuan > 0 ? (laki / perempuan) : laki;
 
-            // Status Kesehatan & Kebersihan - Total Terdaftar
             const kesehatanData = getColumnData('STATUS KESEHATAN');
             const kesehatanTerdaftar = kesehatanData.filter(v => v && v.toString().trim() !== '').length;
 
@@ -2028,7 +2226,7 @@
         }
 
         // ============================================================
-        // RENDER: DETAIL CARDS (Analitik Lanjutan)
+        // RENDER: DETAIL CARDS (Analitik Lanjutan) - DIPERBAIKI
         // ============================================================
         function renderDetailCards() {
             const container = document.getElementById('detailCardsContainer');
@@ -2056,6 +2254,30 @@
             const genderData = getColumnData('JENIS KELAMIN');
             const laki = genderData.filter(v => isLakiLaki(v)).length;
             const perempuan = genderData.filter(v => isPerempuan(v)).length;
+            const totalKK = countUnique(kkData);
+
+            // ============================================================
+            // PERHITUNGAN KEPALA KELUARGA BERDASARKAN GENDER
+            // ============================================================
+            const statusIndex = getColumnIndex('STATUS HUBUNGAN DALAM KELUARGA');
+            const genderIndex = getColumnIndex('JENIS KELAMIN');
+
+            let kepalaLaki = 0;
+            let kepalaPerempuan = 0;
+
+            if (statusIndex !== -1 && genderIndex !== -1) {
+                state.filteredData.forEach(row => {
+                    const status = row[statusIndex];
+                    if (status && status.toString().toUpperCase().trim() === 'KEPALA KELUARGA') {
+                        const gender = row[genderIndex];
+                        if (isLakiLaki(gender)) {
+                            kepalaLaki++;
+                        } else if (isPerempuan(gender)) {
+                            kepalaPerempuan++;
+                        }
+                    }
+                });
+            }
 
             // Kumpulkan semua distribusi
             const agamaDist = getDistribution(getColumnData('AGAMA'));
@@ -2167,7 +2389,9 @@
                     total: total,
                     laki: laki,
                     perempuan: perempuan,
-                    kk: countUnique(kkData)
+                    kk: totalKK,
+                    kepalaLaki: kepalaLaki,
+                    kepalaPerempuan: kepalaPerempuan
                 },
                 agama: { dist: agamaDist, column: 'AGAMA', title: 'AGAMA', icon: '🕌', isAge: false },
                 pendidikan: { dist: pendidikanDist, column: 'PENDIDIKAN', title: 'PENDIDIKAN', icon: '📚',
@@ -2199,7 +2423,7 @@
                     <div class="detail-cards-grid">
             `;
 
-            // Card Jumlah Penduduk
+            // Card Jumlah Penduduk - DIPERBAIKI dengan Kepala Keluarga Laki/Perempuan
             html += `
                 <div class="detail-card" onclick="openDetailModal('jumlahPenduduk')">
                     <div class="detail-card-header">
@@ -2218,12 +2442,12 @@
                     </div>
                     <div class="category-row">
                         <span class="cat-name">Kepala Keluarga</span>
-                        <span class="cat-value laki">-</span>
-                        <span class="cat-value perempuan">-</span>
-                        <span class="cat-value total">${formatNumber(countUnique(kkData))}</span>
+                        <span class="cat-value laki">${formatNumber(kepalaLaki)}</span>
+                        <span class="cat-value perempuan">${formatNumber(kepalaPerempuan)}</span>
+                        <span class="cat-value total">${formatNumber(totalKK)}</span>
                     </div>
                     <div class="category-total">
-                        <span>Total KK: <strong>${formatNumber(countUnique(kkData))}</strong></span>
+                        <span>Total KK: <strong>${formatNumber(totalKK)}</strong></span>
                         <span>Rasio L:P: <strong>${(laki / (perempuan || 1)).toFixed(2)}</strong></span>
                     </div>
                     <div class="click-hint"><i class="fas fa-expand"></i> Klik untuk preview</div>
@@ -2289,7 +2513,7 @@
         }
 
         // ============================================================
-        // MODAL PREVIEW DETAIL
+        // MODAL PREVIEW DETAIL - DIPERBAIKI
         // ============================================================
         function openDetailModal(type) {
             const overlay = document.getElementById('modalOverlay');
@@ -2318,8 +2542,8 @@
                     </div>
                     <div class="category-row">
                         <span class="cat-name">Kepala Keluarga</span>
-                        <span class="cat-value laki">-</span>
-                        <span class="cat-value perempuan">-</span>
+                        <span class="cat-value laki">${formatNumber(detail.kepalaLaki || 0)}</span>
+                        <span class="cat-value perempuan">${formatNumber(detail.kepalaPerempuan || 0)}</span>
                         <span class="cat-value total">${formatNumber(detail.kk)}</span>
                     </div>
                     <div class="category-total">
@@ -2528,8 +2752,18 @@
             const container = document.getElementById('tableContainer');
 
             const columns = [
-                'NO', 'NIK', 'NAMA LENGKAP', 'JENIS KELAMIN', 'TANGGAL LAHIR',
-                'ALAMAT', 'RT', 'RW', 'KELURAHAN/DESA', 'PEKERJAAN', 'STATUS PERKAWINAN', 'AKSI'
+                { key: 'NO', label: 'NO', class: 'col-no' },
+                { key: 'AKSI', label: 'AKSI', class: 'col-aksi' },
+                { key: 'NIK', label: 'NIK', class: 'col-nik' },
+                { key: 'NAMA LENGKAP', label: 'NAMA', class: 'col-nama' },
+                { key: 'JENIS KELAMIN', label: 'JK', class: 'col-kelamin' },
+                { key: 'TANGGAL LAHIR', label: 'TGL LAHIR', class: 'col-tgl' },
+                { key: 'ALAMAT', label: 'ALAMAT', class: 'col-alamat' },
+                { key: 'RT', label: 'RT', class: 'col-rt' },
+                { key: 'RW', label: 'RW', class: 'col-rw' },
+                { key: 'KELURAHAN/DESA', label: 'KELURAHAN', class: 'col-kelurahan' },
+                { key: 'PEKERJAAN', label: 'PEKERJAAN', class: 'col-pekerjaan' },
+                { key: 'STATUS PERKAWINAN', label: 'STATUS KAWIN', class: 'col-status' }
             ];
 
             const dataToShow = state.filteredData;
@@ -2567,7 +2801,7 @@
                         <table>
                             <thead>
                                 <tr>
-                                    ${columns.map(col => `<th>${col}</th>`).join('')}
+                                    ${columns.map(col => `<th class="${col.class}">${col.label}</th>`).join('')}
                                 </tr>
                             </thead>
                             <tbody>
@@ -2578,20 +2812,28 @@
                                     const noKK = rowData[getColumnIndex('NOMOR KK')] || '-';
                                     
                                     columns.forEach(col => {
-                                        if (col === 'NO') {
-                                            row.push(idx + 1);
-                                        } else if (col === 'AKSI') {
+                                        if (col.key === 'NO') {
+                                            row.push(`<td class="${col.class}">${idx + 1}</td>`);
+                                        } else if (col.key === 'AKSI') {
                                             row.push(`
-                                                <button class="btn-keluarga" onclick="openKeluargaModal('${noKK}', '${nama}')">
-                                                    <i class="fas fa-users"></i> Keluarga
-                                                </button>
+                                                <td class="${col.class}">
+                                                    <button class="btn-keluarga" onclick="openKeluargaModal('${noKK}', '${nama}')">
+                                                        <i class="fas fa-users"></i> Keluarga
+                                                    </button>
+                                                </td>
                                             `);
+                                        } else if (col.key === 'NIK' || col.key === 'NOMOR KK') {
+                                            const colIndex = getColumnIndex(col.key);
+                                            const value = colIndex !== -1 ? (rowData[colIndex] || '-') : '-';
+                                            const masked = col.key === 'NIK' ? maskSensitiveNumber(value) : value;
+                                            row.push(`<td class="${col.class}">${masked}</td>`);
                                         } else {
-                                            const colIndex = getColumnIndex(col);
-                                            row.push(colIndex !== -1 ? (rowData[colIndex] || '-') : '-');
+                                            const colIndex = getColumnIndex(col.key);
+                                            const value = colIndex !== -1 ? (rowData[colIndex] || '-') : '-';
+                                            row.push(`<td class="${col.class}">${value}</td>`);
                                         }
                                     });
-                                    return `<tr>${row.map(cell => `<td>${cell}</td>`).join('')}</tr>`;
+                                    return `<tr>${row.join('')}</tr>`;
                                 }).join('')}
                                 ${dataToShow.length > 100 ? `
                                     <tr>
@@ -2616,7 +2858,6 @@
 
             container.innerHTML = html;
 
-            // Set nilai dari state
             const searchSelect = document.getElementById('searchColumn');
             if (searchSelect && state.searchColumn) {
                 searchSelect.value = state.searchColumn;
@@ -2626,7 +2867,6 @@
                 searchInput.value = state.searchTerm;
             }
 
-            // Enter key untuk search
             const input = document.getElementById('searchInput');
             if (input) {
                 input.addEventListener('keypress', function(e) {
@@ -2649,7 +2889,6 @@
                 return;
             }
 
-            // Cari semua anggota keluarga dengan NOMOR KK yang sama
             const kkIndex = getColumnIndex('NOMOR KK');
             const statusIndex = getColumnIndex('STATUS HUBUNGAN DALAM KELUARGA');
 
@@ -2658,7 +2897,6 @@
                 return;
             }
 
-            // Ambil semua data dengan KK yang sama dari rawData (bukan filtered)
             const semuaData = state.rawData;
             const anggotaKeluarga = semuaData.filter(row => {
                 const kk = row[kkIndex];
@@ -2677,7 +2915,6 @@
                 return;
             }
 
-            // Urutkan berdasarkan STATUS HUBUNGAN DALAM KELUARGA
             const sortedAnggota = [...anggotaKeluarga].sort((a, b) => {
                 const statusA = a[statusIndex] ? a[statusIndex].toString().toUpperCase().trim() : '';
                 const statusB = b[statusIndex] ? b[statusIndex].toString().toUpperCase().trim() : '';
@@ -2691,7 +2928,6 @@
                 return idxA - idxB;
             });
 
-            // Header informasi KK
             const kelIndex = getColumnIndex('KELURAHAN/DESA');
             const rtIndex = getColumnIndex('RT');
             const rwIndex = getColumnIndex('RW');
@@ -2707,7 +2943,7 @@
                 infoKK = `
                     <div style="background:var(--glass);border:1px solid var(--glass-border);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;">
                         <div style="display:flex;flex-wrap:wrap;gap:4px 16px;font-size:0.75rem;color:#8899aa;">
-                            <span><strong style="color:#e8edf2;">No. KK:</strong> ${noKK}</span>
+                            <span><strong style="color:#e8edf2;">No. KK:</strong> ${maskSensitiveNumber(noKK)}</span>
                             <span><strong style="color:#e8edf2;">Kelurahan:</strong> ${kel}</span>
                             <span><strong style="color:#e8edf2;">RT:</strong> ${rt}</span>
                             <span><strong style="color:#e8edf2;">RW:</strong> ${rw}</span>
@@ -2717,7 +2953,6 @@
                 `;
             }
 
-            // Daftar anggota keluarga
             let anggotaHtml = '';
             const namaIndex = getColumnIndex('NAMA LENGKAP');
             const genderIndex = getColumnIndex('JENIS KELAMIN');
@@ -2739,7 +2974,6 @@
                 else if (statusDisplay === 'ISTRI') statusClass = 'istri';
                 else if (statusDisplay === 'ANAK') statusClass = 'anak';
 
-                // Hitung umur
                 let umur = '-';
                 if (tglLahir !== '-') {
                     const age = calculateAge(tglLahir);
@@ -2755,7 +2989,7 @@
                             <span class="member-status ${statusClass}">${status}</span>
                         </div>
                         <div class="member-detail">
-                            <span><i class="fas fa-id-card"></i> ${nik}</span>
+                            <span><i class="fas fa-id-card"></i> ${maskSensitiveNumber(nik)}</span>
                             <span><i class="fas fa-calendar-alt"></i> ${tglLahir} (${umur})</span>
                             <span><i class="fas fa-briefcase"></i> ${pekerjaan}</span>
                             <span><i class="fas fa-venus-mars"></i> ${gender}</span>
