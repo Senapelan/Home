@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dashboard | Senapelan Kencana</title>
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png">
@@ -14,74 +14,325 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%);
+            background: #f0f4f8;
             min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .dashboard-container {
-            display: flex;
-            min-height: 100vh;
+            overflow: hidden;
+            height: 100vh;
             position: relative;
         }
 
-        /* ========== SIDEBAR ========== */
-        .sidebar {
-            width: 280px;
-            background: linear-gradient(180deg, #0a2a3a 0%, #0d3b4f 100%);
-            color: white;
-            position: fixed;
-            left: 0;
-            top: 0;
+        /* ========== MAIN WRAPPER ========== */
+        .dashboard-wrapper {
+            display: flex;
+            flex-direction: column;
             height: 100vh;
-            overflow-y: auto;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 1000;
-            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
         }
 
-        .sidebar::-webkit-scrollbar {
-            width: 5px;
-        }
-        .sidebar::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-        }
-        .sidebar::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                transform: translateX(-100%);
-                width: 280px;
-            }
-            .sidebar.open {
-                transform: translateX(0);
-            }
-            .main-content {
-                margin-left: 0 !important;
-            }
+        /* ========== TOP BAR ========== */
+        .top-bar {
+            background: white;
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            flex-shrink: 0;
+            height: 60px;
+            position: relative;
         }
 
-        @media (min-width: 769px) {
-            .sidebar {
-                transform: translateX(0) !important;
+        .top-bar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .top-bar-left .brand-icon {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #0a2a3a, #2c7ec0);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .top-bar-left .brand-icon img {
+            width: 28px;
+            height: 28px;
+            object-fit: contain;
+        }
+
+        .top-bar-left .brand-text {
+            min-width: 0;
+        }
+
+        .top-bar-left .brand-text h1 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #0a2a3a, #2c7ec0);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-bar-left .brand-text p {
+            font-size: 0.6rem;
+            color: #6c757d;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .top-bar-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-shrink: 0;
+        }
+
+        .profile-info {
+            text-align: right;
+            min-width: 0;
+        }
+
+        .profile-info .name {
+            font-weight: 600;
+            color: #1a2a3a;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100px;
+        }
+
+        .profile-info .role {
+            font-size: 0.6rem;
+            color: #6c757d;
+        }
+
+        .profile-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.2s;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .profile-avatar i {
+            font-size: 1.2rem;
+            color: white;
+        }
+
+        .logout-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            border: none;
+            padding: 0.4rem 0.9rem;
+            border-radius: 2rem;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .logout-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+        }
+
+        .logout-btn span {
+            display: inline;
+        }
+
+        @media (max-width: 480px) {
+            .logout-btn span {
+                display: none;
             }
-            .main-content {
-                margin-left: 280px;
+            .logout-btn {
+                padding: 0.4rem 0.7rem;
             }
-            .menu-toggle {
-                display: none !important;
+            .profile-info .name {
+                max-width: 60px;
+                font-size: 0.7rem;
+            }
+            .profile-info .role {
+                font-size: 0.5rem;
+            }
+            .top-bar {
+                padding: 0.6rem 0.8rem;
+                height: 55px;
+            }
+            .top-bar-left .brand-text h1 {
+                font-size: 0.8rem;
+            }
+            .top-bar-left .brand-text p {
+                font-size: 0.5rem;
+            }
+            .top-bar-left .brand-icon {
+                width: 30px;
+                height: 30px;
+            }
+            .top-bar-left .brand-icon img {
+                width: 22px;
+                height: 22px;
+            }
+            .profile-avatar {
+                width: 30px;
+                height: 30px;
             }
         }
 
-        .sidebar-overlay {
+        /* ========== IFRAME CONTAINER ========== */
+        .iframe-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background: #f8fafc;
+        }
+
+        .iframe-wrapper iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            display: block;
+        }
+
+        /* ========== BOTTOM NAVIGATION (MOBILE) ========== */
+        .bottom-nav {
+            display: none;
+            background: white;
+            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 -2px 15px rgba(0, 0, 0, 0.08);
+            z-index: 100;
+            flex-shrink: 0;
+            padding: 6px 0 env(safe-area-inset-bottom);
+            height: 65px;
+            position: relative;
+        }
+
+        .bottom-nav-inner {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 100%;
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 0 8px;
+        }
+
+        .bottom-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            min-width: 48px;
+            -webkit-tap-highlight-color: transparent;
+            background: transparent;
+            border: none;
+            font-family: 'Inter', sans-serif;
+            gap: 2px;
+        }
+
+        .bottom-nav-item i {
+            font-size: 1.3rem;
+            color: #8a9aa8;
+            transition: all 0.3s ease;
+        }
+
+        .bottom-nav-item span {
+            font-size: 0.55rem;
+            font-weight: 500;
+            color: #8a9aa8;
+            transition: all 0.3s ease;
+            text-align: center;
+            line-height: 1.2;
+            max-width: 60px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .bottom-nav-item.active i {
+            color: #2c7ec0;
+            transform: scale(1.1);
+        }
+
+        .bottom-nav-item.active span {
+            color: #2c7ec0;
+            font-weight: 600;
+        }
+
+        .bottom-nav-item.active::before {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(90deg, #2c7ec0, #1a5f9e);
+            border-radius: 0 0 4px 4px;
+        }
+
+        .bottom-nav-item:active {
+            transform: scale(0.92);
+        }
+
+        /* Menu toggle untuk mobile (hamburger) - pindah ke bottom nav */
+        .menu-toggle-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.3rem;
+            color: #2c7ec0;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 8px;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .menu-toggle-btn:active {
+            background: rgba(44, 126, 192, 0.1);
+        }
+
+        /* ========== MOBILE SIDEBAR (Bottom Sheet) ========== */
+        .mobile-menu-overlay {
             position: fixed;
             top: 0;
             left: 0;
@@ -90,86 +341,442 @@
             background: rgba(0, 0, 0, 0.5);
             z-index: 999;
             display: none;
-            backdrop-filter: blur(2px);
+            backdrop-filter: blur(4px);
+            animation: fadeIn 0.3s ease;
         }
 
-        .sidebar-overlay.active {
+        .mobile-menu-overlay.active {
             display: block;
         }
 
-        .sidebar-header {
-            padding: 2rem 1.5rem;
-            text-align: center;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 1.5rem;
+        .mobile-menu-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            max-height: 85vh;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            padding-bottom: env(safe-area-inset-bottom);
         }
 
-        .sidebar-header img {
-            width: 200px;
-            height: auto;
-            margin-bottom: 0.75rem;
+        .mobile-menu-sheet.open {
+            transform: translateY(0);
         }
 
-        .sidebar-header h3 {
-            font-size: 1.1rem;
+        .mobile-menu-header {
+            padding: 16px 20px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f0f0f0;
+            flex-shrink: 0;
+        }
+
+        .mobile-menu-header .handle {
+            width: 40px;
+            height: 4px;
+            background: #d1d5db;
+            border-radius: 4px;
+            margin: 0 auto;
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 8px;
+        }
+
+        .mobile-menu-header .title {
             font-weight: 600;
-            color: white;
+            font-size: 1rem;
+            color: #1a2a3a;
         }
 
-        .sidebar-header p {
-            font-size: 0.6rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 0.25rem;
+        .mobile-menu-header .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #6c757d;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 8px;
         }
 
-        .nav-menu {
-            padding: 0 1rem 2rem;
+        .mobile-menu-header .close-btn:active {
+            background: #f0f0f0;
         }
 
-        .nav-item {
-            margin-bottom: 0.5rem;
+        .mobile-menu-body {
+            overflow-y: auto;
+            padding: 8px 16px 20px;
+            flex: 1;
+            -webkit-overflow-scrolling: touch;
         }
 
-        .nav-header {
-            padding: 0.75rem 1rem;
-            font-size: 0.75rem;
+        .mobile-menu-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        .mobile-menu-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        .mobile-menu-body::-webkit-scrollbar-thumb {
+            background: #c1c7cd;
+            border-radius: 10px;
+        }
+
+        /* Menu items dalam bottom sheet - gaya sama seperti sidebar desktop */
+        .mobile-menu-body .nav-header {
+            padding: 0.75rem 0.5rem 0.5rem;
+            font-size: 0.7rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 1px;
-            color: rgba(255, 255, 255, 0.5);
+            color: #6c757d;
         }
 
-        .nav-link {
+        .mobile-menu-body .nav-item {
+            margin-bottom: 2px;
+        }
+
+        .mobile-menu-body .nav-link {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 0.85rem 1rem;
-            color: rgba(255, 255, 255, 0.85);
+            padding: 0.7rem 0.8rem;
+            color: #1a2a3a;
             text-decoration: none;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            transition: all 0.2s ease;
             cursor: pointer;
             font-weight: 500;
+            font-size: 0.85rem;
+            background: transparent;
+            border: none;
+            width: 100%;
+            text-align: left;
         }
 
-        .nav-link i {
-            width: 24px;
-            font-size: 1.1rem;
+        .mobile-menu-body .nav-link i {
+            width: 22px;
+            font-size: 1rem;
+            color: #5a6a7a;
         }
 
-        .nav-link:hover {
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            transform: translateX(5px);
+        .mobile-menu-body .nav-link:active {
+            background: #f0f4f8;
         }
 
-        .nav-link.active {
+        .mobile-menu-body .nav-link.active {
             background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
             color: white;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
 
-        .nav-link.blink-effect {
+        .mobile-menu-body .nav-link.active i {
+            color: white;
+        }
+
+        .mobile-menu-body .submenu,
+        .mobile-menu-body .submenu-kelurahan {
+            padding-left: 0.8rem;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .mobile-menu-body .nav-item.open > .submenu {
+            max-height: 800px;
+        }
+
+        .mobile-menu-body .kelembagaan-sub-item.open .submenu-kelurahan {
+            max-height: 600px;
+        }
+
+        .mobile-menu-body .nav-link .fa-chevron-down {
+            transition: transform 0.3s ease;
+            margin-left: auto !important;
+        }
+
+        .mobile-menu-body .nav-item.open > .nav-link .fa-chevron-down,
+        .mobile-menu-body .kelembagaan-sub-item.open > .sub-accordion .fa-chevron-down {
+            transform: rotate(180deg);
+        }
+
+        .mobile-menu-body .sub-accordion {
+            background: transparent;
+            padding: 0.6rem 0.8rem;
+        }
+
+        .mobile-menu-body .kelurahan-link {
+            padding: 0.5rem 0.8rem !important;
+            font-size: 0.75rem !important;
+            background: #f8fafc;
+            margin: 2px 0;
+            border-radius: 8px;
+        }
+
+        .mobile-menu-body .kelurahan-link:active {
+            background: #e8edf2;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* ========== RESPONSIVE ========== */
+        @media (max-width: 768px) {
+            .bottom-nav {
+                display: block;
+            }
+
+            .menu-toggle-btn {
+                display: block !important;
+            }
+
+            /* Sembunyikan sidebar desktop */
+            .desktop-sidebar {
+                display: none !important;
+            }
+
+            .iframe-wrapper {
+                height: calc(100vh - 60px - 65px);
+            }
+
+            .top-bar-left .brand-text p {
+                display: none;
+            }
+        }
+
+        @media (min-width: 769px) {
+            /* Desktop: tampilkan sidebar kiri */
+            .desktop-sidebar {
+                display: block !important;
+                width: 260px;
+                background: linear-gradient(180deg, #0a2a3a 0%, #0d3b4f 100%);
+                color: white;
+                flex-shrink: 0;
+                overflow-y: auto;
+                height: 100vh;
+                position: sticky;
+                top: 0;
+            }
+
+            .desktop-sidebar::-webkit-scrollbar {
+                width: 5px;
+            }
+            .desktop-sidebar::-webkit-scrollbar-track {
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 10px;
+            }
+            .desktop-sidebar::-webkit-scrollbar-thumb {
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 10px;
+            }
+
+            .desktop-sidebar .sidebar-header {
+                padding: 1.5rem 1.2rem;
+                text-align: center;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+                margin-bottom: 1rem;
+            }
+
+            .desktop-sidebar .sidebar-header img {
+                width: 160px;
+                height: auto;
+                margin-bottom: 0.5rem;
+            }
+
+            .desktop-sidebar .sidebar-header h3 {
+                font-size: 1rem;
+                font-weight: 600;
+                color: white;
+            }
+
+            .desktop-sidebar .sidebar-header p {
+                font-size: 0.55rem;
+                color: rgba(255, 255, 255, 0.7);
+                margin-top: 0.2rem;
+            }
+
+            .desktop-sidebar .nav-menu {
+                padding: 0 0.8rem 1.5rem;
+            }
+
+            .desktop-sidebar .nav-header {
+                padding: 0.6rem 0.8rem;
+                font-size: 0.7rem;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                color: rgba(255, 255, 255, 0.5);
+            }
+
+            .desktop-sidebar .nav-item {
+                margin-bottom: 2px;
+            }
+
+            .desktop-sidebar .nav-link {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 0.7rem 0.8rem;
+                color: rgba(255, 255, 255, 0.85);
+                text-decoration: none;
+                border-radius: 10px;
+                transition: all 0.2s ease;
+                cursor: pointer;
+                font-weight: 500;
+                font-size: 0.8rem;
+                background: transparent;
+                border: none;
+                width: 100%;
+                text-align: left;
+            }
+
+            .desktop-sidebar .nav-link i {
+                width: 20px;
+                font-size: 0.95rem;
+            }
+
+            .desktop-sidebar .nav-link:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+            }
+
+            .desktop-sidebar .nav-link.active {
+                background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
+                color: white;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+
+            .desktop-sidebar .submenu,
+            .desktop-sidebar .submenu-kelurahan {
+                padding-left: 0.8rem;
+                max-height: 0;
+                overflow: hidden;
+                transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+
+            .desktop-sidebar .nav-item.open > .submenu {
+                max-height: 800px;
+            }
+
+            .desktop-sidebar .kelembagaan-sub-item.open .submenu-kelurahan {
+                max-height: 600px;
+            }
+
+            .desktop-sidebar .nav-link .fa-chevron-down {
+                transition: transform 0.3s ease;
+                margin-left: auto !important;
+            }
+
+            .desktop-sidebar .nav-item.open > .nav-link .fa-chevron-down,
+            .desktop-sidebar .kelembagaan-sub-item.open > .sub-accordion .fa-chevron-down {
+                transform: rotate(180deg);
+            }
+
+            .desktop-sidebar .sub-accordion {
+                background: rgba(255, 255, 255, 0.03);
+                padding: 0.6rem 0.8rem;
+            }
+
+            .desktop-sidebar .kelurahan-link {
+                padding: 0.5rem 0.8rem !important;
+                font-size: 0.7rem !important;
+                background: rgba(255, 255, 255, 0.05);
+                margin: 2px 0;
+                border-radius: 8px;
+            }
+
+            .desktop-sidebar .kelurahan-link:hover {
+                background: rgba(44, 126, 192, 0.4) !important;
+            }
+
+            .dashboard-wrapper {
+                flex-direction: row;
+            }
+
+            .main-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                height: 100vh;
+                overflow: hidden;
+            }
+
+            .iframe-wrapper {
+                flex: 1;
+                height: calc(100vh - 60px);
+            }
+
+            .bottom-nav {
+                display: none !important;
+            }
+
+            .mobile-menu-overlay {
+                display: none !important;
+            }
+
+            .mobile-menu-sheet {
+                display: none !important;
+            }
+
+            .menu-toggle-btn {
+                display: none !important;
+            }
+        }
+
+        /* ========== LOADING OVERLAY ========== */
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .loading-overlay.active {
+            display: flex;
+        }
+
+        .loading-spinner {
+            background: white;
+            padding: 2rem 2.5rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .loading-spinner i {
+            font-size: 2rem;
+            color: #2c7ec0;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner p {
+            margin-top: 0.8rem;
+            font-size: 0.9rem;
+            color: #4a5a6a;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ========== BLINK EFFECT ========== */
+        .blink-effect {
             animation: blinkBorder 1.5s ease-in-out 3;
             position: relative;
         }
@@ -189,327 +796,36 @@
             animation: spin 0.8s linear infinite;
         }
 
-        /* Submenu level 1 */
-        .submenu {
-            padding-left: 1rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .nav-item.open > .submenu {
-            max-height: 800px;
-        }
-
-        /* Submenu level 2 (kelurahan) */
-        .submenu-kelurahan {
-            padding-left: 1.5rem;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .kelembagaan-sub-item.open .submenu-kelurahan {
-            max-height: 600px;
-        }
-
-        .nav-link .fa-chevron-down {
-            transition: transform 0.3s ease;
-        }
-
-        .nav-item.open > .nav-link .fa-chevron-down,
-        .kelembagaan-sub-item.open > .sub-accordion .fa-chevron-down {
-            transform: rotate(180deg);
-        }
-
-        /* Sub accordion style */
-        .sub-accordion {
-            background: rgba(255, 255, 255, 0.03);
-            padding: 0.7rem 1rem;
-        }
-
-        .kelurahan-link {
-            padding: 0.6rem 1rem !important;
-            font-size: 0.8rem !important;
-            background: rgba(255, 255, 255, 0.05);
-            margin: 0.25rem 0;
-            border-radius: 10px;
-        }
-
-        .kelurahan-link i {
-            font-size: 0.8rem;
-            width: 22px;
-        }
-
-        .kelurahan-link:hover {
-            background: rgba(44, 126, 192, 0.4) !important;
-            transform: translateX(3px);
-        }
-
-        /* Main Content */
-        .main-content {
-            flex: 1;
-            min-height: 100vh;
-            transition: margin-left 0.3s ease;
-        }
-
-        .top-bar {
-            background: white;
-            padding: 1rem 2rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: sticky;
-            top: 0;
-            z-index: 99;
-        }
-
-        .page-title h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #0a2a3a, #2c7ec0);
-            background-clip: text;
-            -webkit-background-clip: text;
-            color: transparent;
-        }
-
-        .page-title p {
-            font-size: 0.8rem;
-            color: #6c757d;
-            margin-top: 0.25rem;
-        }
-
-        .menu-toggle {
-            background: none;
-            border: none;
-            font-size: 1.5rem;
-            color: #2c7ec0;
-            cursor: pointer;
-            padding: 0.5rem;
-            border-radius: 0.5rem;
-            transition: all 0.2s;
-        }
-
-        .menu-toggle:hover {
-            background: rgba(44, 126, 192, 0.1);
-        }
-
-        .profile-section {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .profile-info {
-            text-align: right;
-        }
-
-        .profile-info .name {
-            font-weight: 600;
-            color: #1a2a3a;
-            font-size: 0.9rem;
-        }
-
-        .profile-info .role {
-            font-size: 0.7rem;
-            color: #6c757d;
-        }
-
-        .profile-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #2c7ec0, #1a5f9e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: transform 0.2s;
-            overflow: hidden;
-        }
-
-        .profile-avatar img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-avatar i {
-            font-size: 1.5rem;
-            color: white;
-        }
-
-        .profile-avatar:hover {
-            transform: scale(1.05);
-        }
-
-        .logout-btn {
-            background: linear-gradient(135deg, #dc3545, #c82333);
-            color: white;
-            border: none;
-            padding: 0.5rem 1.2rem;
-            border-radius: 2rem;
-            cursor: pointer;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-        }
-
-        .logout-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
-        }
-
-        .content-area {
-            padding: 2rem;
-            background: #f8fafc;
-            min-height: calc(100vh - 73px);
-        }
-
-        .iframe-container {
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-            overflow: auto;
-            min-height: calc(100vh - 120px);
-        }
-
-        iframe {
-            width: 100%;
-            height: calc(100vh - 120px);
-            border: none;
-            display: block;
-        }
-
-        .loading-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            display: none;
-        }
-
-        .loading-spinner {
-            background: white;
-            padding: 2rem;
-            border-radius: 1rem;
-            text-align: center;
-        }
-
-        .loading-spinner i {
-            font-size: 2rem;
-            color: #2c7ec0;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .swipe-hint {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.7);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-size: 12px;
-            z-index: 1001;
-            display: none;
-            backdrop-filter: blur(8px);
-            gap: 8px;
-            align-items: center;
-            pointer-events: none;
-            animation: fadeOut 3s forwards;
-        }
-
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            70% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
-
-        .swipe-hint.show {
-            display: flex;
-        }
-
-        @media (max-width: 768px) {
-            .top-bar {
-                padding: 0.8rem 1rem;
-            }
-            .page-title h1 {
-                font-size: 1.1rem;
-            }
-            .page-title p {
-                font-size: 0.65rem;
-            }
-            .profile-info .name {
-                font-size: 0.75rem;
-            }
-            .profile-info .role {
-                font-size: 0.6rem;
-            }
-            .logout-btn span {
-                display: none;
-            }
-            .logout-btn {
-                padding: 0.5rem 0.8rem;
-            }
-            .content-area {
-                padding: 1rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .profile-info {
-                display: none;
-            }
-        }
-
-        /* Badge kelurahan aktif */
+        /* ========== BADGE ========== */
         .kelurahan-badge {
             background: #2c7ec0;
             padding: 2px 8px;
             border-radius: 20px;
-            font-size: 0.6rem;
+            font-size: 0.55rem;
             margin-left: 8px;
+            color: white;
         }
     </style>
 </head>
 <body>
-<div class="dashboard-container">
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar" id="sidebar">
+<div class="dashboard-wrapper">
+    <!-- ========== DESKTOP SIDEBAR ========== -->
+    <div class="desktop-sidebar" id="desktopSidebar">
         <div class="sidebar-header">
             <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png" alt="Logo">
             <h3>Senapelan Kencana</h3>
             <p>Kendali Dan evaluasi network center analisis</p>
         </div>
-        <div class="nav-menu">
+        <div class="nav-menu" id="desktopNavMenu">
             <div class="nav-header">MAIN MENU</div>
-            
             <!-- MONOGRAFI KECAMATAN -->
-            <div class="nav-item" id="monografiItem">
-                <div class="nav-link" onclick="toggleSubmenu('monografiSub', this)">
+            <div class="nav-item" id="monografiItemDesktop">
+                <div class="nav-link" onclick="toggleSubmenuDesktop('monografiSubDesktop', this)">
                     <i class="fas fa-chart-line"></i>
                     <span>MONOGRAFI KECAMATAN</span>
                     <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.7rem;"></i>
                 </div>
-                <div class="submenu" id="monografiSub">
+                <div class="submenu" id="monografiSubDesktop">
                     <div class="nav-link" onclick="loadPage('giatkecamatan', this)">
                         <i class="fas fa-tasks"></i>
                         <span>GIAT KECAMATAN</span>
@@ -522,30 +838,34 @@
                         <i class="fas fa-map"></i>
                         <span>PETA WILAYAH</span>
                     </div>
-                    <!-- MENU DAFTAR APLIKASI BARU DI BAWAH PETA WILAYAH -->
                     <div class="nav-link" onclick="loadPage('daftarAplikasi', this)">
                         <i class="fas fa-th-large"></i>
                         <span>DAFTAR APLIKASI</span>
                     </div>
                 </div>
             </div>
-
-            <!-- KELEMBAGAAN akan diisi oleh JavaScript dinamis -->
-            <div id="kelembagaanContainer"></div>
+            <!-- KELEMBAGAAN Desktop -->
+            <div id="kelembagaanContainerDesktop"></div>
         </div>
     </div>
 
-    <!-- MAIN CONTENT -->
+    <!-- ========== MAIN CONTENT ========== -->
     <div class="main-content">
+        <!-- TOP BAR -->
         <div class="top-bar">
-            <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="page-title">
-                <h1>SENAPELAN KENCANA</h1>
-                <p>Dashboard Monitoring & Evaluasi</p>
+            <div class="top-bar-left">
+                <div class="brand-icon">
+                    <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/fac_senapelan_kencana.png" alt="Logo">
+                </div>
+                <div class="brand-text">
+                    <h1>SENAPELAN KENCANA</h1>
+                    <p>Dashboard Monitoring & Evaluasi</p>
+                </div>
             </div>
-            <div class="profile-section">
+            <div class="top-bar-right">
+                <button class="menu-toggle-btn" id="menuToggleBtn" onclick="openMobileMenu()">
+                    <i class="fas fa-bars"></i>
+                </button>
                 <div class="profile-info">
                     <div class="name" id="userName">Loading...</div>
                     <div class="role">Administrator</div>
@@ -559,22 +879,60 @@
                 </button>
             </div>
         </div>
-        <div class="content-area">
-            <div class="iframe-container">
-                <iframe id="contentFrame" src="about:blank"></iframe>
-            </div>
+
+        <!-- IFRAME WRAPPER -->
+        <div class="iframe-wrapper">
+            <iframe id="contentFrame" src="about:blank"></iframe>
         </div>
+
+        <!-- ========== BOTTOM NAV (MOBILE) ========== -->
+        <nav class="bottom-nav" id="bottomNav">
+            <div class="bottom-nav-inner">
+                <button class="bottom-nav-item active" data-page="giatkecamatan" onclick="loadPageFromBottom('giatkecamatan', this)">
+                    <i class="fas fa-tasks"></i>
+                    <span>Giat</span>
+                </button>
+                <button class="bottom-nav-item" data-page="penduduk" onclick="loadPageFromBottom('penduduk', this)">
+                    <i class="fas fa-users"></i>
+                    <span>Penduduk</span>
+                </button>
+                <button class="bottom-nav-item" data-page="peta" onclick="loadPageFromBottom('peta', this)">
+                    <i class="fas fa-map"></i>
+                    <span>Peta</span>
+                </button>
+                <button class="bottom-nav-item" data-page="kelembagaan" onclick="openMobileMenu()">
+                    <i class="fas fa-building"></i>
+                    <span>Kelembagaan</span>
+                </button>
+                <button class="bottom-nav-item" data-page="more" onclick="openMobileMenu()">
+                    <i class="fas fa-ellipsis-h"></i>
+                    <span>Lainnya</span>
+                </button>
+            </div>
+        </nav>
     </div>
 </div>
 
-<div class="swipe-hint" id="swipeHint">
-    <i class="fas fa-arrow-right"></i> Geser ke kanan untuk menu
+<!-- ========== MOBILE MENU OVERLAY & SHEET ========== -->
+<div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu-sheet" id="mobileMenuSheet">
+    <div class="mobile-menu-header">
+        <div class="handle"></div>
+        <span class="title">Menu</span>
+        <button class="close-btn" onclick="closeMobileMenu()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="mobile-menu-body" id="mobileMenuBody">
+        <!-- Menu akan di-generate oleh JavaScript -->
+    </div>
 </div>
 
+<!-- ========== LOADING OVERLAY ========== -->
 <div class="loading-overlay" id="loadingOverlay">
     <div class="loading-spinner">
         <i class="fas fa-spinner"></i>
-        <p style="margin-top: 1rem;">Memuat data...</p>
+        <p>Memuat data...</p>
     </div>
 </div>
 
@@ -582,7 +940,6 @@
     // ==================== KONFIGURASI ====================
     const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyqHrTRt9i-QLUMDzJ7Ce2pFSolfqa-IMBJH5-0a-5fT9Q2q1bEToLOxmt1REdcS_0Rxg/exec";
     
-    // Daftar 6 Kelurahan
     const KELURAHAN_LIST = [
         { name: "Kampung Baru", param: "Kampung Baru", display: "KAMPUNG BARU" },
         { name: "Kampung Bandar", param: "Kampung Bandar", display: "KAMPUNG BANDAR" },
@@ -592,11 +949,10 @@
         { name: "Sago", param: "Sago", display: "SAGO" }
     ];
 
-    // Mapping halaman kelembagaan (9 jenis termasuk KADER PEMILAH SAMPAH)
     const KELEMBAGAAN_PAGES = {
         lpm: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardlpm.html", icon: "fas fa-handshake", title: "LPM" },
         rtrw: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardrtrw.html", icon: "fas fa-users-between", title: "RT RW" },
-        pkk: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardpkk.html", icon: "fas fa-female", title: "PKK" },
+        pkk: { url: "https://senapelan.github.io/Home/publik/senapelankencana/pkkmartbersinarshopping.html", icon: "fas fa-female", title: "PKK" },
         posyandu: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardposyandu.html", icon: "fas fa-child", title: "POS YANDU" },
         karangtaruna: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dashboardkarangtaruna.html", icon: "fas fa-users", title: "KARANG TARUNA" },
         lps: { url: "https://senapelan.github.io/Home/publik/senapelankencana/dasboardlps.html", icon: "fas fa-chart-bar", title: "LPS" },
@@ -606,29 +962,29 @@
     };
 
     let currentActiveLink = null;
-    let isMobile = window.innerWidth <= 768;
+    let currentBottomActive = null;
 
-    // ==================== GENERATE MENU KELEMBAGAAN DINAMIS ====================
-    function generateKelembagaanMenu() {
-        const container = document.getElementById('kelembagaanContainer');
+    // ==================== GENERATE MENU ====================
+    function generateKelembagaanHTML(containerId) {
+        const container = document.getElementById(containerId);
         if (!container) return;
 
         let html = `
             <div class="nav-header">KELEMBAGAAN</div>
-            <div class="nav-item" id="kelembagaanParent">
+            <div class="nav-item" id="kelembagaanParent_${containerId}">
         `;
 
-        // Loop setiap jenis kelembagaan
         for (const [key, config] of Object.entries(KELEMBAGAAN_PAGES)) {
+            const subId = `${key}_sub_${containerId}`;
             html += `
                 <div class="nav-item kelembagaan-sub-item" data-page="${key}">
-                    <div class="nav-link sub-accordion" onclick="toggleKelurahanSubmenu('${key}_sub', this)">
+                    <div class="nav-link sub-accordion" onclick="toggleKelurahanSubmenu('${subId}', this)">
                         <i class="${config.icon}"></i>
                         <span>${config.title}</span>
                         <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.6rem;"></i>
                     </div>
-                    <div class="submenu-kelurahan" id="${key}_sub">
-                        ${generateKelurahanList(key, config.url)}
+                    <div class="submenu-kelurahan" id="${subId}">
+                        ${generateKelurahanList(key, config.url, containerId)}
                     </div>
                 </div>
             `;
@@ -638,8 +994,7 @@
         container.innerHTML = html;
     }
 
-    // Generate daftar 6 kelurahan untuk setiap halaman
-    function generateKelurahanList(pageKey, baseUrl) {
+    function generateKelurahanList(pageKey, baseUrl, containerId) {
         let html = '';
         for (const kel of KELURAHAN_LIST) {
             const paramKelurahan = encodeURIComponent(kel.param);
@@ -654,124 +1009,34 @@
         return html;
     }
 
-    // Toggle submenu kelurahan (level 2)
+    // ==================== TOGGLE FUNCTIONS ====================
+    function toggleSubmenuDesktop(id, element) {
+        const submenu = document.getElementById(id);
+        if (!submenu) return;
+        const parentItem = submenu.closest('.nav-item');
+        if (!parentItem) return;
+        const isOpening = !parentItem.classList.contains('open');
+        parentItem.classList.toggle('open');
+        if (isOpening && element) {
+            element.classList.add('blink-effect');
+            setTimeout(() => element.classList.remove('blink-effect'), 1500);
+        }
+    }
+
     function toggleKelurahanSubmenu(id, element) {
         const submenu = document.getElementById(id);
         if (!submenu) return;
         const parentItem = submenu.closest('.kelembagaan-sub-item');
         if (!parentItem) return;
-        
         const isOpening = !parentItem.classList.contains('open');
         parentItem.classList.toggle('open');
-        
         if (isOpening && element) {
             element.classList.add('blink-effect');
-            setTimeout(() => {
-                element.classList.remove('blink-effect');
-            }, 1500);
+            setTimeout(() => element.classList.remove('blink-effect'), 1500);
         }
     }
 
-    // Toggle submenu level 1 (MONOGRAFI)
-    function toggleSubmenu(id, element) {
-        const submenu = document.getElementById(id);
-        const parentItem = submenu.closest('.nav-item');
-        const isOpening = !parentItem.classList.contains('open');
-        
-        parentItem.classList.toggle('open');
-        
-        if (isOpening && element) {
-            element.classList.add('blink-effect');
-            setTimeout(() => {
-                element.classList.remove('blink-effect');
-            }, 1500);
-        }
-    }
-
-    // Load page dengan parameter kelurahan
-    function loadPageWithKelurahan(url, pageKey, kelurahanName, element) {
-        const iframe = document.getElementById('contentFrame');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-        
-        // Simpan ke sessionStorage agar dashboard anak bisa baca
-        if (kelurahanName) {
-            sessionStorage.setItem('selectedKelurahan', kelurahanName);
-            sessionStorage.setItem('selectedKelurahanPage', pageKey);
-        } else {
-            sessionStorage.removeItem('selectedKelurahan');
-            sessionStorage.removeItem('selectedKelurahanPage');
-        }
-        
-        // Efek loading pada menu
-        if (element) {
-            element.classList.add('loading');
-            // Simpan icon asli
-            const iconElem = element.querySelector('i');
-            if (iconElem && !iconElem.classList.contains('fa-spinner')) {
-                iconElem.setAttribute('data-original-class', iconElem.className);
-                iconElem.className = 'fas fa-spinner';
-            }
-        }
-        
-        loadingOverlay.style.display = 'flex';
-        iframe.src = url;
-        
-        iframe.onload = () => {
-            setTimeout(() => {
-                loadingOverlay.style.display = 'none';
-                if (element) {
-                    element.classList.remove('loading');
-                    const iconElem = element.querySelector('i');
-                    if (iconElem && iconElem.classList.contains('fa-spinner')) {
-                        const originalClass = iconElem.getAttribute('data-original-class');
-                        if (originalClass) {
-                            iconElem.className = originalClass;
-                        } else {
-                            iconElem.className = 'fas fa-location-dot';
-                        }
-                    }
-                }
-            }, 500);
-        };
-        
-        // Timeout fallback
-        setTimeout(() => {
-            if (loadingOverlay.style.display === 'flex') {
-                loadingOverlay.style.display = 'none';
-                if (element) {
-                    element.classList.remove('loading');
-                    const iconElem = element.querySelector('i');
-                    if (iconElem && iconElem.classList.contains('fa-spinner')) {
-                        iconElem.className = 'fas fa-location-dot';
-                    }
-                }
-            }
-        }, 8000);
-        
-        // Update active state
-        if (currentActiveLink) {
-            currentActiveLink.classList.remove('active');
-        }
-        if (element) {
-            element.classList.add('active');
-            currentActiveLink = element;
-        }
-        
-        // Update page title dengan informasi kelurahan
-        const pageTitle = document.querySelector('.page-title p');
-        if (pageTitle && kelurahanName) {
-            pageTitle.innerHTML = `Dashboard Monitoring & Evaluasi | <strong style="color:#2c7ec0;">${kelurahanName}</strong>`;
-        } else if (pageTitle) {
-            pageTitle.innerHTML = `Dashboard Monitoring & Evaluasi`;
-        }
-        
-        // Tutup sidebar di mobile
-        if (window.innerWidth <= 768) {
-            closeSidebar();
-        }
-    }
-
-    // Load page standar (tanpa parameter kelurahan)
+    // ==================== LOAD PAGE ====================
     function loadPage(page, element) {
         let baseUrl = '';
         switch(page) {
@@ -791,16 +1056,49 @@
                 baseUrl = 'https://senapelan.github.io/Home/publik/update-informasi/updatev2.0.html';
         }
         
-        // Hapus parameter kelurahan
         sessionStorage.removeItem('selectedKelurahan');
         sessionStorage.removeItem('selectedKelurahanPage');
         
-        // Reset page title
-        const pageTitle = document.querySelector('.page-title p');
+        const pageTitle = document.querySelector('.top-bar-left .brand-text p');
         if (pageTitle) {
-            pageTitle.innerHTML = `Dashboard Monitoring & Evaluasi`;
+            pageTitle.textContent = 'Dashboard Monitoring & Evaluasi';
         }
         
+        loadUrl(baseUrl, element);
+        
+        // Update bottom nav
+        if (window.innerWidth <= 768) {
+            updateBottomNav(page);
+        }
+    }
+
+    function loadPageWithKelurahan(url, pageKey, kelurahanName, element) {
+        if (kelurahanName) {
+            sessionStorage.setItem('selectedKelurahan', kelurahanName);
+            sessionStorage.setItem('selectedKelurahanPage', pageKey);
+        } else {
+            sessionStorage.removeItem('selectedKelurahan');
+            sessionStorage.removeItem('selectedKelurahanPage');
+        }
+        
+        const pageTitle = document.querySelector('.top-bar-left .brand-text p');
+        if (pageTitle && kelurahanName) {
+            pageTitle.innerHTML = `Dashboard | <strong style="color:#2c7ec0;">${kelurahanName}</strong>`;
+        } else if (pageTitle) {
+            pageTitle.textContent = 'Dashboard Monitoring & Evaluasi';
+        }
+        
+        loadUrl(url, element);
+        
+        // Update bottom nav
+        if (window.innerWidth <= 768) {
+            updateBottomNav('kelembagaan');
+        }
+        
+        closeMobileMenu();
+    }
+
+    function loadUrl(url, element) {
         const iframe = document.getElementById('contentFrame');
         const loadingOverlay = document.getElementById('loadingOverlay');
         
@@ -813,12 +1111,12 @@
             }
         }
         
-        loadingOverlay.style.display = 'flex';
-        iframe.src = baseUrl;
+        loadingOverlay.classList.add('active');
+        iframe.src = url;
         
         iframe.onload = () => {
             setTimeout(() => {
-                loadingOverlay.style.display = 'none';
+                loadingOverlay.classList.remove('active');
                 if (element) {
                     element.classList.remove('loading');
                     const iconElem = element.querySelector('i');
@@ -833,8 +1131,8 @@
         };
         
         setTimeout(() => {
-            if (loadingOverlay.style.display === 'flex') {
-                loadingOverlay.style.display = 'none';
+            if (loadingOverlay.classList.contains('active')) {
+                loadingOverlay.classList.remove('active');
                 if (element) element.classList.remove('loading');
             }
         }, 8000);
@@ -846,10 +1144,87 @@
             element.classList.add('active');
             currentActiveLink = element;
         }
+    }
+
+    // ==================== BOTTOM NAV ====================
+    function loadPageFromBottom(page, element) {
+        // Tutup mobile menu jika terbuka
+        closeMobileMenu();
         
-        if (window.innerWidth <= 768) {
-            closeSidebar();
+        // Jika page adalah 'kelembagaan' atau 'more', buka menu saja
+        if (page === 'kelembagaan' || page === 'more') {
+            openMobileMenu();
+            return;
         }
+        
+        loadPage(page, null);
+        updateBottomNav(page);
+        
+        // Cari link di menu desktop yang sesuai untuk diaktifkan
+        const desktopLinks = document.querySelectorAll('#desktopNavMenu .nav-link');
+        desktopLinks.forEach(link => {
+            const span = link.querySelector('span');
+            if (span) {
+                const text = span.textContent.trim().toLowerCase();
+                if (text.includes(page.toLowerCase())) {
+                    if (currentActiveLink) currentActiveLink.classList.remove('active');
+                    link.classList.add('active');
+                    currentActiveLink = link;
+                }
+            }
+        });
+    }
+
+    function updateBottomNav(page) {
+        const items = document.querySelectorAll('.bottom-nav-item');
+        items.forEach(item => {
+            item.classList.remove('active');
+            if (item.dataset.page === page) {
+                item.classList.add('active');
+                currentBottomActive = item;
+            }
+        });
+        
+        // Jika page tidak ada di bottom nav, aktifkan yang sesuai
+        const pageMap = {
+            'giatkecamatan': 'giatkecamatan',
+            'penduduk': 'penduduk',
+            'peta': 'peta'
+        };
+        
+        if (pageMap[page]) {
+            items.forEach(item => {
+                if (item.dataset.page === pageMap[page]) {
+                    item.classList.add('active');
+                }
+            });
+        } else {
+            // Default ke 'giatkecamatan' jika tidak cocok
+            if (!document.querySelector('.bottom-nav-item.active')) {
+                items.forEach(item => {
+                    if (item.dataset.page === 'giatkecamatan') {
+                        item.classList.add('active');
+                    }
+                });
+            }
+        }
+    }
+
+    // ==================== MOBILE MENU ====================
+    function openMobileMenu() {
+        const overlay = document.getElementById('mobileMenuOverlay');
+        const sheet = document.getElementById('mobileMenuSheet');
+        overlay.classList.add('active');
+        sheet.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeMobileMenu() {
+        const overlay = document.getElementById('mobileMenuOverlay');
+        const sheet = document.getElementById('mobileMenuSheet');
+        overlay.classList.remove('active');
+        sheet.classList.remove('open');
+        document.body.style.overflow = '';
     }
 
     // ==================== AUTH & PROFILE ====================
@@ -888,7 +1263,7 @@
         userNameEl.textContent = name || sessionStorage.getItem('adminUsername') || 'Admin';
         
         if (photoUrl && photoUrl !== '') {
-            profileAvatarEl.innerHTML = `<img src="${photoUrl}" alt="Profile" onerror="this.src='', this.onerror=null; this.innerHTML='<i class=\'fas fa-user-circle\'></i>'">`;
+            profileAvatarEl.innerHTML = `<img src="${photoUrl}" alt="Profile" onerror="this.src='', this.onerror=null; this.innerHTML='<i class=\\'fas fa-user-circle\\'></i>'">`;
         } else {
             profileAvatarEl.innerHTML = '<i class="fas fa-user-circle"></i>';
         }
@@ -900,40 +1275,30 @@
         window.location.href = "https://senapelan.github.io/Home/publik/senapelankencana/login.html";
     }
 
-    function toggleSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        sidebar.classList.toggle('open');
-        overlay.classList.toggle('active');
-    }
-
-    function closeSidebar() {
-        const sidebar = document.getElementById('sidebar');
-        const overlay = document.getElementById('sidebarOverlay');
-        sidebar.classList.remove('open');
-        overlay.classList.remove('active');
-    }
-
     // ==================== INITIALIZATION ====================
     async function initDashboard() {
         const username = checkAuth();
         if (!username) return;
         
-        // Generate menu kelembagaan dinamis
-        generateKelembagaanMenu();
+        // Generate menu
+        generateKelembagaanHTML('kelembagaanContainerDesktop');
+        generateKelembagaanHTML('mobileMenuBody');
         
         // Buka default submenu MONOGRAFI dan KELEMBAGAAN parent
         setTimeout(() => {
-            const monografiItem = document.getElementById('monografiItem');
-            if (monografiItem) monografiItem.classList.add('open');
+            const monografiDesktop = document.getElementById('monografiItemDesktop');
+            if (monografiDesktop) monografiDesktop.classList.add('open');
             
-            const kelembagaanParent = document.getElementById('kelembagaanParent');
-            if (kelembagaanParent) kelembagaanParent.classList.add('open');
+            const kelembagaanDesktop = document.getElementById('kelembagaanParent_kelembagaanContainerDesktop');
+            if (kelembagaanDesktop) kelembagaanDesktop.classList.add('open');
+            
+            const kelembagaanMobile = document.getElementById('kelembagaanParent_mobileMenuBody');
+            if (kelembagaanMobile) kelembagaanMobile.classList.add('open');
         }, 100);
         
-        // Load default page (GIAT KECAMATAN)
+        // Load default page
         setTimeout(() => {
-            const giatLink = document.querySelector('#monografiSub .nav-link');
+            const giatLink = document.querySelector('#monografiSubDesktop .nav-link');
             if (giatLink) {
                 giatLink.click();
             } else {
@@ -948,23 +1313,21 @@
         } else {
             updateProfile(username, null);
         }
-        
-        // Tampilkan hint untuk mobile
-        if (window.innerWidth <= 768) {
-            const hint = document.getElementById('swipeHint');
-            hint.classList.add('show');
-            setTimeout(() => {
-                hint.classList.remove('show');
-            }, 4000);
-        }
     }
 
+    // Handle resize
     window.addEventListener('resize', () => {
-        isMobile = window.innerWidth <= 768;
-        if (!isMobile) {
-            closeSidebar();
+        if (window.innerWidth > 768) {
+            closeMobileMenu();
         }
     });
+
+    // Prevent zoom on double tap
+    document.addEventListener('touchend', (e) => {
+        if (e.target.closest('.bottom-nav-item') || e.target.closest('.nav-link')) {
+            e.preventDefault();
+        }
+    }, { passive: false });
 
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
