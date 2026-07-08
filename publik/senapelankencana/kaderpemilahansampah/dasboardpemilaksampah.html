@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ===== RESET & BASE ===== */
         * {
             margin: 0;
             padding: 0;
@@ -17,913 +18,1784 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0e27 0%, #1a1a3e 100%);
+            background: #0a0e27;
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
+            color: #fff;
         }
 
-        .dashboard-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
+        /* ===== SCROLLBAR ===== */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #1a1a3e; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 10px; }
 
-        .header {
-            width: 100%;
-            margin-bottom: 20px;
-            overflow: hidden;
-            position: relative;
-        }
-
-        .header-image {
-            width: 100%;
-            height: auto;
-            max-height: 200px;
-            object-fit: cover;
-            object-position: center;
-            display: block;
-            margin: 0 auto;
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            background: linear-gradient(135deg, #1e3c72, #2a5298);
-            transition: all 0.3s ease;
-        }
-
-        @media (max-width: 1024px) {
-            .header-image { max-height: 180px; border-radius: 16px; }
-        }
-        @media (max-width: 768px) {
-            .header-image { max-height: 150px; border-radius: 14px; }
-        }
-        @media (max-width: 480px) {
-            .header-image { max-height: 120px; border-radius: 12px; }
-        }
-        @media (max-width: 360px) {
-            .header-image { max-height: 100px; border-radius: 10px; }
-        }
-
-        .title-section {
-            text-align: center;
-            margin-bottom: 30px;
+        /* ===== SIDEBAR (DESKTOP) ===== */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 240px;
+            height: 100vh;
+            background: linear-gradient(180deg, #0f1338, #1a1a4e);
+            padding: 20px 0;
             display: flex;
             flex-direction: column;
+            border-right: 1px solid rgba(255,255,255,0.06);
+            z-index: 100;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+
+        .sidebar-brand {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 20px;
+            display: flex;
             align-items: center;
             gap: 12px;
         }
-        .main-title {
-            font-size: 2rem;
-            font-weight: 800;
-            color: #ffffff;
-            margin-bottom: 5px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+
+        .sidebar-brand img {
+            height: 40px;
+            width: auto;
+            border-radius: 8px;
         }
 
-        /* Filter bar - kelurahan dengan logo */
+        .sidebar-brand span {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: #fff;
+            line-height: 1.2;
+        }
+
+        .sidebar-brand small {
+            font-weight: 400;
+            font-size: 0.65rem;
+            color: #94a3b8;
+            display: block;
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 0 12px;
+        }
+
+        .sidebar-menu .menu-label {
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            color: #64748b;
+            padding: 0 12px 8px;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 4px;
+            text-decoration: none;
+            border: none;
+            background: transparent;
+            width: 100%;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .sidebar-menu .menu-item i {
+            width: 22px;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+
+        .sidebar-menu .menu-item:hover {
+            background: rgba(59,130,246,0.1);
+            color: #fff;
+        }
+
+        .sidebar-menu .menu-item.active {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+        }
+
+        .sidebar-footer {
+            padding: 16px 20px;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            font-size: 0.7rem;
+            color: #64748b;
+            text-align: center;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main-content {
+            margin-left: 240px;
+            flex: 1;
+            padding: 20px 24px 100px;
+            min-height: 100vh;
+            max-width: calc(100% - 240px);
+        }
+
+        /* ===== HEADER LOGO ===== */
+        .header-logo {
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        .header-logo img {
+            width: 100%;
+            height: auto;
+            max-height: 180px;
+            object-fit: cover;
+            display: block;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+        }
+
+        /* ===== TOP HEADER ===== */
+        .top-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .top-header .page-title h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+
+        .top-header .page-title p {
+            color: #94a3b8;
+            font-size: 0.85rem;
+        }
+
+        .top-header .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        /* ===== FILTER KELURAHAN ===== */
         .filter-bar {
             display: flex;
-            flex-wrap: wrap;
             align-items: center;
-            justify-content: center;
-            gap: 12px 18px;
-            background: rgba(255,255,255,0.08);
+            gap: 10px;
+            background: rgba(255,255,255,0.06);
             backdrop-filter: blur(12px);
-            padding: 12px 24px;
-            border-radius: 60px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            border: 1px solid rgba(255,255,255,0.05);
-            margin: 8px 0 4px;
-            width: fit-content;
-            max-width: 100%;
+            padding: 6px 16px 6px 12px;
+            border-radius: 40px;
+            border: 1px solid rgba(255,255,255,0.06);
         }
+
         .filter-bar img {
-            height: 38px;
+            height: 28px;
             width: auto;
-            object-fit: contain;
-            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.3));
-            border-radius: 8px;
-            background: rgba(255,255,255,0.1);
-            padding: 2px 6px;
+            border-radius: 6px;
         }
+
         .filter-bar .filter-label {
             color: #b0c4ff;
-            font-weight: 600;
-            font-size: 0.95rem;
-            letter-spacing: 0.3px;
+            font-weight: 500;
+            font-size: 0.8rem;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
         }
+
         .filter-bar .filter-label i {
             color: #fbbf24;
         }
+
         .filter-select {
-            background: rgba(255,255,255,0.15);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: #ffffff;
-            padding: 8px 18px 8px 16px;
-            border-radius: 40px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.15);
+            color: #fff;
+            padding: 6px 30px 6px 14px;
+            border-radius: 30px;
             font-weight: 500;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             cursor: pointer;
             outline: none;
-            transition: all 0.2s;
-            min-width: 150px;
-            backdrop-filter: blur(4px);
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='white' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
             background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 34px;
+            background-position: right 10px center;
         }
-        .filter-select:hover {
-            background: rgba(255,255,255,0.25);
-            border-color: #60a5fa;
-        }
-        .filter-select:focus {
-            border-color: #3b82f6;
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.3);
-        }
-        .filter-select option {
-            background: #1a1a3e;
-            color: white;
-        }
-        .filter-badge {
-            background: rgba(59,130,246,0.2);
-            color: #93bbff;
-            padding: 4px 14px;
-            border-radius: 40px;
+
+        .filter-select option { background: #1a1a3e; color: #fff; }
+
+        .kelurahan-badge {
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-weight: 600;
             font-size: 0.8rem;
-            font-weight: 500;
-            border: 1px solid rgba(59,130,246,0.2);
-            display: none;
+            display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
             white-space: nowrap;
         }
-        .filter-badge i {
-            font-size: 0.7rem;
-        }
 
-        .active-kelurahan-badge {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 4px;
-            box-shadow: 0 4px 12px rgba(59,130,246,0.3);
-        }
-
-        .tabs {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            padding: 10px;
-            border-radius: 50px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 12px 20px;
-            border: none;
-            background: transparent;
-            font-size: 1rem;
-            font-weight: 600;
-            color: #e0e0e0;
-            cursor: pointer;
-            border-radius: 40px;
-            transition: all 0.3s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-        .tab-btn i {
-            font-size: 1.2rem;
-        }
-        .tab-btn.active {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            color: white;
-            box-shadow: 0 4px 12px rgba(59,130,246,0.4);
-        }
-        .tab-btn:hover:not(.active) {
-            background: rgba(59,130,246,0.3);
-            color: white;
-        }
-
+        /* ===== TAB CONTENT ===== */
         .tab-content {
             display: none;
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.4s ease;
         }
-        .tab-content.active {
-            display: block;
-        }
+
+        .tab-content.active { display: block; }
+
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(12px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .loading-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            background: white;
-            border-radius: 20px;
-            text-align: center;
-        }
-        .loading-spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid #e0e0e0;
-            border-top: 4px solid #3b82f6;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 15px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loading-text {
-            color: #3b82f6;
-            font-size: 1rem;
-            font-weight: 500;
-        }
-        .loading-subtext {
-            color: #666;
-            font-size: 0.85rem;
-            margin-top: 5px;
-        }
-
-        .error {
-            background: #ffebee;
-            color: #c62828;
-            padding: 20px;
-            border-radius: 10px;
-            text-align: center;
-        }
-        .error i {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
+        /* ===== KADER CARDS ===== */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-            margin-top: 20px;
+            gap: 20px;
         }
-        .profile-card {
-            background: linear-gradient(135deg, #ffffff, #f0f4ff);
-            border-radius: 20px;
+
+        .card-grid.kader-grid {
+            grid-template-columns: repeat(5, 1fr);
+        }
+
+        .kader-card {
+            background: linear-gradient(145deg, #ffffff, #f0f4ff);
+            border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
         }
-        .profile-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+
+        .kader-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 30px rgba(59,130,246,0.25);
         }
-        .card-header {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            padding: 20px;
-            text-align: center;
-            color: white;
-        }
-        .card-img {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
+
+        .kader-card .card-img-top {
+            width: 100%;
+            height: 160px;
             object-fit: cover;
-            border: 4px solid white;
-            margin-bottom: 10px;
+            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
         }
-        .card-name {
-            font-size: 1.3rem;
+
+        .kader-card .card-body {
+            padding: 16px;
+            color: #1a1a3e;
+            text-align: center;
+        }
+
+        .kader-card .card-body .kader-name {
             font-weight: 700;
-            margin: 10px 0 5px;
+            font-size: 1rem;
+            margin-bottom: 2px;
         }
-        .card-role {
-            font-size: 0.9rem;
-            opacity: 0.9;
+
+        .kader-card .card-body .kader-kel {
+            font-size: 0.8rem;
+            color: #64748b;
         }
-        .card-body {
+
+        .kader-card .card-body .kader-badge {
+            display: inline-block;
+            margin-top: 6px;
+            background: #e0e7ff;
+            color: #1e3a8a;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .kader-card .card-click-hint {
+            position: absolute;
+            bottom: 8px;
+            right: 12px;
+            font-size: 0.65rem;
+            color: #94a3b8;
+            opacity: 0.6;
+        }
+
+        /* ===== MODAL ===== */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 999;
+            display: none;
+            justify-content: center;
+            align-items: center;
             padding: 20px;
+            animation: fadeIn 0.3s ease;
         }
-        .card-info {
+
+        .modal-overlay.show { display: flex; }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 24px;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 0;
+            position: relative;
+            color: #1a1a3e;
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-close {
+            position: sticky;
+            top: 12px;
+            right: 12px;
+            float: right;
+            background: rgba(0,0,0,0.1);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: #1a1a3e;
+            z-index: 10;
+            margin: 12px 12px 0 0;
+            transition: all 0.2s;
             display: flex;
             align-items: center;
-            gap: 10px;
-            margin-bottom: 10px;
-            color: #333;
-        }
-        .card-info i {
-            width: 25px;
-            color: #3b82f6;
+            justify-content: center;
         }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        .modal-close:hover { background: rgba(0,0,0,0.2); }
+
+        .modal-body { padding: 20px 28px 28px; }
+
+        .modal-body .modal-kader-header {
+            display: flex;
+            align-items: center;
             gap: 20px;
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f4ff;
+            flex-wrap: wrap;
         }
-        .stat-card {
-            background: linear-gradient(135deg, #ffffff, #f0f4ff);
-            padding: 20px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+
+        .modal-body .modal-kader-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid #3b82f6;
         }
-        .stat-number {
-            font-size: 2rem;
-            font-weight: 800;
+
+        .modal-body .modal-kader-header .info h2 {
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+
+        .modal-body .modal-kader-header .info p {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .modal-body .modal-kader-header .info .badge-kel {
+            display: inline-block;
+            background: #dbeafe;
             color: #1e3a8a;
-        }
-        .stat-label {
-            color: #666;
-            margin-top: 5px;
+            padding: 2px 14px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.75rem;
         }
 
-        .chart-container {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-        }
-        .chart-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 25px;
-        }
-        canvas {
-            max-height: 300px;
+        .modal-body .warga-binaan-list {
+            margin-top: 16px;
         }
 
-        .ranking-table {
-            width: 100%;
-            background: white;
-            border-radius: 20px;
-            overflow-x: auto;
-            display: block;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .modal-body .warga-binaan-list h4 {
+            color: #1e3a8a;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1rem;
         }
-        .ranking-table table {
-            width: 100%;
-            border-collapse: collapse;
+
+        .modal-body .warga-binaan-list .warga-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 6px;
+            font-size: 0.85rem;
+            flex-wrap: wrap;
+            gap: 4px;
         }
-        .ranking-table th {
-            background: linear-gradient(135deg, #1e3a8a, #3b82f6);
-            color: white;
-            padding: 12px;
-            text-align: left;
+
+        .modal-body .warga-binaan-list .warga-item .alamat {
+            color: #64748b;
+            font-size: 0.75rem;
         }
-        .ranking-table td {
-            padding: 12px;
-            border-bottom: 1px solid #e0e0e0;
+
+        .modal-body .no-warga {
+            color: #94a3b8;
+            font-style: italic;
+            font-size: 0.9rem;
         }
-        .ranking-table tr:hover {
-            background: #f0f4ff;
+
+        /* ===== WARGA BINAAN GROUP ===== */
+        .warga-group {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
         }
-        .ranking-photo {
+
+        .warga-group .group-header {
+            background: linear-gradient(135deg, rgba(30,58,138,0.3), rgba(59,130,246,0.15));
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .warga-group .group-header img {
             width: 40px;
             height: 40px;
             border-radius: 50%;
             object-fit: cover;
         }
 
-        @media (max-width: 768px) {
-            body { padding: 10px; }
-            .main-title { font-size: 1.5rem; }
-            .filter-bar { padding: 10px 16px; gap: 10px; border-radius: 30px; }
-            .filter-bar img { height: 30px; }
-            .filter-select { min-width: 120px; font-size: 0.85rem; padding: 6px 30px 6px 12px; }
-            .tab-btn { padding: 10px 12px; font-size: 0.85rem; }
-            .card-grid { grid-template-columns: 1fr; }
-            .chart-row { grid-template-columns: 1fr; }
-            .ranking-table { font-size: 0.8rem; }
-            .ranking-table th, .ranking-table td { padding: 8px; }
-        }
-        @media (max-width: 480px) {
-            .filter-bar .filter-label span { display: none; }
-            .filter-bar img { height: 26px; }
-            .filter-select { min-width: 100px; font-size: 0.8rem; }
+        .warga-group .group-header .group-info h4 {
+            font-size: 1rem;
         }
 
-        .skeleton-card {
-            background: linear-gradient(135deg, #ffffff, #f0f4ff);
-            border-radius: 20px;
-            overflow: hidden;
-            height: 300px;
+        .warga-group .group-header .group-info small {
+            color: #94a3b8;
+            font-size: 0.75rem;
         }
-        .skeleton-header {
-            height: 120px;
-            background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
-            background-size: 200% 100%;
-            animation: shimmer 1.5s infinite;
+
+        .warga-group .group-body {
+            padding: 12px 20px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 10px;
         }
-        .skeleton-body {
+
+        .warga-group .group-body .warga-mini-card {
+            background: rgba(255,255,255,0.05);
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.04);
+            transition: all 0.2s;
+        }
+
+        .warga-group .group-body .warga-mini-card:hover {
+            background: rgba(255,255,255,0.08);
+        }
+
+        .warga-group .group-body .warga-mini-card .nama {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .warga-group .group-body .warga-mini-card .detail {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        /* ===== REKAP ===== */
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.05);
+            padding: 16px 20px;
+            border-radius: 14px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
+
+        .stat-card .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #60a5fa;
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+
+        .chart-container {
+            background: rgba(255,255,255,0.04);
             padding: 20px;
+            border-radius: 16px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.06);
         }
-        .skeleton-line {
-            height: 15px;
-            background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+
+        .chart-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+        }
+
+        .chart-container canvas { max-height: 260px; max-width: 100%; }
+
+        /* ===== TOP 10 ===== */
+        .top-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 12px;
+            margin-top: 8px;
+        }
+
+        .top-item {
+            background: rgba(255,255,255,0.04);
+            padding: 12px 16px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid rgba(255,255,255,0.04);
+            transition: all 0.2s;
+        }
+
+        .top-item:hover { background: rgba(255,255,255,0.07); }
+
+        .top-item .rank {
+            font-weight: 800;
+            font-size: 1.2rem;
+            color: #3b82f6;
+            min-width: 30px;
+        }
+
+        .top-item .info { flex: 1; }
+
+        .top-item .info .name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .top-item .info .sub {
+            font-size: 0.75rem;
+            color: #94a3b8;
+        }
+
+        .top-item .weight {
+            font-weight: 700;
+            color: #fbbf24;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .top-item .weight i { font-size: 0.7rem; color: #94a3b8; }
+
+        /* ===== RANKING TABLE ===== */
+        .ranking-table-wrap {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 30px;
+            width: 100%;
+        }
+
+        .ranking-table-wrap .table-title {
+            padding: 14px 20px;
+            background: rgba(59,130,246,0.1);
+            font-weight: 700;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ranking-table-wrap .table-wrap {
+            overflow-x: auto;
+            padding: 0 4px 4px;
+            -webkit-overflow-scrolling: touch;
+            width: 100%;
+        }
+
+        .ranking-table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+            min-width: 100%;
+        }
+
+        .ranking-table-wrap th {
+            text-align: left;
+            padding: 12px 14px;
+            color: #94a3b8;
+            font-weight: 600;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            white-space: nowrap;
+        }
+
+        .ranking-table-wrap td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(255,255,255,0.04);
+            vertical-align: middle;
+            word-break: break-word;
+        }
+
+        .ranking-table-wrap tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        .ranking-table-wrap .rank-num {
+            font-weight: 700;
+            color: #3b82f6;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .ranking-table-wrap .photo-thumb {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .ranking-table-wrap .col-rank { width: 50px; min-width: 50px; }
+        .ranking-table-wrap .col-photo { width: 50px; min-width: 50px; }
+        .ranking-table-wrap .col-name { min-width: 120px; }
+        .ranking-table-wrap .col-kel { min-width: 100px; }
+        .ranking-table-wrap .col-binaan { width: 70px; min-width: 70px; }
+        .ranking-table-wrap .col-weight { width: 110px; min-width: 110px; white-space: nowrap; }
+
+        /* ===== LOADING & ERROR ===== */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top: 3px solid #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 12px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text { color: #94a3b8; font-size: 0.9rem; }
+
+        .error-box {
+            background: rgba(239,68,68,0.1);
+            border: 1px solid rgba(239,68,68,0.2);
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+            color: #f87171;
+        }
+
+        .error-box i { font-size: 2rem; display: block; margin-bottom: 8px; }
+
+        /* ===== SKELETON ===== */
+        .skeleton-card {
+            background: rgba(255,255,255,0.04);
+            border-radius: 16px;
+            overflow: hidden;
+            height: 240px;
+        }
+
+        .skeleton-card .sk-header {
+            height: 140px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite;
-            margin-bottom: 10px;
-            border-radius: 5px;
         }
+
+        .skeleton-card .sk-body {
+            padding: 14px;
+        }
+
+        .skeleton-card .sk-body .sk-line {
+            height: 12px;
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-card .sk-body .sk-line.short { width: 60%; }
+
         @keyframes shimmer {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
+        /* ===== BOTTOM NAV (MOBILE) ===== */
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #0f1338;
+            border-top: 1px solid rgba(255,255,255,0.06);
+            padding: 6px 0 env(safe-area-inset-bottom, 6px);
+            z-index: 200;
+            justify-content: space-around;
+            backdrop-filter: blur(12px);
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 6px 12px;
+            border: none;
+            background: transparent;
+            color: #64748b;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.6rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 8px;
+            min-width: 56px;
+        }
+
+        .bottom-nav .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: #60a5fa;
+        }
+
+        .bottom-nav .nav-item.active i {
+            color: #3b82f6;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .card-grid.kader-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
+            .card-grid.kader-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+            .main-content {
+                margin-left: 0;
+                padding: 16px 16px 90px;
+                max-width: 100%;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .bottom-nav {
+                display: flex;
+            }
+            .top-header .page-title h1 {
+                font-size: 1.2rem;
+            }
+            .chart-row {
+                grid-template-columns: 1fr;
+            }
+            .header-logo img {
+                max-height: 140px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .card-grid.kader-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 14px;
+            }
+            .top-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 10px;
+            }
+            .header-actions {
+                flex-wrap: wrap;
+            }
+            .filter-bar {
+                flex-wrap: wrap;
+                padding: 8px 14px;
+                width: 100%;
+            }
+            .kelurahan-badge {
+                font-size: 0.7rem;
+                padding: 4px 12px;
+            }
+            .modal-body { padding: 16px; }
+            .modal-body .modal-kader-header {
+                flex-direction: column;
+                text-align: center;
+            }
+            .header-logo img {
+                max-height: 120px;
+            }
+            .ranking-table-wrap table {
+                font-size: 0.75rem;
+            }
+            .ranking-table-wrap th,
+            .ranking-table-wrap td {
+                padding: 8px 10px;
+            }
+            .ranking-table-wrap .col-rank { width: 40px; min-width: 40px; }
+            .ranking-table-wrap .col-photo { width: 40px; min-width: 40px; }
+            .ranking-table-wrap .col-name { min-width: 100px; }
+            .ranking-table-wrap .col-kel { min-width: 80px; }
+            .ranking-table-wrap .col-binaan { width: 60px; min-width: 60px; }
+            .ranking-table-wrap .col-weight { width: 90px; min-width: 90px; }
+        }
+
+        @media (max-width: 480px) {
+            .card-grid.kader-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+            .kader-card .card-img-top {
+                height: 100px;
+            }
+            .kader-card .card-body .kader-name {
+                font-size: 0.75rem;
+            }
+            .kader-card .card-body .kader-kel {
+                font-size: 0.65rem;
+            }
+            .kader-card .card-body .kader-badge {
+                font-size: 0.6rem;
+                padding: 1px 8px;
+            }
+            .stat-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            .stat-card .stat-number {
+                font-size: 1.3rem;
+            }
+            .top-list {
+                grid-template-columns: 1fr;
+            }
+            .modal-content {
+                max-height: 95vh;
+                border-radius: 16px;
+            }
+            .header-logo img {
+                max-height: 90px;
+            }
+            .ranking-table-wrap table {
+                font-size: 0.7rem;
+            }
+            .ranking-table-wrap th,
+            .ranking-table-wrap td {
+                padding: 6px 8px;
+            }
+            .ranking-table-wrap .photo-thumb {
+                width: 24px;
+                height: 24px;
+            }
+            .top-header .page-title h1 {
+                font-size: 1rem;
+            }
+            .filter-bar .filter-label span {
+                display: none;
+            }
+            .filter-select {
+                font-size: 0.75rem;
+                padding: 4px 24px 4px 10px;
+                min-width: 100px;
+            }
+            .kelurahan-badge {
+                font-size: 0.65rem;
+                padding: 3px 10px;
+            }
+            .warga-group .group-body {
+                grid-template-columns: 1fr;
+                padding: 10px 14px 14px;
+            }
+            .warga-group .group-header {
+                padding: 10px 14px;
+            }
+            .chart-row {
+                gap: 12px;
+            }
+            .chart-container {
+                padding: 12px;
+            }
+            .chart-container canvas {
+                max-height: 200px;
+            }
+            .ranking-table-wrap .col-rank { width: 35px; min-width: 35px; }
+            .ranking-table-wrap .col-photo { width: 35px; min-width: 35px; }
+            .ranking-table-wrap .col-name { min-width: 80px; }
+            .ranking-table-wrap .col-kel { min-width: 60px; }
+            .ranking-table-wrap .col-binaan { width: 50px; min-width: 50px; }
+            .ranking-table-wrap .col-weight { width: 80px; min-width: 80px; }
+        }
+
+        @media (max-width: 360px) {
+            .card-grid.kader-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+            .kader-card .card-img-top {
+                height: 80px;
+            }
+            .kader-card .card-body {
+                padding: 8px 6px;
+            }
+            .kader-card .card-body .kader-name {
+                font-size: 0.7rem;
+            }
+            .kader-card .card-body .kader-kel {
+                font-size: 0.6rem;
+            }
+            .kader-card .card-body .kader-badge {
+                font-size: 0.55rem;
+                padding: 1px 6px;
+            }
+            .kader-card .card-click-hint {
+                display: none;
+            }
+            .header-logo img {
+                max-height: 70px;
+            }
+            .ranking-table-wrap table {
+                font-size: 0.65rem;
+            }
+            .ranking-table-wrap th,
+            .ranking-table-wrap td {
+                padding: 4px 6px;
+            }
+            .bottom-nav .nav-item {
+                min-width: 44px;
+                padding: 4px 8px;
+                font-size: 0.55rem;
+            }
+            .bottom-nav .nav-item i {
+                font-size: 1rem;
+            }
+            .ranking-table-wrap .col-rank { width: 30px; min-width: 30px; }
+            .ranking-table-wrap .col-photo { width: 30px; min-width: 30px; }
+            .ranking-table-wrap .col-name { min-width: 60px; }
+            .ranking-table-wrap .col-kel { min-width: 50px; }
+            .ranking-table-wrap .col-binaan { width: 40px; min-width: 40px; }
+            .ranking-table-wrap .col-weight { width: 70px; min-width: 70px; }
+        }
+
+        /* ===== BADGE JUMLAH WARGA ===== */
+        .badge-count {
+            background: rgba(59,130,246,0.2);
+            color: #60a5fa;
+            padding: 1px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 24px 0 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title i { color: #3b82f6; }
+
+        .text-muted { color: #94a3b8; }
+
+        .mt-1 { margin-top: 8px; }
+        .mb-1 { margin-bottom: 8px; }
+        .gap-1 { gap: 8px; }
     </style>
 </head>
 <body>
-<div class="dashboard-container">
-    <div class="header">
-        <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/headerlogo.png" alt="Kader Pemilahan Sampah" class="header-image">
+
+<!-- ===== SIDEBAR ===== -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">
+        <img src="https://senapelan.github.io/Home/assets/metatag/logopemko/PEMKO%20512px.png" alt="Logo Pemko">
+        <span>
+            Kader Pemilah<br>
+            <small>Sampah dari Rumah</small>
+        </span>
+    </div>
+    <nav class="sidebar-menu">
+        <div class="menu-label">Menu Utama</div>
+        <button class="menu-item active" data-tab="tab1">
+            <i class="fas fa-id-card"></i> Profile Kader
+        </button>
+        <button class="menu-item" data-tab="tab2">
+            <i class="fas fa-users"></i> Warga Binaan
+        </button>
+        <button class="menu-item" data-tab="tab3">
+            <i class="fas fa-chart-pie"></i> Rekap & Grafik
+        </button>
+        <button class="menu-item" data-tab="tab4">
+            <i class="fas fa-trophy"></i> Ranking Global
+        </button>
+    </nav>
+    <div class="sidebar-footer">
+        &copy; 2026 • Kecamatan Senapelan
+    </div>
+</aside>
+
+<!-- ===== MAIN ===== -->
+<main class="main-content">
+
+    <!-- HEADER LOGO -->
+    <div class="header-logo">
+        <img src="https://senapelan.github.io/Home/publik/senapelankencana/image/headerlogo.png" 
+             alt="Kader Pemilahan Sampah" 
+             loading="lazy"
+             onerror="this.src='https://via.placeholder.com/1200x180?text=Kader+Pemilah+Sampah'">
     </div>
 
-    <div class="title-section">
-        <h1 class="main-title"><i class="fas fa-recycle"></i> Dashboard Kader Pemilah Sampah dari Rumah</h1>
-        
-        <!-- Filter Kelurahan dengan Logo -->
-        <div class="filter-bar">
-            <img src="https://senapelan.github.io/Home/assets/metatag/logopemko/PEMKO%20512px.png" alt="Logo Pemko" loading="lazy">
-            <span class="filter-label"><i class="fas fa-map-pin"></i> <span>Kelurahan</span></span>
-            <select id="kelurahanFilter" class="filter-select">
-                <option value="Kampung Baru">Kampung Baru</option>
-                <option value="Kampung Bandar">Kampung Bandar</option>
-                <option value="Kampung Dalam">Kampung Dalam</option>
-                <option value="Padang Bulan">Padang Bulan</option>
-                <option value="Padang Terubuk">Padang Terubuk</option>
-                <option value="Sago">Sago</option>
-            </select>
-            <span class="filter-badge" id="filterBadge"><i class="fas fa-check-circle"></i> <span id="filterBadgeText">Aktif</span></span>
+    <!-- TOP HEADER -->
+    <div class="top-header">
+        <div class="page-title">
+            <h1><i class="fas fa-recycle" style="color:#3b82f6;"></i> Dashboard Kader</h1>
+            <p>Monitoring pemilahan sampah dari rumah</p>
         </div>
-
-        <div class="active-kelurahan-badge" id="kelurahanBadge">
-            <i class="fas fa-building"></i> <span id="kelurahanName">Memuat...</span>
+        <div class="header-actions">
+            <button class="hamburger" id="hamburgerBtn"><i class="fas fa-bars"></i></button>
+            <div class="filter-bar">
+                <img src="https://senapelan.github.io/Home/assets/metatag/logopemko/PEMKO%20512px.png" alt="Logo" loading="lazy">
+                <span class="filter-label"><i class="fas fa-map-pin"></i> <span>Kel.</span></span>
+                <select id="kelurahanFilter" class="filter-select">
+                    <option value="Kampung Baru">Kampung Baru</option>
+                    <option value="Kampung Bandar">Kampung Bandar</option>
+                    <option value="Kampung Dalam">Kampung Dalam</option>
+                    <option value="Padang Bulan">Padang Bulan</option>
+                    <option value="Padang Terubuk">Padang Terubuk</option>
+                    <option value="Sago">Sago</option>
+                </select>
+            </div>
+            <div class="kelurahan-badge" id="kelurahanBadge">
+                <i class="fas fa-building"></i> <span id="kelurahanName">Memuat...</span>
+            </div>
         </div>
-    </div>
-
-    <div class="tabs">
-        <button class="tab-btn active" data-tab="tab1"><i class="fas fa-id-card"></i> Profile Kader</button>
-        <button class="tab-btn" data-tab="tab2"><i class="fas fa-users"></i> Warga Binaan</button>
-        <button class="tab-btn" data-tab="tab3"><i class="fas fa-chart-line"></i> Rekapan & Grafik</button>
-        <button class="tab-btn" data-tab="tab4"><i class="fas fa-trophy"></i> Ranking Global Top 100</button>
     </div>
 
-    <div id="tab1" class="tab-content active">
-        <div id="kaderList" class="card-grid">
-            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
-            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+    <!-- ===== TAB 1: PROFILE KADER ===== -->
+    <section id="tab1" class="tab-content active">
+        <div id="kaderList" class="card-grid kader-grid">
+            <!-- Skeleton akan diisi JS -->
         </div>
-    </div>
-    <div id="tab2" class="tab-content">
-        <div id="wargaList" class="card-grid">
-            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
-            <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+    </section>
+
+    <!-- ===== TAB 2: WARGA BINAAN ===== -->
+    <section id="tab2" class="tab-content">
+        <div id="wargaList">
+            <!-- Skeleton akan diisi JS -->
         </div>
-    </div>
-    <div id="tab3" class="tab-content">
+    </section>
+
+    <!-- ===== TAB 3: REKAP & GRAFIK ===== -->
+    <section id="tab3" class="tab-content">
         <div id="rekapanContainer">
             <div class="loading-container">
                 <div class="loading-spinner"></div>
                 <div class="loading-text">Memuat data rekapan...</div>
-                <div class="loading-subtext">Mohon tunggu, sedang memproses data</div>
             </div>
         </div>
-    </div>
-    <div id="tab4" class="tab-content">
+    </section>
+
+    <!-- ===== TAB 4: RANKING GLOBAL ===== -->
+    <section id="tab4" class="tab-content">
         <div id="rankingContainer">
             <div class="loading-container">
                 <div class="loading-spinner"></div>
                 <div class="loading-text">Memuat data ranking...</div>
-                <div class="loading-subtext">Mohon tunggu, sedang mengumpulkan data</div>
             </div>
+        </div>
+    </section>
+
+</main>
+
+<!-- ===== BOTTOM NAV (MOBILE) ===== -->
+<nav class="bottom-nav" id="bottomNav">
+    <button class="nav-item active" data-tab="tab1">
+        <i class="fas fa-id-card"></i>
+        <span>Kader</span>
+    </button>
+    <button class="nav-item" data-tab="tab2">
+        <i class="fas fa-users"></i>
+        <span>Binaan</span>
+    </button>
+    <button class="nav-item" data-tab="tab3">
+        <i class="fas fa-chart-pie"></i>
+        <span>Rekap</span>
+    </button>
+    <button class="nav-item" data-tab="tab4">
+        <i class="fas fa-trophy"></i>
+        <span>Ranking</span>
+    </button>
+</nav>
+
+<!-- ===== MODAL OVERLAY ===== -->
+<div class="modal-overlay" id="modalOverlay">
+    <div class="modal-content" id="modalContent">
+        <button class="modal-close" id="modalClose"><i class="fas fa-times"></i></button>
+        <div class="modal-body" id="modalBody">
+            <!-- Dinamis diisi JS -->
         </div>
     </div>
 </div>
 
+<!-- ============================================================ -->
+<!-- ===== JAVASCRIPT ===== -->
 <script>
-    // Konfigurasi
+    // ============================================================
+    // KONFIGURASI
+    // ============================================================
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw8kwRs7ZeyOJIbivEmYjx9ztuFmjndl7W79nmzoL-oj4dJq8_l4EYEG1OCiCKHsvA0/exec';
     const SPREADSHEET_ID = '1WzQsh0BxuGqDzG2yIc5vYcxhyaDZs_ByePqFSICl0KE';
-    
-    // Daftar kelurahan yang valid
+
     const VALID_KELURAHAN = ['Kampung Baru', 'Kampung Bandar', 'Kampung Dalam', 'Padang Bulan', 'Padang Terubuk', 'Sago'];
 
     let currentKelurahan = '';
-    let allKader = [], allWarga = [], allLaporan = [];
-    let kaderPhotoMap = {};
+    let allKader = [];
+    let allWarga = [];
+    let allLaporan = [];
     let charts = {};
 
-    // Ambil parameter dari URL
+    // ============================================================
+    // HELPER
+    // ============================================================
+    function escapeHtml(str) {
+        if (str === null || str === undefined) return '';
+        return String(str).replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m] || m));
+    }
+
+    function parseSafe(val) {
+        const parsed = parseFloat(val);
+        return isNaN(parsed) ? 0 : parsed;
+    }
+
     function getParameterFromURL() {
-        const urlParams = new URLSearchParams(window.location.search);
-        let kelurahan = urlParams.get('kelurahan');
-        
-        if (kelurahan) {
-            kelurahan = decodeURIComponent(kelurahan);
-            const matched = VALID_KELURAHAN.find(k => k.toLowerCase() === kelurahan.toLowerCase());
-            if (matched) {
-                return matched;
-            }
+        const params = new URLSearchParams(window.location.search);
+        const kel = params.get('kelurahan');
+        if (kel) {
+            const matched = VALID_KELURAHAN.find(k => k.toLowerCase() === decodeURIComponent(kel).toLowerCase());
+            if (matched) return matched;
         }
         return 'Kampung Baru';
     }
 
-    // Update URL parameter tanpa reload
     function updateURLParameter(param, value) {
         const url = new URL(window.location);
         url.searchParams.set(param, value);
         window.history.replaceState({}, '', url);
     }
 
-    // Show loading skeleton
+    function filterByKelurahan(data, field = 'KELURAHAN') {
+        if (!data || !data.length) return [];
+        return data.filter(item => item[field] === currentKelurahan);
+    }
+
     function showLoading(containerId, type = 'card') {
-        const container = document.getElementById(containerId);
-        if (!container) return;
+        const el = document.getElementById(containerId);
+        if (!el) return;
         if (type === 'card') {
-            container.innerHTML = `
-                <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
-                <div class="skeleton-card"><div class="skeleton-header"></div><div class="skeleton-body"><div class="skeleton-line"></div><div class="skeleton-line"></div></div></div>
+            el.innerHTML = `
+                <div class="skeleton-card"><div class="sk-header"></div><div class="sk-body"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
+                <div class="skeleton-card"><div class="sk-header"></div><div class="sk-body"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
+                <div class="skeleton-card"><div class="sk-header"></div><div class="sk-body"><div class="sk-line"></div><div class="sk-line short"></div></div></div>
             `;
         } else {
-            container.innerHTML = `
+            el.innerHTML = `
                 <div class="loading-container">
                     <div class="loading-spinner"></div>
                     <div class="loading-text">Memuat data...</div>
-                    <div class="loading-subtext">Mohon tunggu, sedang memproses data</div>
                 </div>
             `;
         }
     }
 
-    // Fetch data dari Google Apps Script dengan timeout
+    function destroyCharts() {
+        Object.keys(charts).forEach(k => { if (charts[k]) { charts[k].destroy(); charts[k] = null; } });
+        charts = {};
+    }
+
+    // ============================================================
+    // FETCH DATA
+    // ============================================================
     async function fetchData() {
         try {
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000);
-            
+            const timeout = setTimeout(() => controller.abort(), 30000);
             const url = `${APPS_SCRIPT_URL}?action=getData&sheetId=${SPREADSHEET_ID}`;
-            const response = await fetch(url, { signal: controller.signal });
-            clearTimeout(timeoutId);
-            
-            const data = await response.json();
+            const res = await fetch(url, { signal: controller.signal });
+            clearTimeout(timeout);
+            const data = await res.json();
             if (data.success) {
                 allKader = data.kader || [];
                 allWarga = data.warga || [];
                 allLaporan = data.laporan || [];
-                
-                kaderPhotoMap = {};
-                allKader.forEach(kader => {
-                    kaderPhotoMap[kader.ID_KADER] = {
-                        foto: kader.LINK_FOTO,
-                        nama: kader.NAMA_KADER
-                    };
-                });
-                
-                console.log('Data loaded:', { kader: allKader.length, warga: allWarga.length, laporan: allLaporan.length });
+                console.log(`✅ Data loaded: ${allKader.length} kader, ${allWarga.length} warga, ${allLaporan.length} laporan`);
                 return true;
             }
             throw new Error('Gagal mengambil data');
-        } catch (error) {
-            console.error('Error fetch:', error);
-            if (error.name === 'AbortError') {
-                alert('Timeout: Server terlalu lama merespon. Silakan coba lagi.');
-            } else {
-                alert('Error: ' + error.message);
-            }
+        } catch (err) {
+            console.error('❌ Fetch error:', err);
+            alert(err.name === 'AbortError' ? 'Timeout: Server terlalu lama merespon.' : 'Error: ' + err.message);
             return false;
         }
     }
 
-    // Filter berdasarkan kelurahan
-    function filterByKelurahan(data, kelurahanField = 'KELURAHAN') {
-        if (!data || data.length === 0) return [];
-        return data.filter(item => item[kelurahanField] === currentKelurahan);
-    }
-
-    // Escape HTML
-    function escapeHtml(str) { 
-        if (str === null || str === undefined) return '';
-        const string = String(str);
-        return string.replace(/[&<>]/g, function(m){
-            if(m==='&') return '&amp;'; 
-            if(m==='<') return '&lt;'; 
-            if(m==='>') return '&gt;'; 
-            return m;
-        }); 
-    }
-
-    // Render Tab 1: Profile Kader
+    // ============================================================
+    // RENDER: KADER CARDS
+    // ============================================================
     function renderKader() {
         const container = document.getElementById('kaderList');
         const filtered = filterByKelurahan(allKader, 'KELURAHAN');
-        
+
         if (!filtered.length) {
-            container.innerHTML = `<div class="error"><i class="fas fa-info-circle fa-2x"></i><p>Tidak ada data kader untuk kelurahan ${currentKelurahan}</p></div>`;
+            container.innerHTML = `<div class="error-box"><i class="fas fa-info-circle"></i> Tidak ada data kader untuk ${currentKelurahan}</div>`;
             return;
         }
-        
+
         container.innerHTML = filtered.map(kader => `
-            <div class="profile-card">
-                <div class="card-header">
-                    ${kader.LINK_FOTO ? `<img src="${kader.LINK_FOTO}" class="card-img" loading="lazy" onerror="this.src='https://via.placeholder.com/100?text=Kader'">` : `<i class="fas fa-user-circle" style="font-size: 80px;"></i>`}
-                    <div class="card-name">${escapeHtml(kader.NAMA_KADER)}</div>
-                    <div class="card-role">${escapeHtml(kader.JABATAN || 'Kader')}</div>
-                </div>
+            <div class="kader-card" data-id="${escapeHtml(kader.ID_KADER)}" onclick="openModal('${escapeHtml(kader.ID_KADER)}')">
+                <img class="card-img-top" src="${kader.LINK_FOTO || 'https://via.placeholder.com/300x160?text=Kader'}" 
+                     alt="${escapeHtml(kader.NAMA_KADER)}" loading="lazy"
+                     onerror="this.src='https://via.placeholder.com/300x160?text=No+Photo'">
                 <div class="card-body">
-                    <div class="card-info"><i class="fas fa-id-badge"></i> Kader Pemilah Sampah Dari Rumah</div>
-                    <div class="card-info"><i class="fas fa-map-marker-alt"></i> Kelurahan: ${escapeHtml(kader.KELURAHAN)}</div>
+                    <div class="kader-name">${escapeHtml(kader.NAMA_KADER)}</div>
+                    <div class="kader-kel">${escapeHtml(kader.KELURAHAN)}</div>
+                    <span class="kader-badge">${escapeHtml(kader.JABATAN || 'Kader')}</span>
                 </div>
+                <span class="card-click-hint"><i class="fas fa-eye"></i> Detail</span>
             </div>
         `).join('');
     }
 
-    // Render Tab 2: Warga Binaan
+    // ============================================================
+    // MODAL
+    // ============================================================
+    function openModal(kaderId) {
+        const overlay = document.getElementById('modalOverlay');
+        const body = document.getElementById('modalBody');
+
+        const kader = allKader.find(k => k.ID_KADER === kaderId);
+        if (!kader) {
+            body.innerHTML = `<div class="error-box"><i class="fas fa-exclamation-triangle"></i> Data kader tidak ditemukan</div>`;
+            overlay.classList.add('show');
+            return;
+        }
+
+        // Warga binaan dari kader ini
+        const wargaBinaan = allWarga.filter(w => w.ID_KADER === kaderId);
+
+        let wargaHtml = '';
+        if (wargaBinaan.length) {
+            wargaHtml = wargaBinaan.map(w => `
+                <div class="warga-item">
+                    <span><strong>${escapeHtml(w.NAMA_WARGA)}</strong></span>
+                    <span class="alamat">${escapeHtml(w.ALAMAT || '')} • RT ${escapeHtml(w.RT || '')} / RW ${escapeHtml(w.RW || '')}</span>
+                </div>
+            `).join('');
+        } else {
+            wargaHtml = `<div class="no-warga">Belum ada warga binaan</div>`;
+        }
+
+        body.innerHTML = `
+            <div class="modal-kader-header">
+                <img src="${kader.LINK_FOTO || 'https://via.placeholder.com/80?text=Kader'}" 
+                     alt="${escapeHtml(kader.NAMA_KADER)}"
+                     onerror="this.src='https://via.placeholder.com/80?text=Kader'">
+                <div class="info">
+                    <h2>${escapeHtml(kader.NAMA_KADER)}</h2>
+                    <p>${escapeHtml(kader.JABATAN || 'Kader')}</p>
+                    <span class="badge-kel"><i class="fas fa-map-pin"></i> ${escapeHtml(kader.KELURAHAN)}</span>
+                    <span class="badge-count" style="margin-left:8px;"><i class="fas fa-users"></i> ${wargaBinaan.length} Binaan</span>
+                </div>
+            </div>
+            <div class="warga-binaan-list">
+                <h4><i class="fas fa-user-friends" style="color:#3b82f6;"></i> Daftar Warga Binaan</h4>
+                ${wargaHtml}
+            </div>
+        `;
+
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+        document.getElementById('modalOverlay').classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    // Event modal
+    document.getElementById('modalClose').addEventListener('click', closeModal);
+    document.getElementById('modalOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeModal();
+    });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // ============================================================
+    // RENDER: WARGA BINAAN (Group by Kader)
+    // ============================================================
     function renderWarga() {
         const container = document.getElementById('wargaList');
-        const filtered = filterByKelurahan(allWarga, 'KELURAHAN');
-        
-        if (!filtered.length) {
-            container.innerHTML = `<div class="error"><i class="fas fa-info-circle fa-2x"></i><p>Tidak ada data warga binaan untuk kelurahan ${currentKelurahan}</p></div>`;
+        const filteredWarga = filterByKelurahan(allWarga, 'KELURAHAN');
+
+        if (!filteredWarga.length) {
+            container.innerHTML = `<div class="error-box"><i class="fas fa-info-circle"></i> Tidak ada data warga binaan untuk ${currentKelurahan}</div>`;
             return;
         }
-        
-        container.innerHTML = filtered.map(warga => `
-            <div class="profile-card">
-                <div class="card-header" style="background: linear-gradient(135deg, #2563eb, #1e40af);">
-                    <i class="fas fa-user-friends" style="font-size: 60px;"></i>
-                    <div class="card-name">${escapeHtml(warga.NAMA_WARGA)}</div>
-                    <div class="card-role">Warga Binaan</div>
-                </div>
-                <div class="card-body">
-                    <div class="card-info"><i class="fas fa-home"></i> Alamat: ${escapeHtml(warga.ALAMAT)}</div>
-                    <div class="card-info"><i class="fas fa-map-pin"></i> RT ${escapeHtml(warga.RT)} / RW ${escapeHtml(warga.RW)}</div>
-                    <div class="card-info"><i class="fas fa-building"></i> Kelurahan: ${escapeHtml(warga.KELURAHAN)}</div>
-                </div>
-            </div>
-        `).join('');
-    }
 
-    // Destroy existing charts
-    function destroyCharts() {
-        Object.keys(charts).forEach(key => {
-            if (charts[key]) {
-                charts[key].destroy();
-                charts[key] = null;
+        // Ambil kader di kelurahan ini
+        const kaders = filterByKelurahan(allKader, 'KELURAHAN');
+
+        // Group warga by ID_KADER
+        const groups = {};
+        kaders.forEach(k => { groups[k.ID_KADER] = { kader: k, warga: [] }; });
+
+        filteredWarga.forEach(w => {
+            if (groups[w.ID_KADER]) {
+                groups[w.ID_KADER].warga.push(w);
+            } else {
+                if (!groups['_unknown']) groups['_unknown'] = { kader: null, warga: [] };
+                groups['_unknown'].warga.push(w);
             }
         });
-        charts = {};
+
+        let html = '';
+        for (const [id, group] of Object.entries(groups)) {
+            if (!group.warga.length) continue;
+
+            const k = group.kader;
+            const photo = k?.LINK_FOTO || 'https://via.placeholder.com/40?text=K';
+            const namaKader = k?.NAMA_KADER || 'Kader Tidak Diketahui';
+            const jabatan = k?.JABATAN || '';
+
+            html += `
+                <div class="warga-group">
+                    <div class="group-header">
+                        <img src="${photo}" alt="${escapeHtml(namaKader)}" loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/40?text=K'">
+                        <div class="group-info">
+                            <h4>${escapeHtml(namaKader)} <span class="badge-count">${group.warga.length} Binaan</span></h4>
+                            <small>${escapeHtml(jabatan)} • ${escapeHtml(k?.KELURAHAN || currentKelurahan)}</small>
+                        </div>
+                    </div>
+                    <div class="group-body">
+                        ${group.warga.map(w => `
+                            <div class="warga-mini-card">
+                                <div class="nama">${escapeHtml(w.NAMA_WARGA)}</div>
+                                <div class="detail">${escapeHtml(w.ALAMAT || '')} • RT ${escapeHtml(w.RT || '')} / RW ${escapeHtml(w.RW || '')}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        container.innerHTML = html || `<div class="error-box"><i class="fas fa-info-circle"></i> Tidak ada data</div>`;
     }
 
-    // Rekapan dan Grafik
-    async function renderRekapan() {
+    // ============================================================
+    // RENDER: REKAP & GRAFIK
+    // ============================================================
+    function renderRekapan() {
         const container = document.getElementById('rekapanContainer');
         showLoading('rekapanContainer', 'chart');
-        
-        await new Promise(resolve => setTimeout(resolve, 100));
-        
-        const laporanFiltered = filterByKelurahan(allLaporan, 'KELURAHAN');
-        
-        if (!laporanFiltered.length) {
-            container.innerHTML = `<div class="error"><i class="fas fa-info-circle fa-2x"></i><p>Tidak ada data laporan untuk kelurahan ${currentKelurahan}</p></div>`;
-            return;
-        }
 
-        await new Promise(resolve => setTimeout(resolve, 50));
-
-        let totalOrganik = 0, totalAnorganik = 0, totalResidu = 0, totalBerat = 0;
-        laporanFiltered.forEach(l => {
-            totalOrganik += parseFloat(l.BERAT_ORGANIK) || 0;
-            totalAnorganik += parseFloat(l.BERAT_ANORGANIK) || 0;
-            totalResidu += parseFloat(l.BERAT_RESIDU) || 0;
-            totalBerat += parseFloat(l.TOTAL_BERAT) || 0;
-        });
-
-        const byDate = {};
-        laporanFiltered.forEach(l => {
-            const tgl = l.TANGGAL_LAPORAN ? l.TANGGAL_LAPORAN.split('T')[0] : '';
-            if (tgl) {
-                if (!byDate[tgl]) byDate[tgl] = { organik:0, anorganik:0, residu:0 };
-                byDate[tgl].organik += parseFloat(l.BERAT_ORGANIK)||0;
-                byDate[tgl].anorganik += parseFloat(l.BERAT_ANORGANIK)||0;
-                byDate[tgl].residu += parseFloat(l.BERAT_RESIDU)||0;
-            }
-        });
-
-        const kaderStats = {};
-        laporanFiltered.forEach(l => {
-            const id = l.ID_KADER;
-            if(!kaderStats[id]) {
-                kaderStats[id] = { nama: l.NAMA_KADER, total: 0 };
-            }
-            kaderStats[id].total += parseFloat(l.TOTAL_BERAT)||0;
-        });
-        const topKader = Object.entries(kaderStats)
-            .map(([id,val]) => ({ id, nama:val.nama, total:val.total }))
-            .sort((a,b)=>b.total-a.total)
-            .slice(0,10);
-        
-        const wargaStats = {};
-        laporanFiltered.forEach(l => {
-            const nama = l.NAMA_WARGA;
-            if(!wargaStats[nama]) wargaStats[nama] = { total:0 };
-            wargaStats[nama].total += parseFloat(l.TOTAL_BERAT)||0;
-        });
-        const topWarga = Object.entries(wargaStats)
-            .map(([nama,val]) => ({ nama, total:val.total }))
-            .sort((a,b)=>b.total-a.total)
-            .slice(0,10);
-
-        const days = Object.keys(byDate).sort();
-        const reductionData = days.map(day => {
-            const pilah = (byDate[day].organik + byDate[day].anorganik);
-            return Math.max(0, 1800 - pilah);
-        });
-        
-        const totalLaporanCount = laporanFiltered.length;
-        const targetTotal = totalLaporanCount * 1800;
-        const totalPilah = totalOrganik + totalAnorganik;
-        const persentase = targetTotal > 0 ? (totalPilah / targetTotal) * 100 : 0;
-        
-        const komposisi = [totalOrganik, totalAnorganik, totalResidu];
-        
-        const html = `
-            <div class="stat-grid">
-                <div class="stat-card"><div class="stat-number">${(totalOrganik).toFixed(1)} kg</div><div class="stat-label">Total Sampah Organik</div></div>
-                <div class="stat-card"><div class="stat-number">${(totalAnorganik).toFixed(1)} kg</div><div class="stat-label">Total Sampah Anorganik</div></div>
-                <div class="stat-card"><div class="stat-number">${(totalResidu).toFixed(1)} kg</div><div class="stat-label">Total Residu</div></div>
-                <div class="stat-card"><div class="stat-number">${(totalBerat).toFixed(1)} kg</div><div class="stat-label">Total Keseluruhan</div></div>
-            </div>
-            
-            <div class="chart-row">
-                <div class="chart-container">
-                    <canvas id="reductionChart"></canvas>
-                    <p style="text-align:center; margin-top:10px;">Grafik Pengurangan Tonase ke TPA (kg/hari)</p>
-                </div>
-                <div class="chart-container">
-                    <canvas id="compositionChart"></canvas>
-                    <p style="text-align:center; margin-top:10px;">Komposisi Sampah Terpilah</p>
-                </div>
-            </div>
-            
-            <div class="chart-container">
-                <canvas id="achievementChart"></canvas>
-                <p style="text-align:center; margin-top:10px;">Pencapaian Pemilahan (${persentase.toFixed(1)}%)</p>
-            </div>
-            
-            <div class="stat-grid">
-                <div class="stat-card"><div class="stat-number"><i class="fas fa-trophy"></i> Top 10 Kader</div></div>
-                ${topKader.map((k,i)=>`<div class="stat-card"><strong>${i+1}. ${escapeHtml(k.nama)}</strong><br>${k.total.toFixed(1)} kg</div>`).join('')}
-            </div>
-            
-            <div class="stat-grid">
-                <div class="stat-card"><div class="stat-number"><i class="fas fa-star"></i> Top 10 Warga Binaan</div></div>
-                ${topWarga.map((w,i)=>`<div class="stat-card"><strong>${i+1}. ${escapeHtml(w.nama)}</strong><br>${w.total.toFixed(1)} kg</div>`).join('')}
-            </div>
-        `;
-        container.innerHTML = html;
-        
         setTimeout(() => {
-            try {
+            const laporanFiltered = filterByKelurahan(allLaporan, 'KELURAHAN');
+
+            if (!laporanFiltered.length) {
+                container.innerHTML = `<div class="error-box"><i class="fas fa-info-circle"></i> Tidak ada data laporan untuk ${currentKelurahan}</div>`;
+                return;
+            }
+
+            // ===== STATS =====
+            let totalOrganik = 0, totalAnorganik = 0, totalResidu = 0, totalBerat = 0;
+            laporanFiltered.forEach(l => {
+                totalOrganik += parseSafe(l.BERAT_ORGANIK);
+                totalAnorganik += parseSafe(l.BERAT_ANORGANIK);
+                totalResidu += parseSafe(l.BERAT_RESIDU);
+                totalBerat += parseSafe(l.TOTAL_BERAT);
+            });
+
+            // ===== BY DATE =====
+            const byDate = {};
+            laporanFiltered.forEach(l => {
+                const tgl = l.TANGGAL_LAPORAN ? l.TANGGAL_LAPORAN.split('T')[0] : '';
+                if (tgl) {
+                    if (!byDate[tgl]) byDate[tgl] = { organik: 0, anorganik: 0, residu: 0 };
+                    byDate[tgl].organik += parseSafe(l.BERAT_ORGANIK);
+                    byDate[tgl].anorganik += parseSafe(l.BERAT_ANORGANIK);
+                    byDate[tgl].residu += parseSafe(l.BERAT_RESIDU);
+                }
+            });
+
+            const days = Object.keys(byDate).sort();
+            const reductionData = days.map(day => {
+                const pilah = byDate[day].organik + byDate[day].anorganik;
+                return Math.max(0, 1800 - pilah);
+            });
+
+            // ===== TOP 10 KADER =====
+            const kaderStats = {};
+            laporanFiltered.forEach(l => {
+                const id = l.ID_KADER;
+                if (!kaderStats[id]) {
+                    kaderStats[id] = {
+                        id: id,
+                        nama: l.NAMA_KADER || 'Tidak Diketahui',
+                        kel: l.KELURAHAN || currentKelurahan,
+                        total: 0,
+                        wargaSet: new Set()
+                    };
+                }
+                kaderStats[id].total += parseSafe(l.TOTAL_BERAT);
+                if (l.NAMA_WARGA) kaderStats[id].wargaSet.add(l.NAMA_WARGA);
+            });
+
+            const topKader = Object.values(kaderStats)
+                .map(k => ({ ...k, jumlahWarga: k.wargaSet.size }))
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 10);
+
+            // ===== TOP 10 WARGA =====
+            const wargaStats = {};
+            laporanFiltered.forEach(l => {
+                const nama = l.NAMA_WARGA;
+                if (!nama) return;
+                if (!wargaStats[nama]) {
+                    wargaStats[nama] = {
+                        nama: nama,
+                        kel: l.KELURAHAN || currentKelurahan,
+                        alamat: l.ALAMAT_WARGA || '',
+                        kader: l.NAMA_KADER || 'Tidak Diketahui',
+                        total: 0
+                    };
+                }
+                wargaStats[nama].total += parseSafe(l.TOTAL_BERAT);
+            });
+
+            const topWarga = Object.values(wargaStats)
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 10);
+
+            // ===== KOMPOSISI =====
+            const komposisi = [totalOrganik, totalAnorganik, totalResidu];
+            const totalPilah = totalOrganik + totalAnorganik;
+            const totalLaporanCount = laporanFiltered.length;
+            const targetTotal = totalLaporanCount * 1800;
+            const persentase = targetTotal > 0 ? (totalPilah / targetTotal) * 100 : 0;
+
+            // ===== BUILD HTML =====
+            const html = `
+                <!-- Stat Cards -->
+                <div class="stat-grid">
+                    <div class="stat-card"><div class="stat-number">${totalOrganik.toFixed(1)} kg</div><div class="stat-label">Sampah Organik</div></div>
+                    <div class="stat-card"><div class="stat-number">${totalAnorganik.toFixed(1)} kg</div><div class="stat-label">Sampah Anorganik</div></div>
+                    <div class="stat-card"><div class="stat-number">${totalResidu.toFixed(1)} kg</div><div class="stat-label">Residu</div></div>
+                    <div class="stat-card"><div class="stat-number">${totalBerat.toFixed(1)} kg</div><div class="stat-label">Total Keseluruhan</div></div>
+                    <div class="stat-card"><div class="stat-number">${persentase.toFixed(1)}%</div><div class="stat-label">Pencapaian Pemilahan</div></div>
+                </div>
+
+                <!-- Charts -->
+                <div class="chart-row">
+                    <div class="chart-container">
+                        <canvas id="reductionChart"></canvas>
+                        <p style="text-align:center; margin-top:8px; font-size:0.8rem; color:#94a3b8;">Pengurangan Sampah ke TPA (kg/hari)</p>
+                    </div>
+                    <div class="chart-container">
+                        <canvas id="compositionChart"></canvas>
+                        <p style="text-align:center; margin-top:8px; font-size:0.8rem; color:#94a3b8;">Komposisi Sampah Terpilah</p>
+                    </div>
+                </div>
+
+                <!-- TOP 10 KADER -->
+                <div class="section-title"><i class="fas fa-trophy"></i> TOP 10 Kader</div>
+                <div class="top-list">
+                    ${topKader.map((k, i) => `
+                        <div class="top-item">
+                            <span class="rank">${i + 1}</span>
+                            <div class="info">
+                                <div class="name">${escapeHtml(k.nama)}</div>
+                                <div class="sub">${escapeHtml(k.kel)} • ${k.jumlahWarga} Binaan</div>
+                            </div>
+                            <div class="weight">${k.total.toFixed(1)} <i>kg</i></div>
+                        </div>
+                    `).join('')}
+                </div>
+
+                <!-- TOP 10 WARGA -->
+                <div class="section-title"><i class="fas fa-star"></i> TOP 10 Warga Binaan</div>
+                <div class="top-list">
+                    ${topWarga.map((w, i) => `
+                        <div class="top-item">
+                            <span class="rank">${i + 1}</span>
+                            <div class="info">
+                                <div class="name">${escapeHtml(w.nama)}</div>
+                                <div class="sub">${escapeHtml(w.kel)} • Pembina: ${escapeHtml(w.kader)}</div>
+                            </div>
+                            <div class="weight">${w.total.toFixed(1)} <i>kg</i></div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            container.innerHTML = html;
+
+            // ===== INIT CHARTS =====
+            setTimeout(() => {
                 destroyCharts();
-                
-                const redCtx = document.getElementById('reductionChart');
-                const compCtx = document.getElementById('compositionChart');
-                const achCtx = document.getElementById('achievementChart');
-                
-                if (redCtx) {
-                    charts.reduction = new Chart(redCtx, {
-                        type: 'line', 
-                        data: { labels: days, datasets: [{ label: 'Sampah ke TPA (kg)', data: reductionData, borderColor: '#3b82f6', backgroundColor: 'rgba(59,130,246,0.1)', fill: true, tension: 0.4 }] },
-                        options: { responsive: true, maintainAspectRatio: true }
-                    });
-                }
-                
-                if (compCtx) {
-                    charts.composition = new Chart(compCtx, {
-                        type: 'pie', 
-                        data: { labels: ['Organik', 'Anorganik', 'Residu'], datasets: [{ data: komposisi, backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b'] }] },
-                        options: { responsive: true, maintainAspectRatio: true }
-                    });
-                }
-                
-                if (achCtx) {
-                    const achievements = [20,40,50,60,70,80,90,100];
-                    const achieved = achievements.map(a => persentase >= a ? a : 0);
-                    charts.achievement = new Chart(achCtx, {
-                        type: 'bar', 
-                        data: { labels: achievements.map(a=>a+'%'), datasets: [{ label: 'Pencapaian Target', data: achieved, backgroundColor: '#3b82f6', borderRadius: 10 }] },
-                        options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true, max: 100 } } }
-                    });
-                }
-            } catch(e) { console.error('Chart error:', e); }
-        }, 150);
+                try {
+                    const redCtx = document.getElementById('reductionChart');
+                    const compCtx = document.getElementById('compositionChart');
+
+                    if (redCtx) {
+                        charts.reduction = new Chart(redCtx, {
+                            type: 'line',
+                            data: {
+                                labels: days,
+                                datasets: [{
+                                    label: 'Sampah ke TPA (kg)',
+                                    data: reductionData,
+                                    borderColor: '#3b82f6',
+                                    backgroundColor: 'rgba(59,130,246,0.1)',
+                                    fill: true,
+                                    tension: 0.4
+                                }]
+                            },
+                            options: { 
+                                responsive: true, 
+                                maintainAspectRatio: true, 
+                                plugins: { legend: { labels: { color: '#94a3b8' } } },
+                                scales: { y: { ticks: { color: '#94a3b8' } }, x: { ticks: { color: '#94a3b8' } } }
+                            }
+                        });
+                    }
+
+                    if (compCtx) {
+                        charts.composition = new Chart(compCtx, {
+                            type: 'pie',
+                            data: {
+                                labels: ['Organik', 'Anorganik', 'Residu'],
+                                datasets: [{ data: komposisi, backgroundColor: ['#22c55e', '#3b82f6', '#f59e0b'] }]
+                            },
+                            options: { 
+                                responsive: true, 
+                                maintainAspectRatio: true, 
+                                plugins: { legend: { labels: { color: '#94a3b8' } } }
+                            }
+                        });
+                    }
+                } catch (e) { console.error('Chart error:', e); }
+            }, 150);
+
+        }, 100);
     }
 
-    // Ranking Se_Kecamatan
+    // ============================================================
+    // RENDER: RANKING GLOBAL TOP 100
+    // ============================================================
     function renderRanking() {
         const container = document.getElementById('rankingContainer');
-        
-        const kaderGlobal = {};
-        allLaporan.forEach(l => {
-            const id = l.ID_KADER;
-            if(!kaderGlobal[id]) {
-                kaderGlobal[id] = { id, nama: l.NAMA_KADER, total: 0, kel: l.KELURAHAN, foto: kaderPhotoMap[id]?.foto || null };
-            }
-            kaderGlobal[id].total += parseFloat(l.TOTAL_BERAT)||0;
-        });
-        const topKaderGlobal = Object.values(kaderGlobal).sort((a,b)=>b.total-a.total).slice(0,100);
-        
-        const wargaGlobal = {};
-        allLaporan.forEach(l => {
-            const nama = l.NAMA_WARGA;
-            if(!wargaGlobal[nama]) {
-                wargaGlobal[nama] = { nama, total: 0, kel: l.KELURAHAN, kader: l.NAMA_KADER };
-            }
-            wargaGlobal[nama].total += parseFloat(l.TOTAL_BERAT)||0;
-        });
-        const topWargaGlobal = Object.values(wargaGlobal).sort((a,b)=>b.total-a.total).slice(0,100);
-        
-        container.innerHTML = `
-            <h3 style="margin:20px 0 10px; color:white;"><i class="fas fa-crown"></i> Ranking Se-Kecamatan Top 100 Kader</h3>
-            <div class="ranking-table">
-                <table>
-                    <thead><tr><th>Rank</th><th>Foto</th><th>Nama</th><th>Kelurahan</th><th>Total Berat (kg)</th></tr></thead>
-                    <tbody>
-                        ${topKaderGlobal.map((k,i)=>`
-                            <tr>
-                                <td><strong>${i+1}</strong></td>
-                                <td>${k.foto ? `<img src="${k.foto}" class="ranking-photo" loading="lazy" onerror="this.src='https://via.placeholder.com/40?text=K'">` : `<i class="fas fa-user-circle" style="font-size:40px; color:#3b82f6;"></i>`}</td>
-                                <td>${escapeHtml(k.nama)}</td>
-                                <td>${escapeHtml(k.kel)}</td>
-                                <td><strong>${k.total.toFixed(1)} kg</strong></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-            
-            <h3 style="margin:40px 0 10px; color:white;"><i class="fas fa-medal"></i> Ranking Se-Kecamatan Top 100 Warga Binaan</h3>
-            <div class="ranking-table">
-                <table>
-                    <thead><tr><th>Rank</th><th>Nama Warga</th><th>Kelurahan</th><th>Kader Pembina</th><th>Total Berat (kg)</th></tr></thead>
-                    <tbody>
-                        ${topWargaGlobal.map((w,i)=>`
-                            <tr>
-                                <td><strong>${i+1}</strong></td>
-                                <td>${escapeHtml(w.nama)}</td>
-                                <td>${escapeHtml(w.kel)}</td>
-                                <td>${escapeHtml(w.kader)}</td>
-                                <td><strong>${w.total.toFixed(1)} kg</strong></td>
-                            </tr>
-                        `).join('')}
-                    </tbody>
-                </table>
-            </div>
-        `;
+        showLoading('rankingContainer', 'chart');
+
+        setTimeout(() => {
+            // ===== TOP 100 KADER =====
+            const kaderGlobal = {};
+            allLaporan.forEach(l => {
+                const id = l.ID_KADER;
+                if (!kaderGlobal[id]) {
+                    kaderGlobal[id] = {
+                        id: id,
+                        nama: l.NAMA_KADER || 'Tidak Diketahui',
+                        kel: l.KELURAHAN || 'Unknown',
+                        total: 0,
+                        wargaSet: new Set(),
+                        foto: allKader.find(k => k.ID_KADER === id)?.LINK_FOTO || null
+                    };
+                }
+                kaderGlobal[id].total += parseSafe(l.TOTAL_BERAT);
+                if (l.NAMA_WARGA) kaderGlobal[id].wargaSet.add(l.NAMA_WARGA);
+            });
+
+            const top100Kader = Object.values(kaderGlobal)
+                .map(k => ({ ...k, jumlahWarga: k.wargaSet.size }))
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 100);
+
+            // ===== TOP 100 WARGA =====
+            const wargaGlobal = {};
+            allLaporan.forEach(l => {
+                const nama = l.NAMA_WARGA;
+                if (!nama) return;
+                if (!wargaGlobal[nama]) {
+                    wargaGlobal[nama] = {
+                        nama: nama,
+                        kel: l.KELURAHAN || 'Unknown',
+                        alamat: l.ALAMAT_WARGA || '',
+                        kader: l.NAMA_KADER || 'Tidak Diketahui',
+                        total: 0
+                    };
+                }
+                wargaGlobal[nama].total += parseSafe(l.TOTAL_BERAT);
+            });
+
+            const top100Warga = Object.values(wargaGlobal)
+                .sort((a, b) => b.total - a.total)
+                .slice(0, 100);
+
+            // ===== BUILD HTML =====
+            let html = `
+                <div class="section-title"><i class="fas fa-crown"></i> Ranking Se-Kecamatan TOP 100 Kader</div>
+                <div class="ranking-table-wrap">
+                    <div class="table-title"><i class="fas fa-user-tie"></i> ${top100Kader.length} Kader</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr>
+                                <th class="col-rank">Rank</th>
+                                <th class="col-photo">Foto</th>
+                                <th class="col-name">Nama</th>
+                                <th class="col-kel">Kelurahan</th>
+                                <th class="col-binaan">Binaan</th>
+                                <th class="col-weight">Total Berat</th>
+                            </tr></thead>
+                            <tbody>
+                                ${top100Kader.map((k, i) => `
+                                    <tr>
+                                        <td><span class="rank-num">${i + 1}</span></td>
+                                        <td>
+                                            ${k.foto 
+                                                ? `<img src="${k.foto}" class="photo-thumb" loading="lazy" onerror="this.style.display='none'">` 
+                                                : `<i class="fas fa-user-circle" style="font-size:28px; color:#3b82f6;"></i>`}
+                                        </td>
+                                        <td><strong>${escapeHtml(k.nama)}</strong></td>
+                                        <td>${escapeHtml(k.kel)}</td>
+                                        <td><span class="badge-count">${k.jumlahWarga}</span></td>
+                                        <td><strong style="color:#fbbf24;">${k.total.toFixed(1)} kg</strong></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section-title"><i class="fas fa-medal"></i> Ranking Se-Kecamatan TOP 100 Warga Binaan</div>
+                <div class="ranking-table-wrap">
+                    <div class="table-title"><i class="fas fa-users"></i> ${top100Warga.length} Warga</div>
+                    <div class="table-wrap">
+                        <table>
+                            <thead><tr>
+                                <th class="col-rank">Rank</th>
+                                <th class="col-name">Nama Warga</th>
+                                <th class="col-kel">Alamat</th>
+                                <th class="col-kel">Kelurahan</th>
+                                <th class="col-name">Kader Pembina</th>
+                                <th class="col-weight">Total Berat</th>
+                            </tr></thead>
+                            <tbody>
+                                ${top100Warga.map((w, i) => `
+                                    <tr>
+                                        <td><span class="rank-num">${i + 1}</span></td>
+                                        <td><strong>${escapeHtml(w.nama)}</strong></td>
+                                        <td>${escapeHtml(w.alamat)}</td>
+                                        <td>${escapeHtml(w.kel)}</td>
+                                        <td>${escapeHtml(w.kader)}</td>
+                                        <td><strong style="color:#fbbf24;">${w.total.toFixed(1)} kg</strong></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+
+            container.innerHTML = html;
+        }, 100);
     }
 
+    // ============================================================
+    // REFRESH ALL
+    // ============================================================
     async function refreshAll() {
         document.getElementById('kelurahanName').textContent = currentKelurahan;
-        document.getElementById('filterBadgeText').textContent = currentKelurahan;
-        document.getElementById('filterBadge').style.display = 'inline-flex';
-        
+
         showLoading('kaderList', 'card');
         showLoading('wargaList', 'card');
         showLoading('rekapanContainer', 'chart');
         showLoading('rankingContainer', 'chart');
-        
+
         setTimeout(() => renderKader(), 10);
         setTimeout(() => renderWarga(), 50);
         setTimeout(() => renderRekapan(), 100);
         setTimeout(() => renderRanking(), 200);
     }
 
+    // ============================================================
+    // INIT
+    // ============================================================
     async function init() {
         currentKelurahan = getParameterFromURL();
         document.getElementById('kelurahanName').textContent = currentKelurahan;
-        
-        // Set select value
+
         const select = document.getElementById('kelurahanFilter');
         select.value = currentKelurahan;
-        document.getElementById('filterBadgeText').textContent = currentKelurahan;
-        document.getElementById('filterBadge').style.display = 'inline-flex';
-        
-        // Event listener filter
+
         select.addEventListener('change', function() {
             const newKel = this.value;
             if (newKel !== currentKelurahan) {
@@ -932,25 +1804,46 @@
                 refreshAll();
             }
         });
-        
+
+        // Sidebar & Bottom Nav tabs
+        document.querySelectorAll('.menu-item, .nav-item').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabId = this.dataset.tab;
+                document.querySelectorAll('.menu-item, .nav-item').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll(`.menu-item[data-tab="${tabId}"], .nav-item[data-tab="${tabId}"]`).forEach(b => b.classList.add('active'));
+                document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
+                document.getElementById(tabId).classList.add('active');
+                document.getElementById('sidebar').classList.remove('open');
+            });
+        });
+
+        // Hamburger
+        document.getElementById('hamburgerBtn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('open');
+        });
+
+        // Tutup sidebar klik di luar (mobile)
+        document.addEventListener('click', function(e) {
+            const sidebar = document.getElementById('sidebar');
+            const hamburger = document.getElementById('hamburgerBtn');
+            if (window.innerWidth <= 992) {
+                if (!sidebar.contains(e.target) && !hamburger.contains(e.target)) {
+                    sidebar.classList.remove('open');
+                }
+            }
+        });
+
+        // Fetch data
         const success = await fetchData();
         if (success) {
             await refreshAll();
         }
     }
-    
-    // Event listeners untuk tabs
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            document.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active'));
-            document.getElementById(btn.dataset.tab).classList.add('active');
-        });
-    });
-    
-    // Start
-    init();
+
+    // ============================================================
+    // START
+    // ============================================================
+    document.addEventListener('DOMContentLoaded', init);
 </script>
 </body>
 </html>
