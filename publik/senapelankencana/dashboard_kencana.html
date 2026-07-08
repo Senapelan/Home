@@ -459,12 +459,15 @@
             border: none;
             width: 100%;
             text-align: left;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
         }
 
         .nav-link i {
             width: 22px;
             font-size: 1rem;
             color: #5a6a7a;
+            pointer-events: none;
         }
 
         .nav-link:active {
@@ -499,6 +502,7 @@
         .nav-link .fa-chevron-down {
             transition: transform 0.3s ease;
             margin-left: auto !important;
+            pointer-events: none;
         }
 
         .nav-item.open > .nav-link .fa-chevron-down,
@@ -756,25 +760,25 @@
             <div class="nav-header">MAIN MENU</div>
             <!-- MONOGRAFI KECAMATAN -->
             <div class="nav-item" id="monografiItemDesktop">
-                <div class="nav-link" onclick="toggleSubmenu('monografiSubDesktop', this)">
+                <div class="nav-link" data-toggle="monografiSubDesktop">
                     <i class="fas fa-chart-line"></i>
                     <span>MONOGRAFI KECAMATAN</span>
                     <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.7rem;"></i>
                 </div>
                 <div class="submenu" id="monografiSubDesktop">
-                    <div class="nav-link" onclick="loadPage('giatkecamatan', this)">
+                    <div class="nav-link" data-page="giatkecamatan">
                         <i class="fas fa-tasks"></i>
                         <span>GIAT KECAMATAN</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('penduduk', this)">
+                    <div class="nav-link" data-page="penduduk">
                         <i class="fas fa-users"></i>
                         <span>DATA PENDUDUK</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('peta', this)">
+                    <div class="nav-link" data-page="peta">
                         <i class="fas fa-map"></i>
                         <span>PETA WILAYAH</span>
                     </div>
-                    <div class="nav-link" onclick="loadPage('daftarAplikasi', this)">
+                    <div class="nav-link" data-page="daftarAplikasi">
                         <i class="fas fa-th-large"></i>
                         <span>DAFTAR APLIKASI</span>
                     </div>
@@ -824,23 +828,23 @@
         <!-- ========== BOTTOM NAV (MOBILE) ========== -->
         <nav class="bottom-nav" id="bottomNav">
             <div class="bottom-nav-inner">
-                <button class="bottom-nav-item active" data-page="giatkecamatan" onclick="loadPageFromBottom('giatkecamatan', this)">
+                <button class="bottom-nav-item active" data-page="giatkecamatan">
                     <i class="fas fa-tasks"></i>
                     <span>Giat</span>
                 </button>
-                <button class="bottom-nav-item" data-page="penduduk" onclick="loadPageFromBottom('penduduk', this)">
+                <button class="bottom-nav-item" data-page="penduduk">
                     <i class="fas fa-users"></i>
                     <span>Penduduk</span>
                 </button>
-                <button class="bottom-nav-item" data-page="peta" onclick="loadPageFromBottom('peta', this)">
+                <button class="bottom-nav-item" data-page="peta">
                     <i class="fas fa-map"></i>
                     <span>Peta</span>
                 </button>
-                <button class="bottom-nav-item" data-page="kelembagaan" onclick="openMobileMenu()">
+                <button class="bottom-nav-item" data-page="kelembagaan">
                     <i class="fas fa-building"></i>
                     <span>Kelembagaan</span>
                 </button>
-                <button class="bottom-nav-item" data-page="more" onclick="openMobileMenu()">
+                <button class="bottom-nav-item" data-page="more">
                     <i class="fas fa-ellipsis-h"></i>
                     <span>Lainnya</span>
                 </button>
@@ -850,7 +854,7 @@
 </div>
 
 <!-- ========== MOBILE MENU OVERLAY & SHEET ========== -->
-<div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="closeMobileMenu()"></div>
+<div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
 <div class="mobile-menu-sheet" id="mobileMenuSheet">
     <div class="mobile-menu-header">
         <div class="handle"></div>
@@ -898,7 +902,6 @@
     };
 
     let currentActiveLink = null;
-    let currentBottomActive = null;
 
     // ==================== GENERATE MENU ====================
     function generateKelembagaanHTML(containerId) {
@@ -914,7 +917,7 @@
             const subId = `${key}_sub_${containerId}`;
             html += `
                 <div class="nav-item kelembagaan-sub-item" data-page="${key}">
-                    <div class="nav-link sub-accordion" onclick="toggleKelurahanSubmenu('${subId}', this, '${containerId}')">
+                    <div class="nav-link sub-accordion" data-toggle="${subId}">
                         <i class="${config.icon}"></i>
                         <span>${config.title}</span>
                         <i class="fas fa-chevron-down" style="margin-left: auto; font-size: 0.6rem;"></i>
@@ -936,7 +939,7 @@
             const paramKelurahan = encodeURIComponent(kel.param);
             const fullUrl = `${baseUrl}?kelurahan=${paramKelurahan}`;
             html += `
-                <div class="nav-link kelurahan-link" onclick="loadPageWithKelurahan('${fullUrl}', '${pageKey}', '${kel.param}', this)">
+                <div class="nav-link kelurahan-link" data-kelurahan-url="${fullUrl}" data-page="${pageKey}" data-kelurahan="${kel.param}">
                     <i class="fas fa-location-dot"></i>
                     <span>KELURAHAN ${kel.display}</span>
                 </div>
@@ -945,32 +948,65 @@
         return html;
     }
 
-    // ==================== TOGGLE FUNCTIONS ====================
-    function toggleSubmenu(id, element) {
-        const submenu = document.getElementById(id);
-        if (!submenu) return;
-        const parentItem = submenu.closest('.nav-item');
-        if (!parentItem) return;
-        parentItem.classList.toggle('open');
-        
-        // Jika membuka, beri efek blink
-        if (parentItem.classList.contains('open') && element) {
-            element.classList.add('blink-effect');
-            setTimeout(() => element.classList.remove('blink-effect'), 1500);
-        }
-    }
+    // ==================== EVENT HANDLING ====================
+    function setupEventListeners() {
+        // Toggle submenu untuk desktop dan mobile
+        document.querySelectorAll('.nav-link[data-toggle]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const submenuId = this.getAttribute('data-toggle');
+                const submenu = document.getElementById(submenuId);
+                if (!submenu) return;
+                const parentItem = submenu.closest('.nav-item');
+                if (!parentItem) return;
+                parentItem.classList.toggle('open');
+                
+                if (parentItem.classList.contains('open')) {
+                    this.classList.add('blink-effect');
+                    setTimeout(() => this.classList.remove('blink-effect'), 1500);
+                }
+            });
+        });
 
-    function toggleKelurahanSubmenu(id, element, containerId) {
-        const submenu = document.getElementById(id);
-        if (!submenu) return;
-        const parentItem = submenu.closest('.kelembagaan-sub-item');
-        if (!parentItem) return;
-        parentItem.classList.toggle('open');
-        
-        if (parentItem.classList.contains('open') && element) {
-            element.classList.add('blink-effect');
-            setTimeout(() => element.classList.remove('blink-effect'), 1500);
-        }
+        // Load page untuk menu utama
+        document.querySelectorAll('.nav-link[data-page]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = this.getAttribute('data-page');
+                if (page) {
+                    loadPage(page, this);
+                }
+            });
+        });
+
+        // Load page untuk kelurahan
+        document.querySelectorAll('.nav-link[data-kelurahan-url]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const url = this.getAttribute('data-kelurahan-url');
+                const pageKey = this.getAttribute('data-page');
+                const kelurahan = this.getAttribute('data-kelurahan');
+                if (url && pageKey && kelurahan) {
+                    loadPageWithKelurahan(url, pageKey, kelurahan, this);
+                }
+            });
+        });
+
+        // Bottom nav items
+        document.querySelectorAll('.bottom-nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation();
+                const page = this.getAttribute('data-page');
+                if (page === 'kelembagaan' || page === 'more') {
+                    openMobileMenu();
+                    return;
+                }
+                loadPageFromBottom(page, this);
+            });
+        });
+
+        // Close mobile menu when clicking overlay
+        document.getElementById('mobileMenuOverlay').addEventListener('click', closeMobileMenu);
     }
 
     // ==================== LOAD PAGE ====================
@@ -1003,12 +1039,10 @@
         
         loadUrl(baseUrl, element);
         
-        // Update bottom nav
         if (window.innerWidth <= 768) {
             updateBottomNav(page);
         }
         
-        // Tutup mobile menu jika terbuka
         closeMobileMenu();
     }
 
@@ -1030,7 +1064,6 @@
         
         loadUrl(url, element);
         
-        // Update bottom nav
         if (window.innerWidth <= 768) {
             updateBottomNav('kelembagaan');
         }
@@ -1077,7 +1110,6 @@
             }
         }, 8000);
         
-        // Update active state
         if (currentActiveLink) {
             currentActiveLink.classList.remove('active');
         }
@@ -1089,12 +1121,10 @@
 
     // ==================== BOTTOM NAV ====================
     function loadPageFromBottom(page, element) {
-        // Jika page adalah 'kelembagaan' atau 'more', buka menu saja
         if (page === 'kelembagaan' || page === 'more') {
             openMobileMenu();
             return;
         }
-        
         loadPage(page, null);
         updateBottomNav(page);
     }
@@ -1105,19 +1135,17 @@
             item.classList.remove('active');
         });
         
-        // Cari item yang sesuai
         let found = false;
         items.forEach(item => {
-            if (item.dataset.page === page) {
+            if (item.getAttribute('data-page') === page) {
                 item.classList.add('active');
                 found = true;
             }
         });
         
-        // Jika tidak ditemukan, default ke giatkecamatan
         if (!found) {
             items.forEach(item => {
-                if (item.dataset.page === 'giatkecamatan') {
+                if (item.getAttribute('data-page') === 'giatkecamatan') {
                     item.classList.add('active');
                 }
             });
@@ -1198,7 +1226,10 @@
         generateKelembagaanHTML('kelembagaanContainerDesktop');
         generateKelembagaanHTML('mobileMenuBody');
         
-        // Buka default submenu MONOGRAFI dan KELEMBAGAAN parent
+        // Setup event listeners
+        setupEventListeners();
+        
+        // Buka default submenu
         setTimeout(() => {
             const monografiDesktop = document.getElementById('monografiItemDesktop');
             if (monografiDesktop) monografiDesktop.classList.add('open');
@@ -1212,7 +1243,7 @@
         
         // Load default page
         setTimeout(() => {
-            const giatLink = document.querySelector('#monografiSubDesktop .nav-link');
+            const giatLink = document.querySelector('#monografiSubDesktop .nav-link[data-page]');
             if (giatLink) {
                 giatLink.click();
             } else {
@@ -1235,13 +1266,6 @@
             closeMobileMenu();
         }
     });
-
-    // Prevent zoom on double tap
-    document.addEventListener('touchend', (e) => {
-        if (e.target.closest('.bottom-nav-item') || e.target.closest('.nav-link')) {
-            e.preventDefault();
-        }
-    }, { passive: false });
 
     document.addEventListener('DOMContentLoaded', initDashboard);
 </script>
