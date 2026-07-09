@@ -312,19 +312,14 @@
     <div id="statusMessage"></div>
   </form>
 
-  <!-- ADMIN SECTION -->
   <div class="admin-section">
-    <button class="admin-toggle" id="adminToggle" type="button">
-      🔐 Khusus Admin
-    </button>
+    <button class="admin-toggle" id="adminToggle" type="button">🔐 Khusus Admin</button>
     <div class="admin-panel" id="adminPanel">
       <div class="form-group">
         <label class="form-label" for="namaAdmin">Nama Admin</label>
-        <input type="text" id="namaAdmin" placeholder="Nama Admin" style="text-transform:uppercase;">
+        <input type="text" id="namaAdmin" placeholder="hint : Admin beauty, dia claim dirinya manis" style="text-transform:uppercase;">
       </div>
-      <button class="btn-pdf" id="generatePdfBtn" type="button">
-        📄 Generate PDF Daftar Baju
-      </button>
+      <button class="btn-pdf" id="generatePdfBtn" type="button">📄 Generate PDF Daftar Baju</button>
       <div id="pdfStatus"></div>
     </div>
   </div>
@@ -334,7 +329,7 @@
   // ================================================================
   // KONFIGURASI - GANTI DENGAN URL DEPLOY ANDA
   // ================================================================
-  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyjYDv08GXIejKyFxvjzj3qCUPtcw5JjKspZHgKwoWpMb97YGuK-vEYpS6LYzExu7sleg/exec';
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxfLs_lFxlht5OD2gLIMzpdwtxPKfcygsMDa9wov_sSeTHabBkWVdwimGFQQAmoyHralQ/exec';
   
   // ================================================================
   // ELEMEN
@@ -403,25 +398,92 @@
   }
 
   // ================================================================
-  // KIRIM DATA VIA FETCH
+  // METODE 1: Kirim via Fetch (dengan CORS)
   // ================================================================
   async function kirimViaFetch(data) {
-    const response = await fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'cors',
-      cache: 'no-cache',
-      headers: { 
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(data),
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    try {
+      const response = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'cors',
+        cache: 'no-cache',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.warn('❌ Fetch error:', error);
+      throw error;
     }
-    
-    return await response.json();
+  }
+
+  // ================================================================
+  // METODE 2: Kirim via Form Submit (Fallback - PASTI BERHASIL)
+  // ================================================================
+  function kirimViaForm(data) {
+    return new Promise((resolve, reject) => {
+      // Buat form
+      const form = document.createElement('form');
+      form.method = 'POST';
+      form.action = SCRIPT_URL;
+      form.target = 'hiddenFrame';
+      form.style.display = 'none';
+      
+      // Tambahkan data sebagai input hidden
+      for (const [key, value] of Object.entries(data)) {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = key;
+        input.value = typeof value === 'string' ? value : JSON.stringify(value);
+        form.appendChild(input);
+      }
+      
+      // Buat iframe
+      const iframe = document.createElement('iframe');
+      iframe.name = 'hiddenFrame';
+      iframe.style.display = 'none';
+      document.body.appendChild(iframe);
+      
+      // Timeout
+      let timeout = setTimeout(() => {
+        document.body.removeChild(iframe);
+        document.body.removeChild(form);
+        reject(new Error('Timeout: Server tidak merespon'));
+      }, 15000);
+      
+      // Jika iframe selesai load
+      iframe.onload = function() {
+        clearTimeout(timeout);
+        document.body.removeChild(iframe);
+        document.body.removeChild(form);
+        resolve({ success: true, message: 'Data terkirim (via form)' });
+      };
+      
+      // Submit form
+      document.body.appendChild(form);
+      form.submit();
+    });
+  }
+
+  // ================================================================
+  // KIRIM DATA DENGAN 2 METODE
+  // ================================================================
+  async function kirimData(data) {
+    // Coba fetch dulu
+    try {
+      return await kirimViaFetch(data);
+    } catch (fetchError) {
+      console.warn('Fetch gagal, mencoba form method...', fetchError);
+      // Fallback ke form
+      return await kirimViaForm(data);
+    }
   }
 
   // ================================================================
@@ -465,7 +527,7 @@
     SUBMIT_BTN.innerHTML = '⏳ Mengirim...';
     
     try {
-      const result = await kirimViaFetch(data);
+      const result = await kirimData(data);
       
       if (result.success) {
         showStatus('success', '✅ ' + result.message);
@@ -494,18 +556,18 @@
   });
 
   // ================================================================
-  // GENERATE PDF - via window.open (PASTI BERHASIL)
+  // GENERATE PDF
   // ================================================================
   GENERATE_BTN.addEventListener('click', async function() {
     const namaAdmin = NAMA_ADMIN.value.trim().toUpperCase();
     
     if (!namaAdmin) {
-      showPdfStatus('error', '⚠️ Masukkan nama admin: SSB');
+      showPdfStatus('error', '⚠️ Masukkan nama admin: SITI SALMAH');
       return;
     }
     
     if (namaAdmin !== 'SITI SALMAH') {
-      showPdfStatus('error', '❌ Nama admin salah! Harus Nama Admin');
+      showPdfStatus('error', '❌ Nama admin salah!');
       return;
     }
     
@@ -514,34 +576,11 @@
     GENERATE_BTN.innerHTML = '⏳ Membuka PDF...';
     
     try {
-      // Method 1: Coba via fetch dulu
-      try {
-        const data = {
-          action: 'generatePDF',
-          namaAdmin: namaAdmin
-        };
-        
-        const result = await kirimViaFetch(data);
-        
-        if (result.success && result.data && result.data.url) {
-          // Buka PDF di tab baru
-          window.open(result.data.url, '_blank');
-          showPdfStatus('success', '✅ PDF berhasil dibuka!');
-          NAMA_ADMIN.value = '';
-          GENERATE_BTN.disabled = false;
-          GENERATE_BTN.innerHTML = '📄 Generate PDF Daftar Baju';
-          return;
-        }
-      } catch (fetchError) {
-        console.log('Fetch gagal, menggunakan direct URL:', fetchError);
-      }
-      
-      // Method 2: Direct URL ke HTML Service (PASTI BERHASIL)
+      // Langsung buka PDF via URL (PASTI BERHASIL)
       const directUrl = SCRIPT_URL + '?action=showPDF&t=' + new Date().getTime();
       window.open(directUrl, '_blank');
       showPdfStatus('success', '✅ PDF dibuka di tab baru! Gunakan Print > Save as PDF');
       NAMA_ADMIN.value = '';
-      
     } catch (error) {
       console.error('❌ Error:', error);
       showPdfStatus('error', '❌ Gagal: ' + error.message);
@@ -552,7 +591,7 @@
   });
 
   // ================================================================
-  // AUTO UPPERCASE NAMA ADMIN
+  // AUTO UPPERCASE
   // ================================================================
   NAMA_ADMIN.addEventListener('input', function() {
     this.value = this.value.toUpperCase();
