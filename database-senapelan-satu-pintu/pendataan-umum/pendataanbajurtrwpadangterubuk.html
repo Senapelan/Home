@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>Pendataan Baju RW/RT - Padang Terubuk</title>
+  <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
+  <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png">
+  <meta name="theme-color" content="#0b3b2c">
+  
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #eef3f0;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      font-family: -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+    .card {
+      max-width: 520px;
+      width: 100%;
+      background: #ffffff;
+      border-radius: 32px;
+      box-shadow: 0 20px 60px rgba(0,20,10,0.08);
+      padding: 28px 22px 32px;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 18px;
+      border-bottom: 2px solid #eaf0ec;
+    }
+    .header-img {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      object-fit: cover;
+      background: #dce8e1;
+      flex-shrink: 0;
+    }
+    .header-text h1 {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #0a3528;
+    }
+    .header-text small {
+      display: block;
+      font-size: 0.75rem;
+      color: #3a5a4d;
+      opacity: 0.8;
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+      font-size: 0.88rem;
+      color: #1d3d30;
+      margin-bottom: 6px;
+    }
+    .form-label .badge {
+      background: #d9e8e0;
+      padding: 0 12px;
+      border-radius: 40px;
+      font-size: 0.6rem;
+      font-weight: 700;
+      color: #0b3b2c;
+    }
+    input, select {
+      width: 100%;
+      padding: 14px 16px;
+      font-size: 1rem;
+      border: 1.5px solid #dae5df;
+      border-radius: 16px;
+      background: #fafcfa;
+      outline: none;
+      color: #1a2e26;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+    input:focus, select:focus {
+      border-color: #0b3b2c;
+      box-shadow: 0 0 0 4px rgba(11,59,44,0.06);
+    }
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%230b3b2c' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px;
+      padding-right: 44px;
+    }
+    .dynamic-section {
+      background: #f6faf8;
+      padding: 16px 14px 8px;
+      border-radius: 20px;
+      margin: 4px 0 14px;
+      border: 1px solid #e4ede7;
+    }
+    .dynamic-section .empty-state {
+      color: #3a5a4d;
+      font-size: 0.85rem;
+      padding: 6px 0 10px;
+      text-align: center;
+      opacity: 0.7;
+    }
+    .info-baju {
+      background: #f3f8f5;
+      padding: 14px 16px;
+      border-radius: 20px;
+      margin: 16px 0 20px;
+      border-left: 4px solid #0b3b2c;
+    }
+    .info-baju summary {
+      font-weight: 600;
+      color: #0b3b2c;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .info-baju table {
+      width: 100%;
+      margin-top: 12px;
+      border-collapse: collapse;
+      font-size: 0.75rem;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .info-baju th {
+      background: #d9e8e0;
+      color: #0b3b2c;
+      padding: 8px 4px;
+      text-align: center;
+    }
+    .info-baju td {
+      padding: 8px 4px;
+      text-align: center;
+      border-bottom: 1px solid #e4ede7;
+    }
+    .info-baju tr:last-child td { border-bottom: none; }
+    .btn-submit {
+      width: 100%;
+      background: #0b3b2c;
+      color: white;
+      border: none;
+      padding: 18px 12px;
+      font-size: 1.05rem;
+      font-weight: 600;
+      border-radius: 60px;
+      box-shadow: 0 8px 24px rgba(11,59,44,0.15);
+      cursor: pointer;
+      transition: 0.12s ease;
+    }
+    .btn-submit:active { transform: scale(0.96); }
+    .btn-submit:disabled { opacity: 0.6; pointer-events: none; }
+    #statusMessage {
+      margin-top: 16px;
+      padding: 14px 18px;
+      border-radius: 60px;
+      font-size: 0.9rem;
+      text-align: center;
+      display: none;
+    }
+    #statusMessage.show { display: block; }
+    #statusMessage.success {
+      background: #d5ebe1;
+      border: 1px solid #0b3b2c;
+      color: #0b3b2c;
+    }
+    #statusMessage.error {
+      background: #fce9e9;
+      border: 1px solid #b34a4a;
+      color: #7a2e2e;
+    }
+    .admin-section {
+      margin-top: 20px;
+      border-top: 2px dashed #dae5df;
+      padding-top: 20px;
+    }
+    .admin-toggle {
+      background: none;
+      border: none;
+      color: #0b3b2c;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #eaf0ec;
+      transition: 0.2s;
+      width: 100%;
+      text-align: center;
+    }
+    .admin-toggle:hover { background: #d5e0da; }
+    .admin-panel {
+      display: none;
+      margin-top: 16px;
+      padding: 16px;
+      background: #f8faf9;
+      border-radius: 16px;
+      border: 1px solid #dae5df;
+    }
+    .admin-panel.open { display: block; }
+    .admin-panel .form-group { margin-bottom: 12px; }
+    .admin-panel .btn-pdf {
+      background: #c44536;
+      color: white;
+      border: none;
+      padding: 14px;
+      font-size: 1rem;
+      font-weight: 600;
+      border-radius: 60px;
+      width: 100%;
+      cursor: pointer;
+      transition: 0.12s ease;
+    }
+    .admin-panel .btn-pdf:active { transform: scale(0.96); }
+    .admin-panel .btn-pdf:disabled { opacity: 0.6; pointer-events: none; }
+    #pdfStatus {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      text-align: center;
+      display: none;
+    }
+    #pdfStatus.success { background: #d5ebe1; color: #0b3b2c; border: 1px solid #0b3b2c; display: block; }
+    #pdfStatus.error { background: #fce9e9; color: #7a2e2e; border: 1px solid #b34a4a; display: block; }
+    @media (max-width: 480px) {
+      .card { padding: 20px 14px 24px; }
+      .header-text h1 { font-size: 1.1rem; }
+      .header-img { width: 44px; height: 44px; }
+      input, select { padding: 12px 14px; font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <img class="header-img" src="https://senapelan.github.io/Home/data/foto/thumbnailpadangterubuk.png" alt="Padang Terubuk" loading="lazy">
+    <div class="header-text">
+      <h1>Pendataan Baju</h1>
+      <small>Kelurahan Padang Terubuk · Pekanbaru</small>
+    </div>
+  </div>
+
+  <form id="bajuForm" novalidate>
+    <div class="form-group">
+      <label class="form-label" for="kelurahan">Kelurahan</label>
+      <select id="kelurahan" disabled>
+        <option value="Padang Terubuk" selected>Padang Terubuk</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="jabatan">Pilih Jabatan <span class="badge">RW / RT</span></label>
+      <select id="jabatan" required>
+        <option value="">Pilih jabatan</option>
+        <option value="RW">RW</option>
+        <option value="RT">RT</option>
+      </select>
+    </div>
+
+    <div id="dynamicArea" class="dynamic-section">
+      <div class="empty-state">👤 Silakan pilih jabatan RW atau RT</div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="ukuranBaju">Ukuran Baju <span class="badge">wajib</span></label>
+      <select id="ukuranBaju" required>
+        <option value="">Pilih ukuran</option>
+        <option value="S">S</option>
+        <option value="M">M</option>
+        <option value="L">L</option>
+        <option value="XL">XL</option>
+        <option value="XXL">XXL</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="nama">Nama Lengkap <span class="badge">Ketua</span></label>
+      <input type="text" id="nama" placeholder="Masukkan nama lengkap" required>
+    </div>
+
+    <div class="info-baju">
+      <details>
+        <summary>📏 Panduan Ukuran Baju</summary>
+        <table>
+          <thead><tr><th>Size</th><th>Lingkar Dada</th><th>Lebar Dada</th><th>Panjang Baju</th><th>Panjang Lengan</th></tr></thead>
+          <tbody>
+            <tr><td>S</td><td>100 cm</td><td>50 cm</td><td>68 cm</td><td>59 cm</td></tr>
+            <tr><td>M</td><td>104 cm</td><td>52 cm</td><td>70 cm</td><td>60 cm</td></tr>
+            <tr><td>L</td><td>108 cm</td><td>54 cm</td><td>72 cm</td><td>61 cm</td></tr>
+            <tr><td>XL</td><td>112 cm</td><td>56 cm</td><td>74 cm</td><td>62 cm</td></tr>
+            <tr><td>XXL</td><td>116 cm</td><td>58 cm</td><td>76 cm</td><td>63 cm</td></tr>
+          </tbody>
+        </table>
+      </details>
+    </div>
+
+    <button type="submit" class="btn-submit" id="submitBtn">
+      <span>Kirim Data</span>
+      <span style="font-size:1.3rem;">→</span>
+    </button>
+    <div id="statusMessage"></div>
+  </form>
+
+  <!-- ADMIN SECTION -->
+  <div class="admin-section">
+    <button class="admin-toggle" id="adminToggle" type="button">
+      🔐 Khusus Admin
+    </button>
+    <div class="admin-panel" id="adminPanel">
+      <div class="form-group">
+        <label class="form-label" for="namaAdmin">Nama Admin</label>
+        <input type="text" id="namaAdmin" placeholder="Nama Admin" style="text-transform:uppercase;">
+      </div>
+      <button class="btn-pdf" id="generatePdfBtn" type="button">
+        📄 Generate PDF Daftar Baju
+      </button>
+      <div id="pdfStatus"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ================================================================
+  // KONFIGURASI - GANTI DENGAN URL DEPLOY ANDA
+  // ================================================================
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyjYDv08GXIejKyFxvjzj3qCUPtcw5JjKspZHgKwoWpMb97YGuK-vEYpS6LYzExu7sleg/exec';
+  
+  // ================================================================
+  // ELEMEN
+  // ================================================================
+  const FORM = document.getElementById('bajuForm');
+  const JABATAN = document.getElementById('jabatan');
+  const DYNAMIC_AREA = document.getElementById('dynamicArea');
+  const STATUS = document.getElementById('statusMessage');
+  const SUBMIT_BTN = document.getElementById('submitBtn');
+  const ADMIN_TOGGLE = document.getElementById('adminToggle');
+  const ADMIN_PANEL = document.getElementById('adminPanel');
+  const NAMA_ADMIN = document.getElementById('namaAdmin');
+  const GENERATE_BTN = document.getElementById('generatePdfBtn');
+  const PDF_STATUS = document.getElementById('pdfStatus');
+
+  // ================================================================
+  // RENDER DYNAMIC FIELDS
+  // ================================================================
+  function renderDynamicFields(jabatan) {
+    let html = '';
+    if (jabatan === 'RW') {
+      html = `<div class="form-group">
+        <label class="form-label" for="nomorRW">Nomor RW</label>
+        <input type="text" id="nomorRW" placeholder="Contoh: 01, 02" required pattern="[0-9]{1,2}" inputmode="numeric">
+      </div>`;
+    } else if (jabatan === 'RT') {
+      html = `
+        <div class="form-group">
+          <label class="form-label" for="nomorRT">Nomor RT</label>
+          <input type="text" id="nomorRT" placeholder="Contoh: 01, 02" required pattern="[0-9]{1,2}" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="nomorRW">Nomor RW (Induk)</label>
+          <input type="text" id="nomorRW" placeholder="Contoh: 01" required pattern="[0-9]{1,2}" inputmode="numeric">
+        </div>
+      `;
+    } else {
+      html = `<div class="empty-state">👤 Silakan pilih jabatan RW atau RT</div>`;
+    }
+    DYNAMIC_AREA.innerHTML = html;
+  }
+
+  // ================================================================
+  // SHOW STATUS
+  // ================================================================
+  function showStatus(type, message) {
+    STATUS.className = 'show ' + type;
+    STATUS.textContent = message;
+    STATUS.style.display = 'block';
+  }
+
+  function hideStatus() {
+    STATUS.className = '';
+    STATUS.style.display = 'none';
+  }
+
+  function showPdfStatus(type, message) {
+    PDF_STATUS.className = type;
+    PDF_STATUS.textContent = message;
+    PDF_STATUS.style.display = 'block';
+  }
+
+  function hidePdfStatus() {
+    PDF_STATUS.className = '';
+    PDF_STATUS.style.display = 'none';
+  }
+
+  // ================================================================
+  // KIRIM DATA VIA FETCH
+  // ================================================================
+  async function kirimViaFetch(data) {
+    const response = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      mode: 'cors',
+      cache: 'no-cache',
+      headers: { 
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(data),
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
+    return await response.json();
+  }
+
+  // ================================================================
+  // HANDLE SUBMIT FORM UTAMA
+  // ================================================================
+  FORM.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    hideStatus();
+    hidePdfStatus();
+    
+    const jabatan = JABATAN.value;
+    if (!jabatan) { showStatus('error', '⚠️ Pilih jabatan'); return; }
+    
+    const ukuran = document.getElementById('ukuranBaju').value;
+    if (!ukuran) { showStatus('error', '⚠️ Pilih ukuran baju'); return; }
+    
+    const nama = document.getElementById('nama').value.trim();
+    if (!nama || nama.length < 2) { showStatus('error', '⚠️ Masukkan nama lengkap'); return; }
+    
+    const data = {
+      kelurahan: 'Padang Terubuk',
+      jabatan: jabatan,
+      nama: nama,
+      ukuranBaju: ukuran
+    };
+    
+    if (jabatan === 'RW') {
+      const rw = document.getElementById('nomorRW')?.value.trim();
+      if (!rw || !/^\d{1,2}$/.test(rw)) { showStatus('error', '⚠️ Masukkan nomor RW (01-99)'); return; }
+      data.nomorRW = rw;
+    } else if (jabatan === 'RT') {
+      const rt = document.getElementById('nomorRT')?.value.trim();
+      const rw = document.getElementById('nomorRW')?.value.trim();
+      if (!rt || !/^\d{1,2}$/.test(rt)) { showStatus('error', '⚠️ Masukkan nomor RT (01-99)'); return; }
+      if (!rw || !/^\d{1,2}$/.test(rw)) { showStatus('error', '⚠️ Masukkan nomor RW induk (01-99)'); return; }
+      data.nomorRT = rt;
+      data.nomorRW = rw;
+    }
+    
+    SUBMIT_BTN.disabled = true;
+    SUBMIT_BTN.innerHTML = '⏳ Mengirim...';
+    
+    try {
+      const result = await kirimViaFetch(data);
+      
+      if (result.success) {
+        showStatus('success', '✅ ' + result.message);
+        FORM.reset();
+        JABATAN.value = '';
+        renderDynamicFields('');
+        document.getElementById('ukuranBaju').value = '';
+        document.getElementById('kelurahan').value = 'Padang Terubuk';
+      } else {
+        showStatus('error', '❌ ' + (result.message || 'Gagal menyimpan data'));
+      }
+    } catch (error) {
+      showStatus('error', '❌ Gagal mengirim: ' + error.message);
+    } finally {
+      SUBMIT_BTN.disabled = false;
+      SUBMIT_BTN.innerHTML = '<span>Kirim Data</span><span style="font-size:1.3rem;">→</span>';
+    }
+  });
+
+  // ================================================================
+  // ADMIN TOGGLE
+  // ================================================================
+  ADMIN_TOGGLE.addEventListener('click', function() {
+    ADMIN_PANEL.classList.toggle('open');
+    this.textContent = ADMIN_PANEL.classList.contains('open') ? '🔒 Tutup Admin' : '🔐 Khusus Admin';
+  });
+
+  // ================================================================
+  // GENERATE PDF - via window.open (PASTI BERHASIL)
+  // ================================================================
+  GENERATE_BTN.addEventListener('click', async function() {
+    const namaAdmin = NAMA_ADMIN.value.trim().toUpperCase();
+    
+    if (!namaAdmin) {
+      showPdfStatus('error', '⚠️ Masukkan nama admin: SSB');
+      return;
+    }
+    
+    if (namaAdmin !== 'SITI SALMAH') {
+      showPdfStatus('error', '❌ Nama admin salah! Harus Nama Admin');
+      return;
+    }
+    
+    hidePdfStatus();
+    GENERATE_BTN.disabled = true;
+    GENERATE_BTN.innerHTML = '⏳ Membuka PDF...';
+    
+    try {
+      // Method 1: Coba via fetch dulu
+      try {
+        const data = {
+          action: 'generatePDF',
+          namaAdmin: namaAdmin
+        };
+        
+        const result = await kirimViaFetch(data);
+        
+        if (result.success && result.data && result.data.url) {
+          // Buka PDF di tab baru
+          window.open(result.data.url, '_blank');
+          showPdfStatus('success', '✅ PDF berhasil dibuka!');
+          NAMA_ADMIN.value = '';
+          GENERATE_BTN.disabled = false;
+          GENERATE_BTN.innerHTML = '📄 Generate PDF Daftar Baju';
+          return;
+        }
+      } catch (fetchError) {
+        console.log('Fetch gagal, menggunakan direct URL:', fetchError);
+      }
+      
+      // Method 2: Direct URL ke HTML Service (PASTI BERHASIL)
+      const directUrl = SCRIPT_URL + '?action=showPDF&t=' + new Date().getTime();
+      window.open(directUrl, '_blank');
+      showPdfStatus('success', '✅ PDF dibuka di tab baru! Gunakan Print > Save as PDF');
+      NAMA_ADMIN.value = '';
+      
+    } catch (error) {
+      console.error('❌ Error:', error);
+      showPdfStatus('error', '❌ Gagal: ' + error.message);
+    } finally {
+      GENERATE_BTN.disabled = false;
+      GENERATE_BTN.innerHTML = '📄 Generate PDF Daftar Baju';
+    }
+  });
+
+  // ================================================================
+  // AUTO UPPERCASE NAMA ADMIN
+  // ================================================================
+  NAMA_ADMIN.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+
+  // ================================================================
+  // EVENT LISTENERS
+  // ================================================================
+  JABATAN.addEventListener('change', function() {
+    renderDynamicFields(this.value);
+    hideStatus();
+  });
+
+  document.querySelectorAll('input, select').forEach(el => {
+    el.addEventListener('input', function() {
+      if (STATUS.classList.contains('show')) hideStatus();
+      if (PDF_STATUS.style.display === 'block') hidePdfStatus();
+    });
+  });
+
+  // ================================================================
+  // INIT
+  // ================================================================
+  renderDynamicFields('');
+  document.getElementById('kelurahan').value = 'Padang Terubuk';
+  
+  console.log('✅ Form siap digunakan!');
+  console.log('📤 URL:', SCRIPT_URL);
+</script>
+
+</body>
+</html>
