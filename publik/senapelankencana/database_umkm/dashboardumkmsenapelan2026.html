@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
   <!-- ============================================ -->
-  <!-- META TAG - SEO & SHARING                      -->
+  <!-- META TAG - SEO & SHARING                     -->
   <!-- ============================================ -->
   
   <meta name="description" content="Inovasi Lurah Kampung Bandar | NOPRI ANUGRAH PUTRA, S.STP., | Aplikasi Pendataan dan Monitoring UMKM se-Kecamatan Senapelan 2026.">
@@ -50,6 +50,7 @@
       --danger: #EF4444;
       --purple: #7C3AED;
       --pink: #EC4899;
+      --wa: #25D366;
       --bg: #F0F4F8;
       --card: #FFFFFF;
       --text-primary: #1A1A2E;
@@ -638,11 +639,11 @@
       color: white;
     }
     .modal-body .modal-actions .btn-like:active { transform: scale(0.96); }
-    .modal-body .modal-actions .btn-like.liked {
-      background: var(--bg);
-      color: var(--pink);
-      border: 2px solid var(--pink);
+    .modal-body .modal-actions .btn-wa {
+      background: var(--wa);
+      color: white;
     }
+    .modal-body .modal-actions .btn-wa:active { transform: scale(0.96); }
 
     /* ===== FILTER MODAL ===== */
     .filter-modal .modal-content { padding-bottom: 30px; }
@@ -839,7 +840,7 @@
   <div style="padding:20px 0;">
     <div style="background:var(--card);border-radius:var(--radius);padding:20px;box-shadow:var(--shadow);margin-bottom:12px;">
       <h3 style="font-size:16px;margin-bottom:8px;">⚙️ Pengaturan</h3>
-      <p style="font-size:13px;color:var(--text-secondary);">Dashboard UMKM Senapelan v4.0</p>
+      <p style="font-size:13px;color:var(--text-secondary);">Dashboard UMKM Senapelan v4.1</p>
       <p style="font-size:12px;color:var(--text-muted);margin-top:4px;">Data terakhir diperbarui: <span id="lastUpdateTime">-</span></p>
       <button onclick="refreshData()" style="margin-top:12px;padding:10px 20px;border:none;border-radius:var(--radius-sm);background:var(--primary);color:white;font-weight:600;cursor:pointer;font-size:13px;">
         🔄 Refresh Data
@@ -1063,7 +1064,6 @@ function renderAll(data) {
 // RENDER BINTANG (HANYA YANG AKTIF)
 // ============================================
 function renderStars(rating) {
-  // Hanya tampilkan bintang yang aktif (rating)
   return '⭐'.repeat(Math.min(rating, 5));
 }
 
@@ -1342,6 +1342,28 @@ function renderSettingsStats(stats) {
 }
 
 // ============================================
+// WA CHAT FUNCTION
+// ============================================
+function waChat(phone) {
+  let number = String(phone).replace(/\D/g, '');
+  
+  if (!number || number.length < 10) {
+    alert('📱 Nomor telepon tidak tersedia atau tidak valid');
+    return;
+  }
+  
+  if (number.startsWith('0')) {
+    number = '62' + number.substring(1);
+  }
+  if (!number.startsWith('62')) {
+    number = '62' + number;
+  }
+  
+  const url = `https://wa.me/${number}`;
+  window.open(url, '_blank');
+}
+
+// ============================================
 // MODAL DETAIL UMKM
 // ============================================
 function openModal(index) {
@@ -1421,18 +1443,16 @@ function showModal(u) {
     </div>
     
     <div class="modal-actions">
+      <button class="btn btn-wa" onclick="waChat('${escapeHtml(u.telepon)}')">
+        💬 Chat WhatsApp
+      </button>
       <button class="btn btn-like" onclick="tambahLikeAndRefresh('${escapeHtml(u.nama)}')">
         ❤️ Suka UMKM ini
-      </button>
-      <button class="btn btn-outline" onclick="navigateTo('pageData')">
-        📋 Lihat Data
       </button>
     </div>
   `;
   
-  // Cek apakah bisa view
   if (canView(u.nama)) {
-    // Auto view +1 saat modal dibuka
     tambahViewAuto(u.nama);
   }
   
@@ -1451,10 +1471,9 @@ function closeModal(event) {
 // ============================================
 async function tambahViewAuto(nama) {
   try {
-    // Record view di localStorage
     recordView(nama);
     
-    const response = await fetch(CONFIG.API_URL, {
+    await fetch(CONFIG.API_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
@@ -1464,10 +1483,8 @@ async function tambahViewAuto(nama) {
       })
     });
     
-    // Refresh data setelah view ditambahkan
     await loadDashboard();
     
-    // Update modal dengan data terbaru
     const u = state.umkm.find(item => item.nama === nama);
     if (u && document.getElementById('modalOverlay').classList.contains('show')) {
       showModal(u);
@@ -1489,7 +1506,7 @@ async function tambahLikeAndRefresh(nama) {
       btn.disabled = true;
     }
     
-    const response = await fetch(CONFIG.API_URL, {
+    await fetch(CONFIG.API_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
@@ -1785,11 +1802,12 @@ setInterval(() => {
   }
 }, 300000);
 
-console.log('🏪 UMKM Senapelan Dashboard v4.0');
+console.log('🏪 UMKM Senapelan Dashboard v4.1');
 console.log('📱 Mobile Premium - Instagram Style');
 console.log('⭐ Bintang hanya tampil yang aktif');
 console.log('👁️ View 1x per 24 jam per device');
 console.log('❤️ Like tanpa batas');
+console.log('💬 WhatsApp Direct Chat');
 </script>
 </body>
 </html>
