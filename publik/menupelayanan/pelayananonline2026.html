@@ -745,9 +745,9 @@
 
 <body>
     <header class="header" id="header">
-        <a href="https://senapelan.github.io/Home/" class="logo">
+        <a href="https://senapelan.github.io/Home/" class="logo" id="logoLink">
             <div class="logo-img">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru" id="logoImg">
             </div>
             <div class="logo-text">
                 <div class="logo-main" id="kelurahanDisplayName">Kelurahan</div>
@@ -755,7 +755,7 @@
             </div>
         </a>
         
-        <a href="https://senapelan.github.io/Home/" class="btn-back" title="Kembali ke Beranda">
+        <a href="https://senapelan.github.io/Home/" class="btn-back" id="backButton" title="Kembali ke Beranda">
             <i class="fas fa-arrow-left"></i>
         </a>
     </header>
@@ -873,7 +873,7 @@
         // =====================================================
         // KONFIGURASI
         // =====================================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyNgmXQII-Unb5m6T7MqjdI3xeK1BDCbRqCLa5cbd8449mNV5FfB5XWoPq31rPRJ7g/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyz3l8cdYEzHhri46PB90qmVTs4Hihr1Ou7ur8goRFiqwrn2_3FAcbBNGVO1hbBThir/exec';
         
         function getKelurahanFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -894,7 +894,7 @@
                 if (cached) {
                     const data = JSON.parse(cached);
                     const age = Date.now() - data.timestamp;
-                    if (age < 300000) { // 5 menit
+                    if (age < 300000) {
                         return data.value;
                     }
                 }
@@ -951,7 +951,6 @@
         // =====================================================
         async function fetchAllData(kelurahan) {
             try {
-                // Cek cache dulu
                 const cacheKey = 'allData_' + kelurahan;
                 const cached = getCachedData(cacheKey);
                 if (cached) {
@@ -962,7 +961,6 @@
                 console.log('🔄 Fetching from API...');
                 const url = `${API_URL}?action=getAllData&kelurahan=${encodeURIComponent(kelurahan)}`;
                 
-                // Timeout 30 detik
                 const controller = new AbortController();
                 const timeoutId = setTimeout(() => controller.abort(), 30000);
                 
@@ -992,27 +990,58 @@
         }
 
         // =====================================================
-        // UPDATE META TAGS
+        // UPDATE META TAGS & HEADER
         // =====================================================
         function updateMetaTags(metaData, kelurahanInfo) {
             const displayName = kelurahanInfo?.nama_display || 'Kelurahan';
             
+            // Title
             let title = metaData?.page_title || `Pelayanan - Kelurahan ${displayName}`;
             document.title = title;
             document.getElementById('pageTitle').textContent = title;
             
+            // Meta Description
             let description = metaData?.og_description || `Pelayanan Live Chat WhatsApp Kelurahan ${displayName}`;
             document.querySelector('meta[name="description"]')?.setAttribute('content', description);
             
+            // Open Graph
             document.querySelector('meta[property="og:title"]')?.setAttribute('content', metaData?.og_title || title);
             document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaData?.og_description || description);
             document.querySelector('meta[property="og:image"]')?.setAttribute('content', metaData?.og_image || 'https://senapelan.github.io/Home/data/foto/thumbnailkelurahan.png');
             document.querySelector('meta[property="og:url"]')?.setAttribute('content', window.location.href);
             
+            // Twitter Card
             document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', metaData?.twitter_title || title);
             document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaData?.twitter_description || description);
             document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', metaData?.og_image || 'https://senapelan.github.io/Home/data/foto/thumbnailkelurahan.png');
             
+            // ========== UPDATE HEADER ==========
+            // 1. Logo URL (logo_img_url)
+            const logoUrl = metaData?.logo_img_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
+            const logoImg = document.getElementById('logoImg');
+            if (logoImg) {
+                logoImg.src = logoUrl;
+                logoImg.alt = `Logo ${displayName}`;
+                logoImg.onerror = function() {
+                    this.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
+                };
+            }
+            
+            // 2. Link Logo (link_url_logo) - saat logo diklik
+            const logoLink = document.getElementById('logoLink');
+            if (logoLink && metaData?.link_url_logo) {
+                logoLink.href = metaData.link_url_logo;
+            }
+            
+            // 3. Back URL (back_url) - tombol kembali
+            const backUrl = metaData?.back_url || 'https://senapelan.github.io/Home/';
+            const backButton = document.getElementById('backButton');
+            if (backButton) {
+                backButton.href = backUrl;
+                backButton.title = `Kembali ke ${displayName}`;
+            }
+            
+            // Update UI
             document.getElementById('kelurahanDisplayName').textContent = displayName;
             document.getElementById('pageTitleText').textContent = `Pelayanan Kelurahan ${displayName}`;
             document.getElementById('pageDescription').textContent = `Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik di Kelurahan ${displayName}`;
@@ -1020,78 +1049,75 @@
         }
 
         // =====================================================
-        // RENDER PETUGAS CARDS
+        // RENDER PETUGAS CARDS (Dengan Fallback Foto)
         // =====================================================
         function renderPetugasCards(petugasData) {
-    const grid = document.getElementById('cardGrid');
-    const loadingState = document.getElementById('loadingState');
-    if (loadingState) loadingState.remove();
-    
-    if (!petugasData || petugasData.length === 0) {
-        grid.innerHTML = `
-            <div class="empty-state">
-                <i class="fas fa-user-slash"></i>
-                <h3>Belum Ada Petugas</h3>
-                <p>Belum ada data petugas untuk kelurahan ini. Silakan tambahkan data di spreadsheet.</p>
-            </div>
-        `;
-        return;
-    }
-    
-    let cardsHTML = '';
-    
-    petugasData.forEach((petugas) => {
-        const layanan = [];
-        for (let i = 1; i <= 4; i++) {
-            const layananKey = `layanan_${i}`;
-            if (petugas[layananKey] && petugas[layananKey].trim() !== '') {
-                layanan.push(petugas[layananKey]);
+            const grid = document.getElementById('cardGrid');
+            const loadingState = document.getElementById('loadingState');
+            if (loadingState) loadingState.remove();
+            
+            if (!petugasData || petugasData.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-user-slash"></i>
+                        <h3>Belum Ada Petugas</h3>
+                        <p>Belum ada data petugas untuk kelurahan ini. Silakan tambahkan data di spreadsheet.</p>
+                    </div>
+                `;
+                return;
             }
+            
+            let cardsHTML = '';
+            
+            petugasData.forEach((petugas) => {
+                const layanan = [];
+                for (let i = 1; i <= 4; i++) {
+                    const layananKey = `layanan_${i}`;
+                    if (petugas[layananKey] && petugas[layananKey].trim() !== '') {
+                        layanan.push(petugas[layananKey]);
+                    }
+                }
+                
+                if (layanan.length === 0) {
+                    layanan.push('Pelayanan Administrasi', 'Pelayanan Informasi', 'Pelayanan Publik', 'Pelayanan Sosial');
+                }
+                
+                const namaPetugas = petugas.nama_petugas || 'Petugas';
+                const jabatan = petugas.jabatan || 'Petugas Kelurahan';
+                const nomorWa = petugas.nomor_wa || '';
+                
+                // Foto dengan fallback ke UI Avatars
+                let fotoUrl = petugas.foto_url || '';
+                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaPetugas)}&background=1e6bff&color=fff&size=200&bold=true&font-size=0.5`;
+                
+                if (!fotoUrl || fotoUrl.trim() === '' || fotoUrl.includes('placeholder')) {
+                    fotoUrl = fallbackUrl;
+                }
+                
+                cardsHTML += `
+                    <div class="service-card">
+                        <div class="card-avatar">
+                            <img src="${fotoUrl}" 
+                                 alt="${namaPetugas}" 
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='${fallbackUrl}'">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-name">${namaPetugas}</h3>
+                            <p class="card-role">${jabatan}</p>
+                            <ul class="service-list">
+                                ${layanan.map(l => `<li>${l}</li>`).join('')}
+                            </ul>
+                            <button class="btn-conversation" onclick="openConversationModal('${namaPetugas.replace(/'/g, "\\'")}', '${nomorWa}')">
+                                <i class="fab fa-whatsapp"></i> Mulai Percakapan
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = cardsHTML;
         }
-        
-        if (layanan.length === 0) {
-            layanan.push('Pelayanan Administrasi', 'Pelayanan Informasi', 'Pelayanan Publik', 'Pelayanan Sosial');
-        }
-        
-        const namaPetugas = petugas.nama_petugas || 'Petugas';
-        const jabatan = petugas.jabatan || 'Petugas Kelurahan';
-        const nomorWa = petugas.nomor_wa || '';
-        
-        // === PERBAIKAN FOTO ===
-        let fotoUrl = petugas.foto_url || '';
-        
-        // Jika URL kosong atau hanya placeholder, gunakan UI Avatars
-        if (!fotoUrl || fotoUrl.trim() === '' || fotoUrl.includes('placeholder')) {
-            fotoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaPetugas)}&background=1e6bff&color=fff&size=200&bold=true&font-size=0.5`;
-        }
-        
-        // Buat fallback ke UI Avatars jika gambar gagal load
-        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaPetugas)}&background=1e6bff&color=fff&size=200&bold=true&font-size=0.5`;
-        
-        cardsHTML += `
-            <div class="service-card">
-                <div class="card-avatar">
-                    <img src="${fotoUrl}" 
-                         alt="${namaPetugas}" 
-                         loading="lazy"
-                         onerror="this.onerror=null; this.src='${fallbackUrl}'">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-name">${namaPetugas}</h3>
-                    <p class="card-role">${jabatan}</p>
-                    <ul class="service-list">
-                        ${layanan.map(l => `<li>${l}</li>`).join('')}
-                    </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('${namaPetugas.replace(/'/g, "\\'")}', '${nomorWa}')">
-                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
-                    </button>
-                </div>
-            </div>
-        `;
-    });
-    
-    grid.innerHTML = cardsHTML;
-}
 
         // =====================================================
         // RENDER RUNNING TEXT
