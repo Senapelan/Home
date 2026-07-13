@@ -20,6 +20,10 @@
     <meta name="twitter:title" id="twitterTitle" content="Pelayanan Kelurahan">
     <meta name="twitter:description" id="twitterDescription" content="Pelayanan Live Chat WhatsApp Kelurahan">
     <meta name="twitter:image" id="twitterImage" content="">
+
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     
     <!-- GOOGLE FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -913,89 +917,82 @@
     </div>
 
     <script>
-        // =====================================================
-        // KONFIGURASI
-        // =====================================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbx9charzTlFMvOEQnr4Oy2EHknmN_ezxFZAyeoYVSIZmG_qW1wUyGBxjCYWt1Q7N0IX/exec';
+ // =====================================================
+// KONFIGURASI
+// =====================================================
+const API_URL = 'https://script.google.com/macros/s/AKfycbyPdjce1rl4uaD48DurU31dEiz_g73BS0nOjn-ICTWdeMjvPBJO16t62hqAKhWCkuqS/exec';
+
+// =====================================================
+// 🚀 FETCH DATA - PAKSA FRESH SETIAP KALI
+// =====================================================
+async function fetchAllData(kelurahan) {
+    try {
+        console.log('🔄 Mengambil data terbaru dari spreadsheet...');
         
-        function getKelurahanFromURL() {
-            const params = new URLSearchParams(window.location.search);
-            return params.get('kelurahan') || 'Padang_Terubuk';
+        // Generate unique ID untuk bypass semua cache
+        const uniqueId = Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        const url = `${API_URL}?action=getAllData&kelurahan=${encodeURIComponent(kelurahan)}&_=${uniqueId}`;
+        
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: { 
+                'Accept': 'application/json',
+                'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+                'Pragma': 'no-cache',
+                'Expires': '0'
+            },
+            cache: 'no-store' // 🔥 PAKSA BROWSER TIDAK CACHE
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        let currentKelurahan = '';
-        let allData = null;
-        let selectedPetugas = '';
-        let selectedPhone = '';
-
-        // =====================================================
-        // 🗑️ TIDAK PAKAI CACHE - LANGSUNG FETCH
-        // =====================================================
-        async function fetchAllData(kelurahan) {
-            try {
-                console.log('🔄 Mengambil data terbaru dari API...');
-                
-                // Tambah timestamp biar browser tidak cache
-                const timestamp = new Date().getTime();
-                const url = `${API_URL}?action=getAllData&kelurahan=${encodeURIComponent(kelurahan)}&_=${timestamp}`;
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000);
-                
-                const response = await fetch(url, {
-                    signal: controller.signal,
-                    headers: { 
-                        'Accept': 'application/json',
-                        'Cache-Control': 'no-cache, no-store, must-revalidate',
-                        'Pragma': 'no-cache',
-                        'Expires': '0'
-                    }
-                });
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    console.log('✅ Data berhasil diambil');
-                    return result.data;
-                } else {
-                    throw new Error(result.message || 'Gagal mengambil data');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                throw error;
-            }
+        
+        const result = await response.json();
+        
+        if (result.status === 'success') {
+            console.log('✅ Data berhasil diambil dari spreadsheet');
+            return result.data;
+        } else {
+            throw new Error(result.message || 'Gagal mengambil data');
         }
+    } catch (error) {
+        console.error('❌ Error fetching data:', error);
+        throw error;
+    }
+}
 
-        // =====================================================
-        // 🔄 MANUAL REFRESH
-        // =====================================================
-        async function manualRefresh() {
-            const btn = document.getElementById('refreshBtn');
-            if (!btn) return;
-            
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memperbarui...';
-            btn.disabled = true;
-            
-            try {
-                await loadData();
-                btn.innerHTML = '<i class="fas fa-check"></i> Data Updated!';
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fas fa-sync"></i> Refresh Data';
-                    btn.disabled = false;
-                }, 2000);
-            } catch (error) {
-                btn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal Update';
-                setTimeout(() => {
-                    btn.innerHTML = '<i class="fas fa-sync"></i> Refresh Data';
-                    btn.disabled = false;
-                }, 2000);
-            }
-        }
+// =====================================================
+// 🔄 MANUAL REFRESH - PAKSA UPDATE
+// =====================================================
+async function manualRefresh() {
+    const btn = document.getElementById('refreshBtn');
+    if (!btn) return;
+    
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memperbarui...';
+    btn.disabled = true;
+    
+    try {
+        // Hapus semua cache frontend
+        localStorage.clear();
+        sessionStorage.clear();
+        
+        // Reload data
+        await loadData();
+        
+        btn.innerHTML = '<i class="fas fa-check"></i> Data Updated!';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-sync"></i> Refresh Data';
+            btn.disabled = false;
+        }, 2000);
+    } catch (error) {
+        btn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal Update';
+        setTimeout(() => {
+            btn.innerHTML = '<i class="fas fa-sync"></i> Refresh Data';
+            btn.disabled = false;
+        }, 2000);
+    }
+}
 
         // =====================================================
         // SOUND EFFECT
