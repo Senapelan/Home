@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title id="pageTitle">Pelayanan - Kelurahan</title>
 
-    <!-- Meta Tags (akan di-update oleh JavaScript) -->   
+    <!-- Meta Tags (akan di-update oleh JavaScript) -->
     <meta name="description" id="metaDescription" content="Pelayanan Live Chat WhatsApp Kelurahan">
     
     <!-- Open Graph -->
     <meta property="og:type" content="website">
-    <meta property="og:url" id="ogUrl" content="">    
+    <meta property="og:url" id="ogUrl" content="">
     <meta property="og:title" id="ogTitle" content="Pelayanan Kelurahan">
     <meta property="og:description" id="ogDescription" content="Pelayanan Live Chat WhatsApp Kelurahan">
     <meta property="og:image" id="ogImage" content="">
@@ -19,7 +19,7 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" id="twitterTitle" content="Pelayanan Kelurahan">
     <meta name="twitter:description" id="twitterDescription" content="Pelayanan Live Chat WhatsApp Kelurahan">
-    <meta name="twitter:image" id="twitterImage" content="">   
+    <meta name="twitter:image" id="twitterImage" content="">
     
     <!-- GOOGLE FONTS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -747,7 +747,7 @@
     <header class="header" id="header">
         <a href="https://senapelan.github.io/Home/" class="logo" id="logoLink">
             <div class="logo-img">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru" id="logoImg">
+                <img src="" alt="Logo" id="logoImg">
             </div>
             <div class="logo-text">
                 <div class="logo-main" id="kelurahanDisplayName">Kelurahan</div>
@@ -815,22 +815,22 @@
                     
                     <div class="form-group">
                         <label for="kelurahan">Kelurahan *</label>
-                        <input type="text" id="kelurahan" class="form-control" required placeholder="Nama Kelurahan">
+                        <input type="text" id="kelurahan" class="form-control" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="kecamatan">Kecamatan *</label>
-                        <input type="text" id="kecamatan" class="form-control" required placeholder="Senapelan">
+                        <input type="text" id="kecamatan" class="form-control" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="kota">Kota *</label>
-                        <input type="text" id="kota" class="form-control" required placeholder="Pekanbaru">
+                        <input type="text" id="kota" class="form-control" required>
                     </div>
                     
                     <div class="form-group">
                         <label for="provinsi">Provinsi *</label>
-                        <input type="text" id="provinsi" class="form-control" required placeholder="Riau">
+                        <input type="text" id="provinsi" class="form-control" required>
                     </div>
                     
                     <div class="form-group">
@@ -873,7 +873,7 @@
         // =====================================================
         // KONFIGURASI
         // =====================================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwStfVlrLJtQxYU7jcbA7VdTQekGeYjdQRhVt0dNSp7ITl2GNAw7JDhhWlBnLY7Fqym/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwx5hXGPX0CrMDkzJTEFivP8_NPhUXp2QwHi6_cz0EE0W6x7Mx099IMzO7u8FwAFM59/exec';
         
         function getKelurahanFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -886,7 +886,7 @@
         let selectedPhone = '';
 
         // =====================================================
-        // CACHE MANAGEMENT (Frontend)
+        // CACHE MANAGEMENT (Frontend) - DENGAN TTL 5 MENIT
         // =====================================================
         function getCachedData(key) {
             try {
@@ -894,9 +894,11 @@
                 if (cached) {
                     const data = JSON.parse(cached);
                     const age = Date.now() - data.timestamp;
-                    if (age < 300000) {
+                    if (age < 300000) { // 5 menit
                         return data.value;
                     }
+                    // Hapus cache jika sudah expired
+                    localStorage.removeItem('pelayananCache_' + key);
                 }
             } catch (e) {
                 console.log('Cache error:', e);
@@ -947,7 +949,7 @@
         });
 
         // =====================================================
-        // FETCH DATA DARI API (Dengan Cache & Timeout)
+        // FETCH DATA DARI API
         // =====================================================
         async function fetchAllData(kelurahan) {
             try {
@@ -989,73 +991,81 @@
             }
         }
 
- // =====================================================
-// UPDATE META TAGS & HEADER (PERBAIKAN)
-// =====================================================
-function updateMetaTags(metaData, kelurahanInfo) {
-    const displayName = kelurahanInfo?.nama_display || 'Kelurahan';
-    
-    // Title
-    let title = metaData?.page_title || `Pelayanan - Kelurahan ${displayName}`;
-    document.title = title;
-    document.getElementById('pageTitle').textContent = title;
-    
-    // Meta Description
-    let description = metaData?.og_description || `Pelayanan Live Chat WhatsApp Kelurahan ${displayName}`;
-    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
-    
-    // ========== PERBAIKAN: GAMBAR META TAG ==========
-    // Gunakan og_image dari spreadsheet, jangan di-override
-    let ogImage = metaData?.og_image || 'https://senapelan.github.io/Home/data/foto/thumbnailkelurahan.png';
-    
-    // Open Graph
-    document.querySelector('meta[property="og:title"]')?.setAttribute('content', metaData?.og_title || title);
-    document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaData?.og_description || description);
-    document.querySelector('meta[property="og:image"]')?.setAttribute('content', ogImage);
-    document.querySelector('meta[property="og:url"]')?.setAttribute('content', window.location.href);
-    
-    // Twitter Card
-    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', metaData?.twitter_title || title);
-    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaData?.twitter_description || description);
-    document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', ogImage);
-    
-    console.log('✅ Meta Image:', ogImage);
-    
-    // ========== UPDATE HEADER ==========
-    // Logo URL - Gunakan dari spreadsheet
-    const logoUrl = metaData?.logo_img_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
-    const logoImg = document.getElementById('logoImg');
-    if (logoImg) {
-        logoImg.src = logoUrl;
-        logoImg.alt = `Logo ${displayName}`;
-        logoImg.onerror = function() {
-            this.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
-        };
-    }
-    
-    // Link Logo
-    const logoLink = document.getElementById('logoLink');
-    if (logoLink && metaData?.link_url_logo) {
-        logoLink.href = metaData.link_url_logo;
-    }
-    
-    // Back URL
-    const backUrl = metaData?.back_url || 'https://senapelan.github.io/Home/';
-    const backButton = document.getElementById('backButton');
-    if (backButton) {
-        backButton.href = backUrl;
-        backButton.title = `Kembali ke ${displayName}`;
-    }
-    
-    // Update UI
-    document.getElementById('kelurahanDisplayName').textContent = displayName;
-    document.getElementById('pageTitleText').textContent = `Pelayanan Kelurahan ${displayName}`;
-    document.getElementById('pageDescription').textContent = `Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik di Kelurahan ${displayName}`;
-    document.getElementById('kelurahan').value = displayName;
-}
+        // =====================================================
+        // UPDATE META TAGS & HEADER - TANPA FALLBACK
+        // =====================================================
+        function updateMetaTags(metaData, kelurahanInfo) {
+            if (!metaData) {
+                console.error('❌ MetaData tidak ditemukan!');
+                return;
+            }
+            
+            const displayName = kelurahanInfo?.nama_display || '';
+            
+            // Title
+            document.title = metaData.page_title || '';
+            document.getElementById('pageTitle').textContent = metaData.page_title || '';
+            
+            // Meta Description
+            document.querySelector('meta[name="description"]')?.setAttribute('content', metaData.og_description || '');
+            
+            // Open Graph
+            document.querySelector('meta[property="og:title"]')?.setAttribute('content', metaData.og_title || '');
+            document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaData.og_description || '');
+            document.querySelector('meta[property="og:image"]')?.setAttribute('content', metaData.og_image || '');
+            document.querySelector('meta[property="og:url"]')?.setAttribute('content', window.location.href);
+            
+            // Twitter Card
+            document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', metaData.twitter_title || '');
+            document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaData.twitter_description || '');
+            document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', metaData.og_image || '');
+            
+            // ========== UPDATE HEADER ==========
+            // Logo URL - dari spreadsheet
+            const logoImg = document.getElementById('logoImg');
+            if (logoImg && metaData.logo_img_url) {
+                logoImg.src = metaData.logo_img_url;
+                logoImg.alt = `Logo ${displayName}`;
+                logoImg.onerror = function() {
+                    console.error('❌ Gagal memuat logo:', metaData.logo_img_url);
+                    this.style.display = 'none';
+                };
+            } else if (logoImg) {
+                console.warn('⚠️ Logo URL tidak ditemukan di META_DATA');
+                logoImg.style.display = 'none';
+            }
+            
+            // Link Logo
+            const logoLink = document.getElementById('logoLink');
+            if (logoLink && metaData.link_url_logo) {
+                logoLink.href = metaData.link_url_logo;
+            }
+            
+            // Back URL
+            const backButton = document.getElementById('backButton');
+            if (backButton && metaData.back_url) {
+                backButton.href = metaData.back_url;
+                backButton.title = `Kembali ke ${displayName}`;
+            }
+            
+            // Update UI
+            if (displayName) {
+                document.getElementById('kelurahanDisplayName').textContent = displayName;
+                document.getElementById('pageTitleText').textContent = `Pelayanan Kelurahan ${displayName}`;
+                document.getElementById('pageDescription').textContent = `Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik di Kelurahan ${displayName}`;
+            }
+            
+            // Update form dengan data dari spreadsheet
+            if (kelurahanInfo) {
+                document.getElementById('kelurahan').value = kelurahanInfo.nama_display || '';
+                document.getElementById('kecamatan').value = kelurahanInfo.kecamatan || '';
+                document.getElementById('kota').value = kelurahanInfo.kota || '';
+                document.getElementById('provinsi').value = kelurahanInfo.provinsi || '';
+            }
+        }
 
         // =====================================================
-        // RENDER PETUGAS CARDS (Dengan Fallback Foto)
+        // RENDER PETUGAS CARDS - TANPA FALLBACK FOTO
         // =====================================================
         function renderPetugasCards(petugasData) {
             const grid = document.getElementById('cardGrid');
@@ -1084,29 +1094,23 @@ function updateMetaTags(metaData, kelurahanInfo) {
                     }
                 }
                 
-                if (layanan.length === 0) {
-                    layanan.push('Pelayanan Administrasi', 'Pelayanan Informasi', 'Pelayanan Publik', 'Pelayanan Sosial');
-                }
-                
                 const namaPetugas = petugas.nama_petugas || 'Petugas';
                 const jabatan = petugas.jabatan || 'Petugas Kelurahan';
                 const nomorWa = petugas.nomor_wa || '';
-                
-                // Foto dengan fallback ke UI Avatars
-                let fotoUrl = petugas.foto_url || '';
-                const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaPetugas)}&background=1e6bff&color=fff&size=200&bold=true&font-size=0.5`;
-                
-                if (!fotoUrl || fotoUrl.trim() === '' || fotoUrl.includes('placeholder')) {
-                    fotoUrl = fallbackUrl;
-                }
+                const fotoUrl = petugas.foto_url || '';
                 
                 cardsHTML += `
                     <div class="service-card">
                         <div class="card-avatar">
-                            <img src="${fotoUrl}" 
-                                 alt="${namaPetugas}" 
-                                 loading="lazy"
-                                 onerror="this.onerror=null; this.src='${fallbackUrl}'">
+                            ${fotoUrl ? 
+                                `<img src="${fotoUrl}" 
+                                     alt="${namaPetugas}" 
+                                     loading="lazy"
+                                     onerror="this.style.display='none'; this.parentElement.innerHTML='<div style=\\'display:flex;align-items:center;justify-content:center;height:100%;background:var(--light-gray);color:var(--dark-gray);font-size:4rem;\\'><i class=\\'fas fa-user\\'></i></div>'">` :
+                                `<div style="display:flex;align-items:center;justify-content:center;height:100%;background:var(--light-gray);color:var(--dark-gray);font-size:4rem;">
+                                    <i class="fas fa-user"></i>
+                                </div>`
+                            }
                         </div>
                         <div class="card-content">
                             <h3 class="card-name">${namaPetugas}</h3>
@@ -1126,16 +1130,13 @@ function updateMetaTags(metaData, kelurahanInfo) {
         }
 
         // =====================================================
-        // RENDER RUNNING TEXT
+        // RENDER RUNNING TEXT - TANPA FALLBACK
         // =====================================================
         function renderRunningText(runningTextData) {
             const container = document.getElementById('runningText');
             
             if (!runningTextData || runningTextData.length === 0) {
-                container.innerHTML = `
-                    <span><i class="fas fa-check-circle"></i> Pelayanan terbaik lahir dari keikhlasan dan kebersamaan</span>
-                    <span><i class="fas fa-users"></i> Masyarakat Sejahtera, Kelurahan Maju</span>
-                `;
+                container.innerHTML = `<span><i class="fas fa-info-circle"></i> Tidak ada running text</span>`;
                 return;
             }
             
@@ -1145,10 +1146,12 @@ function updateMetaTags(metaData, kelurahanInfo) {
             duplicated.forEach(item => {
                 const icon = item.ikon || 'fa-check-circle';
                 const teks = item.teks_running || '';
-                html += `<span><i class="fas ${icon}"></i> ${teks}</span>`;
+                if (teks) {
+                    html += `<span><i class="fas ${icon}"></i> ${teks}</span>`;
+                }
             });
             
-            container.innerHTML = html;
+            container.innerHTML = html || `<span><i class="fas fa-info-circle"></i> Tidak ada running text</span>`;
         }
 
         // =====================================================
@@ -1163,6 +1166,11 @@ function updateMetaTags(metaData, kelurahanInfo) {
             try {
                 const data = await fetchAllData(kelurahan);
                 allData = data;
+                
+                // Cek apakah meta data ada
+                if (!data.meta) {
+                    throw new Error('Meta data tidak ditemukan untuk kelurahan ini');
+                }
                 
                 updateMetaTags(data.meta, data.kelurahan_info);
                 renderPetugasCards(data.petugas);
@@ -1179,9 +1187,9 @@ function updateMetaTags(metaData, kelurahanInfo) {
                         <i class="fas fa-exclamation-circle"></i>
                         <h2>Gagal Memuat Data</h2>
                         <p>${error.message || 'Terjadi kesalahan saat memuat data. Silakan coba lagi.'}</p>
-                        <p style="font-size:0.9rem;color:var(--dark-gray);">
+                        <p style="font-size:0.9rem;color:var(--dark-gray);margin-top:10px;">
                             <strong>Kelurahan:</strong> ${kelurahan}<br>
-                            <strong>API URL:</strong> ${API_URL}
+                            <strong>Pastikan data di spreadsheet sudah lengkap!</strong>
                         </p>
                         <button class="btn-retry" onclick="location.reload()">
                             <i class="fas fa-sync"></i> Muat Ulang
