@@ -873,7 +873,7 @@
         // =====================================================
         // KONFIGURASI
         // =====================================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbyz3l8cdYEzHhri46PB90qmVTs4Hihr1Ou7ur8goRFiqwrn2_3FAcbBNGVO1hbBThir/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbwStfVlrLJtQxYU7jcbA7VdTQekGeYjdQRhVt0dNSp7ITl2GNAw7JDhhWlBnLY7Fqym/exec';
         
         function getKelurahanFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -989,64 +989,70 @@
             }
         }
 
-        // =====================================================
-        // UPDATE META TAGS & HEADER
-        // =====================================================
-        function updateMetaTags(metaData, kelurahanInfo) {
-            const displayName = kelurahanInfo?.nama_display || 'Kelurahan';
-            
-            // Title
-            let title = metaData?.page_title || `Pelayanan - Kelurahan ${displayName}`;
-            document.title = title;
-            document.getElementById('pageTitle').textContent = title;
-            
-            // Meta Description
-            let description = metaData?.og_description || `Pelayanan Live Chat WhatsApp Kelurahan ${displayName}`;
-            document.querySelector('meta[name="description"]')?.setAttribute('content', description);
-            
-            // Open Graph
-            document.querySelector('meta[property="og:title"]')?.setAttribute('content', metaData?.og_title || title);
-            document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaData?.og_description || description);
-            document.querySelector('meta[property="og:image"]')?.setAttribute('content', metaData?.og_image || 'https://senapelan.github.io/Home/data/foto/thumbnailkelurahan.png');
-            document.querySelector('meta[property="og:url"]')?.setAttribute('content', window.location.href);
-            
-            // Twitter Card
-            document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', metaData?.twitter_title || title);
-            document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaData?.twitter_description || description);
-            document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', metaData?.og_image || 'https://senapelan.github.io/Home/data/foto/thumbnailkelurahan.png');
-            
-            // ========== UPDATE HEADER ==========
-            // 1. Logo URL (logo_img_url)
-            const logoUrl = metaData?.logo_img_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
-            const logoImg = document.getElementById('logoImg');
-            if (logoImg) {
-                logoImg.src = logoUrl;
-                logoImg.alt = `Logo ${displayName}`;
-                logoImg.onerror = function() {
-                    this.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
-                };
-            }
-            
-            // 2. Link Logo (link_url_logo) - saat logo diklik
-            const logoLink = document.getElementById('logoLink');
-            if (logoLink && metaData?.link_url_logo) {
-                logoLink.href = metaData.link_url_logo;
-            }
-            
-            // 3. Back URL (back_url) - tombol kembali
-            const backUrl = metaData?.back_url || 'https://senapelan.github.io/Home/';
-            const backButton = document.getElementById('backButton');
-            if (backButton) {
-                backButton.href = backUrl;
-                backButton.title = `Kembali ke ${displayName}`;
-            }
-            
-            // Update UI
-            document.getElementById('kelurahanDisplayName').textContent = displayName;
-            document.getElementById('pageTitleText').textContent = `Pelayanan Kelurahan ${displayName}`;
-            document.getElementById('pageDescription').textContent = `Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik di Kelurahan ${displayName}`;
-            document.getElementById('kelurahan').value = displayName;
-        }
+ // =====================================================
+// UPDATE META TAGS & HEADER (PERBAIKAN)
+// =====================================================
+function updateMetaTags(metaData, kelurahanInfo) {
+    const displayName = kelurahanInfo?.nama_display || 'Kelurahan';
+    
+    // Title
+    let title = metaData?.page_title || `Pelayanan - Kelurahan ${displayName}`;
+    document.title = title;
+    document.getElementById('pageTitle').textContent = title;
+    
+    // Meta Description
+    let description = metaData?.og_description || `Pelayanan Live Chat WhatsApp Kelurahan ${displayName}`;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+    
+    // ========== PERBAIKAN: GAMBAR META TAG ==========
+    // Gunakan og_image dari spreadsheet, jangan di-override
+    let ogImage = metaData?.og_image || 'https://senapelan.github.io/Home/data/foto/thumbnailkelurahan.png';
+    
+    // Open Graph
+    document.querySelector('meta[property="og:title"]')?.setAttribute('content', metaData?.og_title || title);
+    document.querySelector('meta[property="og:description"]')?.setAttribute('content', metaData?.og_description || description);
+    document.querySelector('meta[property="og:image"]')?.setAttribute('content', ogImage);
+    document.querySelector('meta[property="og:url"]')?.setAttribute('content', window.location.href);
+    
+    // Twitter Card
+    document.querySelector('meta[name="twitter:title"]')?.setAttribute('content', metaData?.twitter_title || title);
+    document.querySelector('meta[name="twitter:description"]')?.setAttribute('content', metaData?.twitter_description || description);
+    document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', ogImage);
+    
+    console.log('✅ Meta Image:', ogImage);
+    
+    // ========== UPDATE HEADER ==========
+    // Logo URL - Gunakan dari spreadsheet
+    const logoUrl = metaData?.logo_img_url || 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
+    const logoImg = document.getElementById('logoImg');
+    if (logoImg) {
+        logoImg.src = logoUrl;
+        logoImg.alt = `Logo ${displayName}`;
+        logoImg.onerror = function() {
+            this.src = 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png';
+        };
+    }
+    
+    // Link Logo
+    const logoLink = document.getElementById('logoLink');
+    if (logoLink && metaData?.link_url_logo) {
+        logoLink.href = metaData.link_url_logo;
+    }
+    
+    // Back URL
+    const backUrl = metaData?.back_url || 'https://senapelan.github.io/Home/';
+    const backButton = document.getElementById('backButton');
+    if (backButton) {
+        backButton.href = backUrl;
+        backButton.title = `Kembali ke ${displayName}`;
+    }
+    
+    // Update UI
+    document.getElementById('kelurahanDisplayName').textContent = displayName;
+    document.getElementById('pageTitleText').textContent = `Pelayanan Kelurahan ${displayName}`;
+    document.getElementById('pageDescription').textContent = `Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik di Kelurahan ${displayName}`;
+    document.getElementById('kelurahan').value = displayName;
+}
 
         // =====================================================
         // RENDER PETUGAS CARDS (Dengan Fallback Foto)
