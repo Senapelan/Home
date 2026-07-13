@@ -1023,62 +1023,75 @@
         // RENDER PETUGAS CARDS
         // =====================================================
         function renderPetugasCards(petugasData) {
-            const grid = document.getElementById('cardGrid');
-            const loadingState = document.getElementById('loadingState');
-            if (loadingState) loadingState.remove();
-            
-            if (!petugasData || petugasData.length === 0) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-user-slash"></i>
-                        <h3>Belum Ada Petugas</h3>
-                        <p>Belum ada data petugas untuk kelurahan ini. Silakan tambahkan data di spreadsheet.</p>
-                    </div>
-                `;
-                return;
+    const grid = document.getElementById('cardGrid');
+    const loadingState = document.getElementById('loadingState');
+    if (loadingState) loadingState.remove();
+    
+    if (!petugasData || petugasData.length === 0) {
+        grid.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-user-slash"></i>
+                <h3>Belum Ada Petugas</h3>
+                <p>Belum ada data petugas untuk kelurahan ini. Silakan tambahkan data di spreadsheet.</p>
+            </div>
+        `;
+        return;
+    }
+    
+    let cardsHTML = '';
+    
+    petugasData.forEach((petugas) => {
+        const layanan = [];
+        for (let i = 1; i <= 4; i++) {
+            const layananKey = `layanan_${i}`;
+            if (petugas[layananKey] && petugas[layananKey].trim() !== '') {
+                layanan.push(petugas[layananKey]);
             }
-            
-            let cardsHTML = '';
-            
-            petugasData.forEach((petugas) => {
-                const layanan = [];
-                for (let i = 1; i <= 4; i++) {
-                    const layananKey = `layanan_${i}`;
-                    if (petugas[layananKey] && petugas[layananKey].trim() !== '') {
-                        layanan.push(petugas[layananKey]);
-                    }
-                }
-                
-                if (layanan.length === 0) {
-                    layanan.push('Pelayanan Administrasi', 'Pelayanan Informasi', 'Pelayanan Publik', 'Pelayanan Sosial');
-                }
-                
-                const fotoUrl = petugas.foto_url || 'https://via.placeholder.com/400x200/1e6bff/ffffff?text=Petugas';
-                const namaPetugas = petugas.nama_petugas || 'Petugas';
-                const jabatan = petugas.jabatan || 'Petugas Kelurahan';
-                const nomorWa = petugas.nomor_wa || '';
-                
-                cardsHTML += `
-                    <div class="service-card">
-                        <div class="card-avatar">
-                            <img src="${fotoUrl}" alt="${namaPetugas}" loading="lazy" onerror="this.src='https://via.placeholder.com/400x200/1e6bff/ffffff?text=Petugas'">
-                        </div>
-                        <div class="card-content">
-                            <h3 class="card-name">${namaPetugas}</h3>
-                            <p class="card-role">${jabatan}</p>
-                            <ul class="service-list">
-                                ${layanan.map(l => `<li>${l}</li>`).join('')}
-                            </ul>
-                            <button class="btn-conversation" onclick="openConversationModal('${namaPetugas.replace(/'/g, "\\'")}', '${nomorWa}')">
-                                <i class="fab fa-whatsapp"></i> Mulai Percakapan
-                            </button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            grid.innerHTML = cardsHTML;
         }
+        
+        if (layanan.length === 0) {
+            layanan.push('Pelayanan Administrasi', 'Pelayanan Informasi', 'Pelayanan Publik', 'Pelayanan Sosial');
+        }
+        
+        const namaPetugas = petugas.nama_petugas || 'Petugas';
+        const jabatan = petugas.jabatan || 'Petugas Kelurahan';
+        const nomorWa = petugas.nomor_wa || '';
+        
+        // === PERBAIKAN FOTO ===
+        let fotoUrl = petugas.foto_url || '';
+        
+        // Jika URL kosong atau hanya placeholder, gunakan UI Avatars
+        if (!fotoUrl || fotoUrl.trim() === '' || fotoUrl.includes('placeholder')) {
+            fotoUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaPetugas)}&background=1e6bff&color=fff&size=200&bold=true&font-size=0.5`;
+        }
+        
+        // Buat fallback ke UI Avatars jika gambar gagal load
+        const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(namaPetugas)}&background=1e6bff&color=fff&size=200&bold=true&font-size=0.5`;
+        
+        cardsHTML += `
+            <div class="service-card">
+                <div class="card-avatar">
+                    <img src="${fotoUrl}" 
+                         alt="${namaPetugas}" 
+                         loading="lazy"
+                         onerror="this.onerror=null; this.src='${fallbackUrl}'">
+                </div>
+                <div class="card-content">
+                    <h3 class="card-name">${namaPetugas}</h3>
+                    <p class="card-role">${jabatan}</p>
+                    <ul class="service-list">
+                        ${layanan.map(l => `<li>${l}</li>`).join('')}
+                    </ul>
+                    <button class="btn-conversation" onclick="openConversationModal('${namaPetugas.replace(/'/g, "\\'")}', '${nomorWa}')">
+                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
+                    </button>
+                </div>
+            </div>
+        `;
+    });
+    
+    grid.innerHTML = cardsHTML;
+}
 
         // =====================================================
         // RENDER RUNNING TEXT
