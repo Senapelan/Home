@@ -40,7 +40,6 @@
             --transition: all 0.3s ease;
             --border-radius: 16px;
             
-            /* Variabel dari tema utama */
             --glass: rgba(255, 255, 255, 0.1);
             --glass-border: rgba(255, 255, 255, 0.2);
             --dark-bg: #0c1f33;
@@ -65,7 +64,47 @@
             overflow-x: hidden;
         }
 
-        /* ================= HEADER - SAMA DENGAN TEMPAT ASLI ================= */
+        /* ================= LOADING ================= */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+        
+        #loadingOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 4px solid var(--gray);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loader-text {
+            margin-top: 20px;
+            color: var(--dark-gray);
+            font-weight: 500;
+        }
+
+        /* ================= HEADER ================= */
         .header {
             position: fixed;
             top: 0;
@@ -122,7 +161,6 @@
             border-radius: 12px;
         }
 
-        /* LOGO HOVER EFFECT */
         .logo-img:hover {
             transform: scale(1.1);
         }
@@ -266,9 +304,30 @@
         /* ================= CARD GRID ================= */
         .card-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 30px;
             margin-top: 40px;
+        }
+
+        @media (max-width: 1400px) {
+            .card-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .card-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 640px) {
+            .card-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+                margin: 0 auto;
+                gap: 25px;
+            }
         }
 
         .service-card {
@@ -282,6 +341,30 @@
             display: flex;
             flex-direction: column;
             border: 2px solid rgba(30, 107, 255, 0.1);
+            animation: fadeInUp 0.5s ease forwards;
+            opacity: 0;
+        }
+
+        .service-card:nth-child(1) { animation-delay: 0.05s; }
+        .service-card:nth-child(2) { animation-delay: 0.10s; }
+        .service-card:nth-child(3) { animation-delay: 0.15s; }
+        .service-card:nth-child(4) { animation-delay: 0.20s; }
+        .service-card:nth-child(5) { animation-delay: 0.25s; }
+        .service-card:nth-child(6) { animation-delay: 0.30s; }
+        .service-card:nth-child(7) { animation-delay: 0.35s; }
+        .service-card:nth-child(8) { animation-delay: 0.40s; }
+        .service-card:nth-child(9) { animation-delay: 0.45s; }
+        .service-card:nth-child(10) { animation-delay: 0.50s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .service-card:hover {
@@ -295,6 +378,7 @@
             height: 200px;
             overflow: hidden;
             position: relative;
+            background: var(--light-gray);
         }
 
         .card-avatar img {
@@ -308,6 +392,17 @@
             transform: scale(1.05);
         }
 
+        .card-avatar .placeholder-avatar {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            color: var(--dark-gray);
+            background: linear-gradient(135deg, var(--gray), var(--light-gray));
+        }
+
         .card-content {
             padding: 25px;
             flex-grow: 1;
@@ -317,31 +412,33 @@
 
         .card-name {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--dark);
-            margin-bottom: 8px;
+            margin-bottom: 5px;
+            line-height: 1.3;
         }
 
         .card-role {
             color: var(--primary);
             font-weight: 500;
-            margin-bottom: 15px;
-            font-size: 0.95rem;
+            margin-bottom: 12px;
+            font-size: 0.9rem;
         }
 
         .service-list {
             list-style: none;
-            margin: 15px 0;
+            margin: 10px 0;
             flex-grow: 1;
         }
 
         .service-list li {
-            padding: 8px 0;
+            padding: 6px 0;
             color: var(--dark-gray);
-            font-size: 0.9rem;
+            font-size: 0.85rem;
             position: relative;
-            padding-left: 20px;
+            padding-left: 18px;
+            line-height: 1.4;
         }
 
         .service-list li:before {
@@ -368,7 +465,7 @@
             border: none;
             cursor: pointer;
             transition: var(--transition);
-            margin-top: 20px;
+            margin-top: 15px;
             width: 100%;
             position: relative;
             overflow: hidden;
@@ -397,6 +494,26 @@
 
         .btn-conversation i {
             font-size: 18px;
+        }
+
+        /* ================= EMPTY STATE ================= */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--dark-gray);
+        }
+
+        .empty-state i {
+            font-size: 60px;
+            color: var(--gray);
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-state h3 {
+            font-size: 1.5rem;
+            color: var(--dark);
+            margin-bottom: 10px;
         }
 
         /* ================= MODAL ================= */
@@ -447,7 +564,7 @@
 
         .modal-header h2 {
             font-family: 'Poppins', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 600;
             color: var(--dark);
         }
@@ -457,31 +574,41 @@
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 500;
             color: var(--dark);
-            font-size: 0.95rem;
+            font-size: 0.9rem;
+        }
+
+        .form-group label .required {
+            color: var(--accent);
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 16px;
+            padding: 10px 14px;
             border: 1px solid var(--border);
             border-radius: 8px;
-            font-size: 15px;
+            font-size: 14px;
             transition: var(--transition);
             background: var(--white);
+            font-family: 'Inter', sans-serif;
         }
 
         .form-control:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(30, 107, 255, 0.1);
+        }
+
+        .form-control[readonly] {
+            background: var(--light-gray);
+            cursor: not-allowed;
         }
 
         .form-row {
@@ -502,7 +629,7 @@
             padding: 12px 24px;
             border-radius: 8px;
             font-weight: 600;
-            font-size: 15px;
+            font-size: 14px;
             cursor: pointer;
             transition: var(--transition);
             border: none;
@@ -571,6 +698,12 @@
 
         /* ================= RESPONSIVE ================= */
         @media (max-width: 1200px) {
+            .card-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 992px) {
             .card-grid {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -645,13 +778,38 @@
                 margin: 0 25px;
             }
         }
+
+        /* ================= SCROLLBAR ================= */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--light-gray);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary-dark);
+        }
     </style>
 </head>
 
 <body>
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay">
+        <div class="loader"></div>
+        <p class="loader-text">Memuat data pelayanan...</p>
+    </div>
+
     <!-- Header -->
     <header class="header" id="header">
-        <a href="https://senapelan.github.io/Home/kelurahankampungbaru.html" class="logo">
+        <a href="https://senapelan.github.io/Home/kelurahankampungbaru.html?kelurahan=Kampung_Baru" class="logo">
             <div class="logo-img">
                 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/30/Logo_lambang_kota_pekanbaru.png/960px-Logo_lambang_kota_pekanbaru.png" alt="Logo Pekanbaru">
             </div>
@@ -661,7 +819,7 @@
             </div>
         </a>
         
-        <a href="https://senapelan.github.io/Home/kelurahankampungbaru.html" class="btn-back" title="Kembali ke Beranda">
+        <a href="https://senapelan.github.io/Home/kelurahankampungbaru.html?kelurahan=Kampung_Baru" class="btn-back" title="Kembali ke Beranda">
             <i class="fas fa-arrow-left"></i>
         </a>
     </header>
@@ -674,86 +832,8 @@
         </div>
  
         <!-- Card Grid -->
-        <div class="card-grid">
-            <!-- Card 1: YUSYAFRIDA JULIANTI -->
-            <div class="service-card">
-                <div class="card-avatar">
-                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-kb1.png" alt="YUSYAFRIDA JULIANTI">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-name">YUSYAFRIDA JULIANTI</h3>
-                    <p class="card-role">Petugas Pelayanan Administrasi</p>
-                    <ul class="service-list">
-                        <li>Pelayanan Administrasi Surat-Menyurat</li>
-                        <li>Pelayanan Informasi dan Data Kelurahan</li>
-                        <li>Pelayanan Pencatatan dan Arsip Dokumen</li>
-                        <li>Pelaporan Administratif</li>
-                    </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('YUSYAFRIDA JULIANTI', '6282384399618')">
-                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
-                    </button>
-                </div>
-            </div>
-
-            <!-- Card 2: MOH. JUNAIDI -->
-            <div class="service-card">
-                <div class="card-avatar">
-                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-kb2.png" alt="MOH. JUNAIDI">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-name">MOH. JUNAIDI</h3>
-                    <p class="card-role">Petugas Pelayanan Administrasi</p>
-                    <ul class="service-list">
-                        <li>Pelayanan Administrasi Surat-Menyurat</li>
-                        <li>Pelayanan Informasi dan Data Kelurahan</li>
-                        <li>Pelayanan Pencatatan dan Arsip Dokumen</li>
-                        <li>Pelaporan Administratif</li>
-                    </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('MOH. JUNAIDI', '6281267451605')">
-                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
-                    </button>
-                </div>
-            </div>
-
-            <!-- Card 3: EMMY YANTI DAULAY, S.Pd -->
-            <div class="service-card">
-                <div class="card-avatar">
-                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-kb3.png" alt="EMMY YANTI DAULAY, S.Pd">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-name">EMMY YANTI DAULAY, S.Pd</h3>
-                    <p class="card-role">Sekretaris Kelurahan</p>
-                    <ul class="service-list">
-                        <li>Pelayanan Rekomendasi Administrasi</li>
-                        <li>Pelayanan Penjadwalan & Fasilitasi</li>
-                        <li>Pelayanan Data & Statistik Kelurahan</li>
-                        <li>Pelayanan Registrasi & Buku Administrasi</li>
-                    </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('EMMY YANTI DAULAY, S.Pd', '6282285798357')">
-                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
-                    </button>
-                </div>
-            </div>
-
-            <!-- Card 4: SY. FITRIANI MAIFINA, S. Gz -->
-            <div class="service-card">
-                <div class="card-avatar">
-                    <img src="https://senapelan.github.io/Home/data/foto/cardpetugas/card-kb4.png" alt="SY. FITRIANI MAIFINA, S. Gz">
-                </div>
-                <div class="card-content">
-                    <h3 class="card-name">SY. FITRIANI MAIFINA, S. Gz</h3>
-                    <p class="card-role">Petugas Kesejahteraan Sosial</p>
-                    <ul class="service-list">
-                        <li>Pelayanan Bantuan Sosial</li>
-                        <li>Pelayanan Kesejahteraan Masyarakat</li>
-                        <li>Pelayanan Perlindungan Sosial</li>
-                        <li>Pelayanan Perlindungan Sosial</li>
-                    </ul>
-                    <button class="btn-conversation" onclick="openConversationModal('SY. FITRIANI MAIFINA, S. Gz', '6285278556567')">
-                        <i class="fab fa-whatsapp"></i> Mulai Percakapan
-                    </button>
-                </div>
-            </div>
+        <div class="card-grid" id="cardGrid">
+            <!-- Cards akan di-generate oleh JavaScript dari API -->
         </div>
     </main>
 
@@ -784,48 +864,48 @@
             <div class="modal-body">
                 <form id="conversationForm">
                     <div class="form-group">
-                        <label for="nama">Nama Lengkap *</label>
+                        <label for="nama">Nama Lengkap <span class="required">*</span></label>
                         <input type="text" id="nama" class="form-control" required placeholder="Masukkan nama lengkap">
                     </div>
                     
                     <div class="form-group">
-                        <label for="alamat">Alamat Lengkap *</label>
+                        <label for="alamat">Alamat Lengkap <span class="required">*</span></label>
                         <textarea id="alamat" class="form-control" rows="2" required placeholder="Masukkan alamat lengkap"></textarea>
                     </div>
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="rt">RT *</label>
+                            <label for="rt">RT <span class="required">*</span></label>
                             <input type="text" id="rt" class="form-control" required placeholder="Contoh: 004">
                         </div>
                         <div class="form-group">
-                            <label for="rw">RW *</label>
+                            <label for="rw">RW <span class="required">*</span></label>
                             <input type="text" id="rw" class="form-control" required placeholder="Contoh: 005">
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="kelurahan">Kelurahan *</label>
-                        <input type="text" id="kelurahan" class="form-control" required value="Kampung Baru" placeholder="Kampung Baru">
+                        <label for="kelurahan">Kelurahan <span class="required">*</span></label>
+                        <input type="text" id="kelurahan" class="form-control" required value="Kampung Baru" readonly>
                     </div>
                     
                     <div class="form-group">
-                        <label for="kecamatan">Kecamatan *</label>
-                        <input type="text" id="kecamatan" class="form-control" required value="Senapelan" placeholder="Senapelan">
+                        <label for="kecamatan">Kecamatan <span class="required">*</span></label>
+                        <input type="text" id="kecamatan" class="form-control" required value="Senapelan" readonly>
                     </div>
                     
                     <div class="form-group">
-                        <label for="kota">Kota *</label>
-                        <input type="text" id="kota" class="form-control" required value="Pekanbaru" placeholder="Pekanbaru">
+                        <label for="kota">Kota <span class="required">*</span></label>
+                        <input type="text" id="kota" class="form-control" required value="Pekanbaru" readonly>
                     </div>
                     
                     <div class="form-group">
-                        <label for="provinsi">Provinsi *</label>
-                        <input type="text" id="provinsi" class="form-control" required value="Riau" placeholder="Riau">
+                        <label for="provinsi">Provinsi <span class="required">*</span></label>
+                        <input type="text" id="provinsi" class="form-control" required value="Riau" readonly>
                     </div>
                     
                     <div class="form-group">
-                        <label for="no_hp">No. HP / WhatsApp *</label>
+                        <label for="no_hp">No. HP / WhatsApp <span class="required">*</span></label>
                         <input type="tel" id="no_hp" class="form-control" required placeholder="Contoh: 081234567890">
                     </div>
                     
@@ -835,12 +915,14 @@
                     </div>
                     
                     <div class="form-group">
-                        <label for="tujuan">Tujuan Percakapan *</label>
+                        <label for="tujuan">Tujuan Percakapan <span class="required">*</span></label>
                         <select id="tujuan" class="form-control" required>
                             <option value="">Pilih tujuan percakapan</option>
                             <option value="Pelaporan">Pelaporan</option>
                             <option value="Pelayanan Surat">Pelayanan Surat</option>
                             <option value="Kunjungan">Kunjungan</option>
+                            <option value="Informasi">Informasi</option>
+                            <option value="Lainnya">Lainnya</option>
                         </select>
                     </div>
                     
@@ -858,21 +940,27 @@
     </div>
 
     <script>
+        // ================= KONFIGURASI =================
+        // GANTI URL_INI dengan URL deployment Google Apps Script Anda
+        const API_BASE_URL = 'https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec';
+        const API_KEY = 'KELURAHAN2026';
+        const SHEET_NAME = 'Kampung_Baru';
+
+        // ================= STATE =================
+        let petugasData = [];
+        let selectedPetugas = null;
+        let clickSound = null;
+
         // ================= SOUND EFFECT =================
-        let clickSound;
-        
         function loadSoundEffect() {
             clickSound = new Audio('https://senapelan.github.io/Home/data/sound/open-card.mp3');
-            clickSound.volume = 0.5; // Set volume 50%
+            clickSound.volume = 0.5;
         }
-        
+
         function playClickSound() {
             if (clickSound) {
-                // Reset sound untuk bisa diputar berulang
                 clickSound.currentTime = 0;
-                clickSound.play().catch(e => {
-                    console.log('Sound tidak bisa diputar otomatis:', e);
-                    // Fallback: play setelah interaksi user
+                clickSound.play().catch(() => {
                     document.addEventListener('click', function playOnInteraction() {
                         clickSound.play();
                         document.removeEventListener('click', playOnInteraction);
@@ -880,64 +968,234 @@
                 });
             }
         }
-        
-        // ================= HEADER SCROLL EFFECT =================
+
+        // ================= HEADER SCROLL =================
         window.addEventListener('scroll', () => {
             const header = document.getElementById('header');
-            if (window.scrollY > 50) {
-                header.classList.add('scrolled');
-            } else {
-                header.classList.remove('scrolled');
-            }
+            header.classList.toggle('scrolled', window.scrollY > 50);
         });
-        
-        // ================= MODAL FUNCTIONS =================
-        let selectedPetugas = '';
-        let selectedPhone = '';
-        let formData = {};
-        
-        // Database nomor WhatsApp petugas
-        const petugasNumbers = {
-            'YUSYAFRIDA JULIANTI': '6282384399618',
-            'MOH. JUNAIDI': '6281267451605', 
-            'EMMY YANTI DAULAY, S.Pd': '6282285798357',
-            'SY. FITRIANI MAIFINA, S. Gz': '6285278556567'
-        };
-        
-        function openConversationModal(petugasName, phoneNumber) {
-            // Play sound effect
-            playClickSound();
+
+        // ================= AMBIL DATA DARI API =================
+        async function fetchPelayananData() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.remove('hidden');
+
+            try {
+                const url = `${API_BASE_URL}?api_key=${API_KEY}&cmd=getPelayanan&sheet=${encodeURIComponent(SHEET_NAME)}`;
+                console.log('📡 Fetching data from:', url);
+
+                const response = await fetch(url);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const result = await response.json();
+                console.log('📦 API Response:', result);
+
+                if (!result.success) {
+                    throw new Error(result.message || 'Gagal mengambil data');
+                }
+
+                const rawData = result.data || {};
+                petugasData = parsePetugasData(rawData);
+                
+                console.log(`✅ Berhasil memuat ${petugasData.length} petugas dari sheet ${SHEET_NAME}`);
+                return petugasData;
+
+            } catch (error) {
+                console.error('❌ Error fetching data:', error);
+                showError(error.message);
+                return [];
+            } finally {
+                loadingOverlay.classList.add('hidden');
+            }
+        }
+
+        // ================= PARSE DATA PETUGAS =================
+        function parsePetugasData(rawData) {
+            const petugasList = [];
             
-            selectedPetugas = petugasName;
-            selectedPhone = phoneNumber; // Simpan nomor WhatsApp petugas
+            const namaKeys = Object.keys(rawData).filter(key => key.includes('_nama'));
             
-            // Cek jika nomor WA kosong
-            if (!phoneNumber) {
-                alert('Nomor WhatsApp untuk petugas ini belum tersedia. Silakan hubungi kelurahan langsung.');
+            namaKeys.forEach(key => {
+                const parts = key.split('_');
+                if (parts.length >= 3) {
+                    const index = parts[1];
+                    const prefix = `petugas_${index}`;
+                    
+                    const namaData = rawData[`${prefix}_nama`];
+                    const jabatanData = rawData[`${prefix}_jabatan`];
+                    const fotoData = rawData[`${prefix}_foto`];
+                    const waData = rawData[`${prefix}_wa`];
+                    const layananData = rawData[`${prefix}_layanan`];
+                    
+                    if (namaData && namaData.value) {
+                        const petugas = {
+                            id: index,
+                            nama: namaData.value || 'Petugas',
+                            jabatan: jabatanData ? jabatanData.value : 'Petugas Pelayanan',
+                            foto: fotoData ? fotoData.value : '',
+                            wa: waData ? waData.value : '',
+                            layanan: layananData ? layananData.value : ''
+                        };
+                        
+                        if (petugas.layanan) {
+                            petugas.layananArray = petugas.layanan
+                                .split('\n')
+                                .map(item => item.trim())
+                                .filter(item => item.length > 0);
+                        } else {
+                            petugas.layananArray = ['Pelayanan Administrasi'];
+                        }
+                        
+                        petugasList.push(petugas);
+                    }
+                }
+            });
+            
+            if (petugasList.length === 0) {
+                console.warn('⚠️ Tidak ada data petugas ditemukan, menggunakan data default');
+                return getDefaultPetugas();
+            }
+            
+            return petugasList;
+        }
+
+        // ================= DATA DEFAULT (FALLBACK) =================
+        function getDefaultPetugas() {
+            return [
+                {
+                    id: '1',
+                    nama: 'PETUGAS 1',
+                    jabatan: 'Petugas Pelayanan Administrasi',
+                    foto: 'https://senapelan.github.io/Home/data/foto/cardpetugas/default.png',
+                    wa: '6280000000000',
+                    layananArray: [
+                        'Pelayanan Administrasi Surat-Menyurat',
+                        'Pelayanan Informasi dan Data Kelurahan'
+                    ]
+                },
+                {
+                    id: '2',
+                    nama: 'PETUGAS 2',
+                    jabatan: 'Petugas Pelayanan Administrasi',
+                    foto: 'https://senapelan.github.io/Home/data/foto/cardpetugas/default.png',
+                    wa: '6280000000000',
+                    layananArray: [
+                        'Pelayanan Administrasi Surat-Menyurat',
+                        'Pelayanan Informasi dan Data Kelurahan'
+                    ]
+                }
+            ];
+        }
+
+        // ================= RENDER CARDS =================
+        function renderCards(petugasList) {
+            const grid = document.getElementById('cardGrid');
+            
+            if (!petugasList || petugasList.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <i class="fas fa-users-slash"></i>
+                        <h3>Belum Ada Data Petugas</h3>
+                        <p>Silakan tambahkan data petugas di spreadsheet terlebih dahulu.</p>
+                    </div>
+                `;
                 return;
             }
+
+            let html = '';
+            petugasList.forEach((petugas, index) => {
+                const fotoUrl = petugas.foto || 'https://senapelan.github.io/Home/data/foto/cardpetugas/default.png';
+                const layananItems = petugas.layananArray.map(item => 
+                    `<li>${item}</li>`
+                ).join('');
+                
+                html += `
+                    <div class="service-card" style="animation-delay: ${(index * 0.05).toFixed(2)}s">
+                        <div class="card-avatar">
+                            <img src="${fotoUrl}" 
+                                 alt="${petugas.nama}"
+                                 onerror="this.style.display='none'; this.parentElement.innerHTML='<div class=\\'placeholder-avatar\\'><i class=\\'fas fa-user-circle\\'></i></div>'">
+                        </div>
+                        <div class="card-content">
+                            <h3 class="card-name">${petugas.nama}</h3>
+                            <p class="card-role">${petugas.jabatan}</p>
+                            <ul class="service-list">
+                                ${layananItems}
+                            </ul>
+                            <button class="btn-conversation" 
+                                    onclick="openConversationModal('${petugas.nama}', '${petugas.wa}')">
+                                <i class="fab fa-whatsapp"></i> Mulai Percakapan
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            grid.innerHTML = html;
+        }
+
+        // ================= SHOW ERROR =================
+        function showError(message) {
+            const grid = document.getElementById('cardGrid');
+            grid.innerHTML = `
+                <div class="empty-state" style="grid-column: 1/-1;">
+                    <i class="fas fa-exclamation-triangle" style="color: var(--accent);"></i>
+                    <h3>Gagal Memuat Data</h3>
+                    <p>${message}</p>
+                    <button onclick="loadData()" style="
+                        margin-top: 20px;
+                        padding: 12px 30px;
+                        background: var(--primary);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-size: 16px;
+                        cursor: pointer;
+                        font-weight: 600;
+                    ">
+                        <i class="fas fa-sync"></i> Coba Lagi
+                    </button>
+                </div>
+            `;
+        }
+
+        // ================= LOAD DATA =================
+        async function loadData() {
+            const data = await fetchPelayananData();
+            renderCards(data);
+        }
+
+        // ================= MODAL FUNCTIONS =================
+        function openConversationModal(petugasName, phoneNumber) {
+            playClickSound();
+            
+            selectedPetugas = {
+                nama: petugasName,
+                wa: phoneNumber
+            };
             
             document.getElementById('modalPetugasName').textContent = `Percakapan dengan ${petugasName}`;
             document.getElementById('conversationModal').classList.add('active');
             document.body.style.overflow = 'hidden';
             
-            // Focus pada input pertama
             setTimeout(() => {
                 document.getElementById('nama').focus();
             }, 100);
             
-            // Load saved form data if exists
             loadFormData();
         }
-        
+
         function closeModal() {
             document.getElementById('conversationModal').classList.remove('active');
             document.body.style.overflow = '';
         }
-        
+
         // ================= FORM DATA MANAGEMENT =================
         function saveFormData() {
-            formData = {
+            const formData = {
                 nama: document.getElementById('nama').value,
                 alamat: document.getElementById('alamat').value,
                 rt: document.getElementById('rt').value,
@@ -947,18 +1205,14 @@
                 tujuan: document.getElementById('tujuan').value,
                 tujuan_optional: document.getElementById('tujuan_optional').value
             };
-            
-            // Simpan ke localStorage
             localStorage.setItem('pelayananFormData', JSON.stringify(formData));
         }
-        
+
         function loadFormData() {
             const savedData = localStorage.getItem('pelayananFormData');
             if (savedData) {
                 try {
-                    formData = JSON.parse(savedData);
-                    
-                    // Isi form dengan data yang disimpan
+                    const formData = JSON.parse(savedData);
                     document.getElementById('nama').value = formData.nama || '';
                     document.getElementById('alamat').value = formData.alamat || '';
                     document.getElementById('rt').value = formData.rt || '';
@@ -972,37 +1226,13 @@
                 }
             }
         }
-        
+
         function clearFormData() {
             localStorage.removeItem('pelayananFormData');
-            formData = {};
         }
-        
-        // ================= REAL-TIME FORM SAVING =================
-        function setupFormListeners() {
-            const formElements = [
-                'nama', 'alamat', 'rt', 'rw', 'no_hp', 'email', 'tujuan', 'tujuan_optional'
-            ];
-            
-            formElements.forEach(elementId => {
-                const element = document.getElementById(elementId);
-                if (element) {
-                    element.addEventListener('input', function() {
-                        formData[elementId] = this.value;
-                        saveFormData();
-                    });
-                    
-                    element.addEventListener('change', function() {
-                        formData[elementId] = this.value;
-                        saveFormData();
-                    });
-                }
-            });
-        }
-        
+
         // ================= SUBMIT CONVERSATION =================
         function submitConversation() {
-            // Get form values
             const nama = document.getElementById('nama').value.trim();
             const alamat = document.getElementById('alamat').value.trim();
             const rt = document.getElementById('rt').value.trim();
@@ -1015,25 +1245,22 @@
             const email = document.getElementById('email').value.trim();
             const tujuan = document.getElementById('tujuan').value;
             const tujuan_optional = document.getElementById('tujuan_optional').value.trim();
-            
-            // Validate required fields
+
             if (!nama || !alamat || !rt || !rw || !no_hp || !tujuan) {
                 alert('Harap isi semua field yang wajib diisi (*)');
                 return;
             }
-            
-            // Validate phone number
-            const phoneRegex = /^[0-9]{10,13}$/;
+
             const cleanPhone = no_hp.replace(/\D/g, '');
-            if (!phoneRegex.test(cleanPhone)) {
+            if (!/^[0-9]{10,13}$/.test(cleanPhone)) {
                 alert('Nomor HP tidak valid. Harap masukkan 10-13 digit angka.');
                 return;
             }
-            
-            // Create WhatsApp message
+
             const finalTujuan = tujuan_optional ? `${tujuan}: ${tujuan_optional}` : tujuan;
-            
-            const message = `Assalamualaikum Bapak/Ibu ${selectedPetugas} selamat beraktifitas
+            const petugasName = selectedPetugas ? selectedPetugas.nama : 'Petugas';
+
+            const message = `Assalamualaikum Bapak/Ibu ${petugasName} selamat beraktifitas
 
 Perkenalkan,
 nama saya : ${nama}
@@ -1054,73 +1281,40 @@ Atas kesediaan waktu Bapak/Ibu, saya ucapkan terimakasih.
 Percakapan ini bersumber dari Pelayanan Online Kelurahan - Kampung Baru:
 (https://senapelan.github.io/Home/publik/menupelayanan/pelayanankampungbaru.html)
 "Senapelan Satu Pintu - Kelurahan Kampung Baru"`;
-            
-            // Encode message for URL
+
             const encodedMessage = encodeURIComponent(message);
-            
-            // WhatsApp number sesuai petugas yang dipilih
-            const whatsappNumber = selectedPhone;
-            
-            // Create WhatsApp URL
+            const whatsappNumber = selectedPetugas ? selectedPetugas.wa : '6280000000000';
             const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodedMessage}`;
-            
-            // Clear form data setelah submit
+
             clearFormData();
-            
-            // Close modal
             closeModal();
-            
-            // Show success message
+
             setTimeout(() => {
-                // Open WhatsApp langsung ke petugas yang dipilih
                 window.open(whatsappURL, '_blank');
             }, 300);
         }
-        
+
         // ================= EVENT LISTENERS =================
-        document.addEventListener('DOMContentLoaded', function() {
-            // Load sound effect
-            loadSoundEffect();
-            
-            // Setup form listeners
-            setupFormListeners();
-            
-            // Close modal when clicking outside
-            document.getElementById('conversationModal').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    closeModal();
+        function setupEventListeners() {
+            const formElements = ['nama', 'alamat', 'rt', 'rw', 'no_hp', 'email', 'tujuan', 'tujuan_optional'];
+            formElements.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('input', saveFormData);
+                    el.addEventListener('change', saveFormData);
                 }
             });
-            
-            // Close modal with Escape key
+
+            document.getElementById('conversationModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+
             document.addEventListener('keydown', function(e) {
                 if (e.key === 'Escape' && document.getElementById('conversationModal').classList.contains('active')) {
                     closeModal();
                 }
             });
-            
-            // Prevent form submission on Enter key
-            document.getElementById('conversationForm').addEventListener('keydown', function(e) {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    
-                    // Find next input
-                    const inputs = Array.from(this.querySelectorAll('input, textarea, select'));
-                    const currentIndex = inputs.indexOf(document.activeElement);
-                    
-                    if (currentIndex < inputs.length - 1) {
-                        inputs[currentIndex + 1].focus();
-                    }
-                }
-            });
-            
-            // Handle form submission
-            document.getElementById('conversationForm').addEventListener('submit', function(e) {
-                e.preventDefault();
-                submitConversation();
-            });
-            
-            // Format phone number input (untuk nomor user)
+
             document.getElementById('no_hp').addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
                 if (value.length > 0) {
@@ -1128,39 +1322,31 @@ Percakapan ini bersumber dari Pelayanan Online Kelurahan - Kampung Baru:
                 }
                 e.target.value = value;
             });
-            
-            // Add hover sound effect to all conversation buttons
-            document.querySelectorAll('.btn-conversation').forEach(button => {
-                button.addEventListener('mouseenter', function() {
-                    // Optional: tambahkan efek hover sound jika diperlukan
-                    // playHoverSound();
-                });
-                
-                button.addEventListener('click', function() {
-                    // Play sound sudah ditangani di openConversationModal
-                });
+
+            document.getElementById('conversationForm').addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const inputs = Array.from(this.querySelectorAll('input, textarea, select'));
+                    const currentIndex = inputs.indexOf(document.activeElement);
+                    if (currentIndex < inputs.length - 1) {
+                        inputs[currentIndex + 1].focus();
+                    }
+                }
             });
-        });
-        
-        // ================= FORM VALIDATION =================
-        function validateForm() {
-            const nama = document.getElementById('nama').value.trim();
-            const alamat = document.getElementById('alamat').value.trim();
-            const rt = document.getElementById('rt').value.trim();
-            const rw = document.getElementById('rw').value.trim();
-            const no_hp = document.getElementById('no_hp').value.trim();
-            const tujuan = document.getElementById('tujuan').value;
-            
-            if (!nama || !alamat || !rt || !rw || !no_hp || !tujuan) {
-                return false;
-            }
-            
-            return true;
+
+            document.getElementById('conversationForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitConversation();
+            });
+
+            window.addEventListener('beforeunload', saveFormData);
         }
-        
-        // ================= AUTO-SAVE ON PAGE UNLOAD =================
-        window.addEventListener('beforeunload', function() {
-            saveFormData();
+
+        // ================= INIT =================
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSoundEffect();
+            setupEventListeners();
+            loadData();
         });
     </script>
 </body>
