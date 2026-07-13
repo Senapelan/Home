@@ -497,6 +497,44 @@
             font-size: 18px;
         }
 
+        /* Tombol Refresh */
+        .btn-refresh {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: var(--transition);
+            margin-top: 20px;
+        }
+
+        .btn-refresh:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(30, 107, 255, 0.3);
+        }
+
+        .btn-refresh:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-refresh i {
+            font-size: 16px;
+        }
+
+        .btn-refresh .fa-spin {
+            animation: spin 1s linear infinite;
+        }
+
         .modal-overlay {
             position: fixed;
             top: 0;
@@ -764,6 +802,11 @@
         <div class="page-title">
             <h1 id="pageTitleText">Pelayanan Kelurahan</h1>
             <p id="pageDescription">Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik</p>
+            
+            <!-- Tombol Refresh Data -->
+            <button class="btn-refresh" id="refreshBtn" onclick="manualRefresh()">
+                <i class="fas fa-sync"></i> Refresh Data
+            </button>
         </div>
  
         <div class="card-grid" id="cardGrid">
@@ -873,7 +916,7 @@
         // =====================================================
         // KONFIGURASI
         // =====================================================
-        const API_URL = 'https://script.google.com/macros/s/AKfycbwx5hXGPX0CrMDkzJTEFivP8_NPhUXp2QwHi6_cz0EE0W6x7Mx099IMzO7u8FwAFM59/exec';
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzd3Up7N0mS-5xc7UUVUse3uQgU_jBrLkrw-WUh-O5APFpz97zAusD6DdyAkd6Me-zK/exec';
         
         function getKelurahanFromURL() {
             const params = new URLSearchParams(window.location.search);
@@ -886,34 +929,71 @@
         let selectedPhone = '';
 
         // =====================================================
-        // CACHE MANAGEMENT (Frontend) - DENGAN TTL 5 MENIT
+        // 🗑️ TIDAK PAKAI CACHE - LANGSUNG FETCH
         // =====================================================
-        function getCachedData(key) {
+        async function fetchAllData(kelurahan) {
             try {
-                const cached = localStorage.getItem('pelayananCache_' + key);
-                if (cached) {
-                    const data = JSON.parse(cached);
-                    const age = Date.now() - data.timestamp;
-                    if (age < 300000) { // 5 menit
-                        return data.value;
+                console.log('🔄 Mengambil data terbaru dari API...');
+                
+                // Tambah timestamp biar browser tidak cache
+                const timestamp = new Date().getTime();
+                const url = `${API_URL}?action=getAllData&kelurahan=${encodeURIComponent(kelurahan)}&_=${timestamp}`;
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 30000);
+                
+                const response = await fetch(url, {
+                    signal: controller.signal,
+                    headers: { 
+                        'Accept': 'application/json',
+                        'Cache-Control': 'no-cache, no-store, must-revalidate',
+                        'Pragma': 'no-cache',
+                        'Expires': '0'
                     }
-                    // Hapus cache jika sudah expired
-                    localStorage.removeItem('pelayananCache_' + key);
+                });
+                clearTimeout(timeoutId);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            } catch (e) {
-                console.log('Cache error:', e);
+                
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    console.log('✅ Data berhasil diambil');
+                    return result.data;
+                } else {
+                    throw new Error(result.message || 'Gagal mengambil data');
+                }
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                throw error;
             }
-            return null;
         }
 
-        function setCachedData(key, value) {
+        // =====================================================
+        // 🔄 MANUAL REFRESH
+        // =====================================================
+        async function manualRefresh() {
+            const btn = document.getElementById('refreshBtn');
+            if (!btn) return;
+            
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memperbarui...';
+            btn.disabled = true;
+            
             try {
-                localStorage.setItem('pelayananCache_' + key, JSON.stringify({
-                    value: value,
-                    timestamp: Date.now()
-                }));
-            } catch (e) {
-                console.log('Cache save error:', e);
+                await loadData();
+                btn.innerHTML = '<i class="fas fa-check"></i> Data Updated!';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-sync"></i> Refresh Data';
+                    btn.disabled = false;
+                }, 2000);
+            } catch (error) {
+                btn.innerHTML = '<i class="fas fa-exclamation-circle"></i> Gagal Update';
+                setTimeout(() => {
+                    btn.innerHTML = '<i class="fas fa-sync"></i> Refresh Data';
+                    btn.disabled = false;
+                }, 2000);
             }
         }
 
@@ -949,50 +1029,7 @@
         });
 
         // =====================================================
-        // FETCH DATA DARI API
-        // =====================================================
-        async function fetchAllData(kelurahan) {
-            try {
-                const cacheKey = 'allData_' + kelurahan;
-                const cached = getCachedData(cacheKey);
-                if (cached) {
-                    console.log('✅ Data from cache');
-                    return cached;
-                }
-                
-                console.log('🔄 Fetching from API...');
-                const url = `${API_URL}?action=getAllData&kelurahan=${encodeURIComponent(kelurahan)}`;
-                
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 30000);
-                
-                const response = await fetch(url, {
-                    signal: controller.signal,
-                    headers: { 'Accept': 'application/json' }
-                });
-                clearTimeout(timeoutId);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const result = await response.json();
-                
-                if (result.status === 'success') {
-                    setCachedData(cacheKey, result.data);
-                    console.log('✅ Data saved to cache');
-                    return result.data;
-                } else {
-                    throw new Error(result.message || 'Gagal mengambil data');
-                }
-            } catch (error) {
-                console.error('Error fetching data:', error);
-                throw error;
-            }
-        }
-
-        // =====================================================
-        // UPDATE META TAGS & HEADER - TANPA FALLBACK
+        // UPDATE META TAGS & HEADER
         // =====================================================
         function updateMetaTags(metaData, kelurahanInfo) {
             if (!metaData) {
@@ -1021,7 +1058,6 @@
             document.querySelector('meta[name="twitter:image"]')?.setAttribute('content', metaData.og_image || '');
             
             // ========== UPDATE HEADER ==========
-            // Logo URL - dari spreadsheet
             const logoImg = document.getElementById('logoImg');
             if (logoImg && metaData.logo_img_url) {
                 logoImg.src = metaData.logo_img_url;
@@ -1035,27 +1071,23 @@
                 logoImg.style.display = 'none';
             }
             
-            // Link Logo
             const logoLink = document.getElementById('logoLink');
             if (logoLink && metaData.link_url_logo) {
                 logoLink.href = metaData.link_url_logo;
             }
             
-            // Back URL
             const backButton = document.getElementById('backButton');
             if (backButton && metaData.back_url) {
                 backButton.href = metaData.back_url;
                 backButton.title = `Kembali ke ${displayName}`;
             }
             
-            // Update UI
             if (displayName) {
                 document.getElementById('kelurahanDisplayName').textContent = displayName;
                 document.getElementById('pageTitleText').textContent = `Pelayanan Kelurahan ${displayName}`;
                 document.getElementById('pageDescription').textContent = `Pilih petugas untuk memulai percakapan dan mendapatkan pelayanan terbaik di Kelurahan ${displayName}`;
             }
             
-            // Update form dengan data dari spreadsheet
             if (kelurahanInfo) {
                 document.getElementById('kelurahan').value = kelurahanInfo.nama_display || '';
                 document.getElementById('kecamatan').value = kelurahanInfo.kecamatan || '';
@@ -1065,7 +1097,7 @@
         }
 
         // =====================================================
-        // RENDER PETUGAS CARDS - TANPA FALLBACK FOTO
+        // RENDER PETUGAS CARDS
         // =====================================================
         function renderPetugasCards(petugasData) {
             const grid = document.getElementById('cardGrid');
@@ -1130,7 +1162,7 @@
         }
 
         // =====================================================
-        // RENDER RUNNING TEXT - TANPA FALLBACK
+        // RENDER RUNNING TEXT
         // =====================================================
         function renderRunningText(runningTextData) {
             const container = document.getElementById('runningText');
@@ -1167,7 +1199,6 @@
                 const data = await fetchAllData(kelurahan);
                 allData = data;
                 
-                // Cek apakah meta data ada
                 if (!data.meta) {
                     throw new Error('Meta data tidak ditemukan untuk kelurahan ini');
                 }
