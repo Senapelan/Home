@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>SICANTIK</title>
+  
+  <!-- ===== FAVICON ===== -->
+  <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/publik/SICANTIK_SENAPELAN/assets/metatag/logosicantik.png" />
+  <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/publik/SICANTIK_SENAPELAN/assets/metatag/logosicantik.png" />
+  
+  <!-- ===== META TAG ===== -->
+  <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/sicantik/sicantik512x512.png" />
+  <meta property="og:title" content="SICANTIK - SISTEM CERDAS ADMINISTRASI TERINTEGRASI" />
+  <meta property="og:description" content="Pelayanan Kecamatan Senapelan" />
+  
+  <!-- ===== FONTS & ICONS ===== -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  
+  <style>
+    /* ============================================
+       RESET & VARIABEL
+    ============================================ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #0f4c81;
+      --primary-light: #1a6bb0;
+      --primary-dark: #0a2f4a;
+      --accent: #ff6b35;
+      --accent-light: #ff8a5c;
+      --bg: #f0f4f8;
+      --card-bg: #ffffff;
+      --text: #1a2a3a;
+      --text-light: #5a7a8a;
+      --shadow: 0 8px 32px rgba(15, 76, 129, 0.15);
+      --radius: 20px;
+      --radius-sm: 12px;
+      --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding-bottom: 90px;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ============================================
+       PINTU PEMBUKA (SPLASH SCREEN) - TANPA LOGO
+    ============================================ */
+    #doorOverlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      pointer-events: auto;
+      transition: opacity 0.8s ease;
+      background: #0a2f4a;
+    }
+
+    #doorOverlay.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .door {
+      position: absolute;
+      width: 100%;
+      height: 50%;
+      transition: transform 1.5s cubic-bezier(0.7, 0, 0.2, 1);
+      overflow: hidden;
+      background: #0a2f4a;
+    }
+
+    .door.top {
+      top: 0;
+      border-bottom: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .door.bottom {
+      bottom: 0;
+      border-top: 3px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .door img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    #doorOverlay.open .door.top {
+      transform: translateY(-100%);
+    }
+
+    #doorOverlay.open .door.bottom {
+      transform: translateY(100%);
+    }
+
+    .door-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      text-align: center;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+
+    #doorOverlay.open .door-center {
+      opacity: 0;
+      transform: translate(-50%, -50%) scale(0.8);
+      pointer-events: none;
+    }
+
+    .btn-buka {
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(2px);
+      border: 2px solid rgba(255, 255, 255, 0.4);
+      color: white;
+      padding: 15px 30px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      border-radius: 60px;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+      letter-spacing: 2px;
+    }
+
+    .btn-buka:hover {
+      background: rgba(255, 255, 255, 0.35);
+      transform: scale(1.05);
+      border-color: white;
+    }
+
+    .btn-buka:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    /* ============================================
+       HEADER
+    ============================================ */
+    header {
+      background: var(--card-bg);
+      padding: 12px 16px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 20px rgba(0, 0, 0, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .header-left img {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      object-fit: contain;
+      flex-shrink: 0;
+      background: #f0f4f8;
+    }
+
+    .header-left .title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-left .subtitle {
+      font-size: 0.6rem;
+      color: var(--text-light);
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .header-right .menu-toggle {
+      background: none;
+      border: none;
+      font-size: 1.4rem;
+      color: var(--primary);
+      padding: 6px;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: var(--transition);
+    }
+
+    /* ============================================
+       RUNNING TEXT
+    ============================================ */
+    .running-text {
+      background: linear-gradient(90deg, var(--primary-dark), var(--primary));
+      padding: 8px 0;
+      overflow: hidden;
+      white-space: nowrap;
+      position: sticky;
+      top: 62px;
+      z-index: 99;
+      border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .running-text .ticker {
+      display: inline-block;
+      padding-left: 100%;
+      animation: marquee 45s linear infinite;
+      color: white;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.5px;
+    }
+
+    .running-text .ticker i {
+      margin: 0 14px;
+      color: var(--accent-light);
+    }
+
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+
+    /* ============================================
+       MAIN CONTENT
+    ============================================ */
+    main {
+      padding: 16px 16px 100px;
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    /* ============================================
+       PELAYANAN GRID
+    ============================================ */
+    .section-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .section-title i {
+      color: var(--primary);
+    }
+
+    .pelayanan-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .pelayanan-item {
+      background: var(--card-bg);
+      border-radius: var(--radius-sm);
+      padding: 14px 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      min-height: 80px;
+      justify-content: center;
+    }
+
+    .pelayanan-item:active {
+      transform: scale(0.94);
+    }
+
+    .pelayanan-item .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      background: #ffffff;
+      color: var(--primary));
+      flex-shrink: 0;
+    }
+
+    .pelayanan-item .icon img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+    }
+
+    .pelayanan-item .label {
+      font-size: 0.6rem;
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.2;
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    /* ============================================
+       TOMBOL LAPOR!
+    ============================================ */
+    .btn-lapor {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #dc3545, #c0392b);
+      color: white;
+      border: none;
+      border-radius: var(--radius);
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(220, 53, 69, 0.35);
+      text-align: center;
+      margin-top: 4px;
+    }
+
+    .btn-lapor:active {
+      transform: scale(0.97);
+    }
+
+    .btn-lapor i {
+      margin-right: 10px;
+    }
+
+    /* ============================================
+       BOTTOM NAVIGATION
+    ============================================ */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: var(--card-bg);
+      border-top: 1px solid rgba(0, 0, 0, 0.06);
+      display: flex;
+      justify-content: space-around;
+      padding: 6px 0 calc(6px + var(--safe-bottom));
+      z-index: 200;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: none;
+      border: none;
+      color: var(--text-light);
+      font-size: 0.55rem;
+      font-weight: 600;
+      padding: 4px 12px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      text-decoration: none;
+    }
+
+    .bottom-nav .nav-item i {
+      font-size: 1.2rem;
+      transition: var(--transition);
+    }
+
+    .bottom-nav .nav-item.active {
+      color: var(--primary);
+    }
+
+    .bottom-nav .nav-item.active i {
+      transform: translateY(-2px);
+    }
+
+    /* ============================================
+       SIDEBAR
+    ============================================ */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 500;
+      backdrop-filter: blur(4px);
+    }
+
+    .sidebar-overlay.show {
+      display: block;
+    }
+
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -320px;
+      width: 300px;
+      height: 100%;
+      background: var(--card-bg);
+      z-index: 501;
+      transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 24px 20px;
+      overflow-y: auto;
+      box-shadow: -8px 0 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .sidebar.show {
+      right: 0;
+    }
+
+    .sidebar .close-sidebar {
+      background: none;
+      border: none;
+      font-size: 1.8rem;
+      color: var(--text);
+      cursor: pointer;
+      margin-bottom: 20px;
+      padding: 4px;
+    }
+
+    .sidebar .sidebar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 20px;
+    }
+
+    .sidebar .sidebar-menu {
+      list-style: none;
+    }
+
+    .sidebar .sidebar-menu li {
+      padding: 14px 16px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: var(--transition);
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-weight: 500;
+      color: var(--text);
+      border: none;
+      background: none;
+      width: 100%;
+      font-size: 0.95rem;
+    }
+
+    .sidebar .sidebar-menu li:hover {
+      background: rgba(15, 76, 129, 0.06);
+    }
+
+    .sidebar .sidebar-menu li i {
+      width: 24px;
+      color: var(--primary-light);
+    }
+
+    /* ============================================
+       MODAL
+    ============================================ */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--card-bg);
+      border-radius: var(--radius);
+      max-width: 440px;
+      width: 100%;
+      padding: 24px 20px;
+      max-height: 90vh;
+      overflow-y: auto;
+      animation: modalSlide 0.3s ease;
+    }
+
+    @keyframes modalSlide {
+      from { transform: translateY(30px) scale(0.95); opacity: 0; }
+      to { transform: translateY(0) scale(1); opacity: 1; }
+    }
+
+    .modal-content .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-content .modal-header h2 {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .modal-content .modal-header .close-modal {
+      background: none;
+      border: none;
+      font-size: 1.6rem;
+      color: var(--text-light);
+      cursor: pointer;
+      padding: 4px 8px;
+    }
+
+    .modal-content .form-group {
+      margin-bottom: 14px;
+    }
+
+    .modal-content .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--text-light);
+      margin-bottom: 4px;
+    }
+
+    .modal-content .form-group input,
+    .modal-content .form-group select,
+    .modal-content .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 2px solid #e8ecf0;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      font-family: 'Inter', sans-serif;
+      transition: var(--transition);
+      background: #f8fafc;
+    }
+
+    .modal-content .form-group input:focus,
+    .modal-content .form-group select:focus,
+    .modal-content .form-group textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: white;
+      box-shadow: 0 0 0 4px rgba(15, 76, 129, 0.1);
+    }
+
+    .modal-content .form-group textarea {
+      resize: vertical;
+      min-height: 70px;
+    }
+
+    .modal-content .btn-submit {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .modal-content .btn-submit:active {
+      transform: scale(0.97);
+    }
+
+    /* ============================================
+       PENGATURAN
+    ============================================ */
+    .pengaturan-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pengaturan-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: #f8fafc;
+      border-radius: var(--radius-sm);
+      border: 1px solid #e8ecf0;
+    }
+
+    .pengaturan-item .left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .pengaturan-item .left .icon-preview {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      object-fit: contain;
+      background: white;
+      padding: 4px;
+    }
+
+    .pengaturan-item .left .name {
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    .pengaturan-item .toggle {
+      width: 40px;
+      height: 22px;
+      background: #d1d5db;
+      border-radius: 11px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      border: none;
+      padding: 0;
+    }
+
+    .pengaturan-item .toggle.active {
+      background: var(--primary);
+    }
+
+    .pengaturan-item .toggle .thumb {
+      width: 18px;
+      height: 18px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: var(--transition);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .pengaturan-item .toggle.active .thumb {
+      left: 20px;
+    }
+
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (min-width: 640px) {
+      .pelayanan-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+      
+      .pelayanan-item {
+        padding: 18px 10px;
+        min-height: 100px;
+      }
+      
+      .pelayanan-item .icon {
+        width: 52px;
+        height: 52px;
+        font-size: 1.4rem;
+      }
+      
+      .pelayanan-item .label {
+        font-size: 0.7rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      main {
+        max-width: 800px;
+      }
+      
+      .pelayanan-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+      
+      .bottom-nav {
+        display: none;
+      }
+      
+      .sidebar {
+        right: 0;
+        width: 280px;
+        transform: translateX(100%);
+      }
+      
+      .sidebar.show {
+        transform: translateX(0);
+      }
+    }
+
+    /* ============================================
+       LOADING & UTILITY
+    ============================================ */
+    .loading {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--text-light);
+    }
+
+    .loading i {
+      font-size: 1.8rem;
+      margin-bottom: 10px;
+      display: block;
+      color: var(--primary);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      z-index: 2000;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      animation: toastAnim 0.3s ease;
+      max-width: 90%;
+      text-align: center;
+    }
+
+    @keyframes toastAnim {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
+    }
+
+    .splash-loading {
+      margin-top: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .splash-loading i {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ============================================
+  PINTU PEMBUKA - TANPA LOGO & JUDUL
+  ============================================ -->
+  <div id="doorOverlay">
+    <div class="door top">
+      <img id="pintuAtas" src="https://senapelan.github.io/Home/publik/SICANTIK_SENAPELAN/foto/sicantikatas.png" alt="Pintu Atas" />
+    </div>
+    <div class="door-center">
+      <button class="btn-buka" onclick="bukaPintu()" id="btnBuka">
+        <i class="fas fa-arrow-right-to-bracket"></i> BUKA PORTAL
+      </button>
+      <div class="splash-loading" id="splashLoading">
+        <i class="fas fa-spinner"></i> Memuat data...
+      </div>
+    </div>
+    <div class="door bottom">
+      <img id="pintuBawah" src="https://senapelan.github.io/Home/publik/SICANTIK_SENAPELAN/foto/sicantikbawah.png" alt="Pintu Bawah" />
+    </div>
+  </div>
+
+  <!-- ============================================
+  HEADER
+  ============================================ -->
+  <header>
+    <div class="header-left">
+      <img id="headerLogo" src="https://senapelan.github.io/Home/publik/SICANTIK_SENAPELAN/assets/metatag/logosicantik.png" alt="Logo" />
+      <div>
+        <div class="title" id="siteTitle">SICANTIK</div>
+        <div class="subtitle">Sistem Cerdas Administrasi Terintegrasi Kecamatan </div>
+      </div>
+    </div>
+    <div class="header-right">
+      <button class="menu-toggle" onclick="toggleSidebar()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- ============================================
+  RUNNING TEXT
+  ============================================ -->
+  <div class="running-text">
+    <span class="ticker" id="runningText">
+      <i class="fas fa-circle-check"></i> SELAMAT DATANG DI SICANTIK
+      <i class="fas fa-bolt"></i> PELAYANAN CEPAT & MUDAH
+    </span>
+  </div>
+
+  <!-- ============================================
+  MAIN CONTENT
+  ============================================ -->
+  <main>
+    <div class="section-title">
+      <i class="fas fa-th-large"></i> LAYANAN
+    </div>
+    <div id="pelayananContainer">
+      <div class="loading">
+        <i class="fas fa-spinner fa-spin"></i>
+        Memuat layanan...
+      </div>
+    </div>
+
+    <button class="btn-lapor" onclick="openModal('lapor')">
+      <i class="fas fa-exclamation-triangle"></i> LAPOR!
+    </button>
+  </main>
+
+  <!-- ============================================
+  BOTTOM NAVIGATION
+  ============================================ -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" onclick="navigateTo('beranda')">
+      <i class="fas fa-home"></i>
+      <span>Beranda</span>
+    </button>
+    <button class="nav-item" onclick="openModal('janji')">
+      <i class="fas fa-calendar-plus"></i>
+      <span>Buat Janji</span>
+    </button>
+    <button class="nav-item" onclick="openModal('pengaturan')">
+      <i class="fas fa-sliders-h"></i>
+      <span>Pengaturan</span>
+    </button>
+  </nav>
+
+  <!-- ============================================
+  SIDEBAR
+  ============================================ -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+  <div class="sidebar" id="sidebar">
+    <button class="close-sidebar" onclick="toggleSidebar()">✕</button>
+    <div class="sidebar-title">Menu</div>
+    <ul class="sidebar-menu">
+      <li onclick="navigateTo('beranda')"><i class="fas fa-home"></i> Beranda</li>
+      <li onclick="openModal('janji')"><i class="fas fa-calendar-plus"></i> Buat Janji</li>
+      <li onclick="openModal('pengaturan')"><i class="fas fa-sliders-h"></i> Pengaturan</li>
+      <li onclick="openModal('lapor')"><i class="fas fa-exclamation-triangle" style="color:#dc3545;"></i> Lapor!</li>
+    </ul>
+    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e8ecf0; font-size: 0.75rem; color: var(--text-light); text-align: center;">
+      <span id="footerText">© 2026 SICANTIK - Kecamatan Senapelan</span>
+    </div>
+  </div>
+
+  <!-- ============================================
+  MODAL JANJI
+  ============================================ -->
+  <div class="modal-overlay" id="modalJanji">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-calendar-plus" style="color:var(--primary);"></i> Buat Janji</h2>
+        <button class="close-modal" onclick="closeModal('janji')">✕</button>
+      </div>
+      <form id="formJanji" onsubmit="submitJanji(event)">
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="janjiNama" required placeholder="Masukkan nama Anda" />
+        </div>
+        <div class="form-group">
+          <label>Nomor HP</label>
+          <input type="tel" id="janjiHP" required placeholder="08xxxxxxxxxx" />
+        </div>
+        <div class="form-group">
+          <label>Layanan</label>
+          <select id="janjiLayanan" required>
+            <option value="">Pilih layanan...</option>
+          </select>
+        </div>
+        <button type="submit" class="btn-submit">
+          <i class="fas fa-paper-plane"></i> Kirim Janji
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================
+  MODAL LAPOR
+  ============================================ -->
+  <div class="modal-overlay" id="modalLapor">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-exclamation-triangle" style="color:#dc3545;"></i> Lapor!</h2>
+        <button class="close-modal" onclick="closeModal('lapor')">✕</button>
+      </div>
+      <form id="formLapor" onsubmit="submitLapor(event)">
+        <div class="form-group">
+          <label>Nama Lengkap</label>
+          <input type="text" id="laporNama" required placeholder="Masukkan nama Anda" />
+        </div>
+        <div class="form-group">
+          <label>Alamat</label>
+          <input type="text" id="laporAlamat" required placeholder="Masukkan alamat" />
+        </div>
+        <div class="form-group">
+          <label>Nomor HP</label>
+          <input type="tel" id="laporHP" required placeholder="08xxxxxxxxxx" />
+        </div>
+        <div class="form-group">
+          <label>Jenis Laporan</label>
+          <select id="laporJenis" required>
+            <option value="">Pilih jenis laporan...</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Alasan Melapor</label>
+          <textarea id="laporAlasan" required placeholder="Jelaskan alasan Anda..."></textarea>
+        </div>
+        <button type="submit" class="btn-submit" style="background:linear-gradient(135deg,#dc3545,#c0392b);">
+          <i class="fas fa-paper-plane"></i> Kirim Laporan
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ============================================
+  MODAL PENGATURAN
+  ============================================ -->
+  <div class="modal-overlay" id="modalPengaturan">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-sliders-h" style="color:var(--primary);"></i> Pengaturan</h2>
+        <button class="close-modal" onclick="closeModal('pengaturan')">✕</button>
+      </div>
+      <p style="font-size:0.8rem;color:var(--text-light);margin-bottom:14px;">
+        Sembunyikan atau tampilkan menu layanan sesuai kebutuhan Anda.
+      </p>
+      <div id="pengaturanList" class="pengaturan-list">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat...</div>
+      </div>
+      <button class="btn-submit" onclick="simpanPengaturan()" style="margin-top:14px;">
+        <i class="fas fa-save"></i> Simpan Pengaturan
+      </button>
+    </div>
+  </div>
+
+  <!-- ============================================
+  AUDIO
+  ============================================ -->
+  <audio id="bgm" loop preload="auto">
+    <source src="https://senapelan.github.io/Home/data/sound/senapelanhutkota.mp3" type="audio/mpeg" />
+  </audio>
+
+  <!-- ============================================
+  TOAST
+  ============================================ -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- ============================================
+  JAVASCRIPT
+  ============================================ -->
+  <script>
+    // ============================================
+    // KONFIGURASI
+    // ============================================
+    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkjHjGpgRNQU-aiK8ITRU4fToAZ-MLeYMH9JA3R33dlpuJ7-fM9QRIGi9Y3UOqL_v2/exec';
+
+    let allPelayanan = [];
+    let userSettings = { hiddenMenus: [], menuOrder: [] };
+    let settingsData = {};
+    let dataLoaded = false;
+    let musicStarted = false;
+
+    // ============================================
+    // TOAST
+    // ============================================
+    function showToast(message, isSuccess = true) {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.style.background = isSuccess ? '#1a7a3a' : '#dc3545';
+      toast.classList.remove('hidden');
+      toast.style.display = 'block';
+      clearTimeout(toast._hide);
+      toast._hide = setTimeout(() => {
+        toast.classList.add('hidden');
+        setTimeout(() => { toast.style.display = 'none'; }, 300);
+      }, 3000);
+    }
+
+    // ============================================
+    // API CALL
+    // ============================================
+    async function apiCall(action, data = null) {
+      try {
+        let url = `${APP_SCRIPT_URL}?action=${action}`;
+        if (data) {
+          url += `&data=${encodeURIComponent(JSON.stringify(data))}`;
+        }
+        const response = await fetch(url);
+        return await response.json();
+      } catch (error) {
+        console.error('API Error:', error);
+        return { error: error.message || 'Gagal terhubung ke server' };
+      }
+    }
+
+    // ============================================
+    // LOAD DATA
+    // ============================================
+    async function loadAllData() {
+      try {
+        // Load settings
+        const settings = await apiCall('settings');
+        if (!settings.error) {
+          settingsData = settings;
+          applySettings(settings);
+        }
+
+        // Load berita
+        const berita = await apiCall('berita');
+        if (!berita.error && berita.length > 0) {
+          updateRunningText(berita);
+        }
+
+        // Load pelayanan
+        const pelayanan = await apiCall('pelayanan');
+        if (!pelayanan.error) {
+          allPelayanan = pelayanan;
+          renderPelayanan(pelayanan);
+        }
+
+        // Load user settings
+        const userSetting = await apiCall('getUserSetting');
+        if (!userSetting.error) {
+          userSettings = userSetting;
+        }
+
+        // Load pilihan layanan untuk dropdown
+        loadLayananDropdown();
+        
+        dataLoaded = true;
+        document.getElementById('splashLoading').style.display = 'none';
+
+      } catch (error) {
+        console.error('Load data error:', error);
+        document.getElementById('splashLoading').innerHTML = 
+          '<i class="fas fa-exclamation-circle"></i> Gagal memuat data';
+      }
+    }
+
+    // ============================================
+    // APPLY SETTINGS (update dari spreadsheet)
+    // ============================================
+    function applySettings(settings) {
+      if (settings.header_logo) {
+        document.getElementById('headerLogo').src = settings.header_logo;
+      }
+      
+      if (settings.site_title) {
+        document.getElementById('siteTitle').textContent = settings.site_title;
+        document.title = settings.site_title;
+      }
+      
+      if (settings.pintu_atas) {
+        document.getElementById('pintuAtas').src = settings.pintu_atas;
+      }
+      
+      if (settings.pintu_bawah) {
+        document.getElementById('pintuBawah').src = settings.pintu_bawah;
+      }
+
+      if (settings.running_text) {
+        document.getElementById('runningText').innerHTML = 
+          `<i class="fas fa-circle-check"></i> ${settings.running_text}`;
+      }
+
+      if (settings.footer_text) {
+        document.getElementById('footerText').textContent = settings.footer_text;
+      }
+
+      if (settings.music_url) {
+        document.getElementById('bgm').src = settings.music_url;
+        document.getElementById('bgm').load();
+      }
+    }
+
+    // ============================================
+    // UPDATE RUNNING TEXT
+    // ============================================
+    function updateRunningText(beritaList) {
+      const texts = beritaList.map(b => b.teks);
+      const combined = texts.join(' <i class="fas fa-circle"></i> ');
+      document.getElementById('runningText').innerHTML = 
+        `<i class="fas fa-circle-check"></i> ${combined}`;
+    }
+
+    // ============================================
+    // RENDER PELAYANAN
+    // ============================================
+    function renderPelayanan(data) {
+      const container = document.getElementById('pelayananContainer');
+      
+      const hiddenIds = userSettings.hiddenMenus || [];
+      const visible = data.filter(item => !hiddenIds.includes(item.id));
+      
+      const order = userSettings.menuOrder || [];
+      let sorted = [];
+      if (order.length > 0) {
+        order.forEach(id => {
+          const found = visible.find(item => item.id === id);
+          if (found) sorted.push(found);
+        });
+        visible.forEach(item => {
+          if (!sorted.find(s => s.id === item.id)) {
+            sorted.push(item);
+          }
+        });
+      } else {
+        sorted = visible;
+      }
+
+      if (sorted.length === 0) {
+        container.innerHTML = `
+          <div class="loading" style="padding:20px;">
+            <i class="fas fa-info-circle"></i>
+            Tidak ada layanan yang tersedia
+          </div>
+        `;
+        return;
+      }
+
+      let html = '<div class="pelayanan-grid">';
+      sorted.forEach(item => {
+        const iconHtml = item.gambar 
+          ? `<img src="${item.gambar}" alt="${item.judul}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cube\\'></i>'" />`
+          : `<i class="fas fa-cube"></i>`;
+        
+        html += `
+          <a href="${item.link || '#'}" class="pelayanan-item" target="${item.link ? '_blank' : '_self'}">
+            <div class="icon">${iconHtml}</div>
+            <span class="label">${item.judul}</span>
+          </a>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // ============================================
+    // LOAD LAYANAN DROPDOWN
+    // ============================================
+    function loadLayananDropdown() {
+      const selectJanji = document.getElementById('janjiLayanan');
+      const selectLapor = document.getElementById('laporJenis');
+      
+      if (allPelayanan.length > 0) {
+        let options = '<option value="">Pilih layanan...</option>';
+        allPelayanan.forEach(item => {
+          options += `<option value="${item.judul}">${item.judul}</option>`;
+        });
+        selectJanji.innerHTML = options;
+        selectLapor.innerHTML = options;
+      }
+    }
+
+    // ============================================
+    // PINTU PEMBUKA + MUSIK
+    // ============================================
+    function bukaPintu() {
+      const overlay = document.getElementById('doorOverlay');
+      const btn = document.getElementById('btnBuka');
+      
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuka...';
+      
+      // PLAY MUSIK
+      const audio = document.getElementById('bgm');
+      audio.volume = 0.3;
+      audio.play().then(() => {
+        musicStarted = true;
+        console.log('🎵 Musik diputar!');
+      }).catch((err) => {
+        console.log('⚠️ Musik tidak bisa diputar:', err);
+      });
+      
+      overlay.classList.add('open');
+      
+      setTimeout(() => {
+        overlay.classList.add('hidden');
+        loadAllData();
+      }, 1800);
+    }
+
+    // ============================================
+    // SIDEBAR
+    // ============================================
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('show');
+      overlay.classList.toggle('show');
+    }
+
+    // ============================================
+    // NAVIGASI
+    // ============================================
+    function navigateTo(page) {
+      toggleSidebar();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      
+      document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
+        item.classList.remove('active');
+      });
+      document.querySelector('.bottom-nav .nav-item:first-child').classList.add('active');
+      
+      showToast('Menuju ' + page, true);
+    }
+
+    // ============================================
+    // MODAL
+    // ============================================
+    function openModal(type) {
+      const modalMap = {
+        'janji': 'modalJanji',
+        'lapor': 'modalLapor',
+        'pengaturan': 'modalPengaturan'
+      };
+      const modalId = modalMap[type];
+      if (!modalId) return;
+      
+      document.getElementById(modalId).classList.add('show');
+      document.body.style.overflow = 'hidden';
+      
+      if (type === 'pengaturan') {
+        renderPengaturan();
+      }
+    }
+
+    function closeModal(type) {
+      const modalMap = {
+        'janji': 'modalJanji',
+        'lapor': 'modalLapor',
+        'pengaturan': 'modalPengaturan'
+      };
+      const modalId = modalMap[type];
+      if (!modalId) return;
+      
+      document.getElementById(modalId).classList.remove('show');
+      document.body.style.overflow = '';
+    }
+
+    document.querySelectorAll('.modal-overlay').forEach(el => {
+      el.addEventListener('click', function(e) {
+        if (e.target === this) {
+          this.classList.remove('show');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+
+    // ============================================
+    // SUBMIT JANJI
+    // ============================================
+    async function submitJanji(e) {
+      e.preventDefault();
+      const data = {
+        nama: document.getElementById('janjiNama').value,
+        noHP: document.getElementById('janjiHP').value,
+        layanan: document.getElementById('janjiLayanan').value
+      };
+      
+      if (!data.layanan) {
+        showToast('Pilih layanan terlebih dahulu', false);
+        return;
+      }
+      
+      const result = await apiCall('saveJanji', data);
+      if (result.success) {
+        showToast('✅ Janji berhasil dibuat!');
+        closeModal('janji');
+        document.getElementById('formJanji').reset();
+      } else {
+        showToast('❌ ' + (result.error || 'Gagal membuat janji'), false);
+      }
+    }
+
+    // ============================================
+    // SUBMIT LAPORAN
+    // ============================================
+    async function submitLapor(e) {
+      e.preventDefault();
+      const data = {
+        nama: document.getElementById('laporNama').value,
+        alamat: document.getElementById('laporAlamat').value,
+        noHP: document.getElementById('laporHP').value,
+        jenisLaporan: document.getElementById('laporJenis').value,
+        alasan: document.getElementById('laporAlasan').value
+      };
+      
+      if (!data.jenisLaporan) {
+        showToast('Pilih jenis laporan terlebih dahulu', false);
+        return;
+      }
+      
+      const result = await apiCall('saveLaporan', data);
+      
+      if (result.success) {
+        const waNumber = settingsData.whatsapp_number || '628117595592';
+        const waMessage = `*LAPORAN SICANTIK*\n\n` +
+          `Nama: ${data.nama}\n` +
+          `Alamat: ${data.alamat}\n` +
+          `No HP: ${data.noHP}\n` +
+          `Jenis: ${data.jenisLaporan}\n` +
+          `Alasan: ${data.alasan}\n\n` +
+          `Dikirim dari SICANTIK`;
+        
+        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+        window.open(waUrl, '_blank');
+        
+        showToast('✅ Laporan berhasil dikirim!');
+        closeModal('lapor');
+        document.getElementById('formLapor').reset();
+      } else {
+        showToast('❌ ' + (result.error || 'Gagal mengirim laporan'), false);
+      }
+    }
+
+    // ============================================
+    // PENGATURAN
+    // ============================================
+    let pengaturanState = [];
+
+    function renderPengaturan() {
+      const container = document.getElementById('pengaturanList');
+      
+      if (allPelayanan.length === 0) {
+        container.innerHTML = '<div class="loading">Tidak ada layanan</div>';
+        return;
+      }
+      
+      const hiddenIds = userSettings.hiddenMenus || [];
+      pengaturanState = allPelayanan.map(item => ({
+        ...item,
+        visible: !hiddenIds.includes(item.id)
+      }));
+      
+      let html = '';
+      pengaturanState.forEach(item => {
+        const previewHtml = item.gambar 
+          ? `<img src="${item.gambar}" class="icon-preview" alt="${item.judul}" onerror="this.style.display='none'" />`
+          : `<div class="icon-preview" style="background:var(--primary-light);color:white;display:flex;align-items:center;justify-content:center;font-size:1rem;"><i class="fas fa-cube"></i></div>`;
+        
+        html += `
+          <div class="pengaturan-item" data-id="${item.id}">
+            <div class="left">
+              ${previewHtml}
+              <span class="name">${item.judul}</span>
+            </div>
+            <button class="toggle ${item.visible ? 'active' : ''}" onclick="toggleMenu(${item.id})">
+              <span class="thumb"></span>
+            </button>
+          </div>
+        `;
+      });
+      container.innerHTML = html;
+    }
+
+    function toggleMenu(id) {
+      const state = pengaturanState.find(item => item.id === id);
+      if (state) {
+        state.visible = !state.visible;
+        const container = document.getElementById('pengaturanList');
+        const items = container.querySelectorAll('.pengaturan-item');
+        items.forEach(el => {
+          if (parseInt(el.dataset.id) === id) {
+            const toggle = el.querySelector('.toggle');
+            toggle.classList.toggle('active');
+          }
+        });
+      }
+    }
+
+    async function simpanPengaturan() {
+      const hidden = pengaturanState
+        .filter(item => !item.visible)
+        .map(item => item.id);
+      
+      const order = pengaturanState
+        .filter(item => item.visible)
+        .map(item => item.id);
+      
+      const result = await apiCall('updateUserSetting', {
+        hiddenMenus: hidden,
+        menuOrder: order
+      });
+      
+      if (result.success) {
+        userSettings.hiddenMenus = hidden;
+        userSettings.menuOrder = order;
+        renderPelayanan(allPelayanan);
+        showToast('✅ Pengaturan berhasil disimpan!');
+        closeModal('pengaturan');
+      } else {
+        showToast('❌ ' + (result.error || 'Gagal menyimpan pengaturan'), false);
+      }
+    }
+
+    // ============================================
+    // INISIALISASI
+    // ============================================
+    document.addEventListener('DOMContentLoaded', function() {
+      // Update dari spreadsheet
+      apiCall('settings').then(settings => {
+        if (!settings.error) {
+          settingsData = settings;
+          applySettings(settings);
+        }
+      });
+      
+      setTimeout(() => {
+        loadAllData();
+      }, 500);
+    });
+
+    // ============================================
+    // KEYBOARD SHORTCUT
+    // ============================================
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay.show').forEach(el => {
+          el.classList.remove('show');
+        });
+        document.body.style.overflow = '';
+        if (document.getElementById('sidebar').classList.contains('show')) {
+          toggleSidebar();
+        }
+      }
+    });
+
+    console.log('🚀 SICANTIK v1.0 - SISTEM CERDAS ADMINISTRASI TERINTEGRASI');
+  </script>
+</body>
+</html>
