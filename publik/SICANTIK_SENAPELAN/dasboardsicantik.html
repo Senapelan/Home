@@ -58,7 +58,7 @@
     }
 
     /* ============================================
-       PINTU PEMBUKA (SPLASH SCREEN) - TANPA LOGO
+       PINTU PEMBUKA (SPLASH SCREEN)
     ============================================ */
     #doorOverlay {
       position: fixed;
@@ -149,6 +149,25 @@
       opacity: 0.6;
       cursor: not-allowed;
       transform: none !important;
+    }
+
+    .splash-loading {
+      margin-top: 16px;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .splash-loading i {
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     /* ============================================
@@ -262,73 +281,111 @@
     }
 
     /* ============================================
-       PELAYANAN GRID
+       PELAYANAN SECTION (COLLAPSIBLE)
     ============================================ */
-    .section-title {
-      font-size: 1rem;
-      font-weight: 700;
-      color: var(--text);
+    .layanan-section {
+      background: var(--card-bg);
+      border-radius: var(--radius);
       margin-bottom: 14px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      overflow: hidden;
+      border: 1px solid rgba(0, 0, 0, 0.04);
+    }
+
+    .layanan-section .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .layanan-section .section-header:hover {
+      background: rgba(15, 76, 129, 0.04);
+    }
+
+    .layanan-section .section-header .title {
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--text);
       display: flex;
       align-items: center;
       gap: 10px;
     }
 
-    .section-title i {
+    .layanan-section .section-header .title i {
       color: var(--primary);
     }
 
-    .pelayanan-grid {
+    .layanan-section .section-header .toggle-icon {
+      font-size: 1rem;
+      color: var(--text-light);
+      transition: var(--transition);
+    }
+
+    .layanan-section .section-header .toggle-icon.open {
+      transform: rotate(180deg);
+    }
+
+    .layanan-section .section-body {
+      padding: 0 16px 16px;
+      display: block;
+    }
+
+    .layanan-section .section-body.collapsed {
+      display: none;
+    }
+
+    .layanan-section .pelayanan-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 10px;
-      margin-bottom: 20px;
     }
 
-    .pelayanan-item {
-      background: var(--card-bg);
+    .layanan-section .pelayanan-item {
+      background: var(--bg);
       border-radius: var(--radius-sm);
-      padding: 14px 6px;
+      padding: 12px 4px;
       text-align: center;
       cursor: pointer;
       transition: var(--transition);
-      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-      border: 1px solid rgba(0, 0, 0, 0.04);
       text-decoration: none;
       color: var(--text);
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 6px;
-      min-height: 80px;
+      gap: 4px;
+      min-height: 70px;
       justify-content: center;
+      border: 1px solid rgba(0, 0, 0, 0.04);
     }
 
-    .pelayanan-item:active {
+    .layanan-section .pelayanan-item:active {
       transform: scale(0.94);
     }
 
-    .pelayanan-item .icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+    .layanan-section .pelayanan-item .icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 10px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
-      background: #ffffff;
-      color: var(--primary));
+      font-size: 1rem;
+      background: white;
       flex-shrink: 0;
     }
 
-    .pelayanan-item .icon img {
-      width: 50px;
-      height: 50px;
+    .layanan-section .pelayanan-item .icon img {
+      width: 40px;
+      height: 40px;
       object-fit: contain;
     }
 
-    .pelayanan-item .label {
-      font-size: 0.6rem;
+    .layanan-section .pelayanan-item .label {
+      font-size: 0.55rem;
       font-weight: 600;
       color: var(--text);
       line-height: 1.2;
@@ -338,6 +395,20 @@
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
+    }
+
+    .empty-layanan {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-light);
+      font-size: 0.8rem;
+    }
+
+    .empty-layanan i {
+      display: block;
+      font-size: 1.5rem;
+      margin-bottom: 8px;
+      color: var(--primary-light);
     }
 
     /* ============================================
@@ -393,17 +464,18 @@
       background: none;
       border: none;
       color: var(--text-light);
-      font-size: 0.55rem;
+      font-size: 0.5rem;
       font-weight: 600;
-      padding: 4px 12px;
+      padding: 4px 8px;
       cursor: pointer;
       transition: var(--transition);
       position: relative;
       text-decoration: none;
+      min-width: 44px;
     }
 
     .bottom-nav .nav-item i {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       transition: var(--transition);
     }
 
@@ -413,6 +485,10 @@
 
     .bottom-nav .nav-item.active i {
       transform: translateY(-2px);
+    }
+
+    .bottom-nav .nav-item span {
+      font-size: 0.5rem;
     }
 
     /* ============================================
@@ -495,6 +571,15 @@
       color: var(--primary-light);
     }
 
+    .sidebar .sidebar-footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #e8ecf0;
+      font-size: 0.75rem;
+      color: var(--text-light);
+      text-align: center;
+    }
+
     /* ============================================
        MODAL
     ============================================ */
@@ -543,6 +628,10 @@
       color: var(--text);
     }
 
+    .modal-content .modal-header h2 i {
+      margin-right: 8px;
+    }
+
     .modal-content .modal-header .close-modal {
       background: none;
       border: none;
@@ -562,6 +651,12 @@
       font-weight: 600;
       color: var(--text-light);
       margin-bottom: 4px;
+    }
+
+    .modal-content .form-group label .optional {
+      font-weight: 400;
+      color: #999;
+      font-size: 0.65rem;
     }
 
     .modal-content .form-group input,
@@ -606,6 +701,68 @@
 
     .modal-content .btn-submit:active {
       transform: scale(0.97);
+    }
+
+    .modal-content .btn-submit i {
+      margin-right: 8px;
+    }
+
+    /* ============================================
+       INFO APLIKASI / PENGEMBANG
+    ============================================ */
+    .pengembang-profile {
+      text-align: center;
+      padding: 10px 0;
+    }
+
+    .pengembang-profile .foto {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid var(--primary-light);
+      margin-bottom: 12px;
+      background: #e8ecf0;
+    }
+
+    .pengembang-profile .nama {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .pengembang-profile .jabatan {
+      font-size: 0.85rem;
+      color: var(--primary);
+      font-weight: 600;
+      margin-bottom: 6px;
+    }
+
+    .pengembang-profile .biodata {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      line-height: 1.6;
+      max-width: 320px;
+      margin: 0 auto 14px;
+    }
+
+    .pengembang-profile .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .pengembang-profile .social-links a {
+      color: var(--text-light);
+      font-size: 1.4rem;
+      transition: var(--transition);
+      text-decoration: none;
+    }
+
+    .pengembang-profile .social-links a:hover {
+      color: var(--primary);
+      transform: scale(1.1);
     }
 
     /* ============================================
@@ -657,6 +814,7 @@
       position: relative;
       border: none;
       padding: 0;
+      flex-shrink: 0;
     }
 
     .pengaturan-item .toggle.active {
@@ -680,52 +838,34 @@
     }
 
     /* ============================================
-       RESPONSIVE
+       TOAST
     ============================================ */
-    @media (min-width: 640px) {
-      .pelayanan-grid {
-        grid-template-columns: repeat(5, 1fr);
-        gap: 14px;
-      }
-      
-      .pelayanan-item {
-        padding: 18px 10px;
-        min-height: 100px;
-      }
-      
-      .pelayanan-item .icon {
-        width: 52px;
-        height: 52px;
-        font-size: 1.4rem;
-      }
-      
-      .pelayanan-item .label {
-        font-size: 0.7rem;
-      }
+    .toast {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      z-index: 2000;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      animation: toastAnim 0.3s ease;
+      max-width: 90%;
+      text-align: center;
+      display: none;
     }
 
-    @media (min-width: 1024px) {
-      main {
-        max-width: 800px;
-      }
-      
-      .pelayanan-grid {
-        grid-template-columns: repeat(6, 1fr);
-      }
-      
-      .bottom-nav {
-        display: none;
-      }
-      
-      .sidebar {
-        right: 0;
-        width: 280px;
-        transform: translateX(100%);
-      }
-      
-      .sidebar.show {
-        transform: translateX(0);
-      }
+    .toast.show {
+      display: block;
+    }
+
+    @keyframes toastAnim {
+      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+      to { opacity: 1; transform: translateX(-50%) translateY(0); }
     }
 
     /* ============================================
@@ -748,53 +888,85 @@
       display: none !important;
     }
 
-    .toast {
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (min-width: 640px) {
+      .layanan-section .pelayanan-grid {
+        grid-template-columns: repeat(5, 1fr);
+        gap: 14px;
+      }
+      
+      .layanan-section .pelayanan-item {
+        padding: 16px 8px;
+        min-height: 90px;
+      }
+      
+      .layanan-section .pelayanan-item .icon {
+        width: 48px;
+        height: 48px;
+        font-size: 1.2rem;
+      }
+      
+      .layanan-section .pelayanan-item .icon img {
+        width: 48px;
+        height: 48px;
+      }
+      
+      .layanan-section .pelayanan-item .label {
+        font-size: 0.65rem;
+      }
+      
+      .bottom-nav .nav-item span {
+        font-size: 0.6rem;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      main {
+        max-width: 800px;
+      }
+      
+      .layanan-section .pelayanan-grid {
+        grid-template-columns: repeat(6, 1fr);
+      }
+      
+      .bottom-nav {
+        display: none;
+      }
+    }
+
+    /* ============================================
+       DOUBLE CONFIRM BACK
+    ============================================ */
+    .back-confirm {
       position: fixed;
-      bottom: 90px;
+      bottom: 100px;
       left: 50%;
       transform: translateX(-50%);
       background: var(--text);
       color: white;
-      padding: 12px 20px;
+      padding: 10px 24px;
       border-radius: var(--radius-sm);
       font-weight: 600;
       font-size: 0.85rem;
-      z-index: 2000;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+      z-index: 3000;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
       animation: toastAnim 0.3s ease;
-      max-width: 90%;
+      display: none;
       text-align: center;
+      white-space: nowrap;
     }
 
-    @keyframes toastAnim {
-      from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-      to { opacity: 1; transform: translateX(-50%) translateY(0); }
-    }
-
-    .splash-loading {
-      margin-top: 16px;
-      color: rgba(255, 255, 255, 0.6);
-      font-size: 0.8rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .splash-loading i {
-      animation: spin 1s linear infinite;
-    }
-
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
+    .back-confirm.show {
+      display: block;
     }
   </style>
 </head>
 <body>
 
   <!-- ============================================
-  PINTU PEMBUKA - TANPA LOGO & JUDUL
+  PINTU PEMBUKA
   ============================================ -->
   <div id="doorOverlay">
     <div class="door top">
@@ -814,6 +986,13 @@
   </div>
 
   <!-- ============================================
+  BACK CONFIRM
+  ============================================ -->
+  <div class="back-confirm" id="backConfirm">
+    <i class="fas fa-arrow-left"></i> Tekan sekali lagi untuk keluar
+  </div>
+
+  <!-- ============================================
   HEADER
   ============================================ -->
   <header>
@@ -821,7 +1000,7 @@
       <img id="headerLogo" src="https://senapelan.github.io/Home/publik/SICANTIK_SENAPELAN/assets/metatag/logosicantik.png" alt="Logo" />
       <div>
         <div class="title" id="siteTitle">SICANTIK</div>
-        <div class="subtitle">Sistem Cerdas Administrasi Terintegrasi Kecamatan </div>
+        <div class="subtitle">Sistem Cerdas Administrasi Terintegrasi Kecamatan</div>
       </div>
     </div>
     <div class="header-right">
@@ -845,10 +1024,7 @@
   MAIN CONTENT
   ============================================ -->
   <main>
-    <div class="section-title">
-      <i class="fas fa-th-large"></i> LAYANAN
-    </div>
-    <div id="pelayananContainer">
+    <div id="layananContainer">
       <div class="loading">
         <i class="fas fa-spinner fa-spin"></i>
         Memuat layanan...
@@ -876,6 +1052,10 @@
       <i class="fas fa-sliders-h"></i>
       <span>Pengaturan</span>
     </button>
+    <button class="nav-item" onclick="openModal('info')">
+      <i class="fas fa-info-circle"></i>
+      <span>Info</span>
+    </button>
   </nav>
 
   <!-- ============================================
@@ -890,8 +1070,9 @@
       <li onclick="openModal('janji')"><i class="fas fa-calendar-plus"></i> Buat Janji</li>
       <li onclick="openModal('pengaturan')"><i class="fas fa-sliders-h"></i> Pengaturan</li>
       <li onclick="openModal('lapor')"><i class="fas fa-exclamation-triangle" style="color:#dc3545;"></i> Lapor!</li>
+      <li onclick="openModal('info')"><i class="fas fa-info-circle" style="color:var(--primary-light);"></i> Info Aplikasi</li>
     </ul>
-    <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid #e8ecf0; font-size: 0.75rem; color: var(--text-light); text-align: center;">
+    <div class="sidebar-footer">
       <span id="footerText">© 2026 SICANTIK - Kecamatan Senapelan</span>
     </div>
   </div>
@@ -911,14 +1092,30 @@
           <input type="text" id="janjiNama" required placeholder="Masukkan nama Anda" />
         </div>
         <div class="form-group">
-          <label>Nomor HP</label>
+          <label>Jabatan</label>
+          <input type="text" id="janjiJabatan" required placeholder="Contoh: Ketua RT, Tokoh Masyarakat" />
+        </div>
+        <div class="form-group">
+          <label>No HP</label>
           <input type="tel" id="janjiHP" required placeholder="08xxxxxxxxxx" />
         </div>
         <div class="form-group">
-          <label>Layanan</label>
+          <label>Email <span class="optional">(Opsional)</span></label>
+          <input type="email" id="janjiEmail" placeholder="email@domain.com" />
+        </div>
+        <div class="form-group">
+          <label>Pilih Layanan</label>
           <select id="janjiLayanan" required>
             <option value="">Pilih layanan...</option>
           </select>
+        </div>
+        <div class="form-group">
+          <label>Buat Janji Dengan</label>
+          <input type="text" id="janjiBertemu" required placeholder="Contoh: Camat, Sekretaris, Kasi lainnya" />
+        </div>
+        <div class="form-group">
+          <label>Alasan</label>
+          <textarea id="janjiAlasan" required placeholder="Jelaskan alasan Anda membuat janji..." rows="3"></textarea>
         </div>
         <button type="submit" class="btn-submit">
           <i class="fas fa-paper-plane"></i> Kirim Janji
@@ -957,7 +1154,7 @@
         </div>
         <div class="form-group">
           <label>Alasan Melapor</label>
-          <textarea id="laporAlasan" required placeholder="Jelaskan alasan Anda..."></textarea>
+          <textarea id="laporAlasan" required placeholder="Jelaskan alasan Anda..." rows="3"></textarea>
         </div>
         <button type="submit" class="btn-submit" style="background:linear-gradient(135deg,#dc3545,#c0392b);">
           <i class="fas fa-paper-plane"></i> Kirim Laporan
@@ -988,6 +1185,21 @@
   </div>
 
   <!-- ============================================
+  MODAL INFO APLIKASI
+  ============================================ -->
+  <div class="modal-overlay" id="modalInfo">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2><i class="fas fa-info-circle" style="color:var(--primary);"></i> Info Aplikasi</h2>
+        <button class="close-modal" onclick="closeModal('info')">✕</button>
+      </div>
+      <div id="pengembangContainer">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat data pengembang...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
   AUDIO
   ============================================ -->
   <audio id="bgm" loop preload="auto">
@@ -997,7 +1209,7 @@
   <!-- ============================================
   TOAST
   ============================================ -->
-  <div id="toast" class="toast hidden"></div>
+  <div id="toast" class="toast"></div>
 
   <!-- ============================================
   JAVASCRIPT
@@ -1006,13 +1218,44 @@
     // ============================================
     // KONFIGURASI
     // ============================================
-    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkjHjGpgRNQU-aiK8ITRU4fToAZ-MLeYMH9JA3R33dlpuJ7-fM9QRIGi9Y3UOqL_v2/exec';
+    const APP_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzhOZWgQOhXHfq1bfAzU7zX-piLMvBbcNA1L9ee4FiZgO2c7hv-dvWkuaarmzwZkg_7/exec';
 
     let allPelayanan = [];
+    let allLayananEdit = [];
+    let allJenisLaporan = [];
+    let pengembangData = {};
     let userSettings = { hiddenMenus: [], menuOrder: [] };
     let settingsData = {};
     let dataLoaded = false;
     let musicStarted = false;
+    let backPressed = false;
+
+    // ============================================
+    // DOUBLE CONFIRM BACK BUTTON
+    // ============================================
+    window.addEventListener('popstate', function(e) {
+      if (!backPressed) {
+        backPressed = true;
+        const confirmEl = document.getElementById('backConfirm');
+        confirmEl.classList.add('show');
+        setTimeout(() => {
+          confirmEl.classList.remove('show');
+          backPressed = false;
+        }, 3000);
+        // Push state again to prevent immediate exit
+        history.pushState(null, '', location.href);
+        e.preventDefault();
+      } else {
+        // Allow exit
+        backPressed = false;
+        document.getElementById('backConfirm').classList.remove('show');
+        // Actually exit
+        history.back();
+      }
+    });
+
+    // Push initial state
+    history.pushState(null, '', location.href);
 
     // ============================================
     // TOAST
@@ -1021,12 +1264,10 @@
       const toast = document.getElementById('toast');
       toast.textContent = message;
       toast.style.background = isSuccess ? '#1a7a3a' : '#dc3545';
-      toast.classList.remove('hidden');
-      toast.style.display = 'block';
+      toast.classList.add('show');
       clearTimeout(toast._hide);
       toast._hide = setTimeout(() => {
-        toast.classList.add('hidden');
-        setTimeout(() => { toast.style.display = 'none'; }, 300);
+        toast.classList.remove('show');
       }, 3000);
     }
 
@@ -1048,7 +1289,7 @@
     }
 
     // ============================================
-    // LOAD DATA
+    // LOAD ALL DATA
     // ============================================
     async function loadAllData() {
       try {
@@ -1069,7 +1310,27 @@
         const pelayanan = await apiCall('pelayanan');
         if (!pelayanan.error) {
           allPelayanan = pelayanan;
-          renderPelayanan(pelayanan);
+          renderPelayananKategori(pelayanan);
+        }
+
+        // Load layanan edit (untuk dropdown janji)
+        const layananEdit = await apiCall('layananEdit');
+        if (!layananEdit.error) {
+          allLayananEdit = layananEdit;
+          loadLayananDropdown(layananEdit);
+        }
+
+        // Load jenis laporan
+        const jenisLaporan = await apiCall('jenisLaporan');
+        if (!jenisLaporan.error) {
+          allJenisLaporan = jenisLaporan;
+          loadJenisLaporanDropdown(jenisLaporan);
+        }
+
+        // Load pengembang
+        const pengembang = await apiCall('pengembang');
+        if (!pengembang.error) {
+          pengembangData = pengembang;
         }
 
         // Load user settings
@@ -1078,9 +1339,6 @@
           userSettings = userSetting;
         }
 
-        // Load pilihan layanan untuk dropdown
-        loadLayananDropdown();
-        
         dataLoaded = true;
         document.getElementById('splashLoading').style.display = 'none';
 
@@ -1092,7 +1350,7 @@
     }
 
     // ============================================
-    // APPLY SETTINGS (update dari spreadsheet)
+    // APPLY SETTINGS
     // ============================================
     function applySettings(settings) {
       if (settings.header_logo) {
@@ -1138,73 +1396,210 @@
     }
 
     // ============================================
-    // RENDER PELAYANAN
+    // RENDER PELAYANAN PER KATEGORI
     // ============================================
-    function renderPelayanan(data) {
-      const container = document.getElementById('pelayananContainer');
+    function renderPelayananKategori(data) {
+      const container = document.getElementById('layananContainer');
       
-      const hiddenIds = userSettings.hiddenMenus || [];
-      const visible = data.filter(item => !hiddenIds.includes(item.id));
-      
-      const order = userSettings.menuOrder || [];
-      let sorted = [];
-      if (order.length > 0) {
-        order.forEach(id => {
-          const found = visible.find(item => item.id === id);
-          if (found) sorted.push(found);
-        });
-        visible.forEach(item => {
-          if (!sorted.find(s => s.id === item.id)) {
-            sorted.push(item);
-          }
-        });
-      } else {
-        sorted = visible;
-      }
+      // Kelompokkan berdasarkan kategori
+      const kategoriMap = {
+        'KECAMATAN': { label: 'Layanan Kecamatan', icon: 'fa-landmark', items: [] },
+        'PEMKO': { label: 'Layanan Pemko Pekanbaru', icon: 'fa-city', items: [] },
+        'EXTERNAL': { label: 'Layanan External Lainnya', icon: 'fa-globe', items: [] }
+      };
 
-      if (sorted.length === 0) {
-        container.innerHTML = `
-          <div class="loading" style="padding:20px;">
-            <i class="fas fa-info-circle"></i>
-            Tidak ada layanan yang tersedia
+      data.forEach(item => {
+        const kat = item.kategori || 'KECAMATAN';
+        if (kategoriMap[kat]) {
+          kategoriMap[kat].items.push(item);
+        } else {
+          // Default ke KECAMATAN
+          kategoriMap['KECAMATAN'].items.push(item);
+        }
+      });
+
+      const hiddenIds = userSettings.hiddenMenus || [];
+      let html = '';
+
+      Object.keys(kategoriMap).forEach(key => {
+        const section = kategoriMap[key];
+        const visibleItems = section.items.filter(item => !hiddenIds.includes(item.id));
+        
+        if (visibleItems.length === 0) {
+          // Tampilkan empty state
+          html += `
+            <div class="layanan-section">
+              <div class="section-header" onclick="toggleSection(this)">
+                <span class="title"><i class="fas ${section.icon}"></i> ${section.label}</span>
+                <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
+              </div>
+              <div class="section-body">
+                <div class="empty-layanan">
+                  <i class="fas fa-info-circle"></i>
+                  Tidak ada layanan tersedia
+                </div>
+              </div>
+            </div>
+          `;
+          return;
+        }
+
+        let gridHtml = '<div class="pelayanan-grid">';
+        visibleItems.forEach(item => {
+          const iconHtml = item.gambar 
+            ? `<img src="${item.gambar}" alt="${item.judul}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cube\\'></i>'" />`
+            : `<i class="fas fa-cube"></i>`;
+          
+          gridHtml += `
+            <a href="${item.link || '#'}" class="pelayanan-item" target="${item.link ? '_blank' : '_self'}">
+              <div class="icon">${iconHtml}</div>
+              <span class="label">${item.judul}</span>
+            </a>
+          `;
+        });
+        gridHtml += '</div>';
+
+        html += `
+          <div class="layanan-section">
+            <div class="section-header" onclick="toggleSection(this)">
+              <span class="title"><i class="fas ${section.icon}"></i> ${section.label}</span>
+              <span class="toggle-icon"><i class="fas fa-chevron-down"></i></span>
+            </div>
+            <div class="section-body">
+              ${gridHtml}
+            </div>
           </div>
         `;
-        return;
-      }
-
-      let html = '<div class="pelayanan-grid">';
-      sorted.forEach(item => {
-        const iconHtml = item.gambar 
-          ? `<img src="${item.gambar}" alt="${item.judul}" loading="lazy" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-cube\\'></i>'" />`
-          : `<i class="fas fa-cube"></i>`;
-        
-        html += `
-          <a href="${item.link || '#'}" class="pelayanan-item" target="${item.link ? '_blank' : '_self'}">
-            <div class="icon">${iconHtml}</div>
-            <span class="label">${item.judul}</span>
-          </a>
-        `;
       });
-      html += '</div>';
+
       container.innerHTML = html;
+
+      // Buka semua section default
+      document.querySelectorAll('.section-body').forEach(el => {
+        el.classList.remove('collapsed');
+      });
     }
 
     // ============================================
-    // LOAD LAYANAN DROPDOWN
+    // TOGGLE SECTION (COLLAPSE/EXPAND)
     // ============================================
-    function loadLayananDropdown() {
-      const selectJanji = document.getElementById('janjiLayanan');
-      const selectLapor = document.getElementById('laporJenis');
-      
-      if (allPelayanan.length > 0) {
-        let options = '<option value="">Pilih layanan...</option>';
-        allPelayanan.forEach(item => {
-          options += `<option value="${item.judul}">${item.judul}</option>`;
-        });
-        selectJanji.innerHTML = options;
-        selectLapor.innerHTML = options;
+    function toggleSection(header) {
+      const body = header.nextElementSibling;
+      const icon = header.querySelector('.toggle-icon');
+      if (body) {
+        body.classList.toggle('collapsed');
+        if (icon) {
+          icon.classList.toggle('open');
+        }
       }
     }
+
+    // ============================================
+    // LOAD LAYANAN DROPDOWN (untuk janji)
+    // ============================================
+    function loadLayananDropdown(data) {
+      const select = document.getElementById('janjiLayanan');
+      if (data && data.length > 0) {
+        let options = '<option value="">Pilih layanan...</option>';
+        data.forEach(item => {
+          options += `<option value="${item.nama}">${item.nama}</option>`;
+        });
+        select.innerHTML = options;
+      } else {
+        select.innerHTML = '<option value="">Tidak ada layanan</option>';
+      }
+    }
+
+    // ============================================
+    // LOAD JENIS LAPORAN DROPDOWN
+    // ============================================
+    function loadJenisLaporanDropdown(data) {
+      const select = document.getElementById('laporJenis');
+      if (data && data.length > 0) {
+        let options = '<option value="">Pilih jenis laporan...</option>';
+        data.forEach(item => {
+          options += `<option value="${item.nama}">${item.nama}</option>`;
+        });
+        select.innerHTML = options;
+      } else {
+        select.innerHTML = '<option value="">Tidak ada jenis laporan</option>';
+      }
+    }
+
+    // ============================================
+    // RENDER PENGEMBANG / INFO APLIKASI
+    // ============================================
+    function renderPengembang(data) {
+  const container = document.getElementById('pengembangContainer');
+  
+  console.log('📱 Data Pengembang:', data); // Debug
+  
+  if (!data || Object.keys(data).length === 0) {
+    container.innerHTML = `
+      <div class="loading">
+        <i class="fas fa-info-circle"></i>
+        Mohon Tunggu....<br>
+        <span style="font-size:0.7rem;color:#999;">Data Pengembang segera dimuat, Coba Buka Lagi.</span>
+      </div>
+    `;
+    return;
+  }
+
+  // Ambil data dengan fallback
+  const foto = data.foto || '';
+  const nama = data.nama || 'Pengembang Aplikasi';
+  const jabatan = data.jabatan || 'Developer';
+  const biodata = data.biodata || '';
+
+  // Social links - cek dengan berbagai kemungkinan key
+  const socials = [
+    { key: 'facebook', icon: 'fa-facebook', color: '#1877f2', label: 'Facebook' },
+    { key: 'instagram', icon: 'fa-instagram', color: '#e4405f', label: 'Instagram' },
+    { key: 'github', icon: 'fa-github', color: '#333', label: 'GitHub' },
+    { key: 'website', icon: 'fa-globe', color: 'var(--primary)', label: 'Website' },
+    { key: 'email', icon: 'fa-envelope', color: '#ea4335', label: 'Email' }
+  ];
+
+  let socialHtml = '';
+  let hasSocial = false;
+  
+  socials.forEach(s => {
+    // Cek apakah key ada di data
+    if (data[s.key] && data[s.key].trim() !== '') {
+      let href = data[s.key].trim();
+      // Tambahkan protocol jika belum ada
+      if (s.key === 'email' && !href.startsWith('mailto:')) {
+        href = 'mailto:' + href;
+      } else if (s.key !== 'email' && !href.startsWith('http://') && !href.startsWith('https://')) {
+        href = 'https://' + href;
+      }
+      socialHtml += `
+        <a href="${href}" target="_blank" title="${s.label}" style="color:${s.color};">
+          <i class="fab ${s.icon}"></i>
+        </a>
+      `;
+      hasSocial = true;
+    }
+  });
+
+  // Jika foto tidak ada atau error, pakai avatar
+  const fotoHtml = foto ? 
+    `<img src="${foto}" alt="${nama}" class="foto" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&size=120'" />` :
+    `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&size=120" alt="${nama}" class="foto" />`;
+
+  container.innerHTML = `
+    <div class="pengembang-profile">
+      ${fotoHtml}
+      <div class="nama">${nama}</div>
+      <div class="jabatan">${jabatan}</div>
+      ${biodata ? `<div class="biodata">${biodata}</div>` : ''}
+      ${hasSocial ? `<div class="social-links">${socialHtml}</div>` : ''}
+      <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e8ecf0;font-size:0.7rem;color:var(--text-light);">
+        <i class="fas fa-heart"></i> SICANTIK v1.0
+      </div>
+    </div>
+  `;
+}
 
     // ============================================
     // PINTU PEMBUKA + MUSIK
@@ -1248,7 +1643,9 @@
     // NAVIGASI
     // ============================================
     function navigateTo(page) {
-      toggleSidebar();
+      if (document.getElementById('sidebar').classList.contains('show')) {
+        toggleSidebar();
+      }
       window.scrollTo({ top: 0, behavior: 'smooth' });
       
       document.querySelectorAll('.bottom-nav .nav-item').forEach(item => {
@@ -1266,7 +1663,8 @@
       const modalMap = {
         'janji': 'modalJanji',
         'lapor': 'modalLapor',
-        'pengaturan': 'modalPengaturan'
+        'pengaturan': 'modalPengaturan',
+        'info': 'modalInfo'
       };
       const modalId = modalMap[type];
       if (!modalId) return;
@@ -1277,13 +1675,18 @@
       if (type === 'pengaturan') {
         renderPengaturan();
       }
+      
+      if (type === 'info') {
+        renderPengembang(pengembangData);
+      }
     }
 
     function closeModal(type) {
       const modalMap = {
         'janji': 'modalJanji',
         'lapor': 'modalLapor',
-        'pengaturan': 'modalPengaturan'
+        'pengaturan': 'modalPengaturan',
+        'info': 'modalInfo'
       };
       const modalId = modalMap[type];
       if (!modalId) return;
@@ -1306,10 +1709,15 @@
     // ============================================
     async function submitJanji(e) {
       e.preventDefault();
+      
       const data = {
-        nama: document.getElementById('janjiNama').value,
-        noHP: document.getElementById('janjiHP').value,
-        layanan: document.getElementById('janjiLayanan').value
+        nama: document.getElementById('janjiNama').value.trim(),
+        jabatan: document.getElementById('janjiJabatan').value.trim(),
+        noHP: document.getElementById('janjiHP').value.trim(),
+        email: document.getElementById('janjiEmail').value.trim(),
+        layanan: document.getElementById('janjiLayanan').value,
+        bertemuDengan: document.getElementById('janjiBertemu').value.trim(),
+        alasan: document.getElementById('janjiAlasan').value.trim()
       };
       
       if (!data.layanan) {
@@ -1318,10 +1726,16 @@
       }
       
       const result = await apiCall('saveJanji', data);
+      
       if (result.success) {
         showToast('✅ Janji berhasil dibuat!');
         closeModal('janji');
         document.getElementById('formJanji').reset();
+        
+        // Buka WA jika ada URL
+        if (result.waUrl) {
+          window.open(result.waUrl, '_blank');
+        }
       } else {
         showToast('❌ ' + (result.error || 'Gagal membuat janji'), false);
       }
@@ -1332,12 +1746,13 @@
     // ============================================
     async function submitLapor(e) {
       e.preventDefault();
+      
       const data = {
-        nama: document.getElementById('laporNama').value,
-        alamat: document.getElementById('laporAlamat').value,
-        noHP: document.getElementById('laporHP').value,
+        nama: document.getElementById('laporNama').value.trim(),
+        alamat: document.getElementById('laporAlamat').value.trim(),
+        noHP: document.getElementById('laporHP').value.trim(),
         jenisLaporan: document.getElementById('laporJenis').value,
-        alasan: document.getElementById('laporAlasan').value
+        alasan: document.getElementById('laporAlasan').value.trim()
       };
       
       if (!data.jenisLaporan) {
@@ -1440,7 +1855,7 @@
       if (result.success) {
         userSettings.hiddenMenus = hidden;
         userSettings.menuOrder = order;
-        renderPelayanan(allPelayanan);
+        renderPelayananKategori(allPelayanan);
         showToast('✅ Pengaturan berhasil disimpan!');
         closeModal('pengaturan');
       } else {
@@ -1480,7 +1895,8 @@
       }
     });
 
-    console.log('🚀 SICANTIK v1.0 - SISTEM CERDAS ADMINISTRASI TERINTEGRASI');
+    console.log('🚀 SICANTIK v2.0 - SISTEM CERDAS ADMINISTRASI TERINTEGRASI');
+    console.log('📱 Fitur: Layanan Kategori, Buat Janji + WA, Lapor, Info Pengembang');
   </script>
 </body>
 </html>
