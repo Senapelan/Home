@@ -222,19 +222,38 @@
     .header-right {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       flex-shrink: 0;
     }
 
     .header-right .menu-toggle {
       background: none;
       border: none;
-      font-size: 1.4rem;
+      font-size: 1.2rem;
       color: var(--primary);
-      padding: 6px;
+      padding: 6px 8px;
       cursor: pointer;
       border-radius: 10px;
       transition: var(--transition);
+    }
+
+    .header-right .menu-toggle:hover {
+      background: rgba(15, 76, 129, 0.06);
+    }
+
+    .header-right .menu-toggle .fa-volume-mute {
+      color: #999;
+    }
+
+    /* Pulse animation untuk tombol audio */
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.15); background: rgba(15, 76, 129, 0.15); }
+      100% { transform: scale(1); }
+    }
+
+    #btnAudio.pulse {
+      animation: pulse 0.8s ease-in-out 3;
     }
 
     /* ============================================
@@ -1004,6 +1023,9 @@
       </div>
     </div>
     <div class="header-right">
+      <button class="menu-toggle" onclick="toggleAudio()" id="btnAudio" title="Mute/Unmute">
+        <i class="fas fa-volume-up"></i>
+      </button>
       <button class="menu-toggle" onclick="toggleSidebar()">
         <i class="fas fa-bars"></i>
       </button>
@@ -1231,6 +1253,14 @@
     let backPressed = false;
 
     // ============================================
+    // KONFIGURASI AUDIO YANG LEBIH KUAT
+    // ============================================
+    let audioPlaying = false;
+    let audioElement = null;
+    let audioRetryCount = 0;
+    const MAX_AUDIO_RETRY = 10;
+
+    // ============================================
     // DOUBLE CONFIRM BACK BUTTON
     // ============================================
     window.addEventListener('popstate', function(e) {
@@ -1242,19 +1272,15 @@
           confirmEl.classList.remove('show');
           backPressed = false;
         }, 3000);
-        // Push state again to prevent immediate exit
         history.pushState(null, '', location.href);
         e.preventDefault();
       } else {
-        // Allow exit
         backPressed = false;
         document.getElementById('backConfirm').classList.remove('show');
-        // Actually exit
         history.back();
       }
     });
 
-    // Push initial state
     history.pushState(null, '', location.href);
 
     // ============================================
@@ -1293,47 +1319,40 @@
     // ============================================
     async function loadAllData() {
       try {
-        // Load settings
         const settings = await apiCall('settings');
         if (!settings.error) {
           settingsData = settings;
           applySettings(settings);
         }
 
-        // Load berita
         const berita = await apiCall('berita');
         if (!berita.error && berita.length > 0) {
           updateRunningText(berita);
         }
 
-        // Load pelayanan
         const pelayanan = await apiCall('pelayanan');
         if (!pelayanan.error) {
           allPelayanan = pelayanan;
           renderPelayananKategori(pelayanan);
         }
 
-        // Load layanan edit (untuk dropdown janji)
         const layananEdit = await apiCall('layananEdit');
         if (!layananEdit.error) {
           allLayananEdit = layananEdit;
           loadLayananDropdown(layananEdit);
         }
 
-        // Load jenis laporan
         const jenisLaporan = await apiCall('jenisLaporan');
         if (!jenisLaporan.error) {
           allJenisLaporan = jenisLaporan;
           loadJenisLaporanDropdown(jenisLaporan);
         }
 
-        // Load pengembang
         const pengembang = await apiCall('pengembang');
         if (!pengembang.error) {
           pengembangData = pengembang;
         }
 
-        // Load user settings
         const userSetting = await apiCall('getUserSetting');
         if (!userSetting.error) {
           userSettings = userSetting;
@@ -1341,6 +1360,15 @@
 
         dataLoaded = true;
         document.getElementById('splashLoading').style.display = 'none';
+
+        // === PASTIKAN AUDIO TETAP BERJALAN ===
+        if (audioPlaying && audioElement) {
+          if (audioElement.paused) {
+            console.log('🔄 Audio pause saat load, mencoba play ulang...');
+            audioRetryCount = 0;
+            playAudioWithRetry();
+          }
+        }
 
       } catch (error) {
         console.error('Load data error:', error);
@@ -1401,7 +1429,6 @@
     function renderPelayananKategori(data) {
       const container = document.getElementById('layananContainer');
       
-      // Kelompokkan berdasarkan kategori
       const kategoriMap = {
         'KECAMATAN': { label: 'Layanan Kecamatan', icon: 'fa-landmark', items: [] },
         'PEMKO': { label: 'Layanan Pemko Pekanbaru', icon: 'fa-city', items: [] },
@@ -1413,7 +1440,6 @@
         if (kategoriMap[kat]) {
           kategoriMap[kat].items.push(item);
         } else {
-          // Default ke KECAMATAN
           kategoriMap['KECAMATAN'].items.push(item);
         }
       });
@@ -1426,7 +1452,6 @@
         const visibleItems = section.items.filter(item => !hiddenIds.includes(item.id));
         
         if (visibleItems.length === 0) {
-          // Tampilkan empty state
           html += `
             <div class="layanan-section">
               <div class="section-header" onclick="toggleSection(this)">
@@ -1474,14 +1499,13 @@
 
       container.innerHTML = html;
 
-      // Buka semua section default
       document.querySelectorAll('.section-body').forEach(el => {
         el.classList.remove('collapsed');
       });
     }
 
     // ============================================
-    // TOGGLE SECTION (COLLAPSE/EXPAND)
+    // TOGGLE SECTION
     // ============================================
     function toggleSection(header) {
       const body = header.nextElementSibling;
@@ -1495,7 +1519,7 @@
     }
 
     // ============================================
-    // LOAD LAYANAN DROPDOWN (untuk janji)
+    // LOAD LAYANAN DROPDOWN
     // ============================================
     function loadLayananDropdown(data) {
       const select = document.getElementById('janjiLayanan');
@@ -1527,82 +1551,77 @@
     }
 
     // ============================================
-    // RENDER PENGEMBANG / INFO APLIKASI
+    // RENDER PENGEMBANG
     // ============================================
     function renderPengembang(data) {
-  const container = document.getElementById('pengembangContainer');
-  
-  console.log('📱 Data Pengembang:', data); // Debug
-  
-  if (!data || Object.keys(data).length === 0) {
-    container.innerHTML = `
-      <div class="loading">
-        <i class="fas fa-info-circle"></i>
-        Mohon Tunggu....<br>
-        <span style="font-size:0.7rem;color:#999;">Data Pengembang segera dimuat, Coba Buka Lagi.</span>
-      </div>
-    `;
-    return;
-  }
-
-  // Ambil data dengan fallback
-  const foto = data.foto || '';
-  const nama = data.nama || 'Pengembang Aplikasi';
-  const jabatan = data.jabatan || 'Developer';
-  const biodata = data.biodata || '';
-
-  // Social links - cek dengan berbagai kemungkinan key
-  const socials = [
-    { key: 'facebook', icon: 'fa-facebook', color: '#1877f2', label: 'Facebook' },
-    { key: 'instagram', icon: 'fa-instagram', color: '#e4405f', label: 'Instagram' },
-    { key: 'github', icon: 'fa-github', color: '#333', label: 'GitHub' },
-    { key: 'website', icon: 'fa-globe', color: 'var(--primary)', label: 'Website' },
-    { key: 'email', icon: 'fa-envelope', color: '#ea4335', label: 'Email' }
-  ];
-
-  let socialHtml = '';
-  let hasSocial = false;
-  
-  socials.forEach(s => {
-    // Cek apakah key ada di data
-    if (data[s.key] && data[s.key].trim() !== '') {
-      let href = data[s.key].trim();
-      // Tambahkan protocol jika belum ada
-      if (s.key === 'email' && !href.startsWith('mailto:')) {
-        href = 'mailto:' + href;
-      } else if (s.key !== 'email' && !href.startsWith('http://') && !href.startsWith('https://')) {
-        href = 'https://' + href;
+      const container = document.getElementById('pengembangContainer');
+      
+      console.log('📱 Data Pengembang:', data);
+      
+      if (!data || Object.keys(data).length === 0) {
+        container.innerHTML = `
+          <div class="loading">
+            <i class="fas fa-info-circle"></i>
+            Mohon Tunggu....<br>
+            <span style="font-size:0.7rem;color:#999;">Data Pengembang segera dimuat, Coba Buka Lagi.</span>
+          </div>
+        `;
+        return;
       }
-      socialHtml += `
-        <a href="${href}" target="_blank" title="${s.label}" style="color:${s.color};">
-          <i class="fab ${s.icon}"></i>
-        </a>
+
+      const foto = data.foto || '';
+      const nama = data.nama || 'Pengembang Aplikasi';
+      const jabatan = data.jabatan || 'Developer';
+      const biodata = data.biodata || '';
+
+      const socials = [
+        { key: 'facebook', icon: 'fa-facebook', color: '#1877f2', label: 'Facebook' },
+        { key: 'instagram', icon: 'fa-instagram', color: '#e4405f', label: 'Instagram' },
+        { key: 'github', icon: 'fa-github', color: '#333', label: 'GitHub' },
+        { key: 'website', icon: 'fa-globe', color: 'var(--primary)', label: 'Website' },
+        { key: 'email', icon: 'fa-envelope', color: '#ea4335', label: 'Email' }
+      ];
+
+      let socialHtml = '';
+      let hasSocial = false;
+      
+      socials.forEach(s => {
+        if (data[s.key] && data[s.key].trim() !== '') {
+          let href = data[s.key].trim();
+          if (s.key === 'email' && !href.startsWith('mailto:')) {
+            href = 'mailto:' + href;
+          } else if (s.key !== 'email' && !href.startsWith('http://') && !href.startsWith('https://')) {
+            href = 'https://' + href;
+          }
+          socialHtml += `
+            <a href="${href}" target="_blank" title="${s.label}" style="color:${s.color};">
+              <i class="fab ${s.icon}"></i>
+            </a>
+          `;
+          hasSocial = true;
+        }
+      });
+
+      const fotoHtml = foto ? 
+        `<img src="${foto}" alt="${nama}" class="foto" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&size=120'" />` :
+        `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&size=120" alt="${nama}" class="foto" />`;
+
+      container.innerHTML = `
+        <div class="pengembang-profile">
+          ${fotoHtml}
+          <div class="nama">${nama}</div>
+          <div class="jabatan">${jabatan}</div>
+          ${biodata ? `<div class="biodata">${biodata}</div>` : ''}
+          ${hasSocial ? `<div class="social-links">${socialHtml}</div>` : ''}
+          <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e8ecf0;font-size:0.7rem;color:var(--text-light);">
+            <i class="fas fa-heart"></i> SICANTIK v2.0
+          </div>
+        </div>
       `;
-      hasSocial = true;
     }
-  });
-
-  // Jika foto tidak ada atau error, pakai avatar
-  const fotoHtml = foto ? 
-    `<img src="${foto}" alt="${nama}" class="foto" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&size=120'" />` :
-    `<img src="https://ui-avatars.com/api/?name=${encodeURIComponent(nama)}&size=120" alt="${nama}" class="foto" />`;
-
-  container.innerHTML = `
-    <div class="pengembang-profile">
-      ${fotoHtml}
-      <div class="nama">${nama}</div>
-      <div class="jabatan">${jabatan}</div>
-      ${biodata ? `<div class="biodata">${biodata}</div>` : ''}
-      ${hasSocial ? `<div class="social-links">${socialHtml}</div>` : ''}
-      <div style="margin-top:16px;padding-top:12px;border-top:1px solid #e8ecf0;font-size:0.7rem;color:var(--text-light);">
-        <i class="fas fa-heart"></i> SICANTIK v1.0
-      </div>
-    </div>
-  `;
-}
 
     // ============================================
-    // PINTU PEMBUKA + MUSIK
+    // PINTU PEMBUKA + MUSIK (TIDAK BERHENTI)
     // ============================================
     function bukaPintu() {
       const overlay = document.getElementById('doorOverlay');
@@ -1611,15 +1630,17 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Membuka...';
       
-      // PLAY MUSIK
-      const audio = document.getElementById('bgm');
-      audio.volume = 0.3;
-      audio.play().then(() => {
-        musicStarted = true;
-        console.log('🎵 Musik diputar!');
-      }).catch((err) => {
-        console.log('⚠️ Musik tidak bisa diputar:', err);
-      });
+      // === PLAY MUSIK DENGAN CEK STATUS ===
+      if (!audioPlaying) {
+        audioElement = document.getElementById('bgm');
+        audioElement.volume = 0.3;
+        audioElement.loop = true;
+        
+        // Reset retry counter
+        audioRetryCount = 0;
+        
+        playAudioWithRetry();
+      }
       
       overlay.classList.add('open');
       
@@ -1628,6 +1649,119 @@
         loadAllData();
       }, 1800);
     }
+
+    // ============================================
+    // PLAY AUDIO DENGAN RETRY
+    // ============================================
+    function playAudioWithRetry() {
+      if (!audioElement) return;
+      
+      audioElement.play()
+        .then(() => {
+          audioPlaying = true;
+          audioRetryCount = 0;
+          console.log('🎵 Musik diputar!');
+          updateAudioButton(true);
+        })
+        .catch((err) => {
+          console.log('⚠️ Musik gagal diputar (percobaan ' + (audioRetryCount + 1) + '):', err);
+          audioRetryCount++;
+          if (audioRetryCount < MAX_AUDIO_RETRY) {
+            setTimeout(() => {
+              playAudioWithRetry();
+            }, 1000 * audioRetryCount);
+          } else {
+            console.log('❌ Gagal memutar audio setelah ' + MAX_AUDIO_RETRY + ' percobaan');
+            updateAudioButton(false);
+            document.getElementById('btnAudio').classList.add('pulse');
+          }
+        });
+    }
+
+    // ============================================
+    // KONTROL AUDIO (MUTE/UNMUTE)
+    // ============================================
+    function toggleAudio() {
+      const audio = document.getElementById('bgm');
+      if (!audio) return;
+      
+      if (audio.paused) {
+        audioRetryCount = 0;
+        playAudioWithRetry();
+      } else {
+        audio.pause();
+        audioPlaying = false;
+        updateAudioButton(false);
+      }
+    }
+
+    function updateAudioButton(isPlaying) {
+      const btn = document.getElementById('btnAudio');
+      if (btn) {
+        if (isPlaying) {
+          btn.innerHTML = '<i class="fas fa-volume-up"></i>';
+          btn.classList.remove('pulse');
+        } else {
+          btn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+        }
+      }
+    }
+
+    // ============================================
+    // KEEP AUDIO ALIVE (CEK SETIAP 3 DETIK)
+    // ============================================
+    function keepAudioAlive() {
+      setInterval(() => {
+        if (audioPlaying && audioElement) {
+          // Cek apakah audio benar-benar playing
+          if (audioElement.paused) {
+            console.log('🔄 Audio terdeteksi pause, mencoba memutar ulang...');
+            audioRetryCount = 0;
+            playAudioWithRetry();
+          }
+          
+          // Cek volume - kadang volume bisa berubah sendiri
+          if (audioElement.volume === 0) {
+            audioElement.volume = 0.3;
+          }
+          
+          // Cek jika audio sudah selesai (meskipun loop, kadang error)
+          if (audioElement.ended) {
+            console.log('🔄 Audio ended, mencoba memutar ulang...');
+            audioRetryCount = 0;
+            playAudioWithRetry();
+          }
+        }
+      }, 3000);
+    }
+
+    // ============================================
+    // VISIBILITY CHANGE - TANGANI SAAT TAB BERUBAH
+    // ============================================
+    document.addEventListener('visibilitychange', function() {
+      if (!document.hidden) {
+        console.log('👁️ Tab aktif kembali, cek audio...');
+        if (audioPlaying && audioElement && audioElement.paused) {
+          audioRetryCount = 0;
+          playAudioWithRetry();
+        }
+      }
+    });
+
+    // ============================================
+    // TANGANI USER INTERACTION
+    // ============================================
+    function handleUserInteraction() {
+      if (audioPlaying && audioElement && audioElement.paused) {
+        console.log('🖱️ User interaction detected, play audio...');
+        audioRetryCount = 0;
+        playAudioWithRetry();
+      }
+    }
+
+    document.addEventListener('click', handleUserInteraction);
+    document.addEventListener('touchstart', handleUserInteraction);
+    document.addEventListener('keydown', handleUserInteraction);
 
     // ============================================
     // SIDEBAR
@@ -1732,7 +1866,6 @@
         closeModal('janji');
         document.getElementById('formJanji').reset();
         
-        // Buka WA jika ada URL
         if (result.waUrl) {
           window.open(result.waUrl, '_blank');
         }
@@ -1867,7 +2000,6 @@
     // INISIALISASI
     // ============================================
     document.addEventListener('DOMContentLoaded', function() {
-      // Update dari spreadsheet
       apiCall('settings').then(settings => {
         if (!settings.error) {
           settingsData = settings;
@@ -1878,6 +2010,11 @@
       setTimeout(() => {
         loadAllData();
       }, 500);
+
+      // === START KEEP ALIVE AUDIO (LEBIH CEPAT) ===
+      setTimeout(() => {
+        keepAudioAlive();
+      }, 2000);
     });
 
     // ============================================
@@ -1897,6 +2034,7 @@
 
     console.log('🚀 SICANTIK v2.0 - SISTEM CERDAS ADMINISTRASI TERINTEGRASI');
     console.log('📱 Fitur: Layanan Kategori, Buat Janji + WA, Lapor, Info Pengembang');
+    console.log('🎵 Audio akan tetap berjalan tanpa berhenti! (Pengecekan setiap 3 detik)');
   </script>
 </body>
 </html>
