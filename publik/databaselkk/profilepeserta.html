@@ -1,0 +1,1802 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - Kecamatan Senapelan</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f0f2f5;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: linear-gradient(180deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar .profile-section {
+            text-align: center;
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            font-weight: 700;
+            color: white;
+            margin: 0 auto 12px;
+            border: 3px solid rgba(255,255,255,0.3);
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .profile-avatar:hover {
+            transform: scale(1.05);
+            border-color: #fff;
+        }
+
+        .sidebar .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .sidebar .profile-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .sidebar .profile-role {
+            font-size: 12px;
+            color: #a8b5d9;
+            margin-top: 4px;
+        }
+
+        .sidebar .profile-progress {
+            margin-top: 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            height: 6px;
+            overflow: hidden;
+        }
+
+        .sidebar .profile-progress .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .sidebar .profile-progress-text {
+            font-size: 11px;
+            color: #a8b5d9;
+            margin-top: 4px;
+        }
+
+        .sidebar .menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+
+        .sidebar .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 24px;
+            color: #a8b5d9;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .sidebar .menu-item:hover {
+            background: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        .sidebar .menu-item.active {
+            color: white;
+            border-left-color: #667eea;
+            background: rgba(102, 126, 234, 0.15);
+        }
+
+        .sidebar .menu-item .icon {
+            font-size: 20px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .sidebar .menu-item .label {
+            font-size: 14px;
+        }
+
+        .sidebar .bottom-section {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .sidebar .logout-btn {
+            width: 100%;
+            padding: 10px;
+            background: rgba(220, 53, 69, 0.2);
+            color: #ff6b6b;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sidebar .logout-btn:hover {
+            background: rgba(220, 53, 69, 0.3);
+        }
+
+        .main-content {
+            margin-left: 260px;
+            flex: 1;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background: white;
+            border-radius: 15px;
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .topbar .page-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #333;
+        }
+
+        .topbar .page-title span {
+            color: #667eea;
+        }
+
+        .topbar .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .topbar .topbar-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 700;
+            color: white;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .topbar .topbar-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .topbar .topbar-username {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .panel {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .panel.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .panel-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+        }
+
+        .panel-card .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .panel-card .card-title .badge {
+            font-size: 12px;
+            background: #667eea;
+            color: white;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group label .required {
+            color: #dc3545;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            background: #f8f9fa;
+            width: 100%;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            background: white;
+        }
+
+        .form-group input.success,
+        .form-group select.success {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .form-group input.error,
+        .form-group select.error {
+            border-color: #dc3545;
+            background: #fff5f5;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .upload-area {
+            border: 2px dashed #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            position: relative;
+            min-height: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .upload-area:hover {
+            border-color: #667eea;
+            background: #f0f3ff;
+        }
+
+        .upload-area .upload-preview {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-top: 8px;
+        }
+
+        .upload-area .upload-preview.image-preview {
+            max-height: 120px;
+            object-fit: cover;
+        }
+
+        .upload-area .upload-preview.pdf-preview {
+            height: 200px;
+            width: 100%;
+            object-fit: contain;
+            background: #f5f5f5;
+        }
+
+        .upload-area .upload-placeholder {
+            color: #999;
+            font-size: 13px;
+        }
+
+        .upload-area .upload-placeholder .icon {
+            font-size: 32px;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .upload-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .upload-area .file-name {
+            font-size: 12px;
+            color: #667eea;
+            margin-top: 6px;
+            word-break: break-all;
+        }
+
+        .upload-area .upload-loading {
+            display: none;
+            color: #667eea;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+
+        .upload-area .upload-loading.active {
+            display: block;
+        }
+
+        .btn-primary {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            padding: 12px 30px;
+            background: #e9ecef;
+            color: #333;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .progress-container {
+            background: #f0f2f5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .progress-container .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .progress-container .progress-header .label {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .progress-container .progress-header .percentage {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .progress-container .progress-track {
+            background: #e9ecef;
+            border-radius: 20px;
+            height: 10px;
+            overflow: hidden;
+        }
+
+        .progress-container .progress-track .bar {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 20px;
+            transition: width 0.8s ease;
+            width: 0%;
+        }
+
+        .progress-container .progress-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .iframe-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .iframe-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 9999;
+            max-width: 400px;
+            animation: slideRight 0.3s ease;
+        }
+
+        .toast.show {
+            display: flex;
+        }
+
+        @keyframes slideRight {
+            from { opacity: 0; transform: translateX(50px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .toast-success {
+            border-left: 4px solid #28a745;
+        }
+
+        .toast-error {
+            border-left: 4px solid #dc3545;
+        }
+
+        .toast-icon { font-size: 24px; }
+        .toast-title { font-weight: 600; color: #333; font-size: 14px; }
+        .toast-message { color: #666; font-size: 13px; }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease infinite;
+        }
+
+        .spinner.active { display: inline-block; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 8px 0;
+            box-shadow: 0 -5px 20px rgba(0,0,0,0.1);
+            z-index: 999;
+            border-top: 1px solid #eee;
+            justify-content: space-around;
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            padding: 4px 12px;
+            color: #888;
+            text-decoration: none;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 10px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bottom-nav .nav-item .icon {
+            font-size: 22px;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: #667eea;
+        }
+
+        .bottom-nav .nav-item .badge {
+            position: absolute;
+            top: -2px;
+            right: -2px;
+            background: #dc3545;
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                width: 280px;
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 12px;
+                padding-bottom: 80px;
+            }
+
+            .bottom-nav {
+                display: flex;
+            }
+
+            .topbar {
+                padding: 12px 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .topbar .page-title {
+                font-size: 16px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .iframe-container {
+                height: 400px;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn-group button {
+                width: 100%;
+            }
+
+            .sidebar-toggle {
+                display: flex !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .sidebar-toggle {
+                display: none !important;
+            }
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #333;
+            padding: 4px 8px;
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+    <nav class="sidebar" id="sidebar">
+        <div class="profile-section">
+            <div class="profile-avatar" id="profileAvatar" onclick="document.getElementById('avatarUpload').click()">
+                <span id="avatarInitial">U</span>
+                <img id="profileAvatarImg" style="display:none;" alt="Profile">
+            </div>
+            <input type="file" id="avatarUpload" accept="image/*" style="display:none;" onchange="uploadAvatar(this)">
+            <div class="profile-name" id="sidebarName">User</div>
+            <div class="profile-role" id="sidebarRole">User</div>
+            <div class="profile-progress">
+                <div class="bar" id="sidebarProgress" style="width:0%"></div>
+            </div>
+            <div class="profile-progress-text">Kelengkapan Data: <span id="sidebarProgressText">0%</span></div>
+        </div>
+
+        <div class="menu">
+            <div class="menu-item active" data-panel="biodata" onclick="switchPanel('biodata')">
+                <span class="icon">📋</span>
+                <span class="label">Biodata</span>
+            </div>
+            <div class="menu-item" data-panel="aplikasi" onclick="switchPanel('aplikasi')">
+                <span class="icon">📱</span>
+                <span class="label">Aplikasi</span>
+            </div>
+            <div class="menu-item" data-panel="penduduk" onclick="switchPanel('penduduk')">
+                <span class="icon">👥</span>
+                <span class="label">Data Penduduk</span>
+            </div>
+        </div>
+
+        <div class="bottom-section">
+            <button class="logout-btn" onclick="logout()">
+                🚪 Logout
+            </button>
+        </div>
+    </nav>
+
+    <div class="main-content">
+
+        <div class="topbar">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+                <div class="page-title"><span id="pageTitle">📋</span> Biodata</div>
+            </div>
+            <div class="topbar-right">
+                <span class="topbar-username" id="topbarUsername">User</span>
+                <div class="topbar-avatar" id="topbarAvatar">
+                    <span id="topbarInitial">U</span>
+                    <img id="topbarAvatarImg" style="display:none;" alt="Avatar">
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 1: BIODATA -->
+        <div class="panel active" id="panel-biodata">
+            <div class="panel-card">
+                <div class="card-title">
+                    📋 Biodata Peserta
+                    <span class="badge" id="statusBadge">Belum Lengkap</span>
+                </div>
+
+                <div class="progress-container">
+                    <div class="progress-header">
+                        <span class="label">📊 Kelengkapan Data</span>
+                        <span class="percentage" id="progressPercentage">0%</span>
+                    </div>
+                    <div class="progress-track">
+                        <div class="bar" id="progressBar" style="width:0%"></div>
+                    </div>
+                    <div class="progress-detail">
+                        <span id="progressFilled">0</span>
+                        <span>dari 21 kolom terisi</span>
+                    </div>
+                </div>
+
+                <form id="biodataForm">
+                    <div class="form-grid">
+                        <input type="hidden" id="bioIdUser">
+                        <input type="hidden" id="bioRoleUser">
+
+                        <div class="form-group">
+                            <label>Nama Lengkap <span class="required">*</span></label>
+                            <input type="text" id="bioNamaLengkap" placeholder="Nama lengkap" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>No NIK <span class="required">*</span></label>
+                            <input type="text" id="bioNoNik" placeholder="16 digit NIK" maxlength="16" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>No KK <span class="required">*</span></label>
+                            <input type="text" id="bioNoKk" placeholder="16 digit KK" maxlength="16" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Alamat <span class="required">*</span></label>
+                            <textarea id="bioAlamat" placeholder="Alamat lengkap" required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tempat Lahir <span class="required">*</span></label>
+                            <input type="text" id="bioTempatLahir" placeholder="Tempat lahir" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Tanggal Lahir <span class="required">*</span></label>
+                            <input type="date" id="bioTanggalLahir" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>RT <span class="required">*</span></label>
+                            <input type="text" id="bioRt" placeholder="RT" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>RW <span class="required">*</span></label>
+                            <input type="text" id="bioRw" placeholder="RW" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Jenis LKK <span class="required">*</span></label>
+                            <select id="bioJenisLkk" required>
+                                <option value="">Pilih...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Status Jabatan <span class="required">*</span></label>
+                            <select id="bioStatus" required>
+                                <option value="">Pilih...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>No HP <span class="required">*</span></label>
+                            <input type="tel" id="bioNoHp" placeholder="08123456789" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>No Rekening</label>
+                            <input type="text" id="bioNoRekening" placeholder="No rekening">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Awal Menjabat <span class="required">*</span></label>
+                            <input type="date" id="bioAwalMenjabat" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Sisa Masa Jabatan</label>
+                            <input type="text" id="bioSisaMasaJabatan" readonly style="background:#f0f2f5; cursor:not-allowed;">
+                        </div>
+
+                        <div class="form-group">
+                            <label>Alamat Email <span class="required">*</span></label>
+                            <input type="email" id="bioAlamatEmail" placeholder="email@domain.com" required>
+                        </div>
+
+                        <!-- FOTO PROFIL -->
+                        <div class="form-group">
+                            <label>Foto Profil</label>
+                            <div class="upload-area" id="uploadProfil">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'profil')">
+                                <div class="upload-placeholder">
+                                    <span class="icon">📸</span>
+                                    <span>Upload Foto Profil</span>
+                                    <div style="font-size:11px;color:#aaa;">JPG, PNG, PDF • Max 5MB</div>
+                                </div>
+                                <img class="upload-preview image-preview" id="previewProfil" style="display:none;" alt="Preview">
+                                <div class="file-name" id="fileNameProfil"></div>
+                                <div class="upload-loading" id="loadingProfil">⏳ Uploading...</div>
+                            </div>
+                        </div>
+
+                        <!-- BERKAS SK -->
+                        <div class="form-group">
+                            <label>Berkas SK</label>
+                            <div class="upload-area" id="uploadSk">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'sk')">
+                                <div class="upload-placeholder">
+                                    <span class="icon">📄</span>
+                                    <span>Upload Berkas SK</span>
+                                    <div style="font-size:11px;color:#aaa;">JPG, PNG, PDF • Max 5MB</div>
+                                </div>
+                                <img class="upload-preview pdf-preview" id="previewSk" style="display:none;" alt="Preview">
+                                <div class="file-name" id="fileNameSk"></div>
+                                <div class="upload-loading" id="loadingSk">⏳ Uploading...</div>
+                            </div>
+                        </div>
+
+                        <!-- FOTO KTP -->
+                        <div class="form-group">
+                            <label>Foto KTP</label>
+                            <div class="upload-area" id="uploadKtp">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'ktp')">
+                                <div class="upload-placeholder">
+                                    <span class="icon">🪪</span>
+                                    <span>Upload Foto KTP</span>
+                                    <div style="font-size:11px;color:#aaa;">JPG, PNG, PDF • Max 5MB</div>
+                                </div>
+                                <img class="upload-preview image-preview" id="previewKtp" style="display:none;" alt="Preview">
+                                <div class="file-name" id="fileNameKtp"></div>
+                                <div class="upload-loading" id="loadingKtp">⏳ Uploading...</div>
+                            </div>
+                        </div>
+
+                        <!-- FOTO KK -->
+                        <div class="form-group">
+                            <label>Foto KK</label>
+                            <div class="upload-area" id="uploadKk">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'kk')">
+                                <div class="upload-placeholder">
+                                    <span class="icon">📇</span>
+                                    <span>Upload Foto KK</span>
+                                    <div style="font-size:11px;color:#aaa;">JPG, PNG, PDF • Max 5MB</div>
+                                </div>
+                                <img class="upload-preview image-preview" id="previewKk" style="display:none;" alt="Preview">
+                                <div class="file-name" id="fileNameKk"></div>
+                                <div class="upload-loading" id="loadingKk">⏳ Uploading...</div>
+                            </div>
+                        </div>
+
+                        <!-- BUKU REKENING -->
+                        <div class="form-group">
+                            <label>Buku Rekening</label>
+                            <div class="upload-area" id="uploadRekening">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'rekening')">
+                                <div class="upload-placeholder">
+                                    <span class="icon">🏦</span>
+                                    <span>Upload Buku Rekening</span>
+                                    <div style="font-size:11px;color:#aaa;">JPG, PNG, PDF • Max 5MB</div>
+                                </div>
+                                <img class="upload-preview image-preview" id="previewRekening" style="display:none;" alt="Preview">
+                                <div class="file-name" id="fileNameRekening"></div>
+                                <div class="upload-loading" id="loadingRekening">⏳ Uploading...</div>
+                            </div>
+                        </div>
+
+                        <!-- FOTO BPJS -->
+                        <div class="form-group">
+                            <label>Foto BPJS</label>
+                            <div class="upload-area" id="uploadBpjs">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'bpjs')">
+                                <div class="upload-placeholder">
+                                    <span class="icon">🏥</span>
+                                    <span>Upload Foto BPJS</span>
+                                    <div style="font-size:11px;color:#aaa;">JPG, PNG, PDF • Max 5MB</div>
+                                </div>
+                                <img class="upload-preview image-preview" id="previewBpjs" style="display:none;" alt="Preview">
+                                <div class="file-name" id="fileNameBpjs"></div>
+                                <div class="upload-loading" id="loadingBpjs">⏳ Uploading...</div>
+                            </div>
+                        </div>
+
+                        <!-- FOTO NPWP -->
+                        <div class="form-group">
+                            <label>Foto NPWP</label>
+                            <div class="upload-area" id="uploadNpwp">
+                                <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'npwp')">
+                                <div class="upload-placeholder">
+                                    <span class="icon">📑</span>
+                                    <span>Upload Foto NPWP</span>
+                                    <div style="font-size:11px;color:#aaa;">JPG, PNG, PDF • Max 5MB</div>
+                                </div>
+                                <img class="upload-preview image-preview" id="previewNpwp" style="display:none;" alt="Preview">
+                                <div class="file-name" id="fileNameNpwp"></div>
+                                <div class="upload-loading" id="loadingNpwp">⏳ Uploading...</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="btn-group">
+                        <button type="submit" class="btn-primary" id="saveBtn">
+                            <span id="saveBtnText">💾 Simpan Biodata</span>
+                            <span class="spinner" id="saveSpinner"></span>
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="resetForm()">🔄 Reset</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- PANEL 2: APLIKASI -->
+        <div class="panel" id="panel-aplikasi">
+            <div class="panel-card">
+                <div class="card-title">📱 Aplikasi Kecamatan Senapelan</div>
+                <div class="iframe-container">
+                    <iframe src="https://senapelan.github.io/Home/publik/senapelankencana/appikasi/daftaraplikasi.html" 
+                            allowfullscreen
+                            loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 3: DATA PENDUDUK -->
+        <div class="panel" id="panel-penduduk">
+            <div class="panel-card">
+                <div class="card-title">👥 Data Penduduk Kecamatan Senapelan</div>
+                <div class="iframe-container">
+                    <iframe src="https://senapelan.github.io/Home/publik/datapenduduk/dashboardpendudukkecamatan.html"
+                            allowfullscreen
+                            loading="lazy">
+                    </iframe>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BOTTOM NAV -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" data-panel="biodata" onclick="switchPanel('biodata')">
+            <span class="icon">📋</span>
+            <span>Biodata</span>
+        </button>
+        <button class="nav-item" data-panel="aplikasi" onclick="switchPanel('aplikasi')">
+            <span class="icon">📱</span>
+            <span>Aplikasi</span>
+        </button>
+        <button class="nav-item" data-panel="penduduk" onclick="switchPanel('penduduk')">
+            <span class="icon">👥</span>
+            <span>Penduduk</span>
+        </button>
+    </nav>
+
+    <div class="toast" id="toast">
+        <div class="toast-icon" id="toastIcon">✅</div>
+        <div>
+            <div class="toast-title" id="toastTitle">Success</div>
+            <div class="toast-message" id="toastMessage">Operation successful</div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyFCpItsgSb3twY0w37BmB0hTCHKfvlB4TrKbMSCCZTcte5gklkXvlALpv3jzeR9ZJu/exec';
+        const CURRENT_USER = JSON.parse(localStorage.getItem('user') || '{}');
+
+        let biodataData = {};
+
+        if (!CURRENT_USER || !CURRENT_USER.id_user) {
+            window.location.href = 'login.html';
+        }
+
+        // ============================================
+        // TOAST
+        // ============================================
+        function showToast(title, message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = document.getElementById('toastIcon');
+            const titleEl = document.getElementById('toastTitle');
+            const messageEl = document.getElementById('toastMessage');
+
+            toast.className = 'toast show';
+            toast.classList.add(type === 'success' ? 'toast-success' : 'toast-error');
+            icon.textContent = type === 'success' ? '✅' : '❌';
+            titleEl.textContent = title;
+            messageEl.textContent = message;
+
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        // ============================================
+        // SIDEBAR
+        // ============================================
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('sidebarOverlay').classList.toggle('active');
+        }
+
+        function closeSidebar() {
+            document.getElementById('sidebar').classList.remove('open');
+            document.getElementById('sidebarOverlay').classList.remove('active');
+        }
+
+        function switchPanel(panel) {
+            document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.menu-item').forEach(m => m.classList.remove('active'));
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(n => n.classList.remove('active'));
+
+            document.getElementById('panel-' + panel).classList.add('active');
+            document.querySelector(`.menu-item[data-panel="${panel}"]`)?.classList.add('active');
+            document.querySelector(`.bottom-nav .nav-item[data-panel="${panel}"]`)?.classList.add('active');
+
+            const titles = {
+                biodata: '📋 Biodata',
+                aplikasi: '📱 Aplikasi',
+                penduduk: '👥 Data Penduduk'
+            };
+            document.getElementById('pageTitle').textContent = titles[panel] || '📋 Biodata';
+
+            closeSidebar();
+
+            if (panel === 'aplikasi' || panel === 'penduduk') {
+                const iframe = document.querySelector(`#panel-${panel} iframe`);
+                if (iframe) iframe.src = iframe.src;
+            }
+        }
+
+        // ============================================
+        // API CALLS - FIXED
+        // ============================================
+        async function callAPI(action, data = {}) {
+            try {
+                const url = new URL(API_BASE_URL);
+                url.searchParams.append('action', action);
+
+                const formData = new FormData();
+                formData.append('action', action);
+                
+                for (let key in data) {
+                    if (data[key] !== null && data[key] !== undefined) {
+                        if (typeof data[key] === 'object') {
+                            formData.append(key, JSON.stringify(data[key]));
+                        } else {
+                            formData.append(key, String(data[key]));
+                        }
+                    }
+                }
+
+                const response = await fetch(url.toString(), {
+                    method: 'POST',
+                    mode: 'cors',
+                    body: formData
+                });
+
+                return await response.json();
+
+            } catch (error) {
+                console.error('❌ API Error:', error);
+                return { success: false, message: 'Terjadi kesalahan: ' + error.message };
+            }
+        }
+
+        // ============================================
+        // LOAD PROFILE
+        // ============================================
+        async function loadProfile() {
+            try {
+                showToast('⏳ Loading', 'Memuat data profile...', 'success');
+
+                const result = await callAPI('getProfile', {
+                    id_user: CURRENT_USER.id_user
+                });
+
+                if (result.success) {
+                    biodataData = result.data.biodata || {};
+
+                    updateProfileUI(result.data);
+                    updateBiodataForm(biodataData);
+                    updateProgress(biodataData);
+                    updateSidebar(biodataData);
+                    updateUploadPreviews(biodataData);
+
+                    await loadDropdowns();
+                    calculateSisaMasaJabatan();
+
+                    showToast('✅ Profile Loaded', 'Data profile berhasil dimuat', 'success');
+                } else {
+                    showToast('❌ Error', result.message || 'Gagal memuat profile', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading profile:', error);
+                showToast('❌ Error', 'Gagal memuat profile', 'error');
+            }
+        }
+
+        // ============================================
+        // UPDATE PROFILE UI
+        // ============================================
+        function updateProfileUI(data) {
+            const username = data.username || 'User';
+            const role = data.role || 'user';
+            const initial = username.charAt(0).toUpperCase();
+
+            document.getElementById('sidebarName').textContent = username;
+            document.getElementById('sidebarRole').textContent = role === 'admin' ? '👑 Admin' : '👤 User';
+            document.getElementById('topbarUsername').textContent = username;
+            document.getElementById('topbarInitial').textContent = initial;
+            document.getElementById('avatarInitial').textContent = initial;
+
+            document.getElementById('bioIdUser').value = data.id_user || '';
+            document.getElementById('bioRoleUser').value = role || '';
+        }
+
+        // ============================================
+        // UPDATE BIODATA FORM - FIXED TANGGAL
+        // ============================================
+        function updateBiodataForm(data) {
+            const fields = {
+                'bioNamaLengkap': 'NAMA_LENGKAP',
+                'bioNoNik': 'NO_NIK',
+                'bioNoKk': 'NO_KK',
+                'bioAlamat': 'ALAMAT',
+                'bioTempatLahir': 'TEMPAT_LAHR',
+                'bioTanggalLahir': 'TANGGAL_LAHIR',
+                'bioRt': 'RT',
+                'bioRw': 'RW',
+                'bioJenisLkk': 'JENIS_LKK',
+                'bioStatus': 'STATUS',
+                'bioNoHp': 'NO_HP',
+                'bioNoRekening': 'NO_REKENING',
+                'bioAwalMenjabat': 'AWAL MENJABAT',
+                'bioSisaMasaJabatan': 'SISA_MASA_JABATAN',
+                'bioAlamatEmail': 'ALAMAT_EMAIL'
+            };
+
+            for (let [id, key] of Object.entries(fields)) {
+                const el = document.getElementById(id);
+                if (el && data[key] !== undefined) {
+                    let value = data[key] || '';
+                    
+                    // FIX: FORMAT TANGGAL
+                    if ((key === 'TANGGAL_LAHIR' || key === 'AWAL MENJABAT') && value) {
+                        let dateObj = null;
+                        
+                        // Cek format MM/DD/YYYY
+                        if (value.match(/^\d{1,2}\/\d{1,2}\/\d{4}$/)) {
+                            const parts = value.split('/');
+                            dateObj = new Date(parts[2], parts[0] - 1, parts[1]);
+                        }
+                        // Cek format DD/MM/YYYY
+                        else if (value.match(/^\d{1,2}-\d{1,2}-\d{4}$/)) {
+                            const parts = value.split('-');
+                            dateObj = new Date(parts[2], parts[1] - 1, parts[0]);
+                        }
+                        // Cek format YYYY-MM-DD
+                        else if (value.match(/^\d{4}-\d{1,2}-\d{1,2}$/)) {
+                            dateObj = new Date(value);
+                        }
+                        // Cek format timestamp
+                        else if (!isNaN(value)) {
+                            dateObj = new Date(parseInt(value));
+                        }
+                        
+                        if (dateObj && !isNaN(dateObj.getTime())) {
+                            const year = dateObj.getFullYear();
+                            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+                            const day = String(dateObj.getDate()).padStart(2, '0');
+                            value = year + '-' + month + '-' + day;
+                        }
+                    }
+                    
+                    el.value = value;
+                }
+            }
+
+            setTimeout(() => {
+                if (data.JENIS_LKK) {
+                    document.getElementById('bioJenisLkk').value = data.JENIS_LKK;
+                }
+                if (data.STATUS) {
+                    document.getElementById('bioStatus').value = data.STATUS;
+                }
+            }, 500);
+        }
+
+        // ============================================
+        // UPDATE PROGRESS
+        // ============================================
+        function updateProgress(data) {
+            const fields = [
+                'NAMA_LENGKAP', 'NO_NIK', 'NO_KK', 'ALAMAT', 'TEMPAT_LAHR',
+                'TANGGAL_LAHIR', 'RT', 'RW', 'JENIS_LKK', 'STATUS',
+                'NO_HP', 'NO_REKENING', 'AWAL MENJABAT', 'ALAMAT_EMAIL',
+                'LINK_FOTO_PROFIL', 'LINK-BERKAS_SK', 'LINK_FOTO_KTP',
+                'LINK_FOTO_KK', 'LINK_BUKU_REKENING', 'LINK_FOTO_BPJS',
+                'LINK_FOTO_NPWP'
+            ];
+
+            let filled = 0;
+            for (const field of fields) {
+                if (data[field] && data[field].toString().trim() !== '') {
+                    filled++;
+                }
+            }
+
+            const percentage = Math.round((filled / fields.length) * 100);
+            const status = percentage === 100 ? '✅ Lengkap' : percentage >= 70 ? '🟡 Sedang' : '🔴 Perlu Dilengkapi';
+
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressPercentage').textContent = percentage + '%';
+            document.getElementById('progressFilled').textContent = filled;
+            document.getElementById('sidebarProgress').style.width = percentage + '%';
+            document.getElementById('sidebarProgressText').textContent = percentage + '%';
+            document.getElementById('statusBadge').textContent = status;
+
+            if (percentage === 100) {
+                document.getElementById('statusBadge').style.background = '#28a745';
+                document.getElementById('statusBadge').style.color = 'white';
+            } else if (percentage >= 70) {
+                document.getElementById('statusBadge').style.background = '#ffc107';
+                document.getElementById('statusBadge').style.color = '#333';
+            } else {
+                document.getElementById('statusBadge').style.background = '#dc3545';
+                document.getElementById('statusBadge').style.color = 'white';
+            }
+        }
+
+        // ============================================
+        // UPDATE SIDEBAR - FIXED THUMBNAIL
+        // ============================================
+        function updateSidebar(data) {
+            const photoLink = data.LINK_FOTO_PROFIL || '';
+            if (photoLink) {
+                let thumbnailLink = photoLink;
+                if (photoLink.includes('drive.google.com/uc?export=view&id=')) {
+                    const fileId = photoLink.split('id=')[1];
+                    thumbnailLink = 'https://drive.google.com/thumbnail?sz=w1600&id=' + fileId;
+                }
+                
+                document.getElementById('profileAvatarImg').src = thumbnailLink;
+                document.getElementById('profileAvatarImg').style.display = 'block';
+                document.getElementById('avatarInitial').style.display = 'none';
+
+                document.getElementById('topbarAvatarImg').src = thumbnailLink;
+                document.getElementById('topbarAvatarImg').style.display = 'block';
+                document.getElementById('topbarInitial').style.display = 'none';
+            } else {
+                document.getElementById('profileAvatarImg').style.display = 'none';
+                document.getElementById('avatarInitial').style.display = 'block';
+                document.getElementById('topbarAvatarImg').style.display = 'none';
+                document.getElementById('topbarInitial').style.display = 'block';
+            }
+        }
+
+        // ============================================
+        // UPDATE UPLOAD PREVIEWS - FIXED PDF
+        // ============================================
+        function updateUploadPreviews(data) {
+            const mappings = {
+                profil: 'LINK_FOTO_PROFIL',
+                sk: 'LINK-BERKAS_SK',
+                ktp: 'LINK_FOTO_KTP',
+                kk: 'LINK_FOTO_KK',
+                rekening: 'LINK_BUKU_REKENING',
+                bpjs: 'LINK_FOTO_BPJS',
+                npwp: 'LINK_FOTO_NPWP'
+            };
+
+            for (let [key, field] of Object.entries(mappings)) {
+                const link = data[field] || '';
+                const preview = document.getElementById('preview' + key.charAt(0).toUpperCase() + key.slice(1));
+                const fileName = document.getElementById('fileName' + key.charAt(0).toUpperCase() + key.slice(1));
+                const placeholder = document.querySelector(`#upload${key.charAt(0).toUpperCase() + key.slice(1)} .upload-placeholder`);
+                const loading = document.getElementById('loading' + key.charAt(0).toUpperCase() + key.slice(1));
+
+                if (link) {
+                    if (preview) {
+                        let thumbnailLink = link;
+                        let isPDF = false;
+                        
+                        // Deteksi PDF
+                        if (fileName && fileName.textContent.toLowerCase().includes('.pdf')) {
+                            isPDF = true;
+                        }
+                        
+                        if (link.includes('drive.google.com/uc?export=view&id=')) {
+                            const fileId = link.split('id=')[1];
+                            
+                            if (isPDF) {
+                                thumbnailLink = 'https://drive.google.com/file/d/' + fileId + '/preview';
+                                preview.className = 'upload-preview pdf-preview';
+                            } else {
+                                thumbnailLink = 'https://drive.google.com/thumbnail?sz=w1600&id=' + fileId;
+                                preview.className = 'upload-preview image-preview';
+                            }
+                        }
+                        preview.src = thumbnailLink;
+                        preview.style.display = 'block';
+                    }
+                    if (fileName) {
+                        fileName.textContent = '✅ File tersimpan';
+                    }
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+                    if (loading) {
+                        loading.classList.remove('active');
+                    }
+                } else {
+                    if (preview) {
+                        preview.style.display = 'none';
+                        preview.className = 'upload-preview image-preview';
+                    }
+                    if (fileName) {
+                        fileName.textContent = '';
+                    }
+                    if (placeholder) {
+                        placeholder.style.display = 'block';
+                    }
+                    if (loading) {
+                        loading.classList.remove('active');
+                    }
+                }
+            }
+        }
+
+        // ============================================
+        // LOAD DROPDOWNS
+        // ============================================
+        async function loadDropdowns() {
+            try {
+                const result = await callAPI('getDropdown', {});
+
+                if (result.success) {
+                    const data = result.data;
+
+                    const jenisLkk = data.JENIS_LKK || [];
+                    const jenisSelect = document.getElementById('bioJenisLkk');
+                    jenisSelect.innerHTML = '<option value="">Pilih Jenis LKK</option>';
+                    for (const item of jenisLkk) {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = item;
+                        jenisSelect.appendChild(option);
+                    }
+
+                    const status = data.STATUS_JABATAN || [];
+                    const statusSelect = document.getElementById('bioStatus');
+                    statusSelect.innerHTML = '<option value="">Pilih Status</option>';
+                    for (const item of status) {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = item;
+                        statusSelect.appendChild(option);
+                    }
+
+                    if (biodataData.JENIS_LKK) {
+                        jenisSelect.value = biodataData.JENIS_LKK;
+                    }
+                    if (biodataData.STATUS) {
+                        statusSelect.value = biodataData.STATUS;
+                    }
+
+                    jenisSelect.addEventListener('change', calculateSisaMasaJabatan);
+                    statusSelect.addEventListener('change', calculateSisaMasaJabatan);
+                    document.getElementById('bioAwalMenjabat').addEventListener('change', calculateSisaMasaJabatan);
+                }
+            } catch (error) {
+                console.error('Error loading dropdowns:', error);
+            }
+        }
+
+        // ============================================
+        // CALCULATE SISA MASA JABATAN
+        // ============================================
+        async function calculateSisaMasaJabatan() {
+            const jenisLkk = document.getElementById('bioJenisLkk').value;
+            const status = document.getElementById('bioStatus').value;
+            const awalMenjabat = document.getElementById('bioAwalMenjabat').value;
+
+            if (!jenisLkk || !status || !awalMenjabat) {
+                document.getElementById('bioSisaMasaJabatan').value = '';
+                return;
+            }
+
+            try {
+                const result = await callAPI('calculateSisaMasaJabatan', {
+                    jenis_lkk: jenisLkk,
+                    status: status,
+                    awal_menjabat: awalMenjabat
+                });
+
+                if (result.success) {
+                    document.getElementById('bioSisaMasaJabatan').value = result.data.sisa || '';
+                }
+            } catch (error) {
+                console.error('Error calculating sisa masa jabatan:', error);
+            }
+        }
+
+        // ============================================
+        // FILE FUNCTIONS
+        // ============================================
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // ============================================
+        // HANDLE FILE UPLOAD - FIXED PDF
+        // ============================================
+        async function handleFileUpload(input, type) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const loadingId = 'loading' + type.charAt(0).toUpperCase() + type.slice(1);
+            const loading = document.getElementById(loadingId);
+            if (loading) loading.classList.add('active');
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
+                input.value = '';
+                if (loading) loading.classList.remove('active');
+                return;
+            }
+
+            const validTypes = ['.jpg', '.jpeg', '.png', '.pdf'];
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+            if (!validTypes.includes(ext)) {
+                showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG, PNG, atau PDF', 'error');
+                input.value = '';
+                if (loading) loading.classList.remove('active');
+                return;
+            }
+
+            const previewId = 'preview' + type.charAt(0).toUpperCase() + type.slice(1);
+            const preview = document.getElementById(previewId);
+            if (preview) {
+                preview.style.display = 'block';
+                preview.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23f0f2f5"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999" font-size="14"%3EMemuat...%3C/text%3E%3C/svg%3E';
+            }
+
+            try {
+                const base64 = await fileToBase64(file);
+                const fileName = type + ext;
+
+                const result = await callAPI('uploadFile', {
+                    id_user: CURRENT_USER.id_user,
+                    username: CURRENT_USER.username || 'user',
+                    file_name: fileName,
+                    file_type: file.type,
+                    file_data: base64
+                });
+
+                if (result.success) {
+                    const isPDF = file.type === 'application/pdf' || fileName.toLowerCase().includes('.pdf');
+                    const previewLink = result.data.thumbnail_link || result.data.file_link;
+                    
+                    if (preview) {
+                        if (isPDF) {
+                            const fileId = result.data.file_id;
+                            preview.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+                            preview.className = 'upload-preview pdf-preview';
+                        } else {
+                            preview.src = previewLink;
+                            preview.className = 'upload-preview image-preview';
+                        }
+                        preview.style.display = 'block';
+                    }
+
+                    const fileNameEl = document.getElementById('fileName' + type.charAt(0).toUpperCase() + type.slice(1));
+                    if (fileNameEl) {
+                        fileNameEl.textContent = '✅ ' + file.name + ' (' + formatFileSize(file.size) + ')';
+                    }
+
+                    const placeholder = document.querySelector(`#upload${type.charAt(0).toUpperCase() + type.slice(1)} .upload-placeholder`);
+                    if (placeholder) {
+                        placeholder.style.display = 'none';
+                    }
+
+                    const fieldMap = {
+                        profil: 'LINK_FOTO_PROFIL',
+                        sk: 'LINK-BERKAS_SK',
+                        ktp: 'LINK_FOTO_KTP',
+                        kk: 'LINK_FOTO_KK',
+                        rekening: 'LINK_BUKU_REKENING',
+                        bpjs: 'LINK_FOTO_BPJS',
+                        npwp: 'LINK_FOTO_NPWP'
+                    };
+                    
+                    biodataData[fieldMap[type]] = result.data.file_link;
+
+                    updateProgress(biodataData);
+                    await saveBiodata();
+
+                    if (type === 'profil') {
+                        updateSidebar(biodataData);
+                    }
+
+                    showToast('✅ Upload Berhasil', file.name + ' berhasil diupload!', 'success');
+
+                } else {
+                    showToast('❌ Upload Gagal', result.message || 'Gagal upload file', 'error');
+                    if (preview) {
+                        preview.style.display = 'none';
+                    }
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showToast('❌ Error', 'Terjadi kesalahan saat upload', 'error');
+                if (preview) {
+                    preview.style.display = 'none';
+                }
+            } finally {
+                if (loading) loading.classList.remove('active');
+            }
+
+            input.value = '';
+        }
+
+        // ============================================
+        // UPLOAD AVATAR
+        // ============================================
+        async function uploadAvatar(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
+                input.value = '';
+                return;
+            }
+
+            const validTypes = ['.jpg', '.jpeg', '.png'];
+            const ext = '.' + file.name.split('.').pop().toLowerCase();
+            if (!validTypes.includes(ext)) {
+                showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG atau PNG', 'error');
+                input.value = '';
+                return;
+            }
+
+            try {
+                const base64 = await fileToBase64(file);
+                const fileName = 'profil' + ext;
+
+                const result = await callAPI('uploadFile', {
+                    id_user: CURRENT_USER.id_user,
+                    username: CURRENT_USER.username || 'user',
+                    file_name: fileName,
+                    file_type: file.type,
+                    file_data: base64
+                });
+
+                if (result.success) {
+                    const link = result.data.file_link;
+
+                    document.getElementById('profileAvatarImg').src = link;
+                    document.getElementById('profileAvatarImg').style.display = 'block';
+                    document.getElementById('avatarInitial').style.display = 'none';
+
+                    document.getElementById('topbarAvatarImg').src = link;
+                    document.getElementById('topbarAvatarImg').style.display = 'block';
+                    document.getElementById('topbarInitial').style.display = 'none';
+
+                    biodataData.LINK_FOTO_PROFIL = link;
+                    updateProgress(biodataData);
+                    await saveBiodata();
+
+                    showToast('✅ Foto Profil Updated', 'Foto profil berhasil diupdate!', 'success');
+                }
+            } catch (error) {
+                console.error('Avatar upload error:', error);
+                showToast('❌ Error', 'Gagal upload foto profil', 'error');
+            }
+
+            input.value = '';
+        }
+
+        // ============================================
+        // SAVE BIODATA
+        // ============================================
+        async function saveBiodata() {
+            const saveBtn = document.getElementById('saveBtn');
+            const saveText = document.getElementById('saveBtnText');
+            const saveSpinner = document.getElementById('saveSpinner');
+
+            setLoading(saveBtn, saveSpinner, saveText, true);
+
+            try {
+                const formData = {
+                    'ID_USER': document.getElementById('bioIdUser').value || CURRENT_USER.id_user,
+                    'ROLE_USER': document.getElementById('bioRoleUser').value || CURRENT_USER.role || 'user',
+                    'NAMA_LENGKAP': document.getElementById('bioNamaLengkap').value,
+                    'NO_NIK': document.getElementById('bioNoNik').value,
+                    'NO_KK': document.getElementById('bioNoKk').value,
+                    'ALAMAT': document.getElementById('bioAlamat').value,
+                    'TEMPAT_LAHR': document.getElementById('bioTempatLahir').value,
+                    'TANGGAL_LAHIR': document.getElementById('bioTanggalLahir').value,
+                    'RT': document.getElementById('bioRt').value,
+                    'RW': document.getElementById('bioRw').value,
+                    'JENIS_LKK': document.getElementById('bioJenisLkk').value,
+                    'STATUS': document.getElementById('bioStatus').value,
+                    'NO_HP': document.getElementById('bioNoHp').value,
+                    'NO_REKENING': document.getElementById('bioNoRekening').value,
+                    'AWAL MENJABAT': document.getElementById('bioAwalMenjabat').value,
+                    'ALAMAT_EMAIL': document.getElementById('bioAlamatEmail').value,
+                    'LINK_FOTO_PROFIL': biodataData['LINK_FOTO_PROFIL'] || '',
+                    'LINK-BERKAS_SK': biodataData['LINK-BERKAS_SK'] || '',
+                    'LINK_FOTO_KTP': biodataData['LINK_FOTO_KTP'] || '',
+                    'LINK_FOTO_KK': biodataData['LINK_FOTO_KK'] || '',
+                    'LINK_BUKU_REKENING': biodataData['LINK_BUKU_REKENING'] || '',
+                    'LINK_FOTO_BPJS': biodataData['LINK_FOTO_BPJS'] || '',
+                    'LINK_FOTO_NPWP': biodataData['LINK_FOTO_NPWP'] || ''
+                };
+
+                console.log('📝 Menyimpan biodata:', formData);
+
+                const result = await callAPI('saveBiodata', {
+                    id_user: formData['ID_USER'],
+                    role_user: formData['ROLE_USER'],
+                    biodata: formData
+                });
+
+                console.log('📥 Hasil save:', result);
+
+                if (result.success) {
+                    if (result.data && result.data.sisa_masa_jabatan) {
+                        document.getElementById('bioSisaMasaJabatan').value = result.data.sisa_masa_jabatan;
+                    }
+
+                    Object.assign(biodataData, formData);
+                    updateProgress(biodataData);
+                    updateSidebar(biodataData);
+
+                    showToast('✅ Berhasil', 'Biodata berhasil disimpan!', 'success');
+                } else {
+                    showToast('❌ Gagal', result.message || 'Gagal menyimpan biodata', 'error');
+                }
+            } catch (error) {
+                console.error('❌ Save error:', error);
+                showToast('❌ Error', 'Terjadi kesalahan saat menyimpan: ' + error.message, 'error');
+            } finally {
+                setLoading(saveBtn, saveSpinner, saveText, false);
+            }
+        }
+
+        function setLoading(button, spinner, textElement, loading) {
+            if (loading) {
+                button.disabled = true;
+                textElement.style.display = 'none';
+                spinner.classList.add('active');
+            } else {
+                button.disabled = false;
+                textElement.style.display = 'inline';
+                spinner.classList.remove('active');
+            }
+        }
+
+        function resetForm() {
+            if (confirm('Reset form akan menghapus data yang belum disimpan. Lanjutkan?')) {
+                loadProfile();
+                showToast('🔄 Reset', 'Form telah direset', 'success');
+            }
+        }
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('remembered');
+                window.location.href = 'login.html';
+            }
+        }
+
+        document.getElementById('biodataForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await saveBiodata();
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!CURRENT_USER || !CURRENT_USER.id_user) {
+                window.location.href = 'login.html';
+                return;
+            }
+
+            loadProfile();
+
+            let saveTimeout;
+            document.querySelectorAll('#biodataForm input, #biodataForm select, #biodataForm textarea')
+                .forEach(el => {
+                    el.addEventListener('change', () => {
+                        clearTimeout(saveTimeout);
+                        saveTimeout = setTimeout(saveBiodata, 2000);
+                    });
+                    el.addEventListener('input', () => {
+                        clearTimeout(saveTimeout);
+                        saveTimeout = setTimeout(saveBiodata, 3000);
+                    });
+                });
+        });
+
+        console.log('✅ Profile page loaded!');
+        console.log('👤 User:', CURRENT_USER.username);
+    </script>
+
+</body>
+</html>
