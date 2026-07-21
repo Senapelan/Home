@@ -2,8 +2,13 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Login - Perangkat Kecamatan Senapelan</title>
+    <link rel="icon" href="https://senapelan.github.io/Home/data/logo_pemko/logosenapelan.png" type="image/png">
+    <meta property="og:image" content="https://senapelan.github.io/Home/data/logo_pemko/logosenapelan.png">
+    <meta property="og:title" content="Login - LKK Kecamatan Senapelan">
+    <meta property="og:description" content="Login - LKK Kecamatan Senapelan">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -12,109 +17,210 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body {
+        html, body {
             min-height: 100vh;
+            min-height: 100dvh;
+        }
+
+        body {
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 20px;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            padding: 16px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at center, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: rotateBg 30s linear infinite;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        @keyframes rotateBg {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            animation: floatParticle 20s infinite linear;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
         }
 
         .container {
-            background: white;
-            border-radius: 20px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
             width: 100%;
-            max-width: 450px;
-            padding: 40px;
-            animation: slideUp 0.5s ease;
+            max-width: 440px;
+            padding: 40px 32px;
+            position: relative;
+            z-index: 1;
+            animation: slideUp 0.6s ease;
         }
 
         @keyframes slideUp {
             from {
                 opacity: 0;
-                transform: translateY(30px);
+                transform: translateY(40px) scale(0.95);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
             }
         }
 
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
+        }
+
+        .logo-img {
+            width: 72px;
+            height: 72px;
+            border-radius: 50%;
+            margin: 0 auto 12px;
+            display: block;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            object-fit: cover;
+        }
+
+        .logo-img:hover {
+            transform: scale(1.05);
+            border-color: #667eea;
         }
 
         .logo h1 {
-            color: #333;
-            font-size: 24px;
+            color: #fff;
+            font-size: 22px;
             font-weight: 700;
+            background: linear-gradient(135deg, #f093fb, #f5576c, #667eea);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .logo p {
-            color: #777;
-            font-size: 14px;
-            margin-top: 5px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 13px;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 18px;
             position: relative;
         }
 
         .form-group label {
             display: block;
-            margin-bottom: 8px;
-            color: #333;
+            margin-bottom: 6px;
+            color: rgba(255, 255, 255, 0.8);
             font-weight: 500;
-            font-size: 14px;
+            font-size: 13px;
+            letter-spacing: 0.3px;
         }
 
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 14px;
+        .form-group .input-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            border: 2px solid rgba(255, 255, 255, 0.1);
             transition: all 0.3s ease;
-            background: #f8f9fa;
-            appearance: none;
-            -webkit-appearance: none;
+            overflow: hidden;
         }
 
-        .form-group select {
-            cursor: pointer;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 15px center;
-            padding-right: 40px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
+        .form-group .input-wrapper:focus-within {
             border-color: #667eea;
-            background: white;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
+            background: rgba(255, 255, 255, 0.12);
         }
 
-        .form-group input.error,
-        .form-group select.error {
-            border-color: #dc3545;
-            background: #fff5f5;
+        .form-group .input-wrapper .input-icon {
+            padding: 0 12px 0 16px;
+            color: rgba(255, 255, 255, 0.4);
+            font-size: 15px;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
         }
 
-        .form-group input.success,
-        .form-group select.success {
-            border-color: #28a745;
-            background: #f0fff4;
+        .form-group .input-wrapper:focus-within .input-icon {
+            color: #667eea;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 13px 12px 13px 0;
+            border: none;
+            background: transparent;
+            font-size: 14px;
+            color: #fff;
+            outline: none;
+            min-width: 0;
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .form-group .toggle-password {
+            padding: 0 16px 0 8px;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .form-group .toggle-password:hover {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-group .toggle-password.active {
+            color: #667eea;
         }
 
         .error-message {
-            color: #dc3545;
+            color: #ff6b6b;
             font-size: 12px;
             margin-top: 5px;
             display: none;
@@ -128,62 +234,94 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin: 20px 0;
+            margin: 18px 0 22px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
 
         .checkbox-group label {
             display: flex;
             align-items: center;
             gap: 8px;
-            color: #555;
-            font-size: 14px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
             cursor: pointer;
         }
 
-        .checkbox-group input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
+        .checkbox-group label input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
             cursor: pointer;
+            accent-color: #667eea;
+            flex-shrink: 0;
         }
 
         .forgot-password {
             color: #667eea;
             text-decoration: none;
-            font-size: 14px;
+            font-size: 13px;
             font-weight: 500;
             cursor: pointer;
+            transition: all 0.3s ease;
+            background: none;
+            border: none;
+            white-space: nowrap;
         }
 
         .forgot-password:hover {
+            color: #f093fb;
             text-decoration: underline;
         }
 
         .btn-login {
             width: 100%;
-            padding: 14px;
+            padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            font-size: 15px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-login::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn-login:hover::before {
+            left: 100%;
         }
 
         .btn-login:hover {
             transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
         }
 
         .btn-login:active {
             transform: translateY(0);
         }
 
+        .btn-login:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .register-link {
             text-align: center;
-            margin-top: 20px;
-            color: #777;
+            margin-top: 18px;
+            color: rgba(255, 255, 255, 0.5);
             font-size: 14px;
         }
 
@@ -192,12 +330,17 @@
             text-decoration: none;
             font-weight: 600;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
         .register-link a:hover {
+            color: #f093fb;
             text-decoration: underline;
         }
 
+        /* ============================================
+           MODAL STYLES
+        ============================================ */
         .modal {
             display: none;
             position: fixed;
@@ -205,11 +348,16 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
+            height: 100dvh;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             align-items: center;
             justify-content: center;
             z-index: 1000;
             animation: fadeIn 0.3s ease;
+            padding: 16px;
+            overflow-y: auto;
         }
 
         .modal.active {
@@ -217,115 +365,237 @@
         }
 
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .modal-content {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            width: 90%;
+            background: #1a1a2e;
+            border-radius: 24px;
+            padding: 32px 28px;
+            width: 100%;
             max-width: 500px;
             max-height: 90vh;
+            max-height: 90dvh;
             overflow-y: auto;
             animation: slideUp 0.3s ease;
             position: relative;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
+            margin: auto;
+        }
+
+        .modal-content::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .modal-content::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+        }
+
+        .modal-content::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 3px;
         }
 
         .modal-close {
-            position: absolute;
-            top: 15px;
-            right: 20px;
-            font-size: 28px;
-            color: #999;
+            position: sticky;
+            top: 0;
+            float: right;
+            font-size: 26px;
+            color: rgba(255,255,255,0.3);
             cursor: pointer;
             transition: all 0.3s ease;
+            background: none;
+            border: none;
+            padding: 4px 8px;
+            z-index: 10;
         }
 
         .modal-close:hover {
-            color: #333;
+            color: #fff;
             transform: rotate(90deg);
         }
 
         .modal-title {
             text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-            font-size: 22px;
+            margin-bottom: 20px;
+            color: #fff;
+            font-size: 20px;
             font-weight: 700;
+            padding-right: 30px;
         }
 
-        .modal .form-group {
-            margin-bottom: 15px;
+        .modal-title span {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .modal .form-group label {
+            color: rgba(255,255,255,0.8);
+            font-size: 13px;
+        }
+
+        .modal .form-group .input-wrapper {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.08);
+        }
+
+        .modal .form-group .input-wrapper:focus-within {
+            border-color: #667eea;
+            background: rgba(255,255,255,0.1);
         }
 
         .modal .form-group input,
         .modal .form-group select {
-            background: #f8f9fa;
+            color: #fff;
+            font-size: 14px;
         }
 
-        .modal .btn-register {
+        .modal .form-group input::placeholder {
+            color: rgba(255,255,255,0.25);
+        }
+
+        .modal .form-group select {
+            background: transparent;
+            appearance: none;
+            -webkit-appearance: none;
             width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
+            padding: 13px 12px 13px 0;
             border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-        }
-
-        .modal .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .modal .btn-register:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-        }
-
-        .checkbox-agree {
-            margin: 15px 0;
-        }
-
-        .checkbox-agree label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #555;
+            outline: none;
+            color: #fff;
             font-size: 14px;
             cursor: pointer;
         }
 
-        .checkbox-agree input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            cursor: pointer;
+        .modal .form-group select option {
+            background: #1a1a2e;
+            color: #fff;
         }
 
+        /* ============================================
+           BUTTONS - FIXED BACK BUTTON
+        ============================================ */
+        .btn-register {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-register:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+            box-shadow: none;
+            transform: translateY(-2px);
+        }
+
+        /* ============================================
+           TOMBOL BACK - KECIL
+        ============================================ */
+        .btn-back {
+            width: auto !important;
+            padding: 8px 18px !important;
+            font-size: 13px !important;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .btn-back:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .btn-back i {
+            font-size: 13px;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .btn-back {
+                padding: 6px 14px !important;
+                font-size: 12px !important;
+            }
+            
+            .btn-back i {
+                font-size: 12px;
+            }
+        }
+
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 0.8s ease infinite;
+            margin: 0 auto;
+        }
+
+        .spinner.active {
+            display: inline-block;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           TOAST
+        ============================================ */
         .toast {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: white;
-            padding: 15px 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            top: 16px;
+            right: 16px;
+            background: rgba(26, 26, 46, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding: 14px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
             display: none;
             align-items: center;
             gap: 12px;
             animation: slideRight 0.3s ease;
             z-index: 2000;
-            max-width: 400px;
+            max-width: 380px;
+            width: calc(100% - 32px);
         }
 
         .toast.show {
@@ -351,80 +621,139 @@
             border-left: 4px solid #dc3545;
         }
 
+        .toast-warning {
+            border-left: 4px solid #ffc107;
+        }
+
         .toast-icon {
-            font-size: 24px;
+            font-size: 22px;
+            flex-shrink: 0;
         }
 
         .toast-content {
             flex: 1;
+            min-width: 0;
         }
 
         .toast-title {
             font-weight: 600;
-            color: #333;
+            color: #fff;
             font-size: 14px;
         }
 
         .toast-message {
-            color: #666;
+            color: rgba(255,255,255,0.7);
             font-size: 13px;
             margin-top: 2px;
+            word-wrap: break-word;
         }
 
-        @media (max-width: 480px) {
-            .container {
-                padding: 25px;
-            }
-
-            .modal-content {
-                padding: 25px;
-            }
-
-            .checkbox-group {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 10px;
-            }
-        }
-
-        .spinner {
+        /* ============================================
+           NIK CHECK RESULT
+        ============================================ */
+        .nik-check-result {
+            margin: 12px 0;
+            padding: 14px 16px;
+            border-radius: 12px;
             display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 0.8s ease infinite;
-            margin: 0 auto;
         }
 
-        .spinner.active {
-            display: inline-block;
+        .nik-check-result.show {
+            display: block;
         }
 
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+        .nik-check-result.exists {
+            background: rgba(220, 53, 69, 0.15);
+            border: 1px solid rgba(220, 53, 69, 0.3);
         }
 
-        .btn-login:disabled,
-        .btn-register:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
+        .nik-check-result.not-exists {
+            background: rgba(40, 167, 69, 0.15);
+            border: 1px solid rgba(40, 167, 69, 0.3);
         }
 
-        .info-text {
-            font-size: 12px;
-            color: #888;
-            margin-top: 4px;
+        .nik-check-result .title {
+            font-weight: 600;
+            font-size: 14px;
+            margin-bottom: 4px;
         }
 
+        .nik-check-result .title.exists {
+            color: #dc3545;
+        }
+
+        .nik-check-result .title.not-exists {
+            color: #28a745;
+        }
+
+        .nik-check-result .message {
+            font-size: 13px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .nik-check-result .actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .nik-check-result .actions .btn-small {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+            min-width: 120px;
+        }
+
+        .nik-check-result .actions .btn-small:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-small-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+        }
+
+        .btn-small-primary:hover {
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-small-whatsapp {
+            background: #25D366;
+            color: #fff;
+        }
+
+        .btn-small-whatsapp:hover {
+            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
+        }
+
+        .btn-small-success {
+            background: #28a745;
+            color: #fff;
+        }
+
+        .btn-small-success:hover {
+            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
+        }
+
+        /* ============================================
+           PASSWORD STRENGTH
+        ============================================ */
         .password-strength {
             height: 4px;
-            margin-top: 8px;
+            margin-top: 6px;
             border-radius: 2px;
-            background: #e0e0e0;
+            background: rgba(255,255,255,0.1);
             transition: all 0.3s ease;
         }
 
@@ -443,18 +772,45 @@
             width: 100%;
         }
 
+        .password-requirements {
+            font-size: 12px;
+            color: rgba(255,255,255,0.6);
+            margin-top: 4px;
+            padding: 6px 10px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        .password-requirements .req {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            margin: 2px 0;
+        }
+
+        .password-requirements .req.valid {
+            color: #28a745;
+        }
+
+        .password-requirements .req.invalid {
+            color: #dc3545;
+        }
+
+        /* ============================================
+           STEP INDICATOR
+        ============================================ */
         .step-indicator {
             display: flex;
             justify-content: center;
             gap: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
 
         .step-dot {
             width: 10px;
             height: 10px;
             border-radius: 50%;
-            background: #e0e0e0;
+            background: rgba(255,255,255,0.2);
             transition: all 0.3s ease;
         }
 
@@ -475,54 +831,355 @@
             display: block;
         }
 
-        .password-requirements {
+        .info-text {
             font-size: 12px;
-            color: #666;
-            margin-top: 5px;
-            padding: 8px 12px;
-            background: #f8f9fa;
-            border-radius: 8px;
+            color: rgba(255,255,255,0.4);
+            margin-top: 3px;
         }
 
-        .password-requirements .req {
+        .btn-group {
             display: flex;
+            gap: 10px;
+            margin-top: 10px;
             align-items: center;
-            gap: 6px;
-            margin: 2px 0;
         }
 
-        .password-requirements .req .icon {
-            font-size: 14px;
+        .btn-group .btn-register {
+            flex: 1;
         }
 
-        .password-requirements .req.valid {
-            color: #28a745;
+        .checkbox-agree {
+            margin: 12px 0;
         }
 
-        .password-requirements .req.invalid {
-            color: #dc3545;
+        .checkbox-agree label {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .checkbox-agree label input[type="checkbox"] {
+            width: 17px;
+            height: 17px;
+            cursor: pointer;
+            accent-color: #667eea;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        /* ============================================
+           RESPONSIVE
+        ============================================ */
+        @media (max-width: 480px) {
+            .container {
+                padding: 28px 18px;
+                border-radius: 24px;
+            }
+
+            .logo-img {
+                width: 60px;
+                height: 60px;
+            }
+
+            .logo h1 {
+                font-size: 20px;
+            }
+
+            .logo p {
+                font-size: 12px;
+            }
+
+            .modal-content {
+                padding: 24px 16px;
+                border-radius: 20px;
+                max-height: 95dvh;
+            }
+
+            .modal-title {
+                font-size: 18px;
+                margin-bottom: 16px;
+                padding-right: 24px;
+            }
+
+            .form-group {
+                margin-bottom: 14px;
+            }
+
+            .form-group label {
+                font-size: 12px;
+            }
+
+            .form-group input,
+            .modal .form-group input,
+            .modal .form-group select {
+                font-size: 13px;
+                padding: 11px 10px 11px 0;
+            }
+
+            .form-group .input-wrapper .input-icon {
+                padding: 0 10px 0 12px;
+                font-size: 14px;
+            }
+
+            .form-group .toggle-password {
+                padding: 0 12px 0 6px;
+                font-size: 14px;
+            }
+
+            .btn-login,
+            .btn-register {
+                padding: 13px;
+                font-size: 14px;
+            }
+
+            .checkbox-group {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+                margin: 14px 0 18px;
+            }
+
+            .checkbox-group label {
+                font-size: 12px;
+            }
+
+            .forgot-password {
+                font-size: 12px;
+            }
+
+            .register-link {
+                font-size: 13px;
+                margin-top: 14px;
+            }
+
+            .nik-check-result .actions .btn-small {
+                flex: 1 1 100%;
+                min-width: 0;
+                padding: 10px 14px;
+                font-size: 12px;
+            }
+
+            .toast {
+                top: 12px;
+                right: 12px;
+                padding: 12px 16px;
+                max-width: calc(100% - 24px);
+            }
+
+            .toast-title {
+                font-size: 13px;
+            }
+
+            .toast-message {
+                font-size: 12px;
+            }
+
+            .btn-group {
+                flex-direction: row;
+                gap: 8px;
+            }
+
+            .btn-group .btn-register {
+                flex: 1;
+                width: 100%;
+            }
+
+            .btn-group .btn-back {
+                flex: 0 0 auto;
+            }
+
+            .password-requirements {
+                font-size: 11px;
+                padding: 5px 8px;
+            }
+
+            .step-indicator {
+                gap: 8px;
+            }
+
+            .step-dot {
+                width: 8px;
+                height: 8px;
+            }
+
+            .nik-check-result {
+                padding: 12px 14px;
+            }
+
+            .nik-check-result .title {
+                font-size: 13px;
+            }
+
+            .nik-check-result .message {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 20px 14px;
+            }
+
+            .logo-img {
+                width: 50px;
+                height: 50px;
+            }
+
+            .logo h1 {
+                font-size: 17px;
+            }
+
+            .modal-content {
+                padding: 18px 12px;
+            }
+
+            .form-group input,
+            .modal .form-group input,
+            .modal .form-group select {
+                font-size: 12px;
+                padding: 10px 8px 10px 0;
+            }
+
+            .btn-login,
+            .btn-register {
+                padding: 11px;
+                font-size: 13px;
+            }
+
+            .btn-back {
+                padding: 5px 12px !important;
+                font-size: 11px !important;
+            }
+        }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+            .container {
+                padding: 36px 28px;
+                max-width: 420px;
+            }
+
+            .modal-content {
+                padding: 30px 24px;
+                max-width: 480px;
+            }
+
+            .nik-check-result .actions .btn-small {
+                flex: 1;
+                min-width: 100px;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .container {
+                padding: 45px 40px;
+                max-width: 460px;
+            }
+
+            .modal-content {
+                padding: 40px 36px;
+                max-width: 520px;
+            }
+
+            .nik-check-result .actions .btn-small {
+                flex: 0 1 auto;
+            }
+        }
+
+        @media (max-height: 600px) and (orientation: landscape) {
+            .container {
+                padding: 16px 20px;
+                max-width: 380px;
+            }
+
+            .logo-img {
+                width: 40px;
+                height: 40px;
+                margin-bottom: 6px;
+            }
+
+            .logo h1 {
+                font-size: 16px;
+            }
+
+            .logo p {
+                font-size: 11px;
+                margin-top: 2px;
+            }
+
+            .logo {
+                margin-bottom: 12px;
+            }
+
+            .form-group {
+                margin-bottom: 10px;
+            }
+
+            .form-group input {
+                padding: 8px 10px 8px 0;
+                font-size: 12px;
+            }
+
+            .btn-login {
+                padding: 10px;
+                font-size: 13px;
+            }
+
+            .checkbox-group {
+                margin: 10px 0 14px;
+            }
+
+            .modal-content {
+                padding: 16px 14px;
+                max-height: 95dvh;
+            }
+
+            .modal-title {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+
+            .btn-back {
+                padding: 5px 12px !important;
+                font-size: 11px !important;
+            }
         }
     </style>
 </head>
 <body>
 
+    <!-- Particles Background -->
+    <div class="particles" id="particles"></div>
+
     <!-- Login Form -->
     <div class="container">
         <div class="logo">
-            <h1>🏛️ Kecamatan Senapelan</h1>
-            <p>Perangkat Pemerintah Kecamatan</p>
+            <img src="https://senapelan.github.io/Home/data/logo_pemko/logosenapelan.png" alt="Logo" class="logo-img">
+            <h1>Kecamatan Senapelan</h1>
+            <p>Login LKK Kecamatan Senapelan</p>
         </div>
 
         <form id="loginForm" autocomplete="off">
             <div class="form-group">
-                <label>Username atau Email</label>
-                <input type="text" id="loginUsername" placeholder="Masukkan username atau email" required>
+                <label><i class="fas fa-user" style="margin-right: 6px;"></i> Username atau Email</label>
+                <div class="input-wrapper">
+                    <span class="input-icon"><i class="fas fa-user"></i></span>
+                    <input type="text" id="loginUsername" placeholder="Masukkan username atau email" required>
+                </div>
                 <div class="error-message" id="loginUsernameError">Username/email tidak boleh kosong</div>
             </div>
 
             <div class="form-group">
-                <label>Password</label>
-                <input type="password" id="loginPassword" placeholder="Masukkan password" required>
+                <label><i class="fas fa-lock" style="margin-right: 6px;"></i> Password</label>
+                <div class="input-wrapper">
+                    <span class="input-icon"><i class="fas fa-lock"></i></span>
+                    <input type="password" id="loginPassword" placeholder="Masukkan password" required>
+                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
                 <div class="error-message" id="loginPasswordError">Password tidak boleh kosong</div>
             </div>
 
@@ -530,11 +1187,11 @@
                 <label>
                     <input type="checkbox" id="rememberMe"> Ingat Saya
                 </label>
-                <span class="forgot-password" onclick="openForgotPassword()">Lupa Password?</span>
+                <button type="button" class="forgot-password" onclick="openForgotPassword()">Lupa Password?</button>
             </div>
 
             <button type="submit" class="btn-login" id="loginBtn">
-                <span id="loginBtnText">Login</span>
+                <span id="loginBtnText"><i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Login</span>
                 <span class="spinner" id="loginSpinner"></span>
             </button>
         </form>
@@ -547,80 +1204,143 @@
     <!-- Register Modal -->
     <div class="modal" id="registerModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeRegister()">&times;</span>
-            <h2 class="modal-title">📝 Daftar Akun Baru</h2>
+            <button class="modal-close" onclick="closeRegister()">&times;</button>
+            <h2 class="modal-title">📝 <span>Daftar Akun Baru</span></h2>
 
-            <form id="registerForm" autocomplete="off">
+            <!-- Step 1: Check NIK -->
+            <div id="registerStep1">
+                <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; text-align:center; font-size:14px;">
+                    Masukkan NIK untuk memeriksa apakah Anda sudah terdaftar
+                </p>
                 <div class="form-group">
-                    <label>Username *</label>
-                    <input type="text" id="regUsername" placeholder="Masukkan username" required>
-                    <div class="error-message" id="regUsernameError">Username harus diisi</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Password *</label>
-                    <input type="password" id="regPassword" placeholder="Minimal 8 karakter, huruf besar, angka, & karakter khusus" required>
-                    <div class="password-strength" id="passwordStrength"></div>
-                    <div class="password-requirements" id="passwordRequirements">
-                        <div class="req invalid" id="reqLength"><span class="icon">❌</span> Minimal 8 karakter</div>
-                        <div class="req invalid" id="reqUppercase"><span class="icon">❌</span> Huruf besar (A-Z)</div>
-                        <div class="req invalid" id="reqLowercase"><span class="icon">❌</span> Huruf kecil (a-z)</div>
-                        <div class="req invalid" id="reqNumber"><span class="icon">❌</span> Angka (0-9)</div>
-                        <div class="req invalid" id="reqSpecial"><span class="icon">❌</span> Karakter khusus (@$!%*?&)</div>
+                    <label><i class="fas fa-id-card" style="margin-right: 6px;"></i> Nomor NIK <span style="color:#dc3545;">*</span></label>
+                    <div class="input-wrapper">
+                        <span class="input-icon"><i class="fas fa-id-card"></i></span>
+                        <input type="text" id="regNik" placeholder="Masukkan 16 digit NIK" maxlength="16" required>
                     </div>
-                    <div class="error-message" id="regPasswordError">Password harus memenuhi semua persyaratan</div>
+                    <div class="error-message" id="regNikError">NIK harus 16 digit angka</div>
                 </div>
 
-                <div class="form-group">
-                    <label>Email *</label>
-                    <input type="email" id="regEmail" placeholder="Masukkan email" required>
-                    <div class="error-message" id="regEmailError">Email tidak valid</div>
+                <div class="nik-check-result" id="nikCheckResult">
+                    <div class="title" id="nikCheckTitle"></div>
+                    <div class="message" id="nikCheckMessage"></div>
+                    <div class="actions" id="nikCheckActions"></div>
                 </div>
 
-                <div class="form-group">
-                    <label>No HP *</label>
-                    <input type="text" id="regNoHp" placeholder="Contoh: 08123456789" required>
-                    <div class="info-text">Masukkan nomor HP tanpa spasi atau tanda hubung</div>
-                    <div class="error-message" id="regNoHpError">No HP harus diisi dan hanya angka</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Jenis LKK *</label>
-                    <select id="regJenisLkk" required>
-                        <option value="">Memuat data...</option>
-                    </select>
-                    <div class="error-message" id="regJenisLkkError">Jenis LKK harus dipilih</div>
-                </div>
-
-                <div class="form-group">
-                    <label>Tingkatan LKK *</label>
-                    <select id="regTingkatanLkk" required>
-                        <option value="">Memuat data...</option>
-                    </select>
-                    <div class="error-message" id="regTingkatanLkkError">Tingkatan LKK harus dipilih</div>
-                </div>
-
-                <div class="checkbox-agree">
-                    <label>
-                        <input type="checkbox" id="agreeTerms" required>
-                        Saya bersedia bergabung dengan Perangkat Pemerintah Kecamatan Senapelan
-                    </label>
-                    <div class="error-message" id="regAgreeError">Anda harus menyetujui syarat dan ketentuan</div>
-                </div>
-
-                <button type="submit" class="btn-register" id="registerBtn">
-                    <span id="registerBtnText">Mendaftar</span>
-                    <span class="spinner" id="registerSpinner"></span>
+                <button type="button" class="btn-register" id="checkNikBtn" onclick="checkNik()">
+                    <span id="checkNikText"><i class="fas fa-search" style="margin-right: 8px;"></i> Periksa NIK</span>
+                    <span class="spinner" id="checkNikSpinner"></span>
                 </button>
-            </form>
+
+                <!-- ========== TOMBOL BACK KECIL ========== -->
+                <div style="text-align:center; margin-top:12px;">
+                    <button type="button" class="btn-back" onclick="closeRegister()">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </button>
+                </div>
+            </div>
+
+            <!-- Step 2: Register Form -->
+            <div id="registerStep2" style="display:none;">
+                <form id="registerForm" autocomplete="off">
+                    <div class="form-group">
+                        <label>Username <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-user"></i></span>
+                            <input type="text" id="regUsername" placeholder="Masukkan username" required>
+                        </div>
+                        <div class="error-message" id="regUsernameError">Username harus diisi</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Email <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                            <input type="email" id="regEmail" placeholder="Masukkan email" required>
+                        </div>
+                        <div class="error-message" id="regEmailError">Email tidak valid</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>No HP <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-phone"></i></span>
+                            <input type="text" id="regNoHp" placeholder="Contoh: 08123456789" required>
+                        </div>
+                        <div class="info-text">Masukkan nomor HP tanpa spasi atau tanda hubung</div>
+                        <div class="error-message" id="regNoHpError">No HP harus diisi dan hanya angka</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Password <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-lock"></i></span>
+                            <input type="password" id="regPassword" placeholder="Minimal 8 karakter, huruf besar, angka, & karakter khusus" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
+                        <div class="password-strength" id="passwordStrength"></div>
+                        <div class="password-requirements" id="passwordRequirements">
+                            <div class="req invalid" id="reqLength"><span class="icon">❌</span> Minimal 8 karakter</div>
+                            <div class="req invalid" id="reqUppercase"><span class="icon">❌</span> Huruf besar (A-Z)</div>
+                            <div class="req invalid" id="reqLowercase"><span class="icon">❌</span> Huruf kecil (a-z)</div>
+                            <div class="req invalid" id="reqNumber"><span class="icon">❌</span> Angka (0-9)</div>
+                            <div class="req invalid" id="reqSpecial"><span class="icon">❌</span> Karakter khusus (@$!%*?&)</div>
+                        </div>
+                        <div class="error-message" id="regPasswordError">Password harus memenuhi semua persyaratan</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Jenis LKK <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-users"></i></span>
+                            <select id="regJenisLkk" required>
+                                <option value="">Memuat data...</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="regJenisLkkError">Jenis LKK harus dipilih</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Tingkatan LKK <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-layer-group"></i></span>
+                            <select id="regTingkatanLkk" required>
+                                <option value="">Memuat data...</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="regTingkatanLkkError">Tingkatan LKK harus dipilih</div>
+                    </div>
+
+                    <div class="checkbox-agree">
+                        <label>
+                            <input type="checkbox" id="agreeTerms" required>
+                            Saya bersedia bergabung dengan Perangkat Pemerintah Kecamatan Senapelan
+                        </label>
+                        <div class="error-message" id="regAgreeError">Anda harus menyetujui syarat dan ketentuan</div>
+                    </div>
+
+                    <!-- ========== TOMBOL BACK KECIL ========== -->
+                    <div class="btn-group">
+                        <button type="button" class="btn-back" onclick="goToRegisterStep(1)">
+                            <i class="fas fa-arrow-left"></i>
+                        </button>
+                        <button type="submit" class="btn-register" id="registerBtn">
+                            <span id="registerBtnText"><i class="fas fa-user-plus" style="margin-right: 8px;"></i> Mendaftar</span>
+                            <span class="spinner" id="registerSpinner"></span>
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
     <!-- Forgot Password Modal -->
     <div class="modal" id="forgotModal">
         <div class="modal-content">
-            <span class="modal-close" onclick="closeForgotPassword()">&times;</span>
-            <h2 class="modal-title">🔑 Reset Password</h2>
+            <button class="modal-close" onclick="closeForgotPassword()">&times;</button>
+            <h2 class="modal-title">🔑 <span>Reset Password</span></h2>
 
             <div class="step-indicator">
                 <div class="step-dot active" id="step1Dot"></div>
@@ -629,31 +1349,50 @@
             </div>
 
             <form id="forgotForm" autocomplete="off">
-                <!-- Step 1: Verify User -->
                 <div class="reset-step active" id="step1">
-                    <p style="color:#666; margin-bottom:20px; text-align:center;">Masukkan username dan email Anda untuk verifikasi</p>
+                    <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; text-align:center; font-size:14px;">
+                        Masukkan username dan email Anda untuk verifikasi
+                    </p>
                     <div class="form-group">
-                        <label>Username *</label>
-                        <input type="text" id="forgotUsername" placeholder="Masukkan username" required>
+                        <label><i class="fas fa-user" style="margin-right: 6px;"></i> Username <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-user"></i></span>
+                            <input type="text" id="forgotUsername" placeholder="Masukkan username" required>
+                        </div>
                         <div class="error-message" id="forgotUsernameError">Username harus diisi</div>
                     </div>
                     <div class="form-group">
-                        <label>Email *</label>
-                        <input type="email" id="forgotEmail" placeholder="Masukkan email" required>
+                        <label><i class="fas fa-envelope" style="margin-right: 6px;"></i> Email <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-envelope"></i></span>
+                            <input type="email" id="forgotEmail" placeholder="Masukkan email" required>
+                        </div>
                         <div class="error-message" id="forgotEmailError">Email tidak valid</div>
                     </div>
                     <button type="button" class="btn-register" onclick="verifyUser()">
-                        <span id="verifyBtnText">Verifikasi</span>
+                        <span id="verifyBtnText"><i class="fas fa-check" style="margin-right: 8px;"></i> Verifikasi</span>
                         <span class="spinner" id="verifySpinner"></span>
                     </button>
+                    <div style="text-align:center; margin-top:10px;">
+                        <button type="button" class="btn-back" onclick="closeForgotPassword()">
+                            <i class="fas fa-arrow-left"></i> Kembali
+                        </button>
+                    </div>
                 </div>
 
-                <!-- Step 2: Reset Password -->
                 <div class="reset-step" id="step2">
-                    <p style="color:#666; margin-bottom:20px; text-align:center;">Buat password baru untuk akun Anda</p>
+                    <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; text-align:center; font-size:14px;">
+                        Buat password baru untuk akun Anda
+                    </p>
                     <div class="form-group">
-                        <label>Password Baru *</label>
-                        <input type="password" id="newPassword" placeholder="Minimal 8 karakter, huruf besar, angka, & karakter khusus" required>
+                        <label><i class="fas fa-lock" style="margin-right: 6px;"></i> Password Baru <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-lock"></i></span>
+                            <input type="password" id="newPassword" placeholder="Minimal 8 karakter, huruf besar, angka, & karakter khusus" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('newPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <div class="password-strength" id="newPasswordStrength"></div>
                         <div class="password-requirements" id="newPasswordRequirements">
                             <div class="req invalid" id="newReqLength"><span class="icon">❌</span> Minimal 8 karakter</div>
@@ -665,29 +1404,34 @@
                         <div class="error-message" id="newPasswordError">Password harus memenuhi semua persyaratan</div>
                     </div>
                     <div class="form-group">
-                        <label>Konfirmasi Password *</label>
-                        <input type="password" id="confirmPassword" placeholder="Masukkan ulang password" required>
+                        <label><i class="fas fa-check-circle" style="margin-right: 6px;"></i> Konfirmasi Password <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-check-circle"></i></span>
+                            <input type="password" id="confirmPassword" placeholder="Masukkan ulang password" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword', this)">
+                                <i class="fas fa-eye"></i>
+                            </button>
+                        </div>
                         <div class="error-message" id="confirmPasswordError">Password tidak cocok</div>
                     </div>
-                    <div style="display:flex; gap:10px;">
-                        <button type="button" class="btn-register" style="flex:1; background:#6c757d;" onclick="goToStep(1)">
-                            Kembali
+                    <div class="btn-group">
+                        <button type="button" class="btn-back" onclick="goToStep(1)">
+                            <i class="fas fa-arrow-left"></i>
                         </button>
-                        <button type="button" class="btn-register" style="flex:2;" onclick="resetPassword()">
-                            <span id="resetBtnText">Reset Password</span>
+                        <button type="button" class="btn-register" onclick="resetPassword()">
+                            <span id="resetBtnText"><i class="fas fa-save" style="margin-right: 8px;"></i> Reset Password</span>
                             <span class="spinner" id="resetSpinner"></span>
                         </button>
                     </div>
                 </div>
 
-                <!-- Step 3: Success -->
                 <div class="reset-step" id="step3">
-                    <div style="text-align:center; padding:20px 0;">
-                        <div style="font-size:60px; margin-bottom:20px;">✅</div>
-                        <h3 style="color:#28a745; margin-bottom:10px;">Password Berhasil Direset!</h3>
-                        <p style="color:#666; margin-bottom:20px;">Silakan login dengan password baru Anda</p>
-                        <button type="button" class="btn-register" onclick="closeForgotPassword()">
-                            Kembali ke Login
+                    <div style="text-align:center; padding:16px 0;">
+                        <div style="font-size:50px; margin-bottom:16px;">✅</div>
+                        <h3 style="color:#28a745; margin-bottom:8px; font-size:20px;">Password Berhasil Direset!</h3>
+                        <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; font-size:14px;">Silakan login dengan password baru Anda</p>
+                        <button type="button" class="btn-register" onclick="closeForgotPassword()" style="width:auto; padding:12px 30px;">
+                            <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Kembali ke Login
                         </button>
                     </div>
                 </div>
@@ -706,23 +1450,31 @@
 
     <script>
         // ============================================
+        // PARTICLES BACKGROUND
+        // ============================================
+        (function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 20) + 's';
+                particle.style.width = (2 + Math.random() * 4) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        })();
+
+        // ============================================
         // CONFIGURATION
         // ============================================
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbySyk6u4O5Yq_ts459zh0bfj9Y04DuRGT2w7EZMdn6K3PilI7UNpAJsI6Wdzo1292SO/exec';
-        const SPREADSHEET_ID = '1jkInrgt0-S55qv5oH5PdfxjxjRt9hoxej6mK01CKxs0';
-        const SHEET_NAME = 'USER';
-
-        // ============================================
-        // DOM ELEMENTS
-        // ============================================
-        const loginForm = document.getElementById('loginForm');
-        const registerForm = document.getElementById('registerForm');
-        const forgotForm = document.getElementById('forgotForm');
-        const loginBtn = document.getElementById('loginBtn');
-        const registerBtn = document.getElementById('registerBtn');
-
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxRkGBYatrnDUZt8ON8F2NyNIZyBxBT2LxFhLmy_6upC_1hNNh932U1pm1iHcPRhNSg/exec';
+        const WHATSAPP_NUMBER = '6282170089590';
         let verifiedUser = null;
         let dropdownLoaded = false;
+        let nikChecked = false;
+        let nikExists = false;
 
         // ============================================
         // TOAST NOTIFICATION
@@ -734,8 +1486,8 @@
             const messageEl = document.getElementById('toastMessage');
 
             toast.className = 'toast show';
-            toast.classList.add(type === 'success' ? 'toast-success' : 'toast-error');
-            icon.textContent = type === 'success' ? '✅' : '❌';
+            toast.classList.add(type === 'success' ? 'toast-success' : type === 'warning' ? 'toast-warning' : 'toast-error');
+            icon.textContent = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌';
             titleEl.textContent = title;
             messageEl.textContent = message;
 
@@ -743,6 +1495,24 @@
             toast.timeout = setTimeout(() => {
                 toast.classList.remove('show');
             }, 5000);
+        }
+
+        // ============================================
+        // TOGGLE PASSWORD VISIBILITY
+        // ============================================
+        function togglePasswordVisibility(inputId, button) {
+            const input = document.getElementById(inputId);
+            const icon = button.querySelector('i');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+                button.classList.add('active');
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+                button.classList.remove('active');
+            }
         }
 
         // ============================================
@@ -823,9 +1593,6 @@
                 const url = new URL(API_BASE_URL);
                 url.searchParams.append('action', action);
 
-                console.log('📤 URL:', url.toString());
-                console.log('📤 Data:', data);
-
                 const formData = new FormData();
                 formData.append('action', action);
                 for (let key in data) {
@@ -839,7 +1606,6 @@
                 });
 
                 const result = await response.json();
-                console.log('📥 Response:', result);
                 return result;
 
             } catch (error) {
@@ -849,23 +1615,16 @@
         }
 
         // ============================================
-        // LOAD DROPDOWN FROM SHEET
+        // LOAD DROPDOWN
         // ============================================
         async function loadDropdown() {
             try {
-                console.log('🔄 Memuat dropdown dari sheet...');
                 const result = await callAPI('getDropdown', {});
-                
-                console.log('📥 Hasil dropdown:', result);
                 
                 if (result.success && result.data) {
                     const jenisLkk = result.data.jenis_lkk || [];
                     const tingkatanLkk = result.data.tingkatan_lkk || [];
                     
-                    console.log('📋 Jenis LKK:', jenisLkk);
-                    console.log('📋 Tingkatan LKK:', tingkatanLkk);
-                    
-                    // Populate jenis_lkk dropdown
                     const jenisSelect = document.getElementById('regJenisLkk');
                     jenisSelect.innerHTML = '<option value="">Pilih Jenis LKK</option>';
                     for (const item of jenisLkk) {
@@ -877,7 +1636,6 @@
                         }
                     }
                     
-                    // Populate tingkatan_lkk dropdown
                     const tingkatanSelect = document.getElementById('regTingkatanLkk');
                     tingkatanSelect.innerHTML = '<option value="">Pilih Tingkatan LKK</option>';
                     for (const item of tingkatanLkk) {
@@ -890,13 +1648,10 @@
                     }
                     
                     dropdownLoaded = true;
-                    console.log('✅ Dropdown berhasil dimuat!');
                 } else {
-                    console.warn('⚠️ Gagal memuat dropdown, menggunakan data default');
                     loadDefaultDropdown();
                 }
             } catch (error) {
-                console.error('❌ Gagal load dropdown:', error);
                 loadDefaultDropdown();
             }
         }
@@ -922,9 +1677,108 @@
                 option.textContent = item;
                 tingkatanSelect.appendChild(option);
             }
-            
-            console.log('📋 Dropdown default dimuat');
         }
+
+        // ============================================
+        // CHECK NIK
+        // ============================================
+        async function checkNik() {
+            const nikInput = document.getElementById('regNik');
+            const nik = nikInput.value.trim();
+            
+            if (!validateField(nikInput, 'regNikError', /^\d{16}$/.test(nik), 'NIK harus 16 digit angka')) {
+                return;
+            }
+
+            const btn = document.getElementById('checkNikBtn');
+            setLoading(btn, document.getElementById('checkNikSpinner'), document.getElementById('checkNikText'), true);
+
+            try {
+                const result = await callAPI('checkNik', { nik: nik });
+
+                const resultDiv = document.getElementById('nikCheckResult');
+                const title = document.getElementById('nikCheckTitle');
+                const message = document.getElementById('nikCheckMessage');
+                const actions = document.getElementById('nikCheckActions');
+
+                resultDiv.className = 'nik-check-result show';
+
+                if (result.success && result.data && result.data.exists) {
+                    nikExists = true;
+                    resultDiv.className = 'nik-check-result show exists';
+                    title.className = 'title exists';
+                    title.textContent = '⚠️ NIK Sudah Terdaftar';
+                    message.textContent = 'NIK ' + nik + ' sudah terdaftar di sistem. Silakan login atau hubungi admin.';
+                    
+                    actions.innerHTML = `
+                        <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Assalamualaikum%20Admin%2C%20mohon%20bantuannya%20akun%20saya%20di%20LKK%20Kecamatan%20sudah%20terdaftar%20mohon%20konfirmasi%20permintaan%20username%20dan%20password.%20Berikut%20nomor%20NIK%20saya%3A%20${nik}" 
+                           target="_blank" class="btn-small btn-small-whatsapp">
+                            <i class="fab fa-whatsapp"></i> Hubungi Admin
+                        </a>
+                        <button class="btn-small btn-small-primary" onclick="closeRegister()">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </button>
+                    `;
+                    
+                    showToast('⚠️ NIK Terdaftar', 'NIK sudah ada, silakan login atau hubungi admin', 'warning');
+                    
+                } else {
+                    nikExists = false;
+                    resultDiv.className = 'nik-check-result show not-exists';
+                    title.className = 'title not-exists';
+                    title.textContent = '✅ NIK Belum Terdaftar';
+                    message.textContent = 'NIK ' + nik + ' belum terdaftar. Silakan lanjutkan pendaftaran.';
+                    
+                    actions.innerHTML = `
+                        <button class="btn-small btn-small-success" onclick="goToRegisterStep(2)">
+                            <i class="fas fa-user-plus"></i> Lanjutkan Pendaftaran
+                        </button>
+                    `;
+                    
+                    showToast('✅ NIK Valid', 'Silakan lanjutkan pendaftaran', 'success');
+                }
+                
+                nikChecked = true;
+
+            } catch (error) {
+                showToast('❌ Error', 'Terjadi kesalahan saat memeriksa NIK', 'error');
+            } finally {
+                setLoading(btn, document.getElementById('checkNikSpinner'), document.getElementById('checkNikText'), false);
+            }
+        }
+
+        // ============================================
+        // REGISTER STEP NAVIGATION
+        // ============================================
+        function goToRegisterStep(step) {
+            const step1 = document.getElementById('registerStep1');
+            const step2 = document.getElementById('registerStep2');
+            
+            if (step === 1) {
+                step1.style.display = 'block';
+                step2.style.display = 'none';
+                document.querySelector('#registerModal .modal-title span').textContent = 'Daftar Akun Baru';
+            } else {
+                if (!nikChecked || nikExists) {
+                    showToast('⚠️ Periksa NIK Dulu', 'Silakan periksa NIK terlebih dahulu', 'warning');
+                    return;
+                }
+                step1.style.display = 'none';
+                step2.style.display = 'block';
+                document.querySelector('#registerModal .modal-title span').textContent = 'Lengkapi Data Diri';
+                if (!dropdownLoaded) loadDropdown();
+            }
+        }
+
+        // ============================================
+        // NIK INPUT - ONLY NUMBERS
+        // ============================================
+        document.getElementById('regNik').addEventListener('input', function() {
+            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);
+            document.getElementById('nikCheckResult').className = 'nik-check-result';
+            nikChecked = false;
+            nikExists = false;
+        });
 
         // ============================================
         // LOGIN VALIDATION
@@ -960,7 +1814,6 @@
 
             if (!validateField(username, 'regUsernameError', username.value.trim() !== '', 'Username harus diisi')) valid = false;
             
-            // Password validation with pattern
             const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
             if (!validateField(password, 'regPasswordError', passwordPattern.test(password.value), 
                 'Password harus memenuhi semua persyaratan')) {
@@ -985,7 +1838,7 @@
         // ============================================
         // LOGIN HANDLER
         // ============================================
-        loginForm.addEventListener('submit', async (e) => {
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             if (!validateLogin()) {
@@ -1042,7 +1895,7 @@
         // ============================================
         // REGISTER HANDLER
         // ============================================
-        registerForm.addEventListener('submit', async (e) => {
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             if (!validateRegister()) {
@@ -1051,6 +1904,7 @@
             }
 
             const idUser = 'USR' + Date.now().toString().slice(-6);
+            const nik = document.getElementById('regNik').value.trim();
 
             const data = {
                 username: document.getElementById('regUsername').value.trim(),
@@ -1058,6 +1912,7 @@
                 email: document.getElementById('regEmail').value.trim(),
                 no_hp: document.getElementById('regNoHp').value.trim(),
                 id_user: idUser,
+                nik: nik,
                 jenis_lkk: document.getElementById('regJenisLkk').value,
                 tingkatan_lkk: document.getElementById('regTingkatanLkk').value
             };
@@ -1071,6 +1926,7 @@
                     showToast('✅ Pendaftaran Berhasil', 'ID User Anda: ' + idUser + '. Silakan login.', 'success');
                     closeRegister();
                     registerForm.reset();
+                    document.getElementById('regNik').value = '';
 
                     document.querySelectorAll('#registerForm .form-group input, #registerForm .form-group select')
                         .forEach(el => {
@@ -1078,6 +1934,7 @@
                         });
                     document.getElementById('agreeTerms').checked = false;
                     document.getElementById('passwordStrength').className = 'password-strength';
+                    document.getElementById('nikCheckResult').className = 'nik-check-result';
 
                     document.getElementById('loginUsername').value = data.username;
                     document.getElementById('loginPassword').focus();
@@ -1140,7 +1997,7 @@
         async function verifyUser() {
             const usernameInput = document.getElementById('forgotUsername');
             const emailInput = document.getElementById('forgotEmail');
-            const btn = document.querySelector('#step1 .btn-register');
+            const btn = document.querySelector('#step1 .btn-register:not(.btn-back)');
             let valid = true;
 
             if (!validateField(usernameInput, 'forgotUsernameError', usernameInput.value.trim() !== '', 'Username harus diisi')) {
@@ -1198,7 +2055,7 @@
 
             if (!valid) return;
 
-            const btn = document.querySelector('#step2 .btn-register[style*="flex:2"]');
+            const btn = document.querySelector('#step2 .btn-register:not(.btn-back)');
 
             setLoading(btn, document.getElementById('resetSpinner'), document.getElementById('resetBtnText'), true);
 
@@ -1307,10 +2164,13 @@
         function openRegister() {
             document.getElementById('registerModal').classList.add('active');
             document.body.style.overflow = 'hidden';
-            // Load dropdown jika belum dimuat
-            if (!dropdownLoaded) {
-                loadDropdown();
-            }
+            document.getElementById('registerStep1').style.display = 'block';
+            document.getElementById('registerStep2').style.display = 'none';
+            document.getElementById('regNik').value = '';
+            document.getElementById('nikCheckResult').className = 'nik-check-result';
+            nikChecked = false;
+            nikExists = false;
+            document.querySelector('#registerModal .modal-title span').textContent = 'Daftar Akun Baru';
         }
 
         function closeRegister() {
@@ -1322,6 +2182,7 @@
                     el.classList.remove('success', 'error');
                 });
             document.getElementById('passwordStrength').className = 'password-strength';
+            document.getElementById('nikCheckResult').className = 'nik-check-result';
         }
 
         function openForgotPassword() {
@@ -1369,7 +2230,7 @@
         // ============================================
         // REAL-TIME VALIDATION
         // ============================================
-        document.querySelectorAll('#loginForm .form-group input, #registerForm .form-group input, #registerForm .form-group select')
+        document.querySelectorAll('#loginForm .form-group input')
             .forEach(input => {
                 input.addEventListener('input', function() {
                     if (this.value.trim() !== '') {
@@ -1388,7 +2249,6 @@
         // CHECK REMEMBER ME & SESSION
         // ============================================
         window.addEventListener('DOMContentLoaded', () => {
-            // Load dropdown immediately
             loadDropdown();
             
             const remembered = localStorage.getItem('remembered');
@@ -1401,23 +2261,18 @@
             if (user) {
                 window.location.href = 'profilepeserta.html';
             }
+
+            document.getElementById('regNik').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    checkNik();
+                }
+            });
         });
 
-        // ============================================
-        // ENTER KEY HANDLER
-        // ============================================
-        document.getElementById('loginPassword').addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                loginForm.dispatchEvent(new Event('submit'));
-            }
-        });
-
-        // ============================================
-        // CONSOLE INFO
-        // ============================================
-        console.log('✅ Sistem Login Siap Digunakan!');
-	console.log('📋 Silakan daftar akun baru untuk mulai menggunakan sistem.');
-	console.log('📡 API URL:', API_BASE_URL)
+        console.log('✅ Sistem Login Premium Siap Digunakan!');
+        console.log('📋 Fitur: Show/Hide Password, Cek NIK, Auto WhatsApp');
+        console.log('📡 API URL:', API_BASE_URL);
     </script>
 
 </body>
