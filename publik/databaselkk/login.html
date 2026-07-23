@@ -185,7 +185,8 @@
             color: #667eea;
         }
 
-        .form-group input {
+        .form-group input,
+        .form-group select {
             width: 100%;
             padding: 13px 12px 13px 0;
             border: none;
@@ -194,6 +195,17 @@
             color: #fff;
             outline: none;
             min-width: 0;
+        }
+
+        .form-group select {
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+        }
+
+        .form-group select option {
+            background: #1a1a2e;
+            color: #fff;
         }
 
         .form-group input::placeholder {
@@ -459,26 +471,13 @@
             color: rgba(255,255,255,0.25);
         }
 
-        .modal .form-group select {
-            background: transparent;
-            appearance: none;
-            -webkit-appearance: none;
-            width: 100%;
-            padding: 13px 12px 13px 0;
-            border: none;
-            outline: none;
-            color: #fff;
-            font-size: 14px;
-            cursor: pointer;
-        }
-
         .modal .form-group select option {
             background: #1a1a2e;
             color: #fff;
         }
 
         /* ============================================
-           BUTTONS - FIXED BACK BUTTON
+           BUTTONS
         ============================================ */
         .btn-register {
             width: 100%;
@@ -515,9 +514,6 @@
             transform: translateY(-2px);
         }
 
-        /* ============================================
-           TOMBOL BACK - KECIL
-        ============================================ */
         .btn-back {
             width: auto !important;
             padding: 8px 18px !important;
@@ -542,18 +538,6 @@
 
         .btn-back i {
             font-size: 13px;
-        }
-
-        /* Mobile */
-        @media (max-width: 480px) {
-            .btn-back {
-                padding: 6px 14px !important;
-                font-size: 12px !important;
-            }
-            
-            .btn-back i {
-                font-size: 12px;
-            }
         }
 
         .spinner {
@@ -746,6 +730,50 @@
             box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
         }
 
+        .btn-small-danger {
+            background: #dc3545;
+            color: #fff;
+        }
+
+        .btn-small-danger:hover {
+            box-shadow: 0 5px 20px rgba(220, 53, 69, 0.3);
+        }
+
+        /* ============================================
+           JABATAN LIST
+        ============================================ */
+        .jabatan-list {
+            margin: 10px 0;
+            padding: 10px 14px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .jabatan-list .item {
+            padding: 4px 0;
+            color: rgba(255,255,255,0.9);
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .jabatan-list .item .num {
+            color: #667eea;
+            font-weight: 600;
+            min-width: 20px;
+        }
+
+        .jabatan-list .item .jabatan-name {
+            color: #fff;
+        }
+
+        .jabatan-list .item .jabatan-detail {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+
         /* ============================================
            PASSWORD STRENGTH
         ============================================ */
@@ -871,6 +899,32 @@
         }
 
         /* ============================================
+           JABATAN OPTION WITH STATUS
+        ============================================ */
+        .jabatan-option {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 2px 0;
+        }
+
+        .jabatan-option .status {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        .jabatan-option .status.available {
+            color: #28a745;
+            background: rgba(40, 167, 69, 0.15);
+        }
+
+        .jabatan-option .status.full {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.15);
+        }
+
+        /* ============================================
            RESPONSIVE
         ============================================ */
         @media (max-width: 480px) {
@@ -913,6 +967,7 @@
             }
 
             .form-group input,
+            .form-group select,
             .modal .form-group input,
             .modal .form-group select {
                 font-size: 13px;
@@ -1016,6 +1071,10 @@
             .nik-check-result .message {
                 font-size: 12px;
             }
+
+            .jabatan-list .item {
+                font-size: 12px;
+            }
         }
 
         @media (max-width: 360px) {
@@ -1037,6 +1096,7 @@
             }
 
             .form-group input,
+            .form-group select,
             .modal .form-group input,
             .modal .form-group select {
                 font-size: 12px;
@@ -1117,7 +1177,8 @@
                 margin-bottom: 10px;
             }
 
-            .form-group input {
+            .form-group input,
+            .form-group select {
                 padding: 8px 10px 8px 0;
                 font-size: 12px;
             }
@@ -1145,6 +1206,47 @@
                 padding: 5px 12px !important;
                 font-size: 11px !important;
             }
+        }
+
+        /* ============================================
+           JABATAN DROPDOWN WITH STATUS
+        ============================================ */
+        .jabatan-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .jabatan-status .badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .jabatan-status .badge.available {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .jabatan-status .badge.full {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .jabatan-status .badge.warning {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+
+        select option[disabled] {
+            color: #dc3545 !important;
+            opacity: 0.6;
+        }
+
+        .field-hidden {
+            display: none;
         }
     </style>
 </head>
@@ -1205,7 +1307,7 @@
     <div class="modal" id="registerModal">
         <div class="modal-content">
             <button class="modal-close" onclick="closeRegister()">&times;</button>
-            <h2 class="modal-title">📝 <span>Daftar Akun Baru</span></h2>
+            <h2 class="modal-title">📝 <span id="registerModalTitle">Daftar Akun Baru</span></h2>
 
             <!-- Step 1: Check NIK -->
             <div id="registerStep1">
@@ -1224,6 +1326,7 @@
                 <div class="nik-check-result" id="nikCheckResult">
                     <div class="title" id="nikCheckTitle"></div>
                     <div class="message" id="nikCheckMessage"></div>
+                    <div id="nikJabatanList" class="jabatan-list" style="display:none;"></div>
                     <div class="actions" id="nikCheckActions"></div>
                 </div>
 
@@ -1232,7 +1335,6 @@
                     <span class="spinner" id="checkNikSpinner"></span>
                 </button>
 
-                <!-- ========== TOMBOL BACK KECIL ========== -->
                 <div style="text-align:center; margin-top:12px;">
                     <button type="button" class="btn-back" onclick="closeRegister()">
                         <i class="fas fa-arrow-left"></i> Kembali
@@ -1244,9 +1346,18 @@
             <div id="registerStep2" style="display:none;">
                 <form id="registerForm" autocomplete="off">
                     <div class="form-group">
-                        <label>Username <span style="color:#dc3545;">*</span></label>
+                        <label>Nama Lengkap <span style="color:#dc3545;">*</span></label>
                         <div class="input-wrapper">
                             <span class="input-icon"><i class="fas fa-user"></i></span>
+                            <input type="text" id="regNama" placeholder="Masukkan nama lengkap" required>
+                        </div>
+                        <div class="error-message" id="regNamaError">Nama harus diisi</div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Username <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-user-circle"></i></span>
                             <input type="text" id="regUsername" placeholder="Masukkan username" required>
                         </div>
                         <div class="error-message" id="regUsernameError">Username harus diisi</div>
@@ -1296,7 +1407,7 @@
                         <div class="input-wrapper">
                             <span class="input-icon"><i class="fas fa-users"></i></span>
                             <select id="regJenisLkk" required>
-                                <option value="">Memuat data...</option>
+                                <option value="">Pilih Jenis LKK</option>
                             </select>
                         </div>
                         <div class="error-message" id="regJenisLkkError">Jenis LKK harus dipilih</div>
@@ -1307,10 +1418,67 @@
                         <div class="input-wrapper">
                             <span class="input-icon"><i class="fas fa-layer-group"></i></span>
                             <select id="regTingkatanLkk" required>
-                                <option value="">Memuat data...</option>
+                                <option value="">Pilih Tingkatan LKK</option>
                             </select>
                         </div>
                         <div class="error-message" id="regTingkatanLkkError">Tingkatan LKK harus dipilih</div>
+                    </div>
+
+                    <!-- Field RT (khusus Jenis LKK = RT) -->
+                    <div class="form-group field-hidden" id="regRtGroup">
+                        <label>Pilih RT <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-home"></i></span>
+                            <select id="regRt">
+                                <option value="">Pilih RT</option>
+                                <option value="001">RT 001</option>
+                                <option value="002">RT 002</option>
+                                <option value="003">RT 003</option>
+                                <option value="004">RT 004</option>
+                                <option value="005">RT 005</option>
+                                <option value="006">RT 006</option>
+                                <option value="007">RT 007</option>
+                                <option value="008">RT 008</option>
+                                <option value="009">RT 009</option>
+                                <option value="010">RT 010</option>
+                                <option value="011">RT 011</option>
+                                <option value="012">RT 012</option>
+                                <option value="013">RT 013</option>
+                                <option value="014">RT 014</option>
+                                <option value="015">RT 015</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="regRtError">Silakan pilih RT</div>
+                    </div>
+
+                    <!-- Field RW (khusus Jenis LKK = RW) -->
+                    <div class="form-group field-hidden" id="regRwGroup">
+                        <label>Pilih RW <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-building"></i></span>
+                            <select id="regRw">
+                                <option value="">Pilih RW</option>
+                                <option value="001">RW 001</option>
+                                <option value="002">RW 002</option>
+                                <option value="003">RW 003</option>
+                                <option value="004">RW 004</option>
+                                <option value="005">RW 005</option>
+                            </select>
+                        </div>
+                        <div class="error-message" id="regRwError">Silakan pilih RW</div>
+                    </div>
+
+                    <!-- Field Jabatan dengan status kuota -->
+                    <div class="form-group">
+                        <label>Jabatan <span style="color:#dc3545;">*</span></label>
+                        <div class="input-wrapper">
+                            <span class="input-icon"><i class="fas fa-briefcase"></i></span>
+                            <select id="regJabatan" required>
+                                <option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>
+                            </select>
+                        </div>
+                        <div class="info-text" id="jabatanInfo">Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia</div>
+                        <div class="error-message" id="regJabatanError">Jabatan harus dipilih</div>
                     </div>
 
                     <div class="checkbox-agree">
@@ -1321,7 +1489,6 @@
                         <div class="error-message" id="regAgreeError">Anda harus menyetujui syarat dan ketentuan</div>
                     </div>
 
-                    <!-- ========== TOMBOL BACK KECIL ========== -->
                     <div class="btn-group">
                         <button type="button" class="btn-back" onclick="goToRegisterStep(1)">
                             <i class="fas fa-arrow-left"></i>
@@ -1450,6 +1617,19 @@
 
     <script>
         // ============================================
+        // CONFIGURATION
+        // ============================================
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbyKzI0NgvEMZouvn1-cWVxia5wCdJuYxpBezaygrSDkHyXoWOSrL4ybDgOrLIY7mYA9/exec';
+        const WHATSAPP_NUMBER = '6282170089590';
+        let verifiedUser = null;
+        let dropdownLoaded = false;
+        let nikChecked = false;
+        let nikExists = false;
+        let nikData = null;
+        let availableJabatan = [];
+        let userJabatanList = [];
+
+        // ============================================
         // PARTICLES BACKGROUND
         // ============================================
         (function createParticles() {
@@ -1465,16 +1645,6 @@
                 container.appendChild(particle);
             }
         })();
-
-        // ============================================
-        // CONFIGURATION
-        // ============================================
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxRkGBYatrnDUZt8ON8F2NyNIZyBxBT2LxFhLmy_6upC_1hNNh932U1pm1iHcPRhNSg/exec';
-        const WHATSAPP_NUMBER = '6282170089590';
-        let verifiedUser = null;
-        let dropdownLoaded = false;
-        let nikChecked = false;
-        let nikExists = false;
 
         // ============================================
         // TOAST NOTIFICATION
@@ -1680,6 +1850,82 @@
         }
 
         // ============================================
+        // GET AVAILABLE JABATAN
+        // ============================================
+        async function getAvailableJabatan() {
+            const jenisLkk = document.getElementById('regJenisLkk').value;
+            const tingkatanLkk = document.getElementById('regTingkatanLkk').value;
+            const rt = document.getElementById('regRt').value;
+            const rw = document.getElementById('regRw').value;
+
+            if (!jenisLkk || !tingkatanLkk) {
+                return;
+            }
+
+            // Tampilkan loading
+            const jabatanSelect = document.getElementById('regJabatan');
+            jabatanSelect.innerHTML = '<option value="">Memuat data jabatan...</option>';
+            document.getElementById('jabatanInfo').textContent = '⏳ Memuat data jabatan...';
+
+            try {
+                const data = {
+                    jenis_lkk: jenisLkk,
+                    tingkatan_lkk: tingkatanLkk
+                };
+
+                // Tambahkan RT/RW jika diperlukan
+                if (jenisLkk === 'RT' && rt) {
+                    data.rt = rt;
+                }
+                if (jenisLkk === 'RW' && rw) {
+                    data.rw = rw;
+                }
+
+                const result = await callAPI('getAvailableJabatan', data);
+
+                if (result.success && result.data) {
+                    availableJabatan = result.data;
+                    
+                    // Build dropdown options
+                    let options = '<option value="">Pilih Jabatan</option>';
+                    let infoText = '';
+                    let hasAvailable = false;
+
+                    for (const jabatan of availableJabatan) {
+                        const isAvailable = jabatan.sisa > 0;
+                        const statusText = isAvailable ? `✅ Tersisa ${jabatan.sisa} dari ${jabatan.limit}` : `❌ Penuh (${jabatan.terpakai}/${jabatan.limit})`;
+                        const disabled = !isAvailable ? 'disabled' : '';
+                        
+                        options += `<option value="${jabatan.jabatan}" ${disabled}>${jabatan.jabatan} - ${statusText}</option>`;
+                        
+                        if (isAvailable) {
+                            hasAvailable = true;
+                        }
+                    }
+
+                    jabatanSelect.innerHTML = options;
+
+                    if (hasAvailable) {
+                        infoText = '✅ Pilih jabatan yang tersedia di atas';
+                    } else {
+                        infoText = '⚠️ Semua jabatan sudah penuh untuk kombinasi ini!';
+                    }
+                    
+                    document.getElementById('jabatanInfo').textContent = infoText;
+
+                } else {
+                    jabatanSelect.innerHTML = '<option value="">Tidak ada jabatan tersedia</option>';
+                    document.getElementById('jabatanInfo').textContent = '❌ ' + (result.message || 'Gagal memuat data jabatan');
+                }
+
+            } catch (error) {
+                console.error('Error getting available jabatan:', error);
+                jabatanSelect.innerHTML = '<option value="">Error memuat data</option>';
+                document.getElementById('jabatanInfo').textContent = '❌ Terjadi kesalahan';
+            }
+        }
+
+        // ============================================
         // CHECK NIK
         // ============================================
         async function checkNik() {
@@ -1700,42 +1946,80 @@
                 const title = document.getElementById('nikCheckTitle');
                 const message = document.getElementById('nikCheckMessage');
                 const actions = document.getElementById('nikCheckActions');
+                const jabatanList = document.getElementById('nikJabatanList');
 
                 resultDiv.className = 'nik-check-result show';
 
-                if (result.success && result.data && result.data.exists) {
-                    nikExists = true;
-                    resultDiv.className = 'nik-check-result show exists';
-                    title.className = 'title exists';
-                    title.textContent = '⚠️ NIK Sudah Terdaftar';
-                    message.textContent = 'NIK ' + nik + ' sudah terdaftar di sistem. Silakan login atau hubungi admin.';
-                    
-                    actions.innerHTML = `
-                        <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Assalamualaikum%20Admin%2C%20mohon%20bantuannya%20akun%20saya%20di%20LKK%20Kecamatan%20sudah%20terdaftar%20mohon%20konfirmasi%20permintaan%20username%20dan%20password.%20Berikut%20nomor%20NIK%20saya%3A%20${nik}" 
-                           target="_blank" class="btn-small btn-small-whatsapp">
-                            <i class="fab fa-whatsapp"></i> Hubungi Admin
-                        </a>
-                        <button class="btn-small btn-small-primary" onclick="closeRegister()">
-                            <i class="fas fa-sign-in-alt"></i> Login
-                        </button>
-                    `;
-                    
-                    showToast('⚠️ NIK Terdaftar', 'NIK sudah ada, silakan login atau hubungi admin', 'warning');
-                    
+                if (result.success && result.data) {
+                    if (result.data.exists) {
+                        nikExists = true;
+                        nikData = result.data;
+                        
+                        resultDiv.className = 'nik-check-result show exists';
+                        title.className = 'title exists';
+                        title.textContent = '⚠️ NIK Sudah Terdaftar';
+                        
+                        // Tampilkan jabatan user
+                        const jabatans = result.data.jabatan || [];
+                        userJabatanList = jabatans;
+                        
+                        if (jabatans.length > 0) {
+                            let jabatanHtml = '<div style="margin-bottom:8px;font-weight:600;color:rgba(255,255,255,0.8);">📋 Data Jabatan Anda:</div>';
+                            jabatans.forEach((jab, index) => {
+                                const rtText = jab.rt ? ` RT ${jab.rt}` : '';
+                                const rwText = jab.rw ? ` RW ${jab.rw}` : '';
+                                jabatanHtml += `
+                                    <div class="item">
+                                        <span class="num">${index + 1}.</span>
+                                        <span class="jabatan-name">${jab.jabatan}</span>
+                                        <span class="jabatan-detail">${jab.jenis_lkk}${rtText}${rwText} - ${jab.tingkatan_lkk}</span>
+                                    </div>
+                                `;
+                            });
+                            jabatanList.innerHTML = jabatanHtml;
+                            jabatanList.style.display = 'block';
+                            message.textContent = `NIK ${nik} sudah terdaftar dengan ${jabatans.length} jabatan.`;
+                        } else {
+                            jabatanList.style.display = 'none';
+                            message.textContent = `NIK ${nik} sudah terdaftar di sistem.`;
+                        }
+                        
+                        actions.innerHTML = `
+                            <button class="btn-small btn-small-success" onclick="goToRegisterStep(2)">
+                                <i class="fas fa-user-plus"></i> Daftarkan Jabatan Lain
+                            </button>
+                            <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Assalamualaikum%20Admin%2C%20mohon%20bantuannya%20akun%20saya%20di%20LKK%20Kecamatan%20sudah%20terdaftar%20mohon%20konfirmasi%20permintaan%20username%20dan%20password.%20Berikut%20nomor%20NIK%20saya%3A%20${nik}" 
+                               target="_blank" class="btn-small btn-small-whatsapp">
+                                <i class="fab fa-whatsapp"></i> Hubungi Admin
+                            </a>
+                            <button class="btn-small btn-small-primary" onclick="closeRegister()">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </button>
+                        `;
+                        
+                        showToast('⚠️ NIK Terdaftar', `NIK ${nik} sudah terdaftar dengan ${jabatans.length} jabatan`, 'warning');
+                        
+                    } else {
+                        nikExists = false;
+                        nikData = null;
+                        userJabatanList = [];
+                        
+                        resultDiv.className = 'nik-check-result show not-exists';
+                        title.className = 'title not-exists';
+                        title.textContent = '✅ NIK Belum Terdaftar';
+                        message.textContent = `NIK ${nik} belum terdaftar. Silakan lanjutkan pendaftaran.`;
+                        jabatanList.style.display = 'none';
+                        
+                        actions.innerHTML = `
+                            <button class="btn-small btn-small-success" onclick="goToRegisterStep(2)">
+                                <i class="fas fa-user-plus"></i> Lanjutkan Pendaftaran
+                            </button>
+                        `;
+                        
+                        showToast('✅ NIK Valid', 'Silakan lanjutkan pendaftaran', 'success');
+                    }
                 } else {
-                    nikExists = false;
-                    resultDiv.className = 'nik-check-result show not-exists';
-                    title.className = 'title not-exists';
-                    title.textContent = '✅ NIK Belum Terdaftar';
-                    message.textContent = 'NIK ' + nik + ' belum terdaftar. Silakan lanjutkan pendaftaran.';
-                    
-                    actions.innerHTML = `
-                        <button class="btn-small btn-small-success" onclick="goToRegisterStep(2)">
-                            <i class="fas fa-user-plus"></i> Lanjutkan Pendaftaran
-                        </button>
-                    `;
-                    
-                    showToast('✅ NIK Valid', 'Silakan lanjutkan pendaftaran', 'success');
+                    showToast('❌ Error', result.message || 'Terjadi kesalahan saat memeriksa NIK', 'error');
                 }
                 
                 nikChecked = true;
@@ -1753,20 +2037,28 @@
         function goToRegisterStep(step) {
             const step1 = document.getElementById('registerStep1');
             const step2 = document.getElementById('registerStep2');
+            const title = document.getElementById('registerModalTitle');
             
             if (step === 1) {
                 step1.style.display = 'block';
                 step2.style.display = 'none';
-                document.querySelector('#registerModal .modal-title span').textContent = 'Daftar Akun Baru';
+                title.textContent = 'Daftar Akun Baru';
             } else {
-                if (!nikChecked || nikExists) {
+                if (!nikChecked) {
                     showToast('⚠️ Periksa NIK Dulu', 'Silakan periksa NIK terlebih dahulu', 'warning');
                     return;
                 }
                 step1.style.display = 'none';
                 step2.style.display = 'block';
-                document.querySelector('#registerModal .modal-title span').textContent = 'Lengkapi Data Diri';
+                title.textContent = 'Lengkapi Data Diri';
                 if (!dropdownLoaded) loadDropdown();
+                // Isi NIK ke form
+                document.getElementById('regNikHidden')?.remove();
+                const nikInput = document.createElement('input');
+                nikInput.type = 'hidden';
+                nikInput.id = 'regNikHidden';
+                nikInput.value = document.getElementById('regNik').value.trim();
+                document.getElementById('registerForm').appendChild(nikInput);
             }
         }
 
@@ -1803,15 +2095,18 @@
         // REGISTER VALIDATION
         // ============================================
         function validateRegister() {
+            const nama = document.getElementById('regNama');
             const username = document.getElementById('regUsername');
             const password = document.getElementById('regPassword');
             const email = document.getElementById('regEmail');
             const noHp = document.getElementById('regNoHp');
             const jenisLkk = document.getElementById('regJenisLkk');
             const tingkatanLkk = document.getElementById('regTingkatanLkk');
+            const jabatan = document.getElementById('regJabatan');
             const agree = document.getElementById('agreeTerms');
             let valid = true;
 
+            if (!validateField(nama, 'regNamaError', nama.value.trim() !== '', 'Nama harus diisi')) valid = false;
             if (!validateField(username, 'regUsernameError', username.value.trim() !== '', 'Username harus diisi')) valid = false;
             
             const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -1824,6 +2119,18 @@
             if (!validateField(noHp, 'regNoHpError', noHp.value.trim() !== '' && /^[0-9]+$/.test(noHp.value.trim()), 'No HP harus diisi dan hanya angka')) valid = false;
             if (!validateField(jenisLkk, 'regJenisLkkError', jenisLkk.value !== '', 'Jenis LKK harus dipilih')) valid = false;
             if (!validateField(tingkatanLkk, 'regTingkatanLkkError', tingkatanLkk.value !== '', 'Tingkatan LKK harus dipilih')) valid = false;
+
+            // Validasi RT/RW
+            const selectedJenis = jenisLkk.value;
+            if (selectedJenis === 'RT') {
+                const rt = document.getElementById('regRt');
+                if (!validateField(rt, 'regRtError', rt.value !== '', 'Silakan pilih RT')) valid = false;
+            } else if (selectedJenis === 'RW') {
+                const rw = document.getElementById('regRw');
+                if (!validateField(rw, 'regRwError', rw.value !== '', 'Silakan pilih RW')) valid = false;
+            }
+
+            if (!validateField(jabatan, 'regJabatanError', jabatan.value !== '', 'Jabatan harus dipilih')) valid = false;
 
             if (!agree.checked) {
                 document.getElementById('regAgreeError').classList.add('show');
@@ -1866,7 +2173,8 @@
                         no_hp: userData.no_hp || '',
                         id_user: userData.id_user || '',
                         jenis_lkk: userData.jenis_lkk || '',
-                        tingkatan_lkk: userData.tingkatan_lkk || ''
+                        tingkatan_lkk: userData.tingkatan_lkk || '',
+                        nik: userData.nik || ''
                     };
 
                     localStorage.setItem('user', JSON.stringify(user));
@@ -1904,18 +2212,29 @@
             }
 
             const idUser = 'USR' + Date.now().toString().slice(-6);
-            const nik = document.getElementById('regNik').value.trim();
+            const nik = document.getElementById('regNikHidden')?.value || document.getElementById('regNik').value.trim();
+            const jenisLkk = document.getElementById('regJenisLkk').value;
+            const tingkatanLkk = document.getElementById('regTingkatanLkk').value;
 
             const data = {
+                nama: document.getElementById('regNama').value.trim(),
                 username: document.getElementById('regUsername').value.trim(),
                 password: document.getElementById('regPassword').value.trim(),
                 email: document.getElementById('regEmail').value.trim(),
                 no_hp: document.getElementById('regNoHp').value.trim(),
                 id_user: idUser,
                 nik: nik,
-                jenis_lkk: document.getElementById('regJenisLkk').value,
-                tingkatan_lkk: document.getElementById('regTingkatanLkk').value
+                jenis_lkk: jenisLkk,
+                tingkatan_lkk: tingkatanLkk,
+                jabatan: document.getElementById('regJabatan').value
             };
+
+            // Tambahkan RT/RW jika diperlukan
+            if (jenisLkk === 'RT') {
+                data.rt = document.getElementById('regRt').value;
+            } else if (jenisLkk === 'RW') {
+                data.rw = document.getElementById('regRw').value;
+            }
 
             setLoading(registerBtn, document.getElementById('registerSpinner'), document.getElementById('registerBtnText'), true);
 
@@ -1923,7 +2242,7 @@
                 const result = await callAPI('register', data);
 
                 if (result.success) {
-                    showToast('✅ Pendaftaran Berhasil', 'ID User Anda: ' + idUser + '. Silakan login.', 'success');
+                    showToast('✅ Pendaftaran Berhasil', `ID User: ${idUser}. Silakan login.`, 'success');
                     closeRegister();
                     registerForm.reset();
                     document.getElementById('regNik').value = '';
@@ -1935,6 +2254,9 @@
                     document.getElementById('agreeTerms').checked = false;
                     document.getElementById('passwordStrength').className = 'password-strength';
                     document.getElementById('nikCheckResult').className = 'nik-check-result';
+                    document.getElementById('nikJabatanList').style.display = 'none';
+                    document.getElementById('regJabatan').innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
+                    document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
 
                     document.getElementById('loginUsername').value = data.username;
                     document.getElementById('loginPassword').focus();
@@ -1945,6 +2267,79 @@
                 showToast('❌ Error', 'Terjadi kesalahan, silakan coba lagi', 'error');
             } finally {
                 setLoading(registerBtn, document.getElementById('registerSpinner'), document.getElementById('registerBtnText'), false);
+            }
+        });
+
+        // ============================================
+        // JENIS LKK CHANGE - Show/Hide RT/RW
+        // ============================================
+        document.getElementById('regJenisLkk').addEventListener('change', function() {
+            const selected = this.value;
+            const rtGroup = document.getElementById('regRtGroup');
+            const rwGroup = document.getElementById('regRwGroup');
+            const jabatanSelect = document.getElementById('regJabatan');
+            
+            // Reset
+            rtGroup.classList.add('field-hidden');
+            rwGroup.classList.add('field-hidden');
+            document.getElementById('regRt').value = '';
+            document.getElementById('regRw').value = '';
+            document.getElementById('regRtError').classList.remove('show');
+            document.getElementById('regRwError').classList.remove('show');
+
+            if (selected === 'RT') {
+                rtGroup.classList.remove('field-hidden');
+            } else if (selected === 'RW') {
+                rwGroup.classList.remove('field-hidden');
+            }
+
+            // Reset jabatan
+            jabatanSelect.innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
+            document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
+            availableJabatan = [];
+
+            // Auto load jabatan if tingkatan already selected
+            const tingkatan = document.getElementById('regTingkatanLkk').value;
+            if (selected && tingkatan) {
+                const rt = document.getElementById('regRt').value;
+                const rw = document.getElementById('regRw').value;
+                if (selected === 'RT' && !rt) return;
+                if (selected === 'RW' && !rw) return;
+                getAvailableJabatan();
+            }
+        });
+
+        // ============================================
+        // TINGKATAN LKK CHANGE
+        // ============================================
+        document.getElementById('regTingkatanLkk').addEventListener('change', function() {
+            const jenis = document.getElementById('regJenisLkk').value;
+            const rt = document.getElementById('regRt').value;
+            const rw = document.getElementById('regRw').value;
+            
+            if (jenis && this.value) {
+                if (jenis === 'RT' && !rt) return;
+                if (jenis === 'RW' && !rw) return;
+                getAvailableJabatan();
+            }
+        });
+
+        // ============================================
+        // RT/RW CHANGE
+        // ============================================
+        document.getElementById('regRt').addEventListener('change', function() {
+            const jenis = document.getElementById('regJenisLkk').value;
+            const tingkatan = document.getElementById('regTingkatanLkk').value;
+            if (jenis === 'RT' && tingkatan && this.value) {
+                getAvailableJabatan();
+            }
+        });
+
+        document.getElementById('regRw').addEventListener('change', function() {
+            const jenis = document.getElementById('regJenisLkk').value;
+            const tingkatan = document.getElementById('regTingkatanLkk').value;
+            if (jenis === 'RW' && tingkatan && this.value) {
+                getAvailableJabatan();
             }
         });
 
@@ -2168,9 +2563,14 @@
             document.getElementById('registerStep2').style.display = 'none';
             document.getElementById('regNik').value = '';
             document.getElementById('nikCheckResult').className = 'nik-check-result';
+            document.getElementById('nikJabatanList').style.display = 'none';
             nikChecked = false;
             nikExists = false;
-            document.querySelector('#registerModal .modal-title span').textContent = 'Daftar Akun Baru';
+            nikData = null;
+            userJabatanList = [];
+            document.getElementById('registerModalTitle').textContent = 'Daftar Akun Baru';
+            document.getElementById('regJabatan').innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
+            document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
         }
 
         function closeRegister() {
@@ -2183,6 +2583,11 @@
                 });
             document.getElementById('passwordStrength').className = 'password-strength';
             document.getElementById('nikCheckResult').className = 'nik-check-result';
+            document.getElementById('nikJabatanList').style.display = 'none';
+            document.getElementById('regRtGroup').classList.add('field-hidden');
+            document.getElementById('regRwGroup').classList.add('field-hidden');
+            document.getElementById('regJabatan').innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
+            document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
         }
 
         function openForgotPassword() {
@@ -2271,7 +2676,7 @@
         });
 
         console.log('✅ Sistem Login Premium Siap Digunakan!');
-        console.log('📋 Fitur: Show/Hide Password, Cek NIK, Auto WhatsApp');
+        console.log('📋 Fitur: Show/Hide Password, Cek NIK dengan Jabatan, Auto WhatsApp');
         console.log('📡 API URL:', API_BASE_URL);
     </script>
 
