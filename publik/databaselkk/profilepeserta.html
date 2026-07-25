@@ -5,15 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LKK Kecamatan Senapelan</title>
 
-	<!-- ===== FAVICON ===== -->
-  	<link rel="icon" type="image/png" 	href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
-  	<link rel="apple-touch-icon" 	href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
+    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
 
-	<!-- ===== META TAG ===== -->
-  	<meta property="og:image" 	content="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
- 	<meta property="og:title" content="LEMBAGA KEMASYARAKATAN KELURAHAN KECAMATAN SENAPELAN" />
- 	<meta property="og:description" content="Login - LKK Kecamatan Senapelan" />
-
+    <!-- ===== META TAG ===== -->
+    <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
+    <meta property="og:title" content="LEMBAGA KEMASYARAKATAN KELURAHAN KECAMATAN SENAPELAN" />
+    <meta property="og:description" content="Profile - LKK Kecamatan Senapelan" />
 
     <link rel="icon" href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -301,10 +300,6 @@
             font-weight: 600;
         }
 
-        .sidebar .menu-item.hidden {
-            display: none;
-        }
-
         .sidebar .bottom-section {
             padding: 16px 20px;
             border-top: 1px solid rgba(255,255,255,0.06);
@@ -569,112 +564,81 @@
         }
 
         /* ============================================
-           BERITA SLIDE
+           BERITA CARD GRID
            ============================================ */
-        .berita-slide-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: var(--radius-sm);
-            background: var(--bg-card);
-            min-height: 200px;
-        }
-
-        .berita-slide {
-            display: none;
-            animation: slideFade 0.6s ease;
-            padding: 4px;
-        }
-
-        .berita-slide.active {
-            display: block;
-        }
-
-        @keyframes slideFade {
-            from { opacity: 0; transform: scale(0.98); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .berita-slide .berita-content {
+        .berita-grid {
             display: grid;
-            grid-template-columns: 200px 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
-            align-items: center;
-            padding: 16px;
+        }
+
+        .berita-card-item {
             background: var(--bg-card);
-            border-radius: var(--radius-sm);
             border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
             transition: var(--transition);
             cursor: pointer;
         }
 
-        .berita-slide .berita-content:hover {
+        .berita-card-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
             border-color: #667eea;
-            box-shadow: var(--shadow-sm);
         }
 
-        .berita-slide .berita-gambar {
-            width: 200px;
-            height: 130px;
-            border-radius: var(--radius-sm);
+        .berita-card-item .berita-gambar {
+            width: 100%;
+            height: 180px;
             object-fit: cover;
             background: var(--bg-primary);
-            flex-shrink: 0;
         }
 
-        .berita-slide .berita-info {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
+        .berita-card-item .berita-body {
+            padding: 16px 20px 20px;
         }
 
-        .berita-slide .berita-info .judul {
-            font-size: 17px;
+        .berita-card-item .berita-body .judul {
+            font-size: 16px;
             font-weight: 700;
             color: var(--text-primary);
             line-height: 1.3;
+            margin-bottom: 6px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
         }
 
-        .berita-slide .berita-info .tanggal {
+        .berita-card-item .berita-body .tanggal {
             font-size: 12px;
             color: var(--text-light);
+            margin-bottom: 10px;
         }
 
-        .berita-slide .berita-info .link {
+        .berita-card-item .berita-body .link {
             font-size: 13px;
             color: #667eea;
             font-weight: 500;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
         }
 
-        .berita-slide .berita-info .link:hover {
+        .berita-card-item .berita-body .link:hover {
             text-decoration: underline;
         }
 
-        .berita-dots {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            padding: 16px 0 8px;
+        .berita-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--text-secondary);
         }
 
-        .berita-dots .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--border-color);
-            cursor: pointer;
-            transition: var(--transition);
-            border: none;
-        }
-
-        .berita-dots .dot.active {
-            background: var(--gradient-primary);
-            width: 28px;
-            border-radius: 10px;
-        }
-
-        .berita-dots .dot:hover {
-            transform: scale(1.2);
+        .berita-empty .icon {
+            font-size: 56px;
+            margin-bottom: 16px;
         }
 
         /* ============================================
@@ -885,6 +849,13 @@
             margin-left: 4px;
         }
 
+        .form-group label .editable-badge {
+            font-size: 10px;
+            color: #28a745;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -928,6 +899,21 @@
         .form-group select.readonly-field:focus {
             border-color: var(--border-color);
             box-shadow: none;
+        }
+
+        /* EDITABLE STYLE - Field yang bisa diedit */
+        .form-group input.editable-field,
+        .form-group select.editable-field {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            cursor: text;
+            border-color: var(--border-color);
+        }
+
+        .form-group input.editable-field:focus,
+        .form-group select.editable-field:focus {
+            border-color: #28a745;
+            box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.1);
         }
 
         .form-group textarea {
@@ -1233,10 +1219,6 @@
             font-weight: 700;
         }
 
-        .bottom-nav .nav-item.hidden {
-            display: none;
-        }
-
         /* Profile center button */
         .bottom-nav .nav-item.profile-center {
             position: relative;
@@ -1485,14 +1467,8 @@
                 display: none;
             }
 
-            .berita-slide .berita-content {
+            .berita-grid {
                 grid-template-columns: 1fr;
-                text-align: center;
-            }
-            .berita-slide .berita-gambar {
-                width: 100%;
-                height: 160px;
-                margin: 0 auto;
             }
 
             .form-grid {
@@ -1546,11 +1522,11 @@
                 flex-wrap: wrap;
                 gap: 8px;
             }
-            .berita-slide .berita-gambar {
-                height: 120px;
+            .berita-card-item .berita-gambar {
+                height: 140px;
             }
-            .berita-slide .berita-info .judul {
-                font-size: 15px;
+            .berita-card-item .berita-body .judul {
+                font-size: 14px;
             }
         }
 
@@ -1604,6 +1580,18 @@
         }
 
         .readonly-helper.show {
+            display: block;
+        }
+
+        .editable-helper {
+            font-size: 11px;
+            color: #28a745;
+            font-weight: 500;
+            margin-top: 2px;
+            display: none;
+        }
+
+        .editable-helper.show {
             display: block;
         }
 
@@ -1752,15 +1740,14 @@
                 </div>
             </div>
 
-            <!-- Card Berita -->
+            <!-- Card Berita - GRID PER CARD -->
             <div class="card">
                 <div class="card-title">
                     📰 Berita & Informasi Terbaru
                     <span class="badge" id="beritaCount">0</span>
                 </div>
-                <div class="berita-slide-container" id="beritaContainer">
-                    <div id="beritaSlides"></div>
-                    <div class="berita-dots" id="beritaDots"></div>
+                <div id="beritaContainer">
+                    <div id="beritaGrid" class="berita-grid"></div>
                 </div>
             </div>
         </div>
@@ -1877,12 +1864,12 @@
                     <span style="font-size: 12px; color: var(--text-light);" id="themeStatus">Nonaktif</span>
                 </div>
 
-        <!-- ===== TOMBOL EDIT DI ATAS ===== -->
-        <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
-            <button type="button" class="btn-edit" id="editBtnTop" style="padding: 10px 24px; font-size: 14px;">
-                🔓 Edit Biodata
-            </button>
-        </div>
+                <!-- ===== TOMBOL EDIT DI ATAS ===== -->
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+                    <button type="button" class="btn-edit" id="editBtnTop" style="padding: 10px 24px; font-size: 14px;">
+                        🔓 Edit Biodata
+                    </button>
+                </div>
 
                 <!-- Progress -->
                 <div class="progress-container">
@@ -1895,7 +1882,7 @@
                     </div>
                     <div class="progress-detail" style="display:flex; justify-content:space-between; margin-top:6px; font-size:12px; color:var(--text-light);">
                         <span id="profileProgressFilled">0</span>
-                        <span>dari 23 field terisi</span>
+                        <span>dari 26 field terisi</span>
                     </div>
                 </div>
 
@@ -1938,18 +1925,44 @@
                             <input type="date" id="bioTanggalLahir" required disabled>
                         </div>
 
-                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
+                        <!-- ===== FIELD BARU - BISA DIEDIT ===== -->
                         <div class="form-group">
-                            <label>RT <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
-                            <input type="text" id="bioRt" placeholder="RT" required disabled class="readonly-field">
-                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
+                            <label>Jenis Kelamin <span class="required">*</span></label>
+                            <select id="bioJenisKelamin" required disabled>
+                                <option value="">Pilih...</option>
+                            </select>
                         </div>
 
-                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
+                        <!-- ===== FIELD BARU - BISA DIEDIT ===== -->
                         <div class="form-group">
-                            <label>RW <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <label>Agama <span class="required">*</span></label>
+                            <select id="bioAgama" required disabled>
+                                <option value="">Pilih...</option>
+                            </select>
+                        </div>
+
+                        <!-- ===== FIELD BARU - BISA DIEDIT ===== -->
+                        <div class="form-group">
+                            <label>Pendidikan Terakhir <span class="required">*</span></label>
+                            <select id="bioPendidikan" required disabled>
+                                <option value="">Pilih...</option>
+                            </select>
+                        </div>
+
+                        <!-- ===== FIELD RT - DINAMIS ===== -->
+                        <div class="form-group">
+                            <label>RT <span class="required">*</span> <span class="readonly-badge" id="rtBadge">🔒</span></label>
+                            <input type="text" id="bioRt" placeholder="RT" required disabled class="readonly-field">
+                            <div class="readonly-helper show" id="rtReadonlyHelper">⛔ Data ini tidak bisa diedit</div>
+                            <div class="editable-helper" id="rtEditableHelper"> </div>
+                        </div>
+
+                        <!-- ===== FIELD RW - DINAMIS ===== -->
+                        <div class="form-group">
+                            <label>RW <span class="required">*</span> <span class="readonly-badge" id="rwBadge">🔒</span></label>
                             <input type="text" id="bioRw" placeholder="RW" required disabled class="readonly-field">
-                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
+                            <div class="readonly-helper show" id="rwReadonlyHelper">⛔ Data ini tidak bisa diedit</div>
+                            <div class="editable-helper" id="rwEditableHelper"> </div>
                         </div>
 
                         <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
@@ -2198,20 +2211,21 @@
         // ============================================
         // CONFIGURATION
         // ============================================
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxLvMxLDt41kX3jtC6-O2ohZBEY6vcBYQ7R-uczk7J1JT7_7L5oz91JgnT0bZVa5h8f/exec';
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbz9mMg2IW0hQlI7tVlwS10Nx_mOy-9tE6sXpNvLOYj9nLDs_X2jZnj-Qd24VOOUPJDf/exec';
         const CURRENT_USER = JSON.parse(localStorage.getItem('user') || '{}');
 
         let biodataData = {};
         let isLocked = true;
         let sisaUpdateInterval = null;
-        let slideInterval = null;
-        let currentSlide = 0;
         let beritaData = [];
-        let menuAccess = {};
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
 
         // ===== FIELD READONLY (TIDAK BISA DIEDIT) =====
-        const READONLY_FIELDS = ['bioNoNik', 'bioRt', 'bioRw', 'bioJenisLkk', 'bioTingkatanLkk', 'bioJabatan', 'bioAlamatEmail'];
+        const READONLY_FIELDS = ['bioNoNik', 'bioJenisLkk', 'bioTingkatanLkk', 'bioJabatan', 'bioAlamatEmail'];
+
+        // ===== FIELD RT/RW - DINAMIS (tergantung JENIS_LKK) =====
+        const RT_RW_FIELDS = ['bioRt', 'bioRw'];
+        const RT_RW_READONLY_TYPES = ['RT', 'RW'];
 
         if (!CURRENT_USER || !CURRENT_USER.id_user) {
             window.location.href = 'login.html';
@@ -2370,18 +2384,84 @@
         }
 
         // ============================================
+        // FUNGSI UNTUK MENGATUR STATUS RT/RW
+        // ============================================
+        function updateRtRwStatus(jenisLkk, isUnlocked) {
+            const isRtRw = RT_RW_READONLY_TYPES.includes(jenisLkk ? jenisLkk.toUpperCase().trim() : '');
+
+            const rtField = document.getElementById('bioRt');
+            const rwField = document.getElementById('bioRw');
+            const rtBadge = document.getElementById('rtBadge');
+            const rwBadge = document.getElementById('rwBadge');
+            const rtReadonlyHelper = document.getElementById('rtReadonlyHelper');
+            const rwReadonlyHelper = document.getElementById('rwReadonlyHelper');
+            const rtEditableHelper = document.getElementById('rtEditableHelper');
+            const rwEditableHelper = document.getElementById('rwEditableHelper');
+
+            if (isRtRw) {
+                // JENIS_LKK = RT atau RW → READONLY (tidak bisa diedit)
+                [rtField, rwField].forEach(el => {
+                    el.disabled = true;
+                    el.classList.remove('editable-field');
+                    el.classList.add('readonly-field');
+                });
+
+                if (rtBadge) rtBadge.textContent = '🔒';
+                if (rwBadge) rwBadge.textContent = '🔒';
+                if (rtReadonlyHelper) rtReadonlyHelper.classList.add('show');
+                if (rwReadonlyHelper) rwReadonlyHelper.classList.add('show');
+                if (rtEditableHelper) rtEditableHelper.classList.remove('show');
+                if (rwEditableHelper) rwEditableHelper.classList.remove('show');
+
+            } else {
+                // JENIS_LKK lainnya → BISA DIEDIT (jika unlocked)
+                if (isUnlocked) {
+                    [rtField, rwField].forEach(el => {
+                        el.disabled = false;
+                        el.classList.remove('readonly-field');
+                        el.classList.add('editable-field');
+                    });
+
+                    if (rtBadge) rtBadge.textContent = ' ';
+                    if (rwBadge) rwBadge.textContent = ' ';
+                    if (rtReadonlyHelper) rtReadonlyHelper.classList.remove('show');
+                    if (rwReadonlyHelper) rwReadonlyHelper.classList.remove('show');
+                    if (rtEditableHelper) rtEditableHelper.classList.add('show');
+                    if (rwEditableHelper) rwEditableHelper.classList.add('show');
+                } else {
+                    // Saat locked, tetap disabled tapi dengan style editable
+                    [rtField, rwField].forEach(el => {
+                        el.disabled = true;
+                        el.classList.remove('readonly-field');
+                        el.classList.add('editable-field');
+                    });
+
+                    if (rtBadge) rtBadge.textContent = ' ';
+                    if (rwBadge) rwBadge.textContent = ' ';
+                    if (rtReadonlyHelper) rtReadonlyHelper.classList.remove('show');
+                    if (rwReadonlyHelper) rwReadonlyHelper.classList.remove('show');
+                    if (rtEditableHelper) rtEditableHelper.classList.add('show');
+                    if (rwEditableHelper) rwEditableHelper.classList.add('show');
+                }
+            }
+        }
+
+        // ============================================
         // LOCK / UNLOCK
         // ============================================
         function lockBiodata() {
             isLocked = true;
 
+            const jenisLkk = document.getElementById('bioJenisLkk').value;
+
+            // Lock semua field
             document.querySelectorAll('#biodataForm input, #biodataForm select, #biodataForm textarea').forEach(el => {
                 if (el.id !== 'bioSisaMasaJabatan') {
                     el.disabled = true;
                 }
             });
 
-            // Pastikan readonly fields tetap readonly style
+            // READONLY fields
             READONLY_FIELDS.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -2389,6 +2469,10 @@
                 }
             });
 
+            // RT/RW - update status berdasarkan jenis LKK
+            updateRtRwStatus(jenisLkk, false);
+
+            // Upload area
             document.querySelectorAll('.upload-area input[type="file"]').forEach(el => {
                 el.disabled = true;
             });
@@ -2412,12 +2496,16 @@
         function unlockBiodata() {
             isLocked = false;
 
+            const jenisLkk = document.getElementById('bioJenisLkk').value;
+
+            // Unlock semua field (kecuali readonly)
             document.querySelectorAll('#biodataForm input, #biodataForm select, #biodataForm textarea').forEach(el => {
                 if (el.id !== 'bioSisaMasaJabatan') {
-                    // Cek apakah field readonly
                     if (READONLY_FIELDS.includes(el.id)) {
                         el.disabled = true;
                         el.classList.add('readonly-field');
+                    } else if (RT_RW_FIELDS.includes(el.id)) {
+                        // RT/RW akan diatur oleh updateRtRwStatus
                     } else {
                         el.disabled = false;
                         el.classList.remove('readonly-field');
@@ -2425,6 +2513,10 @@
                 }
             });
 
+            // RT/RW - update status berdasarkan jenis LKK
+            updateRtRwStatus(jenisLkk, true);
+
+            // Upload area
             document.querySelectorAll('.upload-area input[type="file"]').forEach(el => {
                 el.disabled = false;
             });
@@ -2492,64 +2584,6 @@
         }
 
         // ============================================
-        // LOAD MENU ACCESS
-        // ============================================
-        async function loadMenuAccess() {
-            try {
-                const result = await callAPI('getMenuAccess', {
-                    jenis_lkk: biodataData.JENIS_LKK || '',
-                    role: CURRENT_USER.role || ''
-                });
-
-                if (result.success) {
-                    menuAccess = result.data;
-
-                    const menuMap = {
-                        beranda: 'MENU_BERANDA',
-                        penduduk: 'MENU_PENDUDUK',
-                        inbox: 'MENU_INBOX',
-                        aplikasi: 'MENU_APLIKASI',
-                        profile: 'MENU_PROFILE'
-                    };
-
-                    for (const [panel, key] of Object.entries(menuMap)) {
-                        const show = menuAccess[key.toLowerCase()] !== false;
-                        const sidebarItem = document.querySelector(`.menu-item[data-panel="${panel}"]`);
-                        const bottomItem = document.querySelector(`.bottom-nav .nav-item[data-panel="${panel}"]`);
-
-                        if (sidebarItem) {
-                            if (show) {
-                                sidebarItem.classList.remove('hidden');
-                            } else {
-                                sidebarItem.classList.add('hidden');
-                            }
-                        }
-
-                        if (bottomItem) {
-                            if (show) {
-                                bottomItem.classList.remove('hidden');
-                            } else {
-                                bottomItem.classList.add('hidden');
-                            }
-                        }
-                    }
-
-                    if (!menuAccess.penduduk) {
-                        const pendudukPanel = document.getElementById('panel-penduduk');
-                        if (pendudukPanel && pendudukPanel.classList.contains('active')) {
-                            switchPanel('beranda');
-                        }
-                    }
-
-                    return true;
-                }
-            } catch (error) {
-                console.error('Error loading menu access:', error);
-                return false;
-            }
-        }
-
-        // ============================================
         // LOAD PROFILE
         // ============================================
         async function loadProfile() {
@@ -2577,7 +2611,6 @@
                     updateUploadPreviews(biodataData);
 
                     await loadDropdowns();
-                    await loadMenuAccess();
                     await calculateSisaMasaJabatan();
 
                     await loadBerita();
@@ -2586,6 +2619,10 @@
                         document.getElementById('adminPesanArea').style.display = 'block';
                         await loadUsers();
                     }
+
+                    // Set initial RT/RW status berdasarkan JENIS_LKK
+                    const jenisLkk = biodataData.JENIS_LKK || '';
+                    updateRtRwStatus(jenisLkk, false);
 
                     lockBiodata();
 
@@ -2672,6 +2709,9 @@
                 'bioAlamat': 'ALAMAT',
                 'bioTempatLahir': 'TEMPAT_LAHR',
                 'bioTanggalLahir': 'TANGGAL_LAHIR',
+                'bioJenisKelamin': 'JENIS_KELAMIN',
+                'bioAgama': 'AGAMA',
+                'bioPendidikan': 'PENDIDIKAN_TERAKHIR',
                 'bioRt': 'RT',
                 'bioRw': 'RW',
                 'bioJenisLkk': 'JENIS_LKK',
@@ -2713,6 +2753,15 @@
             }
 
             setTimeout(() => {
+                if (data.JENIS_KELAMIN) {
+                    document.getElementById('bioJenisKelamin').value = data.JENIS_KELAMIN;
+                }
+                if (data.AGAMA) {
+                    document.getElementById('bioAgama').value = data.AGAMA;
+                }
+                if (data.PENDIDIKAN_TERAKHIR) {
+                    document.getElementById('bioPendidikan').value = data.PENDIDIKAN_TERAKHIR;
+                }
                 if (data.JENIS_LKK) {
                     document.getElementById('bioJenisLkk').value = data.JENIS_LKK;
                 }
@@ -2730,7 +2779,6 @@
                 }, 300);
             }, 500);
 
-            // Apply readonly style ke field yang tidak bisa diedit
             READONLY_FIELDS.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) {
@@ -2740,12 +2788,13 @@
         }
 
         // ============================================
-        // UPDATE PROGRESS
+        // UPDATE PROGRESS - 26 FIELDS
         // ============================================
         function updateProgress(data) {
             const fields = [
                 'NAMA_LENGKAP', 'NO_NIK', 'NO_KK', 'ALAMAT', 'TEMPAT_LAHR',
-                'TANGGAL_LAHIR', 'RT', 'RW', 'JENIS_LKK', 'TINGKATAN_LKK',
+                'TANGGAL_LAHIR', 'JENIS_KELAMIN', 'AGAMA', 'PENDIDIKAN_TERAKHIR',
+                'RT', 'RW', 'JENIS_LKK', 'TINGKATAN_LKK',
                 'JABATAN', 'STATUS', 'NO_HP', 'NO_REKENING', 'AWAL MENJABAT', 'ALAMAT_EMAIL',
                 'LINK_FOTO_PROFIL', 'LINK-BERKAS_SK', 'LINK_FOTO_KTP',
                 'LINK_FOTO_KK', 'LINK_BUKU_REKENING', 'LINK_FOTO_BPJS',
@@ -2900,7 +2949,7 @@
         }
 
         // ============================================
-        // LOAD DROPDOWNS
+        // LOAD DROPDOWNS - TAMBAH JENIS_KELAMIN, AGAMA, PENDIDIKAN
         // ============================================
         async function loadDropdowns() {
             try {
@@ -2909,6 +2958,7 @@
                 if (result.success) {
                     const data = result.data;
 
+                    // Jenis LKK
                     const jenisLkk = data.JENIS_LKK || [];
                     const jenisSelect = document.getElementById('bioJenisLkk');
                     jenisSelect.innerHTML = '<option value="">Pilih Jenis LKK</option>';
@@ -2919,6 +2969,7 @@
                         jenisSelect.appendChild(option);
                     }
 
+                    // Tingkatan LKK
                     const tingkatan = data.TINGKAT_LKK || [];
                     const tingkatanSelect = document.getElementById('bioTingkatanLkk');
                     tingkatanSelect.innerHTML = '<option value="">Pilih Tingkatan LKK</option>';
@@ -2929,6 +2980,7 @@
                         tingkatanSelect.appendChild(option);
                     }
 
+                    // Jabatan
                     const jabatan = data.JABATAN || [];
                     const jabatanSelect = document.getElementById('bioJabatan');
                     jabatanSelect.innerHTML = '<option value="">Pilih Jabatan</option>';
@@ -2939,6 +2991,7 @@
                         jabatanSelect.appendChild(option);
                     }
 
+                    // Status Jabatan
                     const status = data.STATUS_JABATAN || [];
                     const statusSelect = document.getElementById('bioStatus');
                     statusSelect.innerHTML = '<option value="">Pilih Status</option>';
@@ -2949,6 +3002,50 @@
                         statusSelect.appendChild(option);
                     }
 
+                    // ===== FIELD BARU =====
+                    // Jenis Kelamin
+                    const jenisKelamin = data.JENIS_KELAMIN || [];
+                    const kelaminSelect = document.getElementById('bioJenisKelamin');
+                    kelaminSelect.innerHTML = '<option value="">Pilih Jenis Kelamin</option>';
+                    for (const item of jenisKelamin) {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = item;
+                        kelaminSelect.appendChild(option);
+                    }
+
+                    // Agama
+                    const agama = data.AGAMA || [];
+                    const agamaSelect = document.getElementById('bioAgama');
+                    agamaSelect.innerHTML = '<option value="">Pilih Agama</option>';
+                    for (const item of agama) {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = item;
+                        agamaSelect.appendChild(option);
+                    }
+
+                    // Pendidikan Terakhir
+                    const pendidikan = data.PENDIDIKAN_TERAKHIR || [];
+                    const pendidikanSelect = document.getElementById('bioPendidikan');
+                    pendidikanSelect.innerHTML = '<option value="">Pilih Pendidikan Terakhir</option>';
+                    for (const item of pendidikan) {
+                        const option = document.createElement('option');
+                        option.value = item;
+                        option.textContent = item;
+                        pendidikanSelect.appendChild(option);
+                    }
+
+                    // Set nilai dari biodataData
+                    if (biodataData.JENIS_KELAMIN) {
+                        kelaminSelect.value = biodataData.JENIS_KELAMIN;
+                    }
+                    if (biodataData.AGAMA) {
+                        agamaSelect.value = biodataData.AGAMA;
+                    }
+                    if (biodataData.PENDIDIKAN_TERAKHIR) {
+                        pendidikanSelect.value = biodataData.PENDIDIKAN_TERAKHIR;
+                    }
                     if (biodataData.JENIS_LKK) {
                         jenisSelect.value = biodataData.JENIS_LKK;
                     }
@@ -2962,13 +3059,33 @@
                         statusSelect.value = biodataData.STATUS;
                     }
 
-                    jenisSelect.addEventListener('change', calculateSisaMasaJabatan);
+                    // Event listeners
+                    jenisSelect.addEventListener('change', function() {
+                        const jenisLkkValue = this.value;
+                        biodataData.JENIS_LKK = jenisLkkValue;
+                        // Update status RT/RW ketika jenis LKK berubah
+                        updateRtRwStatus(jenisLkkValue, !isLocked);
+                        calculateSisaMasaJabatan();
+                    });
+
                     tingkatanSelect.addEventListener('change', function() {
                         biodataData.TINGKATAN_LKK = this.value;
                     });
+
                     jabatanSelect.addEventListener('change', calculateSisaMasaJabatan);
                     statusSelect.addEventListener('change', calculateSisaMasaJabatan);
                     document.getElementById('bioAwalMenjabat').addEventListener('change', calculateSisaMasaJabatan);
+
+                    // Event listeners untuk field baru - auto save
+                    kelaminSelect.addEventListener('change', function() {
+                        biodataData.JENIS_KELAMIN = this.value;
+                    });
+                    agamaSelect.addEventListener('change', function() {
+                        biodataData.AGAMA = this.value;
+                    });
+                    pendidikanSelect.addEventListener('change', function() {
+                        biodataData.PENDIDIKAN_TERAKHIR = this.value;
+                    });
                 }
             } catch (error) {
                 console.error('Error loading dropdowns:', error);
@@ -3067,7 +3184,7 @@
         }
 
         // ============================================
-        // LOAD BERITA
+        // LOAD BERITA - CARD GRID
         // ============================================
         async function loadBerita() {
             try {
@@ -3077,114 +3194,44 @@
                     beritaData = result.data || [];
                     document.getElementById('beritaCount').textContent = beritaData.length;
 
+                    const grid = document.getElementById('beritaGrid');
+
                     if (beritaData.length === 0) {
-                        document.getElementById('beritaSlides').innerHTML = `
-                            <div class="berita-slide active">
-                                <div class="berita-content" style="justify-content:center; text-align:center; padding:40px 20px;">
-                                    <div>
-                                        <div style="font-size:48px; margin-bottom:12px;">📰</div>
-                                        <div style="font-size:18px; font-weight:600; color:var(--text-secondary);">Belum ada berita</div>
-                                        <div style="font-size:13px; color:var(--text-light);">Berita dan informasi akan muncul di sini</div>
-                                    </div>
-                                </div>
+                        grid.innerHTML = `
+                            <div class="berita-empty" style="grid-column: 1 / -1;">
+                                <div class="icon">📰</div>
+                                <p style="font-weight:500; font-size:16px;">Belum ada berita</p>
+                                <p style="font-size:13px; color:var(--text-light);">Berita dan informasi akan muncul di sini</p>
                             </div>
                         `;
-                        document.getElementById('beritaDots').innerHTML = '';
                         return;
                     }
 
-                    const shuffled = [...beritaData].sort(() => Math.random() - 0.5);
-
-                    let slidesHtml = '';
-                    let dotsHtml = '';
-
-                    shuffled.forEach((item, index) => {
-                        const active = index === 0 ? 'active' : '';
+                    let html = '';
+                    for (const item of beritaData) {
                         const gambar = item.gambar || 'https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png';
                         const link = item.link || '#';
+                        const tanggal = item.tanggal || '';
 
-                        slidesHtml += `
-                            <div class="berita-slide ${active}" data-index="${index}">
-                                <div class="berita-content" onclick="window.open('${link}', '_blank')">
-                                    <img class="berita-gambar" src="${gambar}" alt="${item.judul}" onerror="this.src='https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png'">
-                                    <div class="berita-info">
-                                        <div class="judul">${item.judul || 'Berita'}</div>
-                                        <div class="tanggal">📅 ${item.tanggal || ''}</div>
-                                        <a href="${link}" target="_blank" class="link">🔗 Baca Selengkapnya →</a>
-                                    </div>
+                        html += `
+                            <div class="berita-card-item" onclick="window.open('${link}', '_blank')">
+                                <img class="berita-gambar" src="${gambar}" alt="${item.judul}" onerror="this.src='https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png'">
+                                <div class="berita-body">
+                                    <div class="judul">${item.judul || 'Berita'}</div>
+                                    <div class="tanggal">📅 ${tanggal}</div>
+                                    <a href="${link}" target="_blank" class="link">🔗 Baca Selengkapnya →</a>
                                 </div>
                             </div>
                         `;
+                    }
 
-                        dotsHtml += `
-                            <button class="dot ${active}" data-index="${index}" onclick="goToSlide(${index})"></button>
-                        `;
-                    });
-
-                    document.getElementById('beritaSlides').innerHTML = slidesHtml;
-                    document.getElementById('beritaDots').innerHTML = dotsHtml;
-
-                    currentSlide = 0;
-                    startSlideInterval();
+                    grid.innerHTML = html;
 
                 } else {
                     console.error('Failed to load berita:', result.message);
                 }
             } catch (error) {
                 console.error('Error loading berita:', error);
-            }
-        }
-
-        // ============================================
-        // BERITA SLIDE
-        // ============================================
-        function startSlideInterval() {
-            if (slideInterval) {
-                clearInterval(slideInterval);
-            }
-
-            if (beritaData.length <= 1) return;
-
-            slideInterval = setInterval(() => {
-                const slides = document.querySelectorAll('.berita-slide');
-                const dots = document.querySelectorAll('.berita-dots .dot');
-
-                if (slides.length === 0) return;
-
-                slides.forEach(s => s.classList.remove('active'));
-                dots.forEach(d => d.classList.remove('active'));
-
-                currentSlide = (currentSlide + 1) % slides.length;
-
-                slides[currentSlide].classList.add('active');
-                dots[currentSlide].classList.add('active');
-            }, 5000);
-        }
-
-        function goToSlide(index) {
-            const slides = document.querySelectorAll('.berita-slide');
-            const dots = document.querySelectorAll('.berita-dots .dot');
-
-            if (slides.length === 0) return;
-
-            slides.forEach(s => s.classList.remove('active'));
-            dots.forEach(d => d.classList.remove('active'));
-
-            currentSlide = index;
-            slides[index].classList.add('active');
-            dots[index].classList.add('active');
-
-            if (beritaData.length > 1) {
-                clearInterval(slideInterval);
-                slideInterval = setInterval(() => {
-                    const slides2 = document.querySelectorAll('.berita-slide');
-                    const dots2 = document.querySelectorAll('.berita-dots .dot');
-                    slides2.forEach(s => s.classList.remove('active'));
-                    dots2.forEach(d => d.classList.remove('active'));
-                    currentSlide = (currentSlide + 1) % slides2.length;
-                    slides2[currentSlide].classList.add('active');
-                    dots2[currentSlide].classList.add('active');
-                }, 5000);
             }
         }
 
@@ -3233,16 +3280,10 @@
                     const isAdmin = biodataData.ROLE_USER === 'admin';
                     let html = '<div class="inbox-list">';
 
-                    pesan.sort((a, b) => new Date(b.tanggal) - new Date(a.tanggal));
+                    pesan.sort((a, b) => new Date(b.tanggal_raw || b.tanggal) - new Date(a.tanggal_raw || a.tanggal));
 
                     for (const item of pesan) {
-                        const tanggal = item.tanggal ? new Date(item.tanggal).toLocaleDateString('id-ID', {
-                            day: 'numeric',
-                            month: 'long',
-                            year: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit'
-                        }) : '-';
+                        const tanggal = item.tanggal || '-';
 
                         const penerimaLabel = item.penerima === 'all' ? '📨 Semua User' :
                             item.penerima.startsWith('LKK_') ? '🏘️ ' + item.penerima.replace('LKK_', '') :
@@ -3407,6 +3448,9 @@
                 'ALAMAT': document.getElementById('bioAlamat').value,
                 'TEMPAT_LAHR': document.getElementById('bioTempatLahir').value,
                 'TANGGAL_LAHIR': document.getElementById('bioTanggalLahir').value,
+                'JENIS_KELAMIN': document.getElementById('bioJenisKelamin').value,
+                'AGAMA': document.getElementById('bioAgama').value,
+                'PENDIDIKAN_TERAKHIR': document.getElementById('bioPendidikan').value,
                 'RT': document.getElementById('bioRt').value,
                 'RW': document.getElementById('bioRw').value,
                 'JENIS_LKK': document.getElementById('bioJenisLkk').value,
@@ -3665,6 +3709,9 @@
                     'ALAMAT': document.getElementById('bioAlamat').value,
                     'TEMPAT_LAHR': document.getElementById('bioTempatLahir').value,
                     'TANGGAL_LAHIR': document.getElementById('bioTanggalLahir').value,
+                    'JENIS_KELAMIN': document.getElementById('bioJenisKelamin').value,
+                    'AGAMA': document.getElementById('bioAgama').value,
+                    'PENDIDIKAN_TERAKHIR': document.getElementById('bioPendidikan').value,
                     'RT': document.getElementById('bioRt').value,
                     'RW': document.getElementById('bioRw').value,
                     'JENIS_LKK': document.getElementById('bioJenisLkk').value,
@@ -3787,13 +3834,13 @@
             openModal();
         });
 
-	document.getElementById('editBtnTop').addEventListener('click', () => {
-    		if (!isLocked) {
-        	showToast('ℹ️ Info', 'Biodata sudah tidak terkunci', 'success');
-        	return;
-    		}
-    		openModal();
-	});
+        document.getElementById('editBtnTop').addEventListener('click', () => {
+            if (!isLocked) {
+                showToast('ℹ️ Info', 'Biodata sudah tidak terkunci', 'success');
+                return;
+            }
+            openModal();
+        });
 
         document.getElementById('passwordModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) {
@@ -3816,22 +3863,48 @@
             let saveTimeout;
             document.querySelectorAll('#biodataForm input, #biodataForm select, #biodataForm textarea')
                 .forEach(el => {
-                    // Skip readonly fields - mereka tidak boleh auto-save
                     if (READONLY_FIELDS.includes(el.id)) return;
+                    if (RT_RW_FIELDS.includes(el.id)) return; // RT/RW dihandle terpisah
 
                     el.addEventListener('change', () => {
-                        if (!isLocked && !READONLY_FIELDS.includes(el.id)) {
+                        if (!isLocked && !READONLY_FIELDS.includes(el.id) && !RT_RW_FIELDS.includes(el.id)) {
                             clearTimeout(saveTimeout);
                             saveTimeout = setTimeout(saveBiodataSilent, 2000);
                         }
                     });
                     el.addEventListener('input', () => {
-                        if (!isLocked && !READONLY_FIELDS.includes(el.id)) {
+                        if (!isLocked && !READONLY_FIELDS.includes(el.id) && !RT_RW_FIELDS.includes(el.id)) {
                             clearTimeout(saveTimeout);
                             saveTimeout = setTimeout(saveBiodataSilent, 3000);
                         }
                     });
                 });
+
+            // Handle RT/RW save
+            RT_RW_FIELDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', () => {
+                        if (!isLocked) {
+                            const jenisLkk = document.getElementById('bioJenisLkk').value;
+                            // Cek apakah RT/RW bisa diedit (bukan RT/RW)
+                            if (!RT_RW_READONLY_TYPES.includes(jenisLkk ? jenisLkk.toUpperCase().trim() : '')) {
+                                clearTimeout(saveTimeout);
+                                saveTimeout = setTimeout(saveBiodataSilent, 2000);
+                            }
+                        }
+                    });
+                    el.addEventListener('input', () => {
+                        if (!isLocked) {
+                            const jenisLkk = document.getElementById('bioJenisLkk').value;
+                            if (!RT_RW_READONLY_TYPES.includes(jenisLkk ? jenisLkk.toUpperCase().trim() : '')) {
+                                clearTimeout(saveTimeout);
+                                saveTimeout = setTimeout(saveBiodataSilent, 3000);
+                            }
+                        }
+                    });
+                }
+            });
 
             document.addEventListener('visibilitychange', () => {
                 if (!document.hidden && !isLocked) {
@@ -3851,15 +3924,14 @@
 
         window.addEventListener('beforeunload', () => {
             stopSisaUpdateInterval();
-            if (slideInterval) {
-                clearInterval(slideInterval);
-            }
         });
 
         console.log('✅ Profile page loaded!');
         console.log('👤 User:', CURRENT_USER.username);
         console.log('🔒 Status:', isLocked ? 'Terkunci' : 'Tidak Terkunci');
         console.log('📋 READONLY Fields:', READONLY_FIELDS);
+        console.log('📋 RT/RW Fields:', RT_RW_FIELDS);
+        console.log('📋 RT/RW Readonly Types:', RT_RW_READONLY_TYPES);
     </script>
 
 </body>
