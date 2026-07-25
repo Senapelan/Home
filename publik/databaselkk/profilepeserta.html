@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LKK Kecamatan Senapelan</title>
+
+	<!-- ===== FAVICON ===== -->
+  	<link rel="icon" type="image/png" 	href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
+  	<link rel="apple-touch-icon" 	href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
+
+	<!-- ===== META TAG ===== -->
+  	<meta property="og:image" 	content="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
+ 	<meta property="og:title" content="LEMBAGA KEMASYARAKATAN KELURAHAN KECAMATAN SENAPELAN" />
+ 	<meta property="og:description" content="Login - LKK Kecamatan Senapelan" />
+
+
     <link rel="icon" href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -26,6 +37,8 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --readonly-bg: #f0f0f0;
+            --readonly-color: #6b7280;
         }
 
         /* Dark Mode */
@@ -39,6 +52,8 @@
             --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
             --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
             --shadow-lg: 0 10px 40px rgba(0,0,0,0.5);
+            --readonly-bg: #2a2a4a;
+            --readonly-color: #8a9bb5;
         }
 
         * {
@@ -454,6 +469,7 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            flex-wrap: wrap;
         }
 
         .card-title .badge {
@@ -862,6 +878,13 @@
             color: #dc3545;
         }
 
+        .form-group label .readonly-badge {
+            font-size: 10px;
+            color: #dc3545;
+            font-weight: 600;
+            margin-left: 4px;
+        }
+
         .form-group input,
         .form-group select,
         .form-group textarea {
@@ -889,6 +912,22 @@
         .form-group textarea:disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+
+        /* READONLY STYLE - Field yang tidak bisa diedit */
+        .form-group input.readonly-field,
+        .form-group select.readonly-field {
+            background: var(--readonly-bg);
+            color: var(--readonly-color);
+            cursor: not-allowed;
+            border-color: var(--border-color);
+            opacity: 0.8;
+        }
+
+        .form-group input.readonly-field:focus,
+        .form-group select.readonly-field:focus {
+            border-color: var(--border-color);
+            box-shadow: none;
         }
 
         .form-group textarea {
@@ -1552,6 +1591,28 @@
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
+
+        /* ============================================
+           READONLY HELPER TEXT
+           ============================================ */
+        .readonly-helper {
+            font-size: 11px;
+            color: #dc3545;
+            font-weight: 500;
+            margin-top: 2px;
+            display: none;
+        }
+
+        .readonly-helper.show {
+            display: block;
+        }
+
+        .field-separator {
+            border: none;
+            border-top: 1px dashed var(--border-color);
+            margin: 4px 0 8px 0;
+            opacity: 0.5;
+        }
     </style>
 </head>
 <body>
@@ -1650,7 +1711,7 @@
                 <div class="card-title">
                     DATA ANDA
                     <span class="badge" id="statusBadge">Belum Lengkap</span>
-                    <span class="lock-status locked" id="lockStatus">🔒 Terkunci</span>
+                    <span class="lock-status locked" id="lockStatus">Edit Data Profile Setting</span>
                 </div>
 
                 <div class="profile-card">
@@ -1801,7 +1862,7 @@
                 <div class="card-title">
                     👤 Profile Setting
                     <span class="badge" id="profileStatusBadge">Belum Lengkap</span>
-                    <span class="lock-status locked" id="profileLockStatus">🔒 Terkunci</span>
+                    <span class="lock-status locked" id="profileLockStatus">Tombol Edit Data dibawah</span>
                 </div>
 
                 <!-- Mode Malam - Saklar -->
@@ -1815,6 +1876,13 @@
                     </label>
                     <span style="font-size: 12px; color: var(--text-light);" id="themeStatus">Nonaktif</span>
                 </div>
+
+        <!-- ===== TOMBOL EDIT DI ATAS ===== -->
+        <div style="display: flex; justify-content: flex-end; margin-bottom: 16px;">
+            <button type="button" class="btn-edit" id="editBtnTop" style="padding: 10px 24px; font-size: 14px;">
+                🔓 Edit Biodata
+            </button>
+        </div>
 
                 <!-- Progress -->
                 <div class="progress-container">
@@ -1837,14 +1905,17 @@
                         <input type="hidden" id="bioIdUser">
                         <input type="hidden" id="bioRoleUser">
 
+                        <!-- ===== FIELD YANG BISA DIEDIT ===== -->
                         <div class="form-group">
                             <label>Nama Lengkap <span class="required">*</span></label>
                             <input type="text" id="bioNamaLengkap" placeholder="Nama lengkap" required disabled>
                         </div>
 
+                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
                         <div class="form-group">
-                            <label>No NIK <span class="required">*</span></label>
-                            <input type="text" id="bioNoNik" placeholder="16 digit NIK" maxlength="16" required disabled>
+                            <label>No NIK <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <input type="text" id="bioNoNik" placeholder="16 digit NIK" maxlength="16" required disabled class="readonly-field">
+                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
                         </div>
 
                         <div class="form-group">
@@ -1867,35 +1938,45 @@
                             <input type="date" id="bioTanggalLahir" required disabled>
                         </div>
 
+                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
                         <div class="form-group">
-                            <label>RT <span class="required">*</span></label>
-                            <input type="text" id="bioRt" placeholder="RT" required disabled>
+                            <label>RT <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <input type="text" id="bioRt" placeholder="RT" required disabled class="readonly-field">
+                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
                         </div>
 
+                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
                         <div class="form-group">
-                            <label>RW <span class="required">*</span></label>
-                            <input type="text" id="bioRw" placeholder="RW" required disabled>
+                            <label>RW <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <input type="text" id="bioRw" placeholder="RW" required disabled class="readonly-field">
+                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
                         </div>
 
+                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
                         <div class="form-group">
-                            <label>Jenis LKK <span class="required">*</span></label>
-                            <select id="bioJenisLkk" required disabled>
+                            <label>Jenis LKK <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <select id="bioJenisLkk" required disabled class="readonly-field">
                                 <option value="">Pilih...</option>
                             </select>
+                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
                         </div>
 
+                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
                         <div class="form-group">
-                            <label>Tingkatan LKK <span class="required">*</span></label>
-                            <select id="bioTingkatanLkk" required disabled>
+                            <label>Tingkatan LKK <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <select id="bioTingkatanLkk" required disabled class="readonly-field">
                                 <option value="">Pilih...</option>
                             </select>
+                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
                         </div>
 
+                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
                         <div class="form-group">
-                            <label>Jabatan <span class="required">*</span></label>
-                            <select id="bioJabatan" required disabled>
+                            <label>Jabatan <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <select id="bioJabatan" required disabled class="readonly-field">
                                 <option value="">Pilih Jabatan...</option>
                             </select>
+                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
                         </div>
 
                         <div class="form-group">
@@ -1911,7 +1992,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>No Rekening</label>
+                            <label>No Rekening Bank Riau Kepri (BRK)</label>
                             <input type="text" id="bioNoRekening" placeholder="No rekening" disabled>
                         </div>
 
@@ -1925,14 +2006,16 @@
                             <input type="text" id="bioSisaMasaJabatan" readonly style="background:var(--bg-primary); cursor:not-allowed;" disabled>
                         </div>
 
+                        <!-- ===== FIELD READONLY (TIDAK BISA DIEDIT) ===== -->
                         <div class="form-group">
-                            <label>Alamat Email <span class="required">*</span></label>
-                            <input type="email" id="bioAlamatEmail" placeholder="email@domain.com" required disabled>
+                            <label>Alamat Email <span class="required">*</span> <span class="readonly-badge">🔒</span></label>
+                            <input type="email" id="bioAlamatEmail" placeholder="email@domain.com" required disabled class="readonly-field">
+                            <div class="readonly-helper show">⛔ Data ini tidak bisa diedit</div>
                         </div>
 
                         <!-- UPLOAD FIELDS -->
                         <div class="form-group">
-                            <label>Foto Profil</label>
+                            <label>Foto Profil<br>(Pas Foto 4x6 Latar Merah bersih Rapi)<br> atau (Boleh Foto Bebas (Harus Sopan))</label>
                             <div class="upload-area upload-disabled" id="uploadProfil">
                                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'profil')" disabled>
                                 <div class="upload-placeholder">
@@ -1947,7 +2030,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Berkas SK</label>
+                            <label>Upload Berkas SK LKK Anda<br>(File PDF, Pastikan Hasil Scan Rapi)</label>
                             <div class="upload-area upload-disabled" id="uploadSk">
                                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'sk')" disabled>
                                 <div class="upload-placeholder">
@@ -1962,7 +2045,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Foto KTP</label>
+                            <label>Foto KTP<br>(Pastikan Hasil Foto Jelas / Pdf Hasil Scan Rapi)</label>
                             <div class="upload-area upload-disabled" id="uploadKtp">
                                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'ktp')" disabled>
                                 <div class="upload-placeholder">
@@ -1977,7 +2060,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Foto KK</label>
+                            <label>Foto KK<br>(Pastikan Hasil Foto Jelas / Pdf Hasil Scan Rapi)</label>
                             <div class="upload-area upload-disabled" id="uploadKk">
                                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'kk')" disabled>
                                 <div class="upload-placeholder">
@@ -1992,7 +2075,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Buku Rekening</label>
+                            <label>Buku Rekening Bank Riau Kepri (BRK)<br>(Pastikan Hasil Foto Jelas / Pdf Hasil Scan Rapi)</label>
                             <div class="upload-area upload-disabled" id="uploadRekening">
                                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'rekening')" disabled>
                                 <div class="upload-placeholder">
@@ -2007,7 +2090,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Foto BPJS</label>
+                            <label>Foto BPJS<br>(Pastikan Hasil Foto Jelas / Pdf Hasil Scan Rapi)</label>
                             <div class="upload-area upload-disabled" id="uploadBpjs">
                                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'bpjs')" disabled>
                                 <div class="upload-placeholder">
@@ -2022,7 +2105,7 @@
                         </div>
 
                         <div class="form-group">
-                            <label>Foto NPWP</label>
+                            <label>Foto NPWP<br>(Pastikan Hasil Foto Jelas / Pdf Hasil Scan Rapi)</label>
                             <div class="upload-area upload-disabled" id="uploadNpwp">
                                 <input type="file" accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload(this, 'npwp')" disabled>
                                 <div class="upload-placeholder">
@@ -2115,7 +2198,7 @@
         // ============================================
         // CONFIGURATION
         // ============================================
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxcnPvOeRzvpGgcVHpXA2VyOZmaqavLD2_CLrQjrTx1xsZ1p-f9kL0HCMDtLFgBqoLM/exec';
+        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbxLvMxLDt41kX3jtC6-O2ohZBEY6vcBYQ7R-uczk7J1JT7_7L5oz91JgnT0bZVa5h8f/exec';
         const CURRENT_USER = JSON.parse(localStorage.getItem('user') || '{}');
 
         let biodataData = {};
@@ -2126,6 +2209,9 @@
         let beritaData = [];
         let menuAccess = {};
         let isDarkMode = localStorage.getItem('darkMode') === 'true';
+
+        // ===== FIELD READONLY (TIDAK BISA DIEDIT) =====
+        const READONLY_FIELDS = ['bioNoNik', 'bioRt', 'bioRw', 'bioJenisLkk', 'bioTingkatanLkk', 'bioJabatan', 'bioAlamatEmail'];
 
         if (!CURRENT_USER || !CURRENT_USER.id_user) {
             window.location.href = 'login.html';
@@ -2147,7 +2233,6 @@
                 document.documentElement.removeAttribute('data-theme');
             }
 
-            // Update switch
             const switchInput = document.getElementById('themeSwitch');
             const statusText = document.getElementById('themeStatus');
             if (switchInput) {
@@ -2296,6 +2381,14 @@
                 }
             });
 
+            // Pastikan readonly fields tetap readonly style
+            READONLY_FIELDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('readonly-field');
+                }
+            });
+
             document.querySelectorAll('.upload-area input[type="file"]').forEach(el => {
                 el.disabled = true;
             });
@@ -2321,7 +2414,14 @@
 
             document.querySelectorAll('#biodataForm input, #biodataForm select, #biodataForm textarea').forEach(el => {
                 if (el.id !== 'bioSisaMasaJabatan') {
-                    el.disabled = false;
+                    // Cek apakah field readonly
+                    if (READONLY_FIELDS.includes(el.id)) {
+                        el.disabled = true;
+                        el.classList.add('readonly-field');
+                    } else {
+                        el.disabled = false;
+                        el.classList.remove('readonly-field');
+                    }
                 }
             });
 
@@ -2629,6 +2729,14 @@
                     calculateSisaMasaJabatan();
                 }, 300);
             }, 500);
+
+            // Apply readonly style ke field yang tidak bisa diedit
+            READONLY_FIELDS.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.classList.add('readonly-field');
+                }
+            });
         }
 
         // ============================================
@@ -3248,6 +3356,7 @@
                     const userOptions = document.getElementById('userOptions');
 
                     userOptions.innerHTML = '';
+
                     for (const user of users) {
                         if (user.id_user !== CURRENT_USER.id_user) {
                             const option = document.createElement('option');
@@ -3678,6 +3787,14 @@
             openModal();
         });
 
+	document.getElementById('editBtnTop').addEventListener('click', () => {
+    		if (!isLocked) {
+        	showToast('ℹ️ Info', 'Biodata sudah tidak terkunci', 'success');
+        	return;
+    		}
+    		openModal();
+	});
+
         document.getElementById('passwordModal').addEventListener('click', (e) => {
             if (e.target === e.currentTarget) {
                 closeModal();
@@ -3699,14 +3816,17 @@
             let saveTimeout;
             document.querySelectorAll('#biodataForm input, #biodataForm select, #biodataForm textarea')
                 .forEach(el => {
+                    // Skip readonly fields - mereka tidak boleh auto-save
+                    if (READONLY_FIELDS.includes(el.id)) return;
+
                     el.addEventListener('change', () => {
-                        if (!isLocked) {
+                        if (!isLocked && !READONLY_FIELDS.includes(el.id)) {
                             clearTimeout(saveTimeout);
                             saveTimeout = setTimeout(saveBiodataSilent, 2000);
                         }
                     });
                     el.addEventListener('input', () => {
-                        if (!isLocked) {
+                        if (!isLocked && !READONLY_FIELDS.includes(el.id)) {
                             clearTimeout(saveTimeout);
                             saveTimeout = setTimeout(saveBiodataSilent, 3000);
                         }
@@ -3739,6 +3859,7 @@
         console.log('✅ Profile page loaded!');
         console.log('👤 User:', CURRENT_USER.username);
         console.log('🔒 Status:', isLocked ? 'Terkunci' : 'Tidak Terkunci');
+        console.log('📋 READONLY Fields:', READONLY_FIELDS);
     </script>
 
 </body>
