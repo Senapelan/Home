@@ -2561,10 +2561,7 @@
         // ============================================
         // CONFIGURATION
         // ============================================
-        // ===== API BASE DATA =====
         const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbySb9bQfm3z7FOU9m-W49sQAa6SiUHKTmu5zRn4E76PBTMWUjuIDG18wtDZwffmnUbc/exec';
-
-        // ===== API BASE MENU LAINNYA =====
         const API_BASE_MENU_URL = 'https://script.google.com/macros/s/AKfycbzdXVgVqgQsGl-vKumUUVtyeBrs0z6q-unfMTeANp0e4YkYVnNzHAFZ3_AUWXmPR-KW/exec';
 
         const CURRENT_USER = JSON.parse(localStorage.getItem('user') || '{}');
@@ -2579,7 +2576,6 @@
         let pesanTerbuka = null;
         let menuDataCache = [];
 
-        // ===== FIELD READONLY =====
         const READONLY_FIELDS = ['bioNoNik', 'bioJenisLkk', 'bioTingkatanLkk', 'bioJabatan', 'bioAlamatEmail'];
         const RT_RW_FIELDS = ['bioRt', 'bioRw'];
         const RT_RW_READONLY_TYPES = ['RT', 'RW'];
@@ -2720,16 +2716,18 @@
                         }
                     }
                     fetch(url.toString(), { method: 'POST', mode: 'cors', body: formData })
-                        .then(function(response) { return response.json(); })
+                        .then(function(response) { 
+                            if (!response.ok) {
+                                throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+                            }
+                            return response.json(); 
+                        })
                         .then(function(result) { resolve(result); })
                         .catch(function(error) { reject(error); });
-                } catch (error) { reject(error); }
+                } catch(error) { reject(error); }
             });
         }
 
-        // ============================================
-        // CALL API MENU
-        // ============================================
         function callAPI_Menu(action, data) {
             data = data || {};
             return new Promise(function(resolve, reject) {
@@ -2751,7 +2749,7 @@
                         .then(function(response) { return response.json(); })
                         .then(function(result) { resolve(result); })
                         .catch(function(error) { reject(error); });
-                } catch (error) { reject(error); }
+                } catch(error) { reject(error); }
             });
         }
 
@@ -2763,7 +2761,33 @@
         }
 
         // ============================================
-        // FUNGSI UNTUK MENGATUR STATUS RT/RW
+        // FORMAT FILE SIZE
+        // ============================================
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        // ============================================
+        // FILE TO BASE64 - FUNGSI YANG HILANG!
+        // ============================================
+        function fileToBase64(file) {
+            return new Promise(function(resolve, reject) {
+                var reader = new FileReader();
+                reader.onload = function() {
+                    var base64 = reader.result.split(',')[1];
+                    resolve(base64);
+                };
+                reader.onerror = function(error) {
+                    reject(error);
+                };
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // ============================================
+        // UPDATE RT/RW STATUS
         // ============================================
         function updateRtRwStatus(jenisLkk, isUnlocked) {
             var isRtRw = RT_RW_READONLY_TYPES.indexOf(jenisLkk ? jenisLkk.toUpperCase().trim() : '') !== -1;
@@ -2916,6 +2940,237 @@
         }
 
         // ============================================
+        // HANDLE FILE UPLOAD - DIPERBAIKI!
+        // ============================================
+        function handleFileUpload(input, type) {
+            if (isLocked) {
+                showToast('🔒 Terkunci', 'Biodata terkunci! Klik Edit untuk membuka.', 'error');
+                input.value = '';
+                return;
+            }
+            
+            var file = input.files[0];
+            if (!file) return;
+            
+            var loadingId = 'loading' + type.charAt(0).toUpperCase() + type.slice(1);
+            var loading = document.getElementById(loadingId);
+            var preview = document.getElementById('preview' + type.charAt(0).toUpperCase() + type.slice(1));
+            var fileNameEl = document.getElementById('fileName' + type.charAt(0).toUpperCase() + type.slice(1));
+            var placeholder = document.querySelector('#upload' + type.charAt(0).toUpperCase() + type.slice(1) + ' .upload-placeholder');
+            
+            if (loading) loading.classList.add('active');
+            if (preview) {
+                preview.style.display = 'block';
+                preview.src = 'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23f0f2f5"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999" font-size="14"%3EMemuat...%3C/text%3E%3C/svg%3E';
+            }
+            
+            // Validasi ukuran file (max 5MB)
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
+                input.value = '';
+                if (loading) loading.classList.remove('active');
+                if (preview) preview.style.display = 'none';
+                return;
+            }
+            
+            // Validasi ekstensi file
+            var validExtensions = ['.jpg', '.jpeg', '.png', '.pdf'];
+            var ext = '.' + file.name.split('.').pop().toLowerCase();
+            if (validExtensions.indexOf(ext) === -1) {
+                showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG, PNG, atau PDF', 'error');
+                input.value = '';
+                if (loading) loading.classList.remove('active');
+                if (preview) preview.style.display = 'none';
+                return;
+            }
+            
+            // Konversi ke Base64
+            fileToBase64(file)
+                .then(function(base64) {
+                    var fileType = type + ext;
+                    var payload = {
+                        id_user: CURRENT_USER.id_user,
+                        username: CURRENT_USER.username || 'user',
+                        file_name: fileType,
+                        file_type: file.type,
+                        file_data: base64
+                    };
+                    
+                    return callAPI('uploadFile', payload);
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        var link = result.data.file_link;
+                        var thumbnailLink = result.data.thumbnail_link;
+                        var isPDF = file.type === 'application/pdf' || file.name.toLowerCase().indexOf('.pdf') !== -1;
+                        
+                        // Update preview
+                        if (preview) {
+                            if (isPDF) {
+                                var fileId = result.data.file_id;
+                                preview.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
+                                preview.className = 'upload-preview pdf-preview';
+                            } else {
+                                preview.src = thumbnailLink || link;
+                                preview.className = 'upload-preview image-preview';
+                            }
+                            preview.style.display = 'block';
+                        }
+                        
+                        if (fileNameEl) {
+                            fileNameEl.textContent = '✅ ' + file.name + ' (' + formatFileSize(file.size) + ')';
+                        }
+                        
+                        if (placeholder) placeholder.style.display = 'none';
+                        
+                        // Update biodataData
+                        var fieldMap = {
+                            'profil': 'LINK_FOTO_PROFIL',
+                            'sk': 'LINK-BERKAS_SK',
+                            'ktp': 'LINK_FOTO_KTP',
+                            'kk': 'LINK_FOTO_KK',
+                            'rekening': 'LINK_BUKU_REKENING',
+                            'bpjs': 'LINK_FOTO_BPJS',
+                            'npwp': 'LINK_FOTO_NPWP'
+                        };
+                        
+                        biodataData[fieldMap[type]] = result.data.file_link;
+                        updateProgress(biodataData);
+                        
+                        // Simpan otomatis
+                        return saveBiodataSilent();
+                    } else {
+                        throw new Error(result.message || 'Gagal upload file');
+                    }
+                })
+                .then(function() {
+                    if (type === 'profil') {
+                        updateAvatarAll(biodataData);
+                        updateSidebar(biodataData);
+                    }
+                    showToast('✅ Upload Berhasil', file.name + ' berhasil diupload!', 'success');
+                })
+                .catch(function(error) {
+                    console.error('Upload error:', error);
+                    showToast('❌ Upload Gagal', error.message || 'Terjadi kesalahan saat upload', 'error');
+                    if (preview) {
+                        preview.style.display = 'none';
+                        preview.className = 'upload-preview image-preview';
+                    }
+                    if (fileNameEl) fileNameEl.textContent = '';
+                    if (placeholder) placeholder.style.display = 'block';
+                })
+                .finally(function() {
+                    if (loading) loading.classList.remove('active');
+                    input.value = '';
+                });
+        }
+
+        // ============================================
+        // UPLOAD AVATAR
+        // ============================================
+        function uploadAvatar(input) {
+            if (isLocked) {
+                showToast('🔒 Terkunci', 'Biodata terkunci! Klik Edit untuk membuka.', 'error');
+                input.value = '';
+                return;
+            }
+            
+            var file = input.files[0];
+            if (!file) return;
+            
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
+                input.value = '';
+                return;
+            }
+            
+            var validExtensions = ['.jpg', '.jpeg', '.png'];
+            var ext = '.' + file.name.split('.').pop().toLowerCase();
+            if (validExtensions.indexOf(ext) === -1) {
+                showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG atau PNG', 'error');
+                input.value = '';
+                return;
+            }
+            
+            fileToBase64(file)
+                .then(function(base64) {
+                    var fileName = 'profil' + ext;
+                    return callAPI('uploadFile', {
+                        id_user: CURRENT_USER.id_user,
+                        username: CURRENT_USER.username || 'user',
+                        file_name: fileName,
+                        file_type: file.type,
+                        file_data: base64
+                    });
+                })
+                .then(function(result) {
+                    if (result.success) {
+                        var link = result.data.file_link;
+                        biodataData.LINK_FOTO_PROFIL = link;
+                        updateAvatarAll(biodataData);
+                        updateSidebar(biodataData);
+                        updateProgress(biodataData);
+                        return saveBiodataSilent();
+                    } else {
+                        throw new Error(result.message || 'Gagal upload foto');
+                    }
+                })
+                .then(function() {
+                    showToast('✅ Foto Profil Updated', 'Foto profil berhasil diupdate!', 'success');
+                })
+                .catch(function(error) {
+                    console.error('Avatar upload error:', error);
+                    showToast('❌ Error', error.message || 'Gagal upload foto profil', 'error');
+                })
+                .finally(function() {
+                    input.value = '';
+                });
+        }
+
+        // ============================================
+        // HANDLE ATTACHMENT SELECT
+        // ============================================
+        function handleAttachmentSelect(input) {
+            var file = input.files[0];
+            if (!file) return;
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
+                input.value = '';
+                return;
+            }
+            var validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
+            if (validTypes.indexOf(file.type) === -1) {
+                showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG, PNG, atau PDF', 'error');
+                input.value = '';
+                return;
+            }
+            attachmentFile = file;
+            var preview = document.getElementById('filePreview');
+            var content = document.getElementById('uploadContent');
+            var nameDisplay = document.getElementById('fileNameDisplay');
+            var sizeDisplay = document.getElementById('fileSizeDisplay');
+            var icon = document.getElementById('fileIcon');
+            content.style.display = 'none';
+            preview.classList.add('show');
+            nameDisplay.textContent = file.name;
+            sizeDisplay.textContent = formatFileSize(file.size);
+            if (file.type === 'application/pdf') icon.textContent = '📄';
+            else if (file.type.indexOf('image/') !== -1) icon.textContent = '🖼️';
+            else icon.textContent = '📎';
+        }
+
+        // ============================================
+        // REMOVE ATTACHMENT
+        // ============================================
+        function removeAttachment() {
+            document.getElementById('attachmentInput').value = '';
+            document.getElementById('filePreview').classList.remove('show');
+            document.getElementById('uploadContent').style.display = 'block';
+            attachmentFile = null;
+        }
+
+        // ============================================
         // LOAD PROFILE
         // ============================================
         function loadProfile() {
@@ -2947,7 +3202,6 @@
                             updateRtRwStatus(jenisLkk, false);
                             lockBiodata();
                             showToast('✅ Profile Loaded', 'Berikut Data Anda', 'success');
-                            // Load menu setelah profile selesai
                             loadMenuLainnya();
                         });
                     } else {
@@ -3194,6 +3448,27 @@
                     if (placeholder) placeholder.style.display = 'block';
                     if (loading) loading.classList.remove('active');
                 }
+            }
+        }
+
+        // ============================================
+        // UPDATE SIDEBAR
+        // ============================================
+        function updateSidebar(data) {
+            var photoLink = data.LINK_FOTO_PROFIL || '';
+            if (photoLink) {
+                var thumbnailLink = photoLink;
+                if (photoLink.indexOf('drive.google.com/uc?export=view&id=') !== -1) {
+                    var fileId = photoLink.split('id=')[1];
+                    thumbnailLink = 'https://drive.google.com/thumbnail?sz=w1600&id=' + fileId;
+                }
+                var img = document.getElementById('profileAvatarImg');
+                if (img) { img.src = thumbnailLink;
+                    img.style.display = 'block'; }
+                document.getElementById('avatarInitial').style.display = 'none';
+            } else {
+                document.getElementById('profileAvatarImg').style.display = 'none';
+                document.getElementById('avatarInitial').style.display = 'block';
             }
         }
 
@@ -3679,41 +3954,6 @@
         }
 
         // ============================================
-        // HANDLE ATTACHMENT SELECT
-        // ============================================
-        function handleAttachmentSelect(input) {
-            var file = input.files[0];
-            if (!file) return;
-            if (file.size > 5 * 1024 * 1024) { showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
-                input.value = ''; return; }
-            var validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf'];
-            if (validTypes.indexOf(file.type) === -1) { showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG, PNG, atau PDF',
-                    'error');
-                input.value = ''; return; }
-            attachmentFile = file;
-            var preview = document.getElementById('filePreview');
-            var content = document.getElementById('uploadContent');
-            var nameDisplay = document.getElementById('fileNameDisplay');
-            var sizeDisplay = document.getElementById('fileSizeDisplay');
-            var icon = document.getElementById('fileIcon');
-            content.style.display = 'none';
-            preview.classList.add('show');
-            nameDisplay.textContent = file.name;
-            sizeDisplay.textContent = formatFileSize(file.size);
-            if (file.type === 'application/pdf') icon.textContent = '📄';
-            else if (file.type.indexOf('image/') !== -1) icon.textContent = '🖼️';
-            else icon.textContent = '📎';
-        }
-
-        // ============================================
-        // REMOVE ATTACHMENT
-        // ============================================
-        function removeAttachment() { document.getElementById('attachmentInput').value = '';
-            document.getElementById('filePreview').classList.remove('show');
-            document.getElementById('uploadContent').style.display = 'block';
-            attachmentFile = null; }
-
-        // ============================================
         // HAPUS PESAN
         // ============================================
         function hapusPesan(idPesan) {
@@ -3754,29 +3994,11 @@
         }
 
         // ============================================
-        // FILE FUNCTIONS
-        // ============================================
-        function fileToBase64(file) {
-            return new Promise(function(resolve, reject) {
-                var reader = new FileReader();
-                reader.onload = function() { var base64 = reader.result.split(',')[1];
-                    resolve(base64); };
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function formatFileSize(bytes) {
-            if (bytes < 1024) return bytes + ' B';
-            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
-            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
-        }
-
-        // ============================================
         // SAVE BIODATA SILENT
         // ============================================
         function saveBiodataSilent() {
             if (isLocked) return Promise.resolve(false);
+            
             var formData = {
                 'ID_USER': document.getElementById('bioIdUser').value || CURRENT_USER.id_user,
                 'ROLE_USER': document.getElementById('bioRoleUser').value || CURRENT_USER.role || 'user',
@@ -3807,120 +4029,40 @@
                 'LINK_FOTO_BPJS': biodataData['LINK_FOTO_BPJS'] || '',
                 'LINK_FOTO_NPWP': biodataData['LINK_FOTO_NPWP'] || ''
             };
-            return callAPI('saveBiodata', { id_user: formData['ID_USER'], role_user: formData['ROLE_USER'],
-                    biodata: formData })
-                .then(function(result) {
-                    if (result.success) {
-                        if (result.data && result.data.sisa_masa_jabatan) document.getElementById(
-                            'bioSisaMasaJabatan').value = result.data.sisa_masa_jabatan;
-                        Object.assign(biodataData, formData);
-                        updateProgress(biodataData);
-                        updateSidebar(biodataData);
-                        updateBerandaCard(biodataData);
-                        updateAvatarAll(biodataData);
-                        var userData = { id_user: formData['ID_USER'], role: formData['ROLE_USER'],
-                            username: formData['NAMA_LENGKAP'] || CURRENT_USER.username, biodata: biodataData };
-                        updateProfileUI(userData);
-                        return true;
-                    } else { console.error('❌ Silent save failed:', result.message); return false; }
-                })
-                .catch(function(error) { console.error('❌ Silent save error:', error); return false; });
-        }
-
-        // ============================================
-        // HANDLE FILE UPLOAD
-        // ============================================
-        function handleFileUpload(input, type) {
-            if (isLocked) { showToast('🔒 Terkunci', 'Biodata terkunci! Klik Edit untuk membuka.', 'error');
-                input.value = ''; return; }
-            var file = input.files[0];
-            if (!file) return;
-            var loadingId = 'loading' + type.charAt(0).toUpperCase() + type.slice(1);
-            var loading = document.getElementById(loadingId);
-            if (loading) loading.classList.add('active');
-            if (file.size > 5 * 1024 * 1024) { showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
-                input.value = '';
-                if (loading) loading.classList.remove('active'); return; }
-            var validTypes = ['.jpg', '.jpeg', '.png', '.pdf'];
-            var ext = '.' + file.name.split('.').pop().toLowerCase();
-            if (validTypes.indexOf(ext) === -1) { showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG, PNG, atau PDF',
-                    'error');
-                input.value = '';
-                if (loading) loading.classList.remove('active'); return; }
-            var previewId = 'preview' + type.charAt(0).toUpperCase() + type.slice(1);
-            var preview = document.getElementById(previewId);
-            if (preview) { preview.style.display = 'block';
-                preview.src =
-                    'data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"%3E%3Crect width="100" height="100" fill="%23f0f2f5"/%3E%3Ctext x="50" y="50" text-anchor="middle" dy=".3em" fill="%23999" font-size="14"%3EMemuat...%3C/text%3E%3C/svg%3E'; }
-            fileToBase64(file).then(function(base64) {
-                var fileName = type + ext;
-                return callAPI('uploadFile', { id_user: CURRENT_USER.id_user, username: CURRENT_USER.username ||
-                        'user', file_name: fileName, file_type: file.type, file_data: base64 });
-            }).then(function(result) {
+            
+            return callAPI('saveBiodata', { 
+                id_user: formData['ID_USER'], 
+                role_user: formData['ROLE_USER'], 
+                biodata: formData 
+            })
+            .then(function(result) {
                 if (result.success) {
-                    var isPDF = file.type === 'application/pdf' || fileName.toLowerCase().indexOf('.pdf') !== -1;
-                    var previewLink = result.data.thumbnail_link || result.data.file_link;
-                    if (preview) {
-                        if (isPDF) { var fileId = result.data.file_id;
-                            preview.src = 'https://drive.google.com/file/d/' + fileId + '/preview';
-                            preview.className = 'upload-preview pdf-preview'; } else { preview.src = previewLink;
-                            preview.className = 'upload-preview image-preview'; }
-                        preview.style.display = 'block';
+                    if (result.data && result.data.sisa_masa_jabatan) {
+                        document.getElementById('bioSisaMasaJabatan').value = result.data.sisa_masa_jabatan;
                     }
-                    var fileNameEl = document.getElementById('fileName' + type.charAt(0).toUpperCase() + type.slice(
-                    1));
-                    if (fileNameEl) fileNameEl.textContent = '✅ ' + file.name + ' (' + formatFileSize(file.size) +
-                        ')';
-                    var placeholder = document.querySelector('#upload' + type.charAt(0).toUpperCase() + type.slice(
-                        1) + ' .upload-placeholder');
-                    if (placeholder) placeholder.style.display = 'none';
-                    var fieldMap = { profil: 'LINK_FOTO_PROFIL', sk: 'LINK-BERKAS_SK', ktp: 'LINK_FOTO_KTP',
-                        kk: 'LINK_FOTO_KK', rekening: 'LINK_BUKU_REKENING', bpjs: 'LINK_FOTO_BPJS',
-                        npwp: 'LINK_FOTO_NPWP' };
-                    biodataData[fieldMap[type]] = result.data.file_link;
+                    Object.assign(biodataData, formData);
                     updateProgress(biodataData);
-                    return saveBiodataSilent().then(function() { if (type === 'profil') { updateAvatarAll(
-                            biodataData);
-                        updateSidebar(biodataData); }
-                        showToast('✅ Upload Berhasil', file.name + ' berhasil diupload!', 'success'); });
-                } else { showToast('❌ Upload Gagal', result.message || 'Gagal upload file', 'error'); if (preview)
-                        preview.style.display = 'none'; }
-            }).catch(function(error) { console.error('Upload error:', error);
-                showToast('❌ Error', 'Terjadi kesalahan saat upload', 'error'); if (preview) preview.style.display =
-                    'none'; })
-                .finally(function() { if (loading) loading.classList.remove('active'); });
-            input.value = '';
-        }
-
-        // ============================================
-        // UPLOAD AVATAR
-        // ============================================
-        function uploadAvatar(input) {
-            if (isLocked) { showToast('🔒 Terkunci', 'Biodata terkunci! Klik Edit untuk membuka.', 'error');
-                input.value = ''; return; }
-            var file = input.files[0];
-            if (!file) return;
-            if (file.size > 5 * 1024 * 1024) { showToast('❌ Error', 'File terlalu besar! Maksimal 5MB', 'error');
-                input.value = ''; return; }
-            var validTypes = ['.jpg', '.jpeg', '.png'];
-            var ext = '.' + file.name.split('.').pop().toLowerCase();
-            if (validTypes.indexOf(ext) === -1) { showToast('❌ Error', 'Format file tidak didukung! Gunakan JPG atau PNG',
-                    'error');
-                input.value = ''; return; }
-            fileToBase64(file).then(function(base64) {
-                var fileName = 'profil' + ext;
-                return callAPI('uploadFile', { id_user: CURRENT_USER.id_user, username: CURRENT_USER.username ||
-                        'user', file_name: fileName, file_type: file.type, file_data: base64 });
-            }).then(function(result) {
-                if (result.success) { var link = result.data.file_link;
-                    biodataData.LINK_FOTO_PROFIL = link;
-                    updateAvatarAll(biodataData);
                     updateSidebar(biodataData);
-                    updateProgress(biodataData); return saveBiodataSilent(); }
-            }).then(function() { showToast('✅ Foto Profil Updated', 'Foto profil berhasil diupdate!', 'success'); })
-                .catch(function(error) { console.error('Avatar upload error:', error);
-                    showToast('❌ Error', 'Gagal upload foto profil', 'error'); });
-            input.value = '';
+                    updateBerandaCard(biodataData);
+                    updateAvatarAll(biodataData);
+                    
+                    var userData = { 
+                        id_user: formData['ID_USER'], 
+                        role: formData['ROLE_USER'],
+                        username: formData['NAMA_LENGKAP'] || CURRENT_USER.username, 
+                        biodata: biodataData 
+                    };
+                    updateProfileUI(userData);
+                    return true;
+                } else {
+                    console.error('❌ Silent save failed:', result.message);
+                    return false;
+                }
+            })
+            .catch(function(error) {
+                console.error('❌ Silent save error:', error);
+                return false;
+            });
         }
 
         // ============================================
@@ -3931,7 +4073,10 @@
             var saveBtn = document.getElementById('saveBtn');
             var saveText = document.getElementById('saveBtnText');
             var saveSpinner = document.getElementById('saveSpinner');
-            setLoading(saveBtn, saveSpinner, saveText, true);
+            saveBtn.disabled = true;
+            saveText.style.display = 'none';
+            saveSpinner.classList.add('active');
+            
             var formData = {
                 'ID_USER': document.getElementById('bioIdUser').value || CURRENT_USER.id_user,
                 'ROLE_USER': document.getElementById('bioRoleUser').value || CURRENT_USER.role || 'user',
@@ -3962,11 +4107,13 @@
                 'LINK_FOTO_BPJS': biodataData['LINK_FOTO_BPJS'] || '',
                 'LINK_FOTO_NPWP': biodataData['LINK_FOTO_NPWP'] || ''
             };
+            
             callAPI('saveBiodata', { id_user: formData['ID_USER'], role_user: formData['ROLE_USER'], biodata: formData })
                 .then(function(result) {
                     if (result.success) {
-                        if (result.data && result.data.sisa_masa_jabatan) document.getElementById(
-                            'bioSisaMasaJabatan').value = result.data.sisa_masa_jabatan;
+                        if (result.data && result.data.sisa_masa_jabatan) {
+                            document.getElementById('bioSisaMasaJabatan').value = result.data.sisa_masa_jabatan;
+                        }
                         Object.assign(biodataData, formData);
                         updateProgress(biodataData);
                         updateSidebar(biodataData);
@@ -3981,45 +4128,11 @@
                 })
                 .catch(function(error) { console.error('❌ Save error:', error);
                     showToast('❌ Error', 'Terjadi kesalahan saat menyimpan: ' + error.message, 'error'); })
-                .finally(function() { setLoading(saveBtn, saveSpinner, saveText, false); });
-        }
-
-        function setLoading(button, spinner, textElement, loading) {
-            if (loading) { button.disabled = true;
-                textElement.style.display = 'none';
-                spinner.classList.add('active'); } else { button.disabled = false;
-                textElement.style.display = 'inline';
-                spinner.classList.remove('active'); }
-        }
-
-        // ============================================
-        // UPDATE SIDEBAR
-        // ============================================
-        function updateSidebar(data) {
-            var photoLink = data.LINK_FOTO_PROFIL || '';
-            if (photoLink) {
-                var thumbnailLink = photoLink;
-                if (photoLink.indexOf('drive.google.com/uc?export=view&id=') !== -1) { var fileId = photoLink.split(
-                        'id=')[1];
-                    thumbnailLink = 'https://drive.google.com/thumbnail?sz=w1600&id=' + fileId; }
-                var img = document.getElementById('profileAvatarImg');
-                if (img) { img.src = thumbnailLink;
-                    img.style.display = 'block'; }
-                document.getElementById('avatarInitial').style.display = 'none';
-            } else { document.getElementById('profileAvatarImg').style.display = 'none';
-                document.getElementById('avatarInitial').style.display = 'block'; }
-        }
-
-        // ============================================
-        // LOGOUT
-        // ============================================
-        function logout() {
-            if (confirm('Apakah Anda yakin ingin logout?')) {
-                localStorage.removeItem('user');
-                localStorage.removeItem('remembered');
-                localStorage.removeItem('darkMode');
-                window.location.href = 'login.html';
-            }
+                .finally(function() {
+                    saveBtn.disabled = false;
+                    saveText.style.display = 'inline';
+                    saveSpinner.classList.remove('active');
+                });
         }
 
         // ============================================
@@ -4050,7 +4163,6 @@
                             return;
                         }
 
-                        // Render grid menu
                         var gridHtml = '<div class="menu-grid">';
                         for (var i = 0; i < menus.length; i++) {
                             var menu = menus[i];
@@ -4069,7 +4181,6 @@
                         gridHtml += '</div>';
                         gridContainer.innerHTML = gridHtml;
 
-                        // Render dropdown menu
                         var dropdownHtml = '';
                         for (var j = 0; j < menus.length; j++) {
                             var m = menus[j];
@@ -4115,7 +4226,33 @@
             }
             if (!menu) { showToast('❌ Error', 'Menu tidak ditemukan', 'error'); return; }
 
-            var url = buildMenuLink(menu, CURRENT_USER);
+            var userData = {
+                username: CURRENT_USER.username || '',
+                id_user: CURRENT_USER.id_user || '',
+                role: biodataData.ROLE_USER || '',
+                jenis_lkk: biodataData.JENIS_LKK || '',
+                tingkatan_lkk: biodataData.TINGKATAN_LKK || '',
+                nama: biodataData.NAMA_LENGKAP || '',
+                jabatan: biodataData.JABATAN || '',
+                rt: biodataData.RT || '',
+                rw: biodataData.RW || '',
+                nik: biodataData.NO_NIK || ''
+            };
+
+            var url = menu.link || '';
+            var params = menu.parameter || [];
+            if (params.length > 0) {
+                var paramString = '';
+                for (var j = 0; j < params.length; j++) {
+                    var paramName = params[j].trim();
+                    var paramValue = userData[paramName.toLowerCase()] || '';
+                    if (j > 0) paramString += '&';
+                    paramString += paramName + '=' + encodeURIComponent(paramValue);
+                }
+                if (url.indexOf('?') !== -1) url += '&' + paramString;
+                else url += '?' + paramString;
+            }
+
             switchPanel('lainnya');
             document.getElementById('menuGridContainer').style.display = 'none';
             document.getElementById('menuIframeContainer').style.display = 'block';
@@ -4131,7 +4268,6 @@
             document.getElementById('pageTitle').innerHTML = iconDisplay + ' ' + menu.nama_menu;
             document.getElementById('pageSubtitle').textContent = 'Menampilkan ' + menu.nama_menu;
 
-            // Tutup dropdown setelah memilih menu
             if (isDropdownOpen) {
                 toggleDropdownMenu();
             }
@@ -4140,35 +4276,15 @@
         }
 
         // ============================================
-        // BUILD MENU LINK DENGAN PARAMETER
+        // LOGOUT
         // ============================================
-        function buildMenuLink(menu, userData) {
-            var link = menu.link || '';
-            var params = menu.parameter || [];
-            if (params.length === 0) return link;
-            var paramString = '';
-            for (var i = 0; i < params.length; i++) {
-                var paramName = params[i].trim();
-                var paramValue = '';
-                if (paramName === 'USERNAME') paramValue = userData.username || '';
-                else if (paramName === 'ID_USER') paramValue = userData.id_user || '';
-                else if (paramName === 'ROLE') paramValue = userData.role || '';
-                else if (paramName === 'JENIS_LKK') paramValue = userData.jenis_lkk || '';
-                else if (paramName === 'TINGKATAN_LKK') paramValue = userData.tingkatan_lkk || '';
-                else if (paramName === 'NAMA') paramValue = userData.nama || '';
-                else if (paramName === 'JABATAN') paramValue = userData.jabatan || '';
-                else if (paramName === 'RT') paramValue = userData.rt || '';
-                else if (paramName === 'RW') paramValue = userData.rw || '';
-                else if (paramName === 'NIK') paramValue = userData.nik || '';
-                if (i > 0) paramString += '&';
-                paramString += paramName + '=' + encodeURIComponent(paramValue);
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin logout?')) {
+                localStorage.removeItem('user');
+                localStorage.removeItem('remembered');
+                localStorage.removeItem('darkMode');
+                window.location.href = 'login.html';
             }
-            var finalUrl = link.replace(/{PARAMETER}/g, paramString);
-            if (finalUrl === link) {
-                if (link.indexOf('?') !== -1) finalUrl += '&' + paramString;
-                else finalUrl += '?' + paramString;
-            }
-            return finalUrl;
         }
 
         // ============================================
