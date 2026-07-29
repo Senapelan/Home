@@ -2491,7 +2491,7 @@
         // CONFIGURATION
         // ============================================
         const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwsQWu9u_aOLsNQcRcru_bZ5dv3pJyAIPB0M2Cna6HhYLd_EuaZxpGz1Ce6stTMawN5/exec';
-        const API_BASE_MENU_URL = 'https://script.google.com/macros/s/AKfycbxzt08ZBIhJFBNzxjA4-XyQilxUtXnkGGYATpl-8r45nlxZYTmQKPL1GwTV7arnqOl7/exec';
+        const API_BASE_MENU_URL = 'https://script.google.com/macros/s/AKfycbyJCk4nPaErBh7C_nPUgLRf6ald4naaChxcoQXU0IaMSXf4T5TSP41wvbVJT8x07Zkn/exec';
 
         const CURRENT_USER = JSON.parse(localStorage.getItem('user') || '{}');
 
@@ -4428,23 +4428,46 @@
         // LOAD MENU LAINNYA
         // ============================================
  function loadMenuLainnya() {
+    console.log('🔄 ===== loadMenuLainnya() START =====');
+    
     var gridContainer = document.getElementById('menuLainnyaGrid');
     var countBadge = document.getElementById('menuLainnyaCount');
     var dropdownContent = document.getElementById('dropdownMenuContent');
+
+    console.log('📦 gridContainer:', gridContainer);
+    console.log('📦 countBadge:', countBadge);
+    console.log('📦 dropdownContent:', dropdownContent);
 
     gridContainer.innerHTML =
         '<div class="menu-loading"><div class="spinner"></div><p style="margin-top:12px; color:var(--text-light);">Memuat menu...</p></div>';
     dropdownContent.innerHTML =
         '<div class="menu-loading" style="padding:12px 16px 12px 50px; display:flex; gap:10px; align-items:center; color:rgba(255,255,255,0.4); font-size:13px;"><span class="spinner" style="display:inline-block; width:16px; height:16px; border-width:2px; margin:0;"></span><span>Memuat menu...</span></div>';
 
+    console.log('📤 Memanggil API Menu dengan user:', CURRENT_USER.id_user);
+
     callAPI_Menu('getMenuLainnya', { id_user: CURRENT_USER.id_user })
         .then(function(result) {
+            console.log('📦 ===== API RESPONSE =====');
+            console.log('📦 Success:', result.success);
+            console.log('📦 Message:', result.message);
+            console.log('📦 Data:', JSON.stringify(result.data, null, 2));
+            console.log('📦 ===== END RESPONSE =====');
+            
             if (result.success) {
                 var menus = result.data || [];
+                console.log('📋 Jumlah menu:', menus.length);
+                
+                if (menus.length > 0) {
+                    console.log('📋 Menu pertama:', menus[0]);
+                    console.log('📋 Icon menu pertama:', menus[0].icon);
+                    console.log('📋 Nama menu pertama:', menus[0].nama_menu);
+                }
+                
                 menuDataCache = menus;
                 countBadge.textContent = menus.length;
 
                 if (menus.length === 0) {
+                    console.log('⚠️ Tidak ada menu');
                     gridContainer.innerHTML =
                         '<div class="menu-empty"><div class="icon">📭</div><p style="font-weight:500; font-size:16px;">Belum ada menu</p><p style="font-size:13px;">Menu akan muncul setelah admin menambahkan di spreadsheet</p></div>';
                     dropdownContent.innerHTML =
@@ -4452,19 +4475,21 @@
                     return;
                 }
 
+                console.log('✅ Memproses ' + menus.length + ' menu...');
+                
                 var gridHtml = '<div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:20px;">';
                 for (var i = 0; i < menus.length; i++) {
                     var menu = menus[i];
+                    console.log(`🔍 Menu ${i+1}: ${menu.nama_menu} | Icon: ${menu.icon || '(kosong)'}`);
                     
-                    // ===== LOGIKA ICON =====
                     var iconHtml = '';
-if (menu.icon && menu.icon.trim() !== '') {
-    iconHtml = '<img src="' + menu.icon + '" alt="' + menu.nama_menu +
-        '" style="width:48px; height:48px; object-fit:contain; border-radius:8px;" ' +
-        'onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<span style=\\"font-size:32px;\\">📄</span>\'">';
-} else {
-    iconHtml = '<span style="font-size:32px;">📄</span>';
-}
+                    if (menu.icon && menu.icon.trim() !== '') {
+                        iconHtml = '<img src="' + menu.icon + '" alt="' + menu.nama_menu +
+                            '" style="width:48px; height:48px; object-fit:contain; border-radius:8px;" ' +
+                            'onerror="console.log(\'❌ Gagal load icon:\', this.src);this.style.display=\'none\';this.parentElement.innerHTML=\'<span style=\\"font-size:32px;\\">📄</span>\'">';
+                    } else {
+                        iconHtml = '<span style="font-size:32px;">📄</span>';
+                    }
                     
                     gridHtml += '<div class="menu-grid-item" onclick="bukaMenuLainnya(\'' + menu.id +
                         '\')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:var(--bg-card); border-radius:var(--radius-sm); border:1px solid var(--border-color); cursor:pointer; transition:var(--transition); text-align:center; min-height:140px;">';
@@ -4496,8 +4521,11 @@ if (menu.icon && menu.icon.trim() !== '') {
                     dropdownHtml += '</div>';
                 }
                 dropdownContent.innerHTML = dropdownHtml;
+                
+                console.log('✅ Menu selesai dirender!');
 
             } else {
+                console.error('❌ API Error:', result.message);
                 gridContainer.innerHTML =
                     '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
                     (result.message || 'Terjadi kesalahan') + '</p></div>';
@@ -4506,7 +4534,7 @@ if (menu.icon && menu.icon.trim() !== '') {
             }
         })
         .catch(function(error) {
-            console.error('Error loading menu:', error);
+            console.error('❌ Error loading menu:', error);
             gridContainer.innerHTML =
                 '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
                 (error.message || 'Terjadi kesalahan') + '</p></div>';
