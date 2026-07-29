@@ -2105,7 +2105,7 @@
 
 <script>
 // ================= KONFIGURASI =================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxgSkEWH6upRjXNRDqa_ezaLsq_qeH4_XYS6L7xkdZs11DCPsiPzN_174WR-ClMDaDl/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyBjMdIhtXPJq6giz6lCkU4pdkQzyPoXZr7gyjKm4Af3C880ihRPeewRM02chnj112J/exec';
 
 // ================= VARIABEL GLOBAL =================
 let allData = [];
@@ -2184,13 +2184,26 @@ function showMainApp() {
         
         // Tampilkan nama + role
         let roleText = '';
-        if (currentPetugas.is_admin) roleText = '👑 Admin';
-        else if (currentPetugas.is_rt) roleText = '🏠 RT';
-        else if (currentPetugas.is_petugas_pendata) roleText = '📋 Petugas Pendata';
+        let roleBadgeClass = '';
+        let roleBadgeText = '';
+        
+        if (currentPetugas.is_admin) {
+            roleText = '👑 Admin';
+            roleBadgeClass = 'admin';
+            roleBadgeText = 'ADMIN';
+        } else if (currentPetugas.is_rt) {
+            roleText = '🏠 RT';
+            roleBadgeClass = 'rt';
+            roleBadgeText = 'RT';
+        } else if (currentPetugas.is_petugas_pendata) {
+            roleText = '📋 Petugas Pendata';
+            roleBadgeClass = 'petugas';
+            roleBadgeText = 'PETUGAS PENDATA';
+        }
         
         nameEl.textContent = currentPetugas.nama + ' (' + roleText + ')';
         
-        // Tambahkan badge role di header
+        // Tambahkan badge role
         let roleBadge = document.getElementById('roleBadge');
         if (!roleBadge) {
             roleBadge = document.createElement('span');
@@ -2218,6 +2231,23 @@ function showMainApp() {
             roleBadge.textContent = 'PETUGAS PENDATA';
             roleBadge.style.background = '#fef3c7';
             roleBadge.style.color = '#92400e';
+        }
+        
+        // 🔥 Tampilkan informasi kelurahan untuk PETUGAS PENDATA
+        if (currentPetugas.is_petugas_pendata && currentPetugas.tingkatan_lkk) {
+            let infoKelurahan = document.getElementById('infoKelurahan');
+            if (!infoKelurahan) {
+                infoKelurahan = document.createElement('div');
+                infoKelurahan.id = 'infoKelurahan';
+                infoKelurahan.style.cssText = `
+                    font-size: 12px;
+                    color: #64748b;
+                    margin-top: 4px;
+                    text-align: center;
+                `;
+                document.querySelector('.header-content').appendChild(infoKelurahan);
+            }
+            infoKelurahan.textContent = '📌 Kelurahan: ' + currentPetugas.tingkatan_lkk;
         }
     }
 }
@@ -2290,13 +2320,18 @@ function loadDataFromServer() {
         url += '&id_rt=' + encodeURIComponent(currentPetugas.id_rt || '');
         url += '&id_rw=' + encodeURIComponent(currentPetugas.id_rw || '');
         
-        // 🔥 TAMBAHKAN: Kirim role untuk filtering
+        // Kirim role untuk filtering
         let role = 'user';
         if (currentPetugas.is_admin) role = 'admin';
         else if (currentPetugas.is_rt) role = 'rt';
         else if (currentPetugas.is_petugas_pendata) role = 'petugas_pendata';
         
         url += '&role=' + encodeURIComponent(role);
+        
+        // 🔥 KIRIM TINGKATAN_LKK untuk PETUGAS PENDATA
+        if (currentPetugas.is_petugas_pendata && currentPetugas.tingkatan_lkk) {
+            url += '&tingkatan_lkk=' + encodeURIComponent(currentPetugas.tingkatan_lkk);
+        }
     }
     
     fetch(url)
