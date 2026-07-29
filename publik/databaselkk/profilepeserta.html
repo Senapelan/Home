@@ -4428,119 +4428,148 @@
         // LOAD MENU LAINNYA
         // ============================================
  function loadMenuLainnya() {
-    console.log('🔄 ===== loadMenuLainnya() START =====');
-    
-    var gridContainer = document.getElementById('menuLainnyaGrid');
-    var countBadge = document.getElementById('menuLainnyaCount');
-    var dropdownContent = document.getElementById('dropdownMenuContent');
+    try {
+        console.log('🔄 ===== loadMenuLainnya() START =====');
+        console.log('👤 CURRENT_USER:', CURRENT_USER);
+        
+        var gridContainer = document.getElementById('menuLainnyaGrid');
+        var countBadge = document.getElementById('menuLainnyaCount');
+        var dropdownContent = document.getElementById('dropdownMenuContent');
 
-    console.log('📦 gridContainer:', gridContainer);
-    console.log('📦 countBadge:', countBadge);
-    console.log('📦 dropdownContent:', dropdownContent);
+        console.log('📦 gridContainer:', gridContainer);
+        console.log('📦 countBadge:', countBadge);
+        console.log('📦 dropdownContent:', dropdownContent);
 
-    gridContainer.innerHTML =
-        '<div class="menu-loading"><div class="spinner"></div><p style="margin-top:12px; color:var(--text-light);">Memuat menu...</p></div>';
-    dropdownContent.innerHTML =
-        '<div class="menu-loading" style="padding:12px 16px 12px 50px; display:flex; gap:10px; align-items:center; color:rgba(255,255,255,0.4); font-size:13px;"><span class="spinner" style="display:inline-block; width:16px; height:16px; border-width:2px; margin:0;"></span><span>Memuat menu...</span></div>';
+        if (!gridContainer) {
+            console.error('❌ gridContainer tidak ditemukan!');
+            return;
+        }
 
-    console.log('📤 Memanggil API Menu dengan user:', CURRENT_USER.id_user);
+        gridContainer.innerHTML =
+            '<div class="menu-loading"><div class="spinner"></div><p style="margin-top:12px; color:var(--text-light);">Memuat menu...</p></div>';
+        
+        if (dropdownContent) {
+            dropdownContent.innerHTML =
+                '<div class="menu-loading" style="padding:12px 16px 12px 50px; display:flex; gap:10px; align-items:center; color:rgba(255,255,255,0.4); font-size:13px;"><span class="spinner" style="display:inline-block; width:16px; height:16px; border-width:2px; margin:0;"></span><span>Memuat menu...</span></div>';
+        }
 
-    callAPI_Menu('getMenuLainnya', { id_user: CURRENT_USER.id_user })
-        .then(function(result) {
-            console.log('📦 ===== API RESPONSE =====');
-            console.log('📦 Success:', result.success);
-            console.log('📦 Message:', result.message);
-            console.log('📦 Data:', JSON.stringify(result.data, null, 2));
-            console.log('📦 ===== END RESPONSE =====');
-            
-            if (result.success) {
-                var menus = result.data || [];
-                console.log('📋 Jumlah menu:', menus.length);
+        console.log('📤 Memanggil API Menu dengan user:', CURRENT_USER.id_user);
+        console.log('📤 API_BASE_MENU_URL:', API_BASE_MENU_URL);
+
+        callAPI_Menu('getMenuLainnya', { id_user: CURRENT_USER.id_user })
+            .then(function(result) {
+                console.log('📦 ===== API RESPONSE =====');
+                console.log('📦 Success:', result.success);
+                console.log('📦 Message:', result.message);
+                console.log('📦 Data length:', result.data ? result.data.length : 0);
+                console.log('📦 Full Data:', JSON.stringify(result.data, null, 2));
+                console.log('📦 ===== END RESPONSE =====');
                 
-                if (menus.length > 0) {
-                    console.log('📋 Menu pertama:', menus[0]);
-                    console.log('📋 Icon menu pertama:', menus[0].icon);
-                    console.log('📋 Nama menu pertama:', menus[0].nama_menu);
-                }
-                
-                menuDataCache = menus;
-                countBadge.textContent = menus.length;
-
-                if (menus.length === 0) {
-                    console.log('⚠️ Tidak ada menu');
-                    gridContainer.innerHTML =
-                        '<div class="menu-empty"><div class="icon">📭</div><p style="font-weight:500; font-size:16px;">Belum ada menu</p><p style="font-size:13px;">Menu akan muncul setelah admin menambahkan di spreadsheet</p></div>';
-                    dropdownContent.innerHTML =
-                        '<div class="menu-empty-sub">📭 Tidak ada menu tersedia</div>';
-                    return;
-                }
-
-                console.log('✅ Memproses ' + menus.length + ' menu...');
-                
-                var gridHtml = '<div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:20px;">';
-                for (var i = 0; i < menus.length; i++) {
-                    var menu = menus[i];
-                    console.log(`🔍 Menu ${i+1}: ${menu.nama_menu} | Icon: ${menu.icon || '(kosong)'}`);
+                if (result.success) {
+                    var menus = result.data || [];
+                    console.log('📋 Jumlah menu:', menus.length);
                     
-                    var iconHtml = '';
-                    if (menu.icon && menu.icon.trim() !== '') {
-                        iconHtml = '<img src="' + menu.icon + '" alt="' + menu.nama_menu +
-                            '" style="width:48px; height:48px; object-fit:contain; border-radius:8px;" ' +
-                            'onerror="console.log(\'❌ Gagal load icon:\', this.src);this.style.display=\'none\';this.parentElement.innerHTML=\'<span style=\\"font-size:32px;\\">📄</span>\'">';
-                    } else {
-                        iconHtml = '<span style="font-size:32px;">📄</span>';
+                    if (menus.length > 0) {
+                        console.log('📋 Menu pertama:', menus[0]);
+                        console.log('📋 Icon menu pertama:', menus[0].icon);
+                        console.log('📋 Nama menu pertama:', menus[0].nama_menu);
                     }
                     
-                    gridHtml += '<div class="menu-grid-item" onclick="bukaMenuLainnya(\'' + menu.id +
-                        '\')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:var(--bg-card); border-radius:var(--radius-sm); border:1px solid var(--border-color); cursor:pointer; transition:var(--transition); text-align:center; min-height:140px;">';
-                    gridHtml += '<div class="menu-icon" style="margin-bottom:12px;">' + iconHtml + '</div>';
-                    gridHtml += '<div class="menu-name" style="font-weight:600; font-size:14px; color:var(--text-primary);">' + menu.nama_menu + '</div>';
-                    gridHtml += '<div class="menu-desc" style="font-size:11px; color:var(--text-light); margin-top:4px;">Klik untuk buka</div>';
+                    menuDataCache = menus;
+                    if (countBadge) countBadge.textContent = menus.length;
+
+                    if (menus.length === 0) {
+                        console.log('⚠️ Tidak ada menu');
+                        gridContainer.innerHTML =
+                            '<div class="menu-empty"><div class="icon">📭</div><p style="font-weight:500; font-size:16px;">Belum ada menu</p><p style="font-size:13px;">Menu akan muncul setelah admin menambahkan di spreadsheet</p></div>';
+                        if (dropdownContent) {
+                            dropdownContent.innerHTML =
+                                '<div class="menu-empty-sub">📭 Tidak ada menu tersedia</div>';
+                        }
+                        return;
+                    }
+
+                    console.log('✅ Memproses ' + menus.length + ' menu...');
+                    
+                    var gridHtml = '<div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:20px;">';
+                    for (var i = 0; i < menus.length; i++) {
+                        var menu = menus[i];
+                        console.log(`🔍 Menu ${i+1}: ${menu.nama_menu} | Icon: ${menu.icon || '(kosong)'}`);
+                        
+                        var iconHtml = '';
+                        if (menu.icon && menu.icon.trim() !== '') {
+                            console.log(`✅ Menu ${i+1} memiliki icon: ${menu.icon}`);
+                            iconHtml = '<img src="' + menu.icon + '" alt="' + menu.nama_menu +
+                                '" style="width:48px; height:48px; object-fit:contain; border-radius:8px;" ' +
+                                'onerror="console.log(\'❌ Gagal load icon:\', this.src);this.style.display=\'none\';this.parentElement.innerHTML=\'<span style=\\"font-size:32px;\\">📄</span>\'">';
+                        } else {
+                            console.log(`⚠️ Menu ${i+1} TIDAK memiliki icon, pakai default`);
+                            iconHtml = '<span style="font-size:32px;">📄</span>';
+                        }
+                        
+                        gridHtml += '<div class="menu-grid-item" onclick="bukaMenuLainnya(\'' + menu.id +
+                            '\')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:var(--bg-card); border-radius:var(--radius-sm); border:1px solid var(--border-color); cursor:pointer; transition:var(--transition); text-align:center; min-height:140px;">';
+                        gridHtml += '<div class="menu-icon" style="margin-bottom:12px;">' + iconHtml + '</div>';
+                        gridHtml += '<div class="menu-name" style="font-weight:600; font-size:14px; color:var(--text-primary);">' + menu.nama_menu + '</div>';
+                        gridHtml += '<div class="menu-desc" style="font-size:11px; color:var(--text-light); margin-top:4px;">Klik untuk buka</div>';
+                        gridHtml += '</div>';
+                    }
                     gridHtml += '</div>';
-                }
-                gridHtml += '</div>';
-                gridContainer.innerHTML = gridHtml;
+                    gridContainer.innerHTML = gridHtml;
+                    console.log('✅ Grid HTML selesai dibuat');
 
-                // ===== DROPDOWN SIDEBAR =====
-                var dropdownHtml = '';
-                for (var j = 0; j < menus.length; j++) {
-                    var m = menus[j];
-                    
-                    var iconSidebar = '';
-                    if (m.icon && m.icon.trim() !== '') {
-                        iconSidebar = '<img src="' + m.icon + '" alt="' + m.nama_menu +
-                            '" style="width:20px; height:20px; object-fit:contain; border-radius:4px; vertical-align:middle;" onerror="this.style.display=\'none\'">';
-                    } else {
-                        iconSidebar = '📄';
+                    if (dropdownContent) {
+                        var dropdownHtml = '';
+                        for (var j = 0; j < menus.length; j++) {
+                            var m = menus[j];
+                            
+                            var iconSidebar = '';
+                            if (m.icon && m.icon.trim() !== '') {
+                                iconSidebar = '<img src="' + m.icon + '" alt="' + m.nama_menu +
+                                    '" style="width:20px; height:20px; object-fit:contain; border-radius:4px; vertical-align:middle;" onerror="this.style.display=\'none\'">';
+                            } else {
+                                iconSidebar = '📄';
+                            }
+                            
+                            dropdownHtml += '<div class="menu-item" onclick="bukaMenuLainnya(\'' + m.id +
+                                '\'); closeSidebar();">';
+                            dropdownHtml += '<span class="icon">' + iconSidebar + '</span>';
+                            dropdownHtml += '<span class="label">' + m.nama_menu + '</span>';
+                            dropdownHtml += '</div>';
+                        }
+                        dropdownContent.innerHTML = dropdownHtml;
+                        console.log('✅ Dropdown selesai dibuat');
                     }
                     
-                    dropdownHtml += '<div class="menu-item" onclick="bukaMenuLainnya(\'' + m.id +
-                        '\'); closeSidebar();">';
-                    dropdownHtml += '<span class="icon">' + iconSidebar + '</span>';
-                    dropdownHtml += '<span class="label">' + m.nama_menu + '</span>';
-                    dropdownHtml += '</div>';
-                }
-                dropdownContent.innerHTML = dropdownHtml;
-                
-                console.log('✅ Menu selesai dirender!');
+                    console.log('✅ Menu selesai dirender!');
 
-            } else {
-                console.error('❌ API Error:', result.message);
+                } else {
+                    console.error('❌ API Error:', result.message);
+                    gridContainer.innerHTML =
+                        '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
+                        (result.message || 'Terjadi kesalahan') + '</p></div>';
+                    if (dropdownContent) {
+                        dropdownContent.innerHTML =
+                            '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
+                    }
+                }
+            })
+            .catch(function(error) {
+                console.error('❌ Error loading menu:', error);
+                console.error('❌ Stack:', error.stack);
                 gridContainer.innerHTML =
                     '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
-                    (result.message || 'Terjadi kesalahan') + '</p></div>';
-                dropdownContent.innerHTML =
-                    '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
-            }
-        })
-        .catch(function(error) {
-            console.error('❌ Error loading menu:', error);
-            gridContainer.innerHTML =
-                '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
-                (error.message || 'Terjadi kesalahan') + '</p></div>';
-            dropdownContent.innerHTML =
-                '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
-        });
+                    (error.message || 'Terjadi kesalahan') + '</p></div>';
+                if (dropdownContent) {
+                    dropdownContent.innerHTML =
+                        '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
+                }
+            });
+            
+    } catch(error) {
+        console.error('❌ CRITICAL ERROR di loadMenuLainnya():', error);
+        console.error('❌ Stack:', error.stack);
+    }
 }
 
         // ============================================
