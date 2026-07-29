@@ -2243,8 +2243,7 @@ function login() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
     btn.disabled = true;
     
-    fetch(SCRIPT_URL + '?action=login&username=' + encodeURIComponent(username) + 
-          '&password=' + encodeURIComponent(password))
+    fetch(SCRIPT_URL + '?action=login&username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password))
         .then(response => response.json())
         .then(result => {
             if (result.status === 'success') {
@@ -2256,7 +2255,7 @@ function login() {
                 showMainApp();
                 loadAllData();
                 
-                // Tampilkan role yang login
+                // 🔥 TAMBAHKAN: Tampilkan role yang login
                 let roleDisplay = '';
                 if (currentPetugas.is_admin) roleDisplay = 'ADMIN';
                 else if (currentPetugas.is_rt) roleDisplay = 'RT';
@@ -2279,7 +2278,7 @@ function login() {
         });
 }
 
-// ================= LOAD DATA DENGAN ROLE =================
+// ================= LOAD DATA DARI SERVER =================
 
 function loadDataFromServer() {
     showCircularLoader('Memuat Data', 'Mengambil data dari server...');
@@ -2291,7 +2290,7 @@ function loadDataFromServer() {
         url += '&id_rt=' + encodeURIComponent(currentPetugas.id_rt || '');
         url += '&id_rw=' + encodeURIComponent(currentPetugas.id_rw || '');
         
-        // Kirim role untuk filtering
+        // 🔥 TAMBAHKAN: Kirim role untuk filtering
         let role = 'user';
         if (currentPetugas.is_admin) role = 'admin';
         else if (currentPetugas.is_rt) role = 'rt';
