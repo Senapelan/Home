@@ -2174,13 +2174,51 @@ function showMainApp() {
     if (currentPetugas) {
         const avatar = document.getElementById('userAvatar');
         const nameEl = document.getElementById('userName');
+        const userInfo = document.getElementById('userInfo');
         
         if (currentPetugas.foto) {
             avatar.innerHTML = '<img src="' + currentPetugas.foto + '" alt="' + currentPetugas.nama + '">';
         } else {
             avatar.textContent = currentPetugas.nama.charAt(0).toUpperCase();
         }
-        nameEl.textContent = currentPetugas.nama;
+        
+        // Tampilkan nama + role
+        let roleText = '';
+        if (currentPetugas.is_admin) roleText = '👑 Admin';
+        else if (currentPetugas.is_rt) roleText = '🏠 RT';
+        else if (currentPetugas.is_petugas_pendata) roleText = '📋 Petugas Pendata';
+        
+        nameEl.textContent = currentPetugas.nama + ' (' + roleText + ')';
+        
+        // Tambahkan badge role di header
+        let roleBadge = document.getElementById('roleBadge');
+        if (!roleBadge) {
+            roleBadge = document.createElement('span');
+            roleBadge.id = 'roleBadge';
+            roleBadge.style.cssText = `
+                display: inline-block;
+                padding: 2px 12px;
+                border-radius: 100px;
+                font-size: 11px;
+                font-weight: 600;
+                margin-left: 8px;
+            `;
+            userInfo.appendChild(roleBadge);
+        }
+        
+        if (currentPetugas.is_admin) {
+            roleBadge.textContent = 'ADMIN';
+            roleBadge.style.background = '#dbeafe';
+            roleBadge.style.color = '#1d4ed8';
+        } else if (currentPetugas.is_rt) {
+            roleBadge.textContent = 'RT';
+            roleBadge.style.background = '#d1fae5';
+            roleBadge.style.color = '#065f46';
+        } else if (currentPetugas.is_petugas_pendata) {
+            roleBadge.textContent = 'PETUGAS PENDATA';
+            roleBadge.style.background = '#fef3c7';
+            roleBadge.style.color = '#92400e';
+        }
     }
 }
 
@@ -2205,7 +2243,8 @@ function login() {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Memproses...';
     btn.disabled = true;
     
-    fetch(SCRIPT_URL + '?action=login&username=' + encodeURIComponent(username) + '&password=' + encodeURIComponent(password))
+    fetch(SCRIPT_URL + '?action=login&username=' + encodeURIComponent(username) + 
+          '&password=' + encodeURIComponent(password))
         .then(response => response.json())
         .then(result => {
             if (result.status === 'success') {
@@ -2217,7 +2256,13 @@ function login() {
                 showMainApp();
                 loadAllData();
                 
-                showNotification('Selamat datang, ' + currentPetugas.nama + '!');
+                // Tampilkan role yang login
+                let roleDisplay = '';
+                if (currentPetugas.is_admin) roleDisplay = 'ADMIN';
+                else if (currentPetugas.is_rt) roleDisplay = 'RT';
+                else if (currentPetugas.is_petugas_pendata) roleDisplay = 'PETUGAS PENDATA';
+                
+                showNotification('Selamat datang, ' + currentPetugas.nama + ' (' + roleDisplay + ')!');
             } else {
                 errorMsg.textContent = result.data || 'Username atau password salah!';
                 errorDiv.classList.add('show');
@@ -2234,31 +2279,65 @@ function login() {
         });
 }
 
-function logout() {
+// ================= LOAD DATA DENGAN ROLE =================
+
+function loadDataFromServer() {
+    showCircularLoader('Memuat Data', 'Mengambil data dari server...');
+    
+    let url = SCRIPT_URL + '?action=get&entry=all';
+    
     if (currentPetugas) {
-        fetch(SCRIPT_URL + '?action=logout&id_petugas=' + encodeURIComponent(currentPetugas.id_petugas || '') + '&nama_petugas=' + encodeURIComponent(currentPetugas.nama))
-            .catch(e => console.log('Logout log error:', e));
+        url += '&id_petugas=' + encodeURIComponent(currentPetugas.id_petugas || '');
+        url += '&id_rt=' + encodeURIComponent(currentPetugas.id_rt || '');
+        url += '&id_rw=' + encodeURIComponent(currentPetugas.id_rw || '');
+        
+        // Kirim role untuk filtering
+        let role = 'user';
+        if (currentPetugas.is_admin) role = 'admin';
+        else if (currentPetugas.is_rt) role = 'rt';
+        else if (currentPetugas.is_petugas_pendata) role = 'petugas_pendata';
+        
+        url += '&role=' + encodeURIComponent(role);
     }
     
-    currentPetugas = null;
-    isLoggedIn = false;
-    localStorage.removeItem('petugas');
-    
-    showLoginPage();
-    showNotification('Anda telah logout');
-}
-
-function loadAllData() {
-    loadDropdownData()
-        .then(() => {
-            populateAllDropdowns();
-            setDefaultSelectValues();
-            loadDataFromServer();
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.data || data.data.length === 0) {
+                allData = [];
+            } else {
+                allData = data.data.map((row, index) => {
+                    let tanggalLahir = row['TANGGAL LAHIR'] || '';
+                    if (tanggalLahir && !tanggalLahir.includes('/')) {
+                        tanggalLahir = convertISODateToDisplay(tanggalLahir);
+                    }
+                    
+                    return {
+                        ...row,
+                        'TANGGAL LAHIR': tanggalLahir,
+                        'NIK': row['NIK'] ? row['NIK'].toString() : '',
+                        'NOMOR KK': row['NOMOR KK'] ? row['NOMOR KK'].toString() : '',
+                        'NAMA LENGKAP': row['NAMA LENGKAP'] ? row['NAMA LENGKAP'].toString() : '',
+                        'STATUS WARGA': row['STATUS WARGA'] || 'DOMISILI',
+                        spreadsheetRowIndex: index + 2
+                    };
+                });
+                
+                console.log('Data loaded:', allData.length, 'records');
+            }
+            
+            if (window.completeCircularLoader) {
+                window.completeCircularLoader(true);
+            }
+            
+            resetSearchDisplay();
         })
         .catch(error => {
-            console.error('Gagal memuat dropdown:', error);
-            showNotification('Gagal memuat data dropdown', true);
-            loadDataFromServer();
+            console.error('Error loading data:', error);
+            showNotification('Gagal memuat data dari server', true);
+            if (window.completeCircularLoader) {
+                window.completeCircularLoader(false);
+            }
         });
 }
 
