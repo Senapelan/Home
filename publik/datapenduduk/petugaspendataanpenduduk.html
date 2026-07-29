@@ -1298,172 +1298,106 @@
             color: #ef4444;
         }
 
+        /* ===== EFEK VISUAL KOLOM TERISI / BELUM TERISI ===== */
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            border: 2px solid #e2e8f0;
+            background: #ffffff;
+            transition: all 0.3s ease;
+            position: relative;
+        }
 
-/* ===== EFEK VISUAL KOLOM TERISI / BELUM TERISI ===== */
+        .form-group input.is-filled,
+        .form-group select.is-filled,
+        .form-group textarea.is-filled {
+            border-color: #10b981 !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
 
-/* Input text - default (kosong) */
-.form-group input,
-.form-group select,
-.form-group textarea {
-    border: 2px solid #e2e8f0;
-    background: #ffffff;
-    transition: all 0.3s ease;
-    position: relative;
-}
+        .form-group input.is-empty,
+        .form-group select.is-empty,
+        .form-group textarea.is-empty {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
 
-/* Input text - sudah terisi (hijau) */
-.form-group input.is-filled,
-.form-group select.is-filled,
-.form-group textarea.is-filled {
-    border-color: #10b981 !important;
-    background: #f0fdf4 !important;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea !important;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
 
-/* Input text - belum terisi (merah) */
-.form-group input.is-empty,
-.form-group select.is-empty,
-.form-group textarea.is-empty {
-    border-color: #ef4444 !important;
-    background: #fef2f2 !important;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
+        .form-group label .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+            vertical-align: middle;
+        }
 
-/* Input text - fokus */
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: #667eea !important;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
-}
+        .form-group label .status-dot.filled {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
 
-/* Label dengan indikator dot */
-.form-group label .status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-left: 8px;
-    transition: all 0.3s ease;
-    vertical-align: middle;
-}
+        .form-group label .status-dot.empty {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
 
-.form-group label .status-dot.filled {
-    background: #10b981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-}
+        @keyframes statusBounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-.form-group label .status-dot.empty {
-    background: #ef4444;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-}
+        .status-bounce {
+            animation: statusBounce 0.3s ease;
+        }
 
-/* Efek bounce saat status berubah */
-@keyframes statusBounce {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { transform: scale(1.3); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
+        /* ===== LOADING SPINNER PREMIUM ===== */
+        .loading-spinner-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
 
-.status-bounce {
-    animation: statusBounce 0.3s ease;
-}
+        .spinner-wrapper {
+            background: white;
+            padding: 40px 36px;
+            border-radius: 32px;
+            text-align: center;
+            min-width: 260px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
 
-/* ===== LOADING SPINNER PREMIUM ===== */
-.loading-spinner-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
+        .spinner-status {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 10px 0 4px;
+        }
 
-.spinner-wrapper {
-    background: white;
-    padding: 40px 36px;
-    border-radius: 32px;
-    text-align: center;
-    min-width: 260px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-}
-
-.circular-spinner {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.spinner-status {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 10px 0 4px;
-}
-
-.spinner-substatus {
-    font-size: 13px;
-    color: #64748b;
-}
-
-
-        /* ===== LOADING SPINNER ===== */
-.loading-spinner-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.spinner-wrapper {
-    background: white;
-    padding: 40px 36px;
-    border-radius: 32px;
-    text-align: center;
-    min-width: 260px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-}
-
-.circular-spinner {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.spinner-status {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 10px 0 4px;
-}
-
-.spinner-substatus {
-    font-size: 13px;
-    color: #64748b;
-}
+        .spinner-substatus {
+            font-size: 13px;
+            color: #64748b;
+        }
 
         /* ===== FOOTER ===== */
         .footer {
@@ -2171,7 +2105,7 @@
 
 <script>
 // ================= KONFIGURASI =================
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwF9vN0yP8IJQyvTb9m7VTsGa1qGK_k0YK5ytPIGsz0SoKOXcgtUcmK3-DhXBxb0Y28/exec';
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyU-GQjhtm_kaC_ATrVkWPOF2I9Q2WZ7jFjNO6QQ3uOU3O2TdrW2j0JujMj5kA8hkts/exec';
 
 // ================= VARIABEL GLOBAL =================
 let allData = [];
@@ -2302,7 +2236,7 @@ function login() {
 
 function logout() {
     if (currentPetugas) {
-        fetch(SCRIPT_URL + '?action=logout&id_petugas=' + encodeURIComponent(currentPetugas.id) + '&nama_petugas=' + encodeURIComponent(currentPetugas.nama))
+        fetch(SCRIPT_URL + '?action=logout&id_petugas=' + encodeURIComponent(currentPetugas.id_petugas || '') + '&nama_petugas=' + encodeURIComponent(currentPetugas.nama))
             .catch(e => console.log('Logout log error:', e));
     }
     
@@ -2418,6 +2352,9 @@ function populateAllDropdowns() {
 function populateAnggotaDropdowns(index) {
     if (!dropdownData) return;
     
+    const statusHubunganFiltered = dropdownData.statusHubungan ? 
+        dropdownData.statusHubungan.filter(item => item !== 'KEPALA KELUARGA') : [];
+    
     const dropdownConfigs = [
         { id: `status_warga_${index}`, data: dropdownData.statusWarga },
         { id: `jenis_kelamin_${index}`, data: dropdownData.jenisKelamin },
@@ -2425,7 +2362,7 @@ function populateAnggotaDropdowns(index) {
         { id: `pendidikan_${index}`, data: dropdownData.pendidikan },
         { id: `pekerjaan_${index}`, data: dropdownData.pekerjaan },
         { id: `status_perkawinan_${index}`, data: dropdownData.statusPerkawinan },
-        { id: `status_hubungan_${index}`, data: dropdownData.statusHubungan },
+        { id: `status_hubungan_${index}`, data: statusHubunganFiltered },
         { id: `kewarganegaraan_${index}`, data: dropdownData.kewarganegaraan },
         { id: `suku_${index}`, data: dropdownData.suku },
         { id: `status_kekayaan_${index}`, data: dropdownData.statusKekayaan },
@@ -3403,6 +3340,13 @@ function tampilkanSemuaAnggota() {
         if (riwayatSelect) {
             toggleJenisPenyakitAnggota(index);
         }
+        
+        const hubunganSelect = document.getElementById(`status_hubungan_${index}`);
+        if (hubunganSelect) {
+            hubunganSelect.addEventListener('change', function() {
+                autoFillOrangTua(index);
+            });
+        }
     });
 }
 
@@ -3494,8 +3438,8 @@ function simpanSemuaAnggota() {
             nomorKK: baseData.nomorKK,
             namaKepalaKeluarga: baseData.namaKepalaKeluarga,
             alamat: baseData.alamat,
-            rt: "'" + baseData.rt,
-            rw: "'" + baseData.rw,
+            rt: baseData.rt,
+            rw: baseData.rw,
             kelurahan: baseData.kelurahan,
             kecamatan: baseData.kecamatan,
             kabupaten: baseData.kabupaten,
@@ -3524,9 +3468,11 @@ function simpanSemuaAnggota() {
             riwayatPenyakit: riwayatPenyakit,
             jenisPenyakit: jenisPenyakit,
             statusKebersihan: document.getElementById(`status_kebersihan_${i}`).value || 'TIDAK DIKETAHUI',
-            nomorTelepon: "'" + (document.getElementById(`nomor_telepon_${i}`).value || ''),
+            nomorTelepon: document.getElementById(`nomor_telepon_${i}`).value || '',
             email: document.getElementById(`email_${i}`).value || '',
-            idPetugas: currentPetugas ? currentPetugas.id : '',
+            idPetugas: currentPetugas ? currentPetugas.id_petugas : '',
+            idRT: currentPetugas ? currentPetugas.id_rt : '',
+            idRW: currentPetugas ? currentPetugas.id_rw : '',
             namaPetugas: currentPetugas ? currentPetugas.nama : ''
         };
         
@@ -3621,8 +3567,8 @@ document.getElementById('pendudukForm').addEventListener('submit', function(e) {
         nomorKK: nomorKK,
         namaKepalaKeluarga: getValue('nama_kepala_keluarga'),
         alamat: getValue('alamat'),
-        rt: "'" + getValue('rt'),
-        rw: "'" + getValue('rw'),
+        rt: getValue('rt'),
+        rw: getValue('rw'),
         kelurahan: kelurahanValue,
         kecamatan: kecamatanValue,
         kabupaten: kabupatenValue,
@@ -3651,9 +3597,11 @@ document.getElementById('pendudukForm').addEventListener('submit', function(e) {
         riwayatPenyakit: getValue('riwayat_penyakit') || 'TIDAK DIKETAHUI',
         jenisPenyakit: getValue('jenis_penyakit') || '',
         statusKebersihan: getValue('status_kebersihan') || 'TIDAK DIKETAHUI',
-        nomorTelepon: "'" + (getValue('nomor_telepon') || ''),
+        nomorTelepon: getValue('nomor_telepon') || '',
         email: getValue('email') || '',
-        idPetugas: currentPetugas ? currentPetugas.id : '',
+        idPetugas: currentPetugas ? currentPetugas.id_petugas : '',
+        idRT: currentPetugas ? currentPetugas.id_rt : '',
+        idRW: currentPetugas ? currentPetugas.id_rw : '',
         namaPetugas: currentPetugas ? currentPetugas.nama : ''
     };
 
@@ -3699,45 +3647,54 @@ document.getElementById('pendudukForm').addEventListener('submit', function(e) {
 function loadDataFromServer() {
     showCircularLoader('Memuat Data', 'Mengambil data dari server...');
     
-    fetch(SCRIPT_URL + '?action=get&entry=all')
-    .then(response => response.json())
-    .then(data => {
-        if (!data.data || data.data.length === 0) {
-            allData = [];
-        } else {
-            allData = data.data.map((row, index) => {
-                let tanggalLahir = row['TANGGAL LAHIR'] || '';
-                if (tanggalLahir && !tanggalLahir.includes('/')) {
-                    tanggalLahir = convertISODateToDisplay(tanggalLahir);
-                }
+    let url = SCRIPT_URL + '?action=get&entry=all';
+    
+    if (currentPetugas) {
+        url += '&id_petugas=' + encodeURIComponent(currentPetugas.id_petugas || '');
+        url += '&id_rt=' + encodeURIComponent(currentPetugas.id_rt || '');
+        url += '&id_rw=' + encodeURIComponent(currentPetugas.id_rw || '');
+        url += '&role=' + encodeURIComponent(currentPetugas.role || 'user');
+    }
+    
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            if (!data.data || data.data.length === 0) {
+                allData = [];
+            } else {
+                allData = data.data.map((row, index) => {
+                    let tanggalLahir = row['TANGGAL LAHIR'] || '';
+                    if (tanggalLahir && !tanggalLahir.includes('/')) {
+                        tanggalLahir = convertISODateToDisplay(tanggalLahir);
+                    }
+                    
+                    return {
+                        ...row,
+                        'TANGGAL LAHIR': tanggalLahir,
+                        'NIK': row['NIK'] ? row['NIK'].toString() : '',
+                        'NOMOR KK': row['NOMOR KK'] ? row['NOMOR KK'].toString() : '',
+                        'NAMA LENGKAP': row['NAMA LENGKAP'] ? row['NAMA LENGKAP'].toString() : '',
+                        'STATUS WARGA': row['STATUS WARGA'] || 'DOMISILI',
+                        spreadsheetRowIndex: index + 2
+                    };
+                });
                 
-                return {
-                    ...row,
-                    'TANGGAL LAHIR': tanggalLahir,
-                    'NIK': row['NIK'] ? row['NIK'].toString() : '',
-                    'NOMOR KK': row['NOMOR KK'] ? row['NOMOR KK'].toString() : '',
-                    'NAMA LENGKAP': row['NAMA LENGKAP'] ? row['NAMA LENGKAP'].toString() : '',
-                    'STATUS WARGA': row['STATUS WARGA'] || 'DOMISILI',
-                    spreadsheetRowIndex: index + 2
-                };
-            });
+                console.log('Data loaded:', allData.length, 'records');
+            }
             
-            console.log('Data loaded:', allData.length, 'records');
-        }
-        
-        if (window.completeCircularLoader) {
-            window.completeCircularLoader(true);
-        }
-        
-        resetSearchDisplay();
-    })
-    .catch(error => {
-        console.error('Error loading data:', error);
-        showNotification('Gagal memuat data dari server', true);
-        if (window.completeCircularLoader) {
-            window.completeCircularLoader(false);
-        }
-    });
+            if (window.completeCircularLoader) {
+                window.completeCircularLoader(true);
+            }
+            
+            resetSearchDisplay();
+        })
+        .catch(error => {
+            console.error('Error loading data:', error);
+            showNotification('Gagal memuat data dari server', true);
+            if (window.completeCircularLoader) {
+                window.completeCircularLoader(false);
+            }
+        });
 }
 
 // ================= FUNGSI PENCARIAN =================
@@ -4322,9 +4279,11 @@ function submitEditAnggota() {
         riwayatPenyakit: riwayatPenyakit,
         jenisPenyakit: jenisPenyakit,
         statusKebersihan: document.getElementById('edit_status_kebersihan')?.value || 'TIDAK DIKETAHUI',
-        nomorTelepon: "'" + (document.getElementById('edit_nomor_telepon')?.value || ''),
+        nomorTelepon: document.getElementById('edit_nomor_telepon')?.value || '',
         email: document.getElementById('edit_email')?.value || '',
-        idPetugas: currentPetugas ? currentPetugas.id : '',
+        idPetugas: currentPetugas ? currentPetugas.id_petugas : '',
+        idRT: currentPetugas ? currentPetugas.id_rt : '',
+        idRW: currentPetugas ? currentPetugas.id_rw : '',
         namaPetugas: currentPetugas ? currentPetugas.nama : ''
     };
     
@@ -4626,9 +4585,11 @@ function submitEditAnggotaCard() {
         riwayatPenyakit: riwayatPenyakit,
         jenisPenyakit: jenisPenyakit,
         statusKebersihan: document.getElementById('edit_card_status_kebersihan')?.value || 'TIDAK DIKETAHUI',
-        nomorTelepon: "'" + (document.getElementById('edit_card_nomor_telepon')?.value || ''),
+        nomorTelepon: document.getElementById('edit_card_nomor_telepon')?.value || '',
         email: document.getElementById('edit_card_email')?.value || '',
-        idPetugas: currentPetugas ? currentPetugas.id : '',
+        idPetugas: currentPetugas ? currentPetugas.id_petugas : '',
+        idRT: currentPetugas ? currentPetugas.id_rt : '',
+        idRW: currentPetugas ? currentPetugas.id_rw : '',
         namaPetugas: currentPetugas ? currentPetugas.nama : ''
     };
     
@@ -4801,19 +4762,16 @@ function showCircularLoader(status = 'Memuat Data', subStatus = 'Mempersiapkan t
     const statusEl = document.getElementById('spinnerStatus');
     const subStatusEl = document.getElementById('spinnerSubStatus');
     
-    // ===== GANTI DENGAN LOGO + PROGRESS BAR PREMIUM =====
     const circularSpinner = document.querySelector('.circular-spinner');
     if (circularSpinner) {
         circularSpinner.innerHTML = `
             <div style="width: 100%; text-align: center;">
-                <!-- LOGO -->
                 <img src="https://senapelan.github.io/Home/data/logo_pemko/logosenapelan.png" 
                      alt="Logo Senapelan" 
                      style="width: 100px; height: 100px; object-fit: contain; 
                             animation: floatSlow 3s ease-in-out infinite;
                             display: block; margin: 0 auto 20px;">
                 
-                <!-- PROGRESS BAR PREMIUM -->
                 <div style="width: 100%; max-width: 200px; margin: 0 auto; position: relative;">
                     <div style="width: 100%; height: 6px; background: #e8ecf1; border-radius: 100px; overflow: hidden; position: relative;">
                         <div id="progressBarFill" style="width: 0%; height: 100%; 
@@ -4824,7 +4782,6 @@ function showCircularLoader(status = 'Memuat Data', subStatus = 'Mempersiapkan t
                                 animation: shimmerProgress 2s ease-in-out infinite;">
                         </div>
                     </div>
-                    <!-- PERSENTASE -->
                     <div style="margin-top: 8px; font-size: 13px; font-weight: 700; color: #667eea; letter-spacing: 0.5px;">
                         <span id="spinnerPercent">0</span>%
                     </div>
@@ -4833,7 +4790,6 @@ function showCircularLoader(status = 'Memuat Data', subStatus = 'Mempersiapkan t
         `;
     }
     
-    // ===== TAMBAHKAN CSS ANIMASI =====
     const style = document.createElement('style');
     style.textContent = `
         @keyframes floatSlow {
@@ -4879,13 +4835,11 @@ function showCircularLoader(status = 'Memuat Data', subStatus = 'Mempersiapkan t
     `;
     document.head.appendChild(style);
     
-    // ===== SET STATUS =====
     document.getElementById('spinnerStatus').textContent = status;
     document.getElementById('spinnerSubStatus').textContent = subStatus;
     
     spinner.style.display = 'flex';
     
-    // ===== UPDATE PROGRESS =====
     window.updateCircularProgress = function(progress, newStatus, newSubStatus) {
         const percent = Math.min(Math.floor(progress), 100);
         const fill = document.getElementById('progressBarFill');
@@ -4914,6 +4868,96 @@ function hideCircularLoader() {
     const spinner = document.getElementById('loadingSpinner');
     if (spinner) {
         spinner.style.display = 'none';
+    }
+}
+
+// ================= AUTO-FILL NAMA AYAH & IBU UNTUK ANAK =================
+
+function autoFillOrangTua(index) {
+    const statusSelect = document.getElementById(`status_hubungan_${index}`);
+    if (!statusSelect) return;
+    
+    const statusHubungan = statusSelect.value;
+    
+    if (statusHubungan !== 'ANAK') {
+        document.getElementById(`nama_ayah_${index}`).value = '';
+        document.getElementById(`nama_ibu_${index}`).value = '';
+        validateInputField(document.getElementById(`nama_ayah_${index}`));
+        validateInputField(document.getElementById(`nama_ibu_${index}`));
+        return;
+    }
+    
+    const nomorKK = currentKKData ? currentKKData['NOMOR KK'] : '';
+    if (!nomorKK) return;
+    
+    const dataKK = allData.filter(row => row['NOMOR KK'] === nomorKK);
+    
+    const ayah = dataKK.find(row => row['STATUS HUBUNGAN DALAM KELUARGA'] === 'KEPALA KELUARGA');
+    const namaAyah = ayah ? ayah['NAMA LENGKAP'] || '' : '';
+    
+    const istriList = dataKK.filter(row => row['STATUS HUBUNGAN DALAM KELUARGA'] === 'ISTRI');
+    let namaIbu = '';
+    if (istriList.length === 1) {
+        namaIbu = istriList[0]['NAMA LENGKAP'] || '';
+    } else if (istriList.length > 1) {
+        namaIbu = istriList.map(i => i['NAMA LENGKAP'] || '').filter(n => n).join(', ');
+    }
+    
+    const ayahInput = document.getElementById(`nama_ayah_${index}`);
+    const ibuInput = document.getElementById(`nama_ibu_${index}`);
+    
+    if (ayahInput) ayahInput.value = namaAyah;
+    if (ibuInput) ibuInput.value = namaIbu;
+    
+    if (ayahInput) validateInputField(ayahInput);
+    if (ibuInput) validateInputField(ibuInput);
+}
+
+// ================= FUNGSI VALIDASI VISUAL =================
+
+function validateInputField(input) {
+    if (!input) return;
+    if (input.readOnly) return;
+    
+    const isRequired = input.hasAttribute('required') || input.closest('.form-group')?.querySelector('.required');
+    const value = input.value.trim();
+    const isFilled = value !== '';
+    const isSelect = input.tagName === 'SELECT';
+    
+    input.classList.remove('is-filled', 'is-empty');
+    
+    const wrapper = input.closest('.form-group');
+    let statusDot = wrapper ? wrapper.querySelector('.status-dot') : null;
+    
+    if (isSelect) {
+        const hasValue = input.selectedIndex > 0 || (input.value && input.value !== '');
+        if (hasValue) {
+            input.classList.add('is-filled');
+            if (statusDot) {
+                statusDot.className = 'status-dot filled status-bounce';
+                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
+            }
+        } else if (isRequired) {
+            input.classList.add('is-empty');
+            if (statusDot) {
+                statusDot.className = 'status-dot empty status-bounce';
+                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
+            }
+        }
+    } else {
+        if (isFilled) {
+            input.classList.add('is-filled');
+            if (statusDot) {
+                statusDot.className = 'status-dot filled status-bounce';
+                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
+            }
+        } else if (isRequired) {
+            input.classList.add('is-empty');
+            if (statusDot) {
+                statusDot.className = 'status-dot empty status-bounce';
+                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
+            }
+        }
     }
 }
 
@@ -5015,11 +5059,9 @@ window.onload = function() {
     updateCurrentDate();
     setInterval(updateCurrentDate, 1000);
     
-    // CEK SESSION LOGIN
     if (!checkSession()) {
         showLoginPage();
     } else {
-        // Sudah login, load data
         loadAllData();
     }
     
@@ -5027,185 +5069,6 @@ window.onload = function() {
     document.getElementById('kepalaKeluargaCard').classList.remove('show');
     document.getElementById('anggotaKeluargaContainer').classList.remove('show');
 };
-
-
-// ================= AUTO-FILL NAMA AYAH & IBU UNTUK ANAK =================
-
-function autoFillOrangTua(index) {
-    const statusSelect = document.getElementById(`status_hubungan_${index}`);
-    if (!statusSelect) return;
-    
-    const statusHubungan = statusSelect.value;
-    
-    // Hanya jalankan jika status = ANAK
-    if (statusHubungan !== 'ANAK') {
-        document.getElementById(`nama_ayah_${index}`).value = '';
-        document.getElementById(`nama_ibu_${index}`).value = '';
-        // Reset visual
-        validateInputField(document.getElementById(`nama_ayah_${index}`));
-        validateInputField(document.getElementById(`nama_ibu_${index}`));
-        return;
-    }
-    
-    const nomorKK = currentKKData ? currentKKData['NOMOR KK'] : '';
-    if (!nomorKK) return;
-    
-    // Cari semua data dengan NOMOR KK yang sama
-    const dataKK = allData.filter(row => row['NOMOR KK'] === nomorKK);
-    
-    // Cari KEPALA KELUARGA (Ayah)
-    const ayah = dataKK.find(row => row['STATUS HUBUNGAN DALAM KELUARGA'] === 'KEPALA KELUARGA');
-    const namaAyah = ayah ? ayah['NAMA LENGKAP'] || '' : '';
-    
-    // Cari semua ISTRI (Ibu)
-    const istriList = dataKK.filter(row => row['STATUS HUBUNGAN DALAM KELUARGA'] === 'ISTRI');
-    let namaIbu = '';
-    if (istriList.length === 1) {
-        namaIbu = istriList[0]['NAMA LENGKAP'] || '';
-    } else if (istriList.length > 1) {
-        namaIbu = istriList.map(i => i['NAMA LENGKAP'] || '').filter(n => n).join(', ');
-    }
-    
-    // Isi field
-    const ayahInput = document.getElementById(`nama_ayah_${index}`);
-    const ibuInput = document.getElementById(`nama_ibu_${index}`);
-    
-    if (ayahInput) ayahInput.value = namaAyah;
-    if (ibuInput) ibuInput.value = namaIbu;
-    
-    // Validasi visual
-    if (ayahInput) validateInputField(ayahInput);
-    if (ibuInput) validateInputField(ibuInput);
-}
-
-// ================= FUNGSI VALIDASI VISUAL =================
-
-function validateInputField(input) {
-    if (!input) return;
-    
-    // Skip jika input readonly (auto-fill)
-    if (input.readOnly) return;
-    
-    const isRequired = input.hasAttribute('required') || input.closest('.form-group')?.querySelector('.required');
-    const value = input.value.trim();
-    const isFilled = value !== '';
-    const isSelect = input.tagName === 'SELECT';
-    
-    // Hapus class lama
-    input.classList.remove('is-filled', 'is-empty');
-    
-    // Cari status dot di label
-    const wrapper = input.closest('.form-group');
-    let statusDot = wrapper ? wrapper.querySelector('.status-dot') : null;
-    
-    if (isSelect) {
-        const hasValue = input.selectedIndex > 0 || (input.value && input.value !== '');
-        if (hasValue) {
-            input.classList.add('is-filled');
-            if (statusDot) {
-                statusDot.className = 'status-dot filled status-bounce';
-                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
-            }
-        } else if (isRequired) {
-            input.classList.add('is-empty');
-            if (statusDot) {
-                statusDot.className = 'status-dot empty status-bounce';
-                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
-            }
-        }
-    } else {
-        if (isFilled) {
-            input.classList.add('is-filled');
-            if (statusDot) {
-                statusDot.className = 'status-dot filled status-bounce';
-                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
-            }
-        } else if (isRequired) {
-            input.classList.add('is-empty');
-            if (statusDot) {
-                statusDot.className = 'status-dot empty status-bounce';
-                setTimeout(() => statusDot.classList.remove('status-bounce'), 300);
-            }
-        }
-    }
-}
-
-// ================= INISIALISASI VALIDASI VISUAL =================
-
-function initValidation() {
-    // Semua input di form
-    document.querySelectorAll('.form-group input, .form-group select, .form-group textarea').forEach(input => {
-        validateInputField(input);
-    });
-}
-
-// Event listener untuk validasi real-time
-document.addEventListener('input', function(e) {
-    if (e.target.closest('.form-group')) {
-        validateInputField(e.target);
-    }
-});
-
-document.addEventListener('change', function(e) {
-    if (e.target.closest('.form-group')) {
-        validateInputField(e.target);
-    }
-});
-
-document.addEventListener('blur', function(e) {
-    if (e.target.closest('.form-group')) {
-        validateInputField(e.target);
-    }
-}, true);
-
-// ================= MODIFIKASI POPULATE ANGGOTA (HILANGKAN KEPALA KELUARGA) =================
-
-// Ganti fungsi populateAnggotaDropdowns dengan ini:
-function populateAnggotaDropdowns(index) {
-    if (!dropdownData) return;
-    
-    // Filter STATUS HUBUNGAN - HAPUS KEPALA KELUARGA
-    const statusHubunganFiltered = dropdownData.statusHubungan ? 
-        dropdownData.statusHubungan.filter(item => item !== 'KEPALA KELUARGA') : [];
-    
-    const dropdownConfigs = [
-        { id: `status_warga_${index}`, data: dropdownData.statusWarga },
-        { id: `jenis_kelamin_${index}`, data: dropdownData.jenisKelamin },
-        { id: `agama_${index}`, data: dropdownData.agama },
-        { id: `pendidikan_${index}`, data: dropdownData.pendidikan },
-        { id: `pekerjaan_${index}`, data: dropdownData.pekerjaan },
-        { id: `status_perkawinan_${index}`, data: dropdownData.statusPerkawinan },
-        { id: `status_hubungan_${index}`, data: statusHubunganFiltered },
-        { id: `kewarganegaraan_${index}`, data: dropdownData.kewarganegaraan },
-        { id: `suku_${index}`, data: dropdownData.suku },
-        { id: `status_kekayaan_${index}`, data: dropdownData.statusKekayaan },
-        { id: `status_kesehatan_${index}`, data: dropdownData.statusKesehatan },
-        { id: `riwayat_penyakit_${index}`, data: dropdownData.riwayatPenyakit },
-        { id: `status_kebersihan_${index}`, data: dropdownData.statusKebersihan }
-    ];
-    
-    dropdownConfigs.forEach(config => {
-        if (config.data && config.data.length > 0) {
-            populateDropdown(config.id, config.data);
-        }
-    });
-    
-    const statusSelect = document.getElementById(`status_warga_${index}`);
-    if (statusSelect && !statusSelect.value) {
-        statusSelect.value = 'DOMISILI';
-    }
-    
-    // Auto-fill orang tua jika status = ANAK (setelah dropdown diisi)
-    const hubunganSelect = document.getElementById(`status_hubungan_${index}`);
-    if (hubunganSelect) {
-        // Tambahkan event listener untuk auto-fill
-        hubunganSelect.addEventListener('change', function() {
-            autoFillOrangTua(index);
-        });
-    }
-}
-
-
 </script>
 </body>
 </html>
