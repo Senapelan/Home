@@ -4496,15 +4496,18 @@
                         var menu = menus[i];
                         console.log(`🔍 Menu ${i+1}: ${menu.nama_menu} | Icon: ${menu.icon || '(kosong)'}`);
                         
+                        // ===== LOGIKA ICON - TANPA FALLBACK EMOJI =====
                         var iconHtml = '';
                         if (menu.icon && menu.icon.trim() !== '') {
+                            // Jika ada URL_ICON, tampilkan gambar
                             console.log(`✅ Menu ${i+1} memiliki icon: ${menu.icon}`);
                             iconHtml = '<img src="' + menu.icon + '" alt="' + menu.nama_menu +
                                 '" style="width:48px; height:48px; object-fit:contain; border-radius:8px;" ' +
-                                'onerror="console.log(\'❌ Gagal load icon:\', this.src);this.style.display=\'none\';this.parentElement.innerHTML=\'<span style=\\"font-size:32px;\\">📄</span>\'">';
+                                'onerror="console.log(\'❌ Gagal load icon:\', this.src);this.style.display=\'none\'">';
                         } else {
-                            console.log(`⚠️ Menu ${i+1} TIDAK memiliki icon, pakai default`);
-                            iconHtml = '<span style="font-size:32px;">📄</span>';
+                            // Jika TIDAK ADA URL_ICON, tampilkan KOSONG
+                            console.log(`⚠️ Menu ${i+1} TIDAK memiliki icon`);
+                            iconHtml = '<div style="width:48px; height:48px;"></div>';
                         }
                         
                         gridHtml += '<div class="menu-grid-item" onclick="bukaMenuLainnya(\'' + menu.id +
@@ -4528,7 +4531,7 @@
                                 iconSidebar = '<img src="' + m.icon + '" alt="' + m.nama_menu +
                                     '" style="width:20px; height:20px; object-fit:contain; border-radius:4px; vertical-align:middle;" onerror="this.style.display=\'none\'">';
                             } else {
-                                iconSidebar = '📄';
+                                iconSidebar = '';
                             }
                             
                             dropdownHtml += '<div class="menu-item" onclick="bukaMenuLainnya(\'' + m.id +
