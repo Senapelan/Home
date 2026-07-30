@@ -1298,172 +1298,107 @@
             color: #ef4444;
         }
 
+        /* ===== EFEK VISUAL KOLOM TERISI / BELUM TERISI ===== */
+        .form-group input.is-filled,
+        .form-group select.is-filled,
+        .form-group textarea.is-filled {
+            border-color: #10b981 !important;
+            background: #f0fdf4 !important;
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+        }
 
-/* ===== EFEK VISUAL KOLOM TERISI / BELUM TERISI ===== */
+        .form-group input.is-empty,
+        .form-group select.is-empty,
+        .form-group textarea.is-empty {
+            border-color: #ef4444 !important;
+            background: #fef2f2 !important;
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+        }
 
-/* Input text - default (kosong) */
-.form-group input,
-.form-group select,
-.form-group textarea {
-    border: 2px solid #e2e8f0;
-    background: #ffffff;
-    transition: all 0.3s ease;
-    position: relative;
-}
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: #667eea !important;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
 
-/* Input text - sudah terisi (hijau) */
-.form-group input.is-filled,
-.form-group select.is-filled,
-.form-group textarea.is-filled {
-    border-color: #10b981 !important;
-    background: #f0fdf4 !important;
-    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
+        .form-group label .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-left: 8px;
+            transition: all 0.3s ease;
+            vertical-align: middle;
+        }
 
-/* Input text - belum terisi (merah) */
-.form-group input.is-empty,
-.form-group select.is-empty,
-.form-group textarea.is-empty {
-    border-color: #ef4444 !important;
-    background: #fef2f2 !important;
-    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-}
+        .form-group label .status-dot.filled {
+            background: #10b981;
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+        }
 
-/* Input text - fokus */
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    border-color: #667eea !important;
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
-}
+        .form-group label .status-dot.empty {
+            background: #ef4444;
+            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+        }
 
-/* Label dengan indikator dot */
-.form-group label .status-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    margin-left: 8px;
-    transition: all 0.3s ease;
-    vertical-align: middle;
-}
+        @keyframes statusBounce {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.3); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
 
-.form-group label .status-dot.filled {
-    background: #10b981;
-    box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
-}
+        .status-bounce {
+            animation: statusBounce 0.3s ease;
+        }
 
-.form-group label .status-dot.empty {
-    background: #ef4444;
-    box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
-}
+        /* ===== LOADING SPINNER PREMIUM ===== */
+        .loading-spinner-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
 
-/* Efek bounce saat status berubah */
-@keyframes statusBounce {
-    0% { transform: scale(0.5); opacity: 0; }
-    50% { transform: scale(1.3); opacity: 1; }
-    100% { transform: scale(1); opacity: 1; }
-}
+        .spinner-wrapper {
+            background: white;
+            padding: 40px 36px;
+            border-radius: 32px;
+            text-align: center;
+            min-width: 260px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
+        }
 
-.status-bounce {
-    animation: statusBounce 0.3s ease;
-}
+        .circular-spinner {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
 
-/* ===== LOADING SPINNER PREMIUM ===== */
-.loading-spinner-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
+        .spinner-status {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 10px 0 4px;
+        }
 
-.spinner-wrapper {
-    background: white;
-    padding: 40px 36px;
-    border-radius: 32px;
-    text-align: center;
-    min-width: 260px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-}
-
-.circular-spinner {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.spinner-status {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 10px 0 4px;
-}
-
-.spinner-substatus {
-    font-size: 13px;
-    color: #64748b;
-}
-
-
-        /* ===== LOADING SPINNER ===== */
-.loading-spinner-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 9999;
-}
-
-.spinner-wrapper {
-    background: white;
-    padding: 40px 36px;
-    border-radius: 32px;
-    text-align: center;
-    min-width: 260px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08);
-}
-
-.circular-spinner {
-    width: 120px;
-    height: 120px;
-    margin: 0 auto 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-}
-
-.spinner-status {
-    font-size: 16px;
-    font-weight: 600;
-    color: #1e293b;
-    margin: 10px 0 4px;
-}
-
-.spinner-substatus {
-    font-size: 13px;
-    color: #64748b;
-}
+        .spinner-substatus {
+            font-size: 13px;
+            color: #64748b;
+        }
 
         /* ===== FOOTER ===== */
         .footer {
@@ -2190,13 +2125,13 @@ let currentPetugas = null;
 let isLoggedIn = false;
 
 // 🔄 UPDATE: Variabel untuk data petugas dari LOGIN
-let currentPetugasData = null;     // Data lengkap petugas dari sheet LOGIN
-let currentRole = '';             // 'RT' atau 'PETUGAS PENDATA'
-let currentIDPetugas = '';        // TINGKATAN_LKK tanpa "KELURAHAN "
-let currentIDRT = '';             // Untuk RT: dari LOGIN, untuk PETUGAS PENDATA: dari input
-let currentIDRW = '';             // Untuk RT: dari LOGIN, untuk PETUGAS PENDATA: dari input
-let currentNamaPetugas = '';      // NAMA dari LOGIN
-let currentUsername = '';         // USERNAME dari LOGIN
+let currentPetugasData = null;
+let currentRole = '';
+let currentIDPetugas = '';
+let currentIDRT = '';
+let currentIDRW = '';
+let currentNamaPetugas = '';
+let currentUsername = '';
 
 // Prioritas urutan dalam keluarga
 const HUBUNGAN_PRIORITAS = {
@@ -2286,67 +2221,22 @@ function login() {
             if (result.status === 'success') {
                 const petugasData = result.data;
                 
-                // 🔍 DEBUG: Lihat semua data dari backend
-                console.log('🔍 DATA DARI BACKEND:', petugasData);
-                console.log('🔍 KEYS:', Object.keys(petugasData));
+                const jenisLKK = petugasData.jenisLKK || petugasData.JENIS_LKK || petugasData['jenisLKK'] || petugasData['JENIS_LKK'] || '';
+                const tingkatanLKK = petugasData.tingkatanLKK || petugasData.TINGKATAN_LKK || petugasData['tingkatanLKK'] || petugasData['TINGKATAN_LKK'] || '';
+                const namaPetugas = petugasData.nama || petugasData.NAMA || petugasData['nama'] || petugasData['NAMA'] || '';
+                const rtPetugas = petugasData.rt || petugasData.RT || petugasData['rt'] || petugasData['RT'] || '';
+                const rwPetugas = petugasData.rw || petugasData.RW || petugasData['rw'] || petugasData['RW'] || '';
+                const idUser = petugasData.idUser || petugasData.ID_USER || petugasData['idUser'] || petugasData['ID_USER'] || '';
                 
-                // 🔥 PERBAIKAN: Ambil dengan case insensitive (huruf kecil dari backend)
-                const jenisLKK = petugasData.jenisLKK || 
-                                 petugasData.JENIS_LKK || 
-                                 petugasData['jenisLKK'] || 
-                                 petugasData['JENIS_LKK'] || 
-                                 '';
-                
-                const tingkatanLKK = petugasData.tingkatanLKK || 
-                                     petugasData.TINGKATAN_LKK || 
-                                     petugasData['tingkatanLKK'] || 
-                                     petugasData['TINGKATAN_LKK'] || 
-                                     '';
-                
-                const namaPetugas = petugasData.nama || 
-                                    petugasData.NAMA || 
-                                    petugasData['nama'] || 
-                                    petugasData['NAMA'] || 
-                                    '';
-                
-                const rtPetugas = petugasData.rt || 
-                                  petugasData.RT || 
-                                  petugasData['rt'] || 
-                                  petugasData['RT'] || 
-                                  '';
-                
-                const rwPetugas = petugasData.rw || 
-                                  petugasData.RW || 
-                                  petugasData['rw'] || 
-                                  petugasData['RW'] || 
-                                  '';
-                
-                const idUser = petugasData.idUser || 
-                               petugasData.ID_USER || 
-                               petugasData['idUser'] || 
-                               petugasData['ID_USER'] || 
-                               '';
-                
-                console.log('🔍 JENIS_LKK yang ditemukan:', jenisLKK);
-                console.log('🔍 TINGKATAN_LKK yang ditemukan:', tingkatanLKK);
-                console.log('🔍 NAMA yang ditemukan:', namaPetugas);
-                console.log('🔍 RT yang ditemukan:', rtPetugas);
-                console.log('🔍 RW yang ditemukan:', rwPetugas);
-                
-                // 🔄 UPDATE: Filter hanya JENIS_LKK = RT atau PETUGAS PENDATA
                 const jenisLKKTrim = jenisLKK.trim();
                 if (jenisLKKTrim !== 'RT' && jenisLKKTrim !== 'PETUGAS PENDATA') {
-                    errorMsg.textContent = 'Akses ditolak! Hanya RT dan Petugas Pendata yang diizinkan. (JENIS_LKK: "' + jenisLKKTrim + '")';
+                    errorMsg.textContent = 'Akses ditolak! Hanya RT dan Petugas Pendata yang diizinkan.';
                     errorDiv.classList.add('show');
                     btn.innerHTML = originalText;
                     btn.disabled = false;
-                    console.log('❌ Login ditolak! JENIS_LKK tidak valid:', jenisLKKTrim);
                     return;
                 }
                 
-                console.log('✅ Login berhasil! JENIS_LKK:', jenisLKKTrim);
-                
-                // 🔄 UPDATE: Set variabel petugas
                 currentPetugas = {
                     id: idUser || '',
                     username: username,
@@ -2354,34 +2244,26 @@ function login() {
                     foto: petugasData.linkFotoProfil || petugasData.LINK_FOTO_PROFIL || ''
                 };
                 
-                // 🔄 UPDATE: Simpan data lengkap petugas
                 currentPetugasData = petugasData;
                 currentUsername = username;
                 currentRole = jenisLKKTrim;
                 
-                // 🔄 UPDATE: Hilangkan "KELURAHAN " dari TINGKATAN_LKK
                 let tingkatanLKKClean = tingkatanLKK.trim();
                 if (tingkatanLKKClean.startsWith('KELURAHAN ')) {
                     currentIDPetugas = tingkatanLKKClean.substring(10).trim();
                 } else {
                     currentIDPetugas = tingkatanLKKClean;
                 }
-                console.log('✅ ID_PETUGAS (tanpa KELURAHAN):', currentIDPetugas);
                 
-                // 🔄 UPDATE: Set ID_RT dan ID_RW berdasarkan role
                 if (currentRole === 'RT') {
-                    currentIDRT = rtPetugas;
-                    currentIDRW = rwPetugas;
+                    currentIDRT = rtPetugas.toString().padStart(3, '0');
+                    currentIDRW = rwPetugas.toString().padStart(3, '0');
                 } else {
                     currentIDRT = '';
                     currentIDRW = '';
                 }
                 
                 currentNamaPetugas = namaPetugas;
-                
-                console.log('✅ currentIDPetugas:', currentIDPetugas);
-                console.log('✅ currentRole:', currentRole);
-                console.log('✅ currentNamaPetugas:', currentNamaPetugas);
                 
                 isLoggedIn = true;
                 
@@ -2439,7 +2321,6 @@ function logout() {
     showNotification('Anda telah logout');
 }
 
-// 🔄 UPDATE: Fungsi untuk mendapatkan data petugas dari localStorage
 function getPetugasDataFromStorage() {
     try {
         const data = localStorage.getItem('petugasData');
@@ -2460,7 +2341,6 @@ function getPetugasDataFromStorage() {
 }
 
 function loadAllData() {
-    // 🔄 UPDATE: Ambil data petugas dari storage jika belum ada
     if (!currentIDPetugas || !currentRole) {
         getPetugasDataFromStorage();
     }
@@ -2568,7 +2448,6 @@ function populateAllDropdowns() {
 function populateAnggotaDropdowns(index) {
     if (!dropdownData) return;
     
-    // 🔄 UPDATE: Filter STATUS HUBUNGAN - HAPUS KEPALA KELUARGA
     const statusHubunganFiltered = dropdownData.statusHubungan ? 
         dropdownData.statusHubungan.filter(item => item !== 'KEPALA KELUARGA') : [];
     
@@ -2997,7 +2876,8 @@ function resetForm() {
     setDefaultSelectValues();
 }
 
-// 🔄 UPDATE: Fungsi filter data berdasarkan role petugas
+// ================= 🔥 FUNGSI FILTER DATA YANG DIPERBAIKI =================
+
 function filterDataByRole(dataArray) {
     if (!dataArray || dataArray.length === 0) return [];
     
@@ -3008,114 +2888,51 @@ function filterDataByRole(dataArray) {
     console.log('  currentIDRW:', currentIDRW);
     console.log('  Total data sebelum filter:', dataArray.length);
     
-    // 🔥 NORMALISASI: Ubah ke format 3 digit
     function normalizeId(value) {
         if (!value) return '';
         const str = value.toString().trim();
-        // Jika hanya angka, pad dengan 3 digit
         if (/^\d+$/.test(str)) {
             return str.padStart(3, '0');
         }
         return str;
     }
     
-    // Normalisasi ID petugas saat ini
     const normalizedIDRT = normalizeId(currentIDRT);
     const normalizedIDRW = normalizeId(currentIDRW);
     const normalizedIDPetugas = normalizeId(currentIDPetugas);
     
-    console.log('  Normalized ID_RT:', normalizedIDRT);
-    console.log('  Normalized ID_RW:', normalizedIDRW);
-    console.log('  Normalized ID_PETUGAS:', normalizedIDPetugas);
-    
     if (currentRole === 'RT') {
-        // Untuk RT: filter berdasarkan ID_RT dan ID_RW
-        console.log('🔍 Filtering for RT - ID_RT:', currentIDRT, 'ID_RW:', currentIDRW);
-        console.log('🔍 Normalized - ID_RT:', normalizedIDRT, 'ID_RW:', normalizedIDRW);
-        
-        // Tampilkan semua ID_RT dan ID_RW yang ada di data untuk debug
-        const uniqueRT = new Set();
-        const uniqueRW = new Set();
-        dataArray.forEach(row => {
-            const idRT = (row['ID_RT'] || '').toString().trim();
-            const idRW = (row['ID_RW'] || '').toString().trim();
-            if (idRT) uniqueRT.add(idRT);
-            if (idRW) uniqueRW.add(idRW);
-        });
-        console.log('  ID_RT yang ada di data (asli):', Array.from(uniqueRT));
-        console.log('  ID_RW yang ada di data (asli):', Array.from(uniqueRW));
-        
-        // Normalisasi ID_RT dan ID_RW di data
-        const normalizedUniqueRT = new Set();
-        const normalizedUniqueRW = new Set();
-        dataArray.forEach(row => {
-            const idRT = (row['ID_RT'] || '').toString().trim();
-            const idRW = (row['ID_RW'] || '').toString().trim();
-            if (idRT) normalizedUniqueRT.add(normalizeId(idRT));
-            if (idRW) normalizedUniqueRW.add(normalizeId(idRW));
-        });
-        console.log('  ID_RT yang ada di data (normalized):', Array.from(normalizedUniqueRT));
-        console.log('  ID_RW yang ada di data (normalized):', Array.from(normalizedUniqueRW));
-        
         const filtered = dataArray.filter(row => {
-            const idRT = (row['ID_RT'] || '').toString().trim();
-            const idRW = (row['ID_RW'] || '').toString().trim();
-            // Normalisasi kedua sisi untuk perbandingan
-            const match = normalizeId(idRT) === normalizedIDRT && normalizeId(idRW) === normalizedIDRW;
-            if (match) {
-                console.log('  ✅ Data match:', row['NAMA LENGKAP'], 'ID_RT:', idRT, 'ID_RW:', idRW);
+            let idRT = row['ID_RT'] || '';
+            let idRW = row['ID_RW'] || '';
+            
+            // 🔥 PERBAIKAN: Jika ID_RT/ID_RW kosong, ambil dari kolom RT/RW biasa
+            if (idRT === '' || idRW === '') {
+                idRT = row['RT'] ? row['RT'].toString().trim() : '';
+                idRW = row['RW'] ? row['RW'].toString().trim() : '';
             }
-            return match;
+            
+            // Normalisasi
+            idRT = normalizeId(idRT);
+            idRW = normalizeId(idRW);
+            
+            return idRT === normalizedIDRT && idRW === normalizedIDRW;
         });
         
         console.log('  Data setelah filter RT:', filtered.length);
-        
-        if (filtered.length === 0) {
-            console.log('  ⚠️ TIDAK ADA DATA UNTUK RT', currentIDRT, 'RW', currentIDRW);
-            console.log('  ⚠️ Coba cek data dengan ID_RT =', normalizedIDRT, 'dan ID_RW =', normalizedIDRW);
-        }
-        
         return filtered;
         
     } else if (currentRole === 'PETUGAS PENDATA') {
-        // Untuk PETUGAS PENDATA: filter berdasarkan ID_PETUGAS
-        console.log('🔍 Filtering for PETUGAS PENDATA - ID_PETUGAS:', currentIDPetugas);
-        console.log('🔍 Normalized - ID_PETUGAS:', normalizedIDPetugas);
-        
-        const uniquePetugas = new Set();
-        dataArray.forEach(row => {
-            const idPetugas = (row['ID_PETUGAS'] || '').toString().trim();
-            if (idPetugas) uniquePetugas.add(idPetugas);
-        });
-        console.log('  ID_PETUGAS yang ada di data (asli):', Array.from(uniquePetugas));
-        
-        const normalizedUniquePetugas = new Set();
-        dataArray.forEach(row => {
-            const idPetugas = (row['ID_PETUGAS'] || '').toString().trim();
-            if (idPetugas) normalizedUniquePetugas.add(normalizeId(idPetugas));
-        });
-        console.log('  ID_PETUGAS yang ada di data (normalized):', Array.from(normalizedUniquePetugas));
-        
         const filtered = dataArray.filter(row => {
-            const idPetugas = (row['ID_PETUGAS'] || '').toString().trim();
-            const match = normalizeId(idPetugas) === normalizedIDPetugas;
-            if (match) {
-                console.log('  ✅ Data match:', row['NAMA LENGKAP'], 'ID_PETUGAS:', idPetugas);
-            }
-            return match;
+            let idPetugas = row['ID_PETUGAS'] || '';
+            idPetugas = normalizeId(idPetugas);
+            return idPetugas === normalizedIDPetugas;
         });
         
         console.log('  Data setelah filter PETUGAS PENDATA:', filtered.length);
-        
-        if (filtered.length === 0) {
-            console.log('  ⚠️ TIDAK ADA DATA UNTUK PETUGAS', currentIDPetugas);
-            console.log('  ⚠️ Coba cek data dengan ID_PETUGAS =', normalizedIDPetugas);
-        }
-        
         return filtered;
     }
     
-    console.log('  ⚠️ Role tidak dikenali, return empty array');
     return [];
 }
 
@@ -3131,7 +2948,6 @@ function cekNomorKK() {
         return;
     }
     
-    // 🔄 UPDATE: Filter data berdasarkan role petugas
     let dataKK = allData.filter(row => row['NOMOR KK'] === nomorKK);
     dataKK = filterDataByRole(dataKK);
     
@@ -3226,7 +3042,6 @@ function tampilkanKepalaKeluarga(data) {
         default: statusBadgeClass = 'domisili';
     }
     
-    // 🔄 UPDATE: Tampilkan ID_PETUGAS, ID_RT, ID_RW, NAMA_PETUGAS jika ada
     const idPetugas = data['ID_PETUGAS'] || '-';
     const idRT = data['ID_RT'] || '-';
     const idRW = data['ID_RW'] || '-';
@@ -3787,21 +3602,14 @@ function simpanSemuaAnggota() {
         const riwayatPenyakit = document.getElementById(`riwayat_penyakit_${i}`)?.value || 'TIDAK DIKETAHUI';
         const jenisPenyakit = document.getElementById(`jenis_penyakit_${i}`)?.value || '';
         
-        // 🔄 UPDATE: Ambil RT dan RW dari input form untuk PETUGAS PENDATA
-        const rtInput = document.getElementById(`rt_${i}`)?.value || '';
-        const rwInput = document.getElementById(`rw_${i}`)?.value || '';
-        
-        // 🔄 UPDATE: Tentukan ID_RT dan ID_RW berdasarkan role
         let idRT = '';
         let idRW = '';
         if (currentRole === 'RT') {
-            // Untuk RT: gunakan dari LOGIN
             idRT = currentIDRT;
             idRW = currentIDRW;
         } else {
-            // Untuk PETUGAS PENDATA: copy dari input
-            idRT = rtInput;
-            idRW = rwInput;
+            idRT = document.getElementById(`rt_${i}`)?.value || '';
+            idRW = document.getElementById(`rw_${i}`)?.value || '';
         }
         
         const formData = {
@@ -3843,7 +3651,6 @@ function simpanSemuaAnggota() {
             statusKebersihan: document.getElementById(`status_kebersihan_${i}`).value || 'TIDAK DIKETAHUI',
             nomorTelepon: document.getElementById(`nomor_telepon_${i}`).value || '',
             email: document.getElementById(`email_${i}`).value || '',
-            // 🔄 UPDATE: Tambahkan field ID_PETUGAS, ID_RT, ID_RW, NAMA_PETUGAS
             idPetugas: currentIDPetugas,
             idRT: idRT,
             idRW: idRW,
@@ -3937,19 +3744,15 @@ document.getElementById('pendudukForm').addEventListener('submit', function(e) {
 
     const statusWarga = document.getElementById('status_warga_kepala')?.value || 'DOMISILI';
     
-    // 🔄 UPDATE: Ambil RT dan RW dari input form
     const rtInput = document.getElementById('rt').value || '';
     const rwInput = document.getElementById('rw').value || '';
     
-    // 🔄 UPDATE: Tentukan ID_RT dan ID_RW berdasarkan role
     let idRT = '';
     let idRW = '';
     if (currentRole === 'RT') {
-        // Untuk RT: gunakan dari LOGIN
         idRT = currentIDRT;
         idRW = currentIDRW;
     } else {
-        // Untuk PETUGAS PENDATA: copy dari input
         idRT = rtInput;
         idRW = rwInput;
     }
@@ -3992,7 +3795,6 @@ document.getElementById('pendudukForm').addEventListener('submit', function(e) {
         statusKebersihan: getValue('status_kebersihan') || 'TIDAK DIKETAHUI',
         nomorTelepon: getValue('nomor_telepon') || '',
         email: getValue('email') || '',
-        // 🔄 UPDATE: Tambahkan field ID_PETUGAS, ID_RT, ID_RW, NAMA_PETUGAS
         idPetugas: currentIDPetugas,
         idRT: idRT,
         idRW: idRW,
@@ -4055,22 +3857,10 @@ function loadDataFromServer() {
                     tanggalLahir = convertISODateToDisplay(tanggalLahir);
                 }
                 
-                // 🔥 PERBAIKAN: Ambil ID_RT dan ID_RW dengan benar
-                // Coba beberapa kemungkinan nama kolom
                 const idRT = row['ID_RT'] || row['ID RT'] || row['id_rt'] || '';
                 const idRW = row['ID_RW'] || row['ID RW'] || row['id_rw'] || '';
                 const idPetugas = row['ID_PETUGAS'] || row['ID PETUGAS'] || row['id_petugas'] || '';
                 const namaPetugas = row['NAMA_PETUGAS'] || row['NAMA PETUGAS'] || row['nama_petugas'] || '';
-                
-                console.log('🔍 Row data:', {
-                    nama: row['NAMA LENGKAP'],
-                    'ID_RT (asli)': row['ID_RT'],
-                    'ID_RT (cari)': idRT,
-                    'ID_RW (asli)': row['ID_RW'],
-                    'ID_RW (cari)': idRW,
-                    'ID_PETUGAS (asli)': row['ID_PETUGAS'],
-                    'ID_PETUGAS (cari)': idPetugas
-                });
                 
                 return {
                     ...row,
@@ -4088,22 +3878,8 @@ function loadDataFromServer() {
             });
             
             console.log('📊 Data loaded:', allData.length, 'records');
-            
-            // 🔥 DEBUG: Tampilkan semua ID_RT dan ID_RW dari data
-            const uniqueRT = new Set();
-            const uniqueRW = new Set();
-            const uniquePetugas = new Set();
-            allData.forEach(row => {
-                if (row['ID_RT']) uniqueRT.add(row['ID_RT']);
-                if (row['ID_RW']) uniqueRW.add(row['ID_RW']);
-                if (row['ID_PETUGAS']) uniquePetugas.add(row['ID_PETUGAS']);
-            });
-            console.log('📊 ID_RT yang ada di data:', Array.from(uniqueRT));
-            console.log('📊 ID_RW yang ada di data:', Array.from(uniqueRW));
-            console.log('📊 ID_PETUGAS yang ada di data:', Array.from(uniquePetugas));
         }
         
-        // 🔄 UPDATE: Filter data berdasarkan role petugas
         const filteredData = filterDataByRole(allData);
         console.log('📊 Filtered data by role:', filteredData.length, 'records');
         
@@ -4203,7 +3979,6 @@ function performSearch() {
     showCircularLoader('Mencari Data', 'Memproses pencarian...');
     
     setTimeout(() => {
-        // 🔄 UPDATE: Filter data berdasarkan role terlebih dahulu
         const filteredByRole = filterDataByRole(allData);
         
         const filtered = filteredByRole.filter(row => {
@@ -4364,21 +4139,35 @@ function displayDataInTable(data) {
     tbody.innerHTML = html;
 }
 
-// ================= FUNGSI EDIT DATA =================
+// ================= 🔥 FUNGSI EDIT DATA YANG DIPERBAIKI =================
 
 function editData(index) {
     const data = allData[index];
-    if (!data) return;
+    if (!data) {
+        showNotification('Data tidak ditemukan!', true);
+        return;
+    }
     
     if (data['STATUS HUBUNGAN DALAM KELUARGA'] !== 'KEPALA KELUARGA') {
         showNotification('Fitur ini khusus untuk edit Kepala Keluarga. Gunakan "Edit Anggota" untuk anggota keluarga.', true);
         return;
     }
     
-    // 🔄 UPDATE: Cek akses berdasarkan role
+    // 🔒 CEK AKSES BERDASARKAN ROLE
     if (currentRole === 'RT') {
-        const idRT = data['ID_RT'] || '';
-        const idRW = data['ID_RW'] || '';
+        let idRT = data['ID_RT'] || '';
+        let idRW = data['ID_RW'] || '';
+        
+        // 🔥 PERBAIKAN: Jika ID_RT/ID_RW kosong, ambil dari kolom RT/RW biasa
+        if (idRT === '' || idRW === '') {
+            idRT = data['RT'] ? data['RT'].toString().trim() : '';
+            idRW = data['RW'] ? data['RW'].toString().trim() : '';
+        }
+        
+        // Normalisasi
+        idRT = idRT.toString().padStart(3, '0');
+        idRW = idRW.toString().padStart(3, '0');
+        
         if (idRT !== currentIDRT || idRW !== currentIDRW) {
             showNotification('Anda tidak memiliki akses untuk mengedit data ini!', true);
             return;
@@ -4467,7 +4256,7 @@ function editData(index) {
     document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
 }
 
-// ================= FUNGSI EDIT ANGGOTA =================
+// ================= 🔥 FUNGSI EDIT ANGGOTA YANG DIPERBAIKI =================
 
 function editAnggota(index) {
     const data = allData[index];
@@ -4478,10 +4267,21 @@ function editAnggota(index) {
         return;
     }
     
-    // 🔄 UPDATE: Cek akses berdasarkan role
+    // 🔒 CEK AKSES BERDASARKAN ROLE
     if (currentRole === 'RT') {
-        const idRT = data['ID_RT'] || '';
-        const idRW = data['ID_RW'] || '';
+        let idRT = data['ID_RT'] || '';
+        let idRW = data['ID_RW'] || '';
+        
+        // 🔥 PERBAIKAN: Jika ID_RT/ID_RW kosong, ambil dari kolom RT/RW biasa
+        if (idRT === '' || idRW === '') {
+            idRT = data['RT'] ? data['RT'].toString().trim() : '';
+            idRW = data['RW'] ? data['RW'].toString().trim() : '';
+        }
+        
+        // Normalisasi
+        idRT = idRT.toString().padStart(3, '0');
+        idRW = idRW.toString().padStart(3, '0');
+        
         if (idRT !== currentIDRT || idRW !== currentIDRW) {
             showNotification('Anda tidak memiliki akses untuk mengedit data ini!', true);
             return;
@@ -4725,11 +4525,9 @@ function submitEditAnggota() {
         second: '2-digit'
     }).replace(/\//g, '/');
     
-    // 🔄 UPDATE: Tentukan ID_RT dan ID_RW berdasarkan role
     let idRT = data['ID_RT'] || '';
     let idRW = data['ID_RW'] || '';
     if (currentRole === 'PETUGAS PENDATA') {
-        // Untuk PETUGAS PENDATA: gunakan dari data yang sudah ada (dari input sebelumnya)
         idRT = data['ID_RT'] || '';
         idRW = data['ID_RW'] || '';
     }
@@ -4774,7 +4572,6 @@ function submitEditAnggota() {
         statusKebersihan: document.getElementById('edit_status_kebersihan')?.value || 'TIDAK DIKETAHUI',
         nomorTelepon: document.getElementById('edit_nomor_telepon')?.value || '',
         email: document.getElementById('edit_email')?.value || '',
-        // 🔄 UPDATE: Tambahkan field ID_PETUGAS, ID_RT, ID_RW, NAMA_PETUGAS
         idPetugas: data['ID_PETUGAS'] || currentIDPetugas,
         idRT: idRT,
         idRW: idRW,
@@ -4803,16 +4600,27 @@ function submitEditAnggota() {
     });
 }
 
-// ================= FUNGSI EDIT ANGGOTA CARD =================
+// ================= 🔥 FUNGSI EDIT ANGGOTA CARD YANG DIPERBAIKI =================
 
 function editAnggotaCard(index) {
     const data = existingAnggotaList[index];
     if (!data) return;
     
-    // 🔄 UPDATE: Cek akses berdasarkan role
+    // 🔒 CEK AKSES BERDASARKAN ROLE
     if (currentRole === 'RT') {
-        const idRT = data['ID_RT'] || '';
-        const idRW = data['ID_RW'] || '';
+        let idRT = data['ID_RT'] || '';
+        let idRW = data['ID_RW'] || '';
+        
+        // 🔥 PERBAIKAN: Jika ID_RT/ID_RW kosong, ambil dari kolom RT/RW biasa
+        if (idRT === '' || idRW === '') {
+            idRT = data['RT'] ? data['RT'].toString().trim() : '';
+            idRW = data['RW'] ? data['RW'].toString().trim() : '';
+        }
+        
+        // Normalisasi
+        idRT = idRT.toString().padStart(3, '0');
+        idRW = idRW.toString().padStart(3, '0');
+        
         if (idRT !== currentIDRT || idRW !== currentIDRW) {
             showNotification('Anda tidak memiliki akses untuk mengedit data ini!', true);
             return;
@@ -5059,7 +4867,6 @@ function submitEditAnggotaCard() {
         second: '2-digit'
     }).replace(/\//g, '/');
     
-    // 🔄 UPDATE: Tentukan ID_RT dan ID_RW berdasarkan role
     let idRT = data['ID_RT'] || '';
     let idRW = data['ID_RW'] || '';
     if (currentRole === 'PETUGAS PENDATA') {
@@ -5107,7 +4914,6 @@ function submitEditAnggotaCard() {
         statusKebersihan: document.getElementById('edit_card_status_kebersihan')?.value || 'TIDAK DIKETAHUI',
         nomorTelepon: document.getElementById('edit_card_nomor_telepon')?.value || '',
         email: document.getElementById('edit_card_email')?.value || '',
-        // 🔄 UPDATE: Tambahkan field ID_PETUGAS, ID_RT, ID_RW, NAMA_PETUGAS
         idPetugas: data['ID_PETUGAS'] || currentIDPetugas,
         idRT: idRT,
         idRW: idRW,
@@ -5136,16 +4942,27 @@ function submitEditAnggotaCard() {
     });
 }
 
-// ================= FUNGSI DELETE DATA =================
+// ================= 🔥 FUNGSI DELETE DATA YANG DIPERBAIKI =================
 
 function deleteData(index) {
     const data = allData[index];
     if (!data) return;
     
-    // 🔄 UPDATE: Cek akses berdasarkan role
+    // 🔒 CEK AKSES BERDASARKAN ROLE
     if (currentRole === 'RT') {
-        const idRT = data['ID_RT'] || '';
-        const idRW = data['ID_RW'] || '';
+        let idRT = data['ID_RT'] || '';
+        let idRW = data['ID_RW'] || '';
+        
+        // 🔥 PERBAIKAN: Jika ID_RT/ID_RW kosong, ambil dari kolom RT/RW biasa
+        if (idRT === '' || idRW === '') {
+            idRT = data['RT'] ? data['RT'].toString().trim() : '';
+            idRW = data['RW'] ? data['RW'].toString().trim() : '';
+        }
+        
+        // Normalisasi
+        idRT = idRT.toString().padStart(3, '0');
+        idRW = idRW.toString().padStart(3, '0');
+        
         if (idRT !== currentIDRT || idRW !== currentIDRW) {
             showNotification('Anda tidak memiliki akses untuk menghapus data ini!', true);
             return;
@@ -5201,14 +5018,27 @@ function confirmDelete() {
     });
 }
 
+// ================= 🔥 FUNGSI HAPUS ANGGOTA CARD YANG DIPERBAIKI =================
+
 function hapusAnggotaCard(index) {
     const data = existingAnggotaList[index];
     if (!data) return;
     
-    // 🔄 UPDATE: Cek akses berdasarkan role
+    // 🔒 CEK AKSES BERDASARKAN ROLE
     if (currentRole === 'RT') {
-        const idRT = data['ID_RT'] || '';
-        const idRW = data['ID_RW'] || '';
+        let idRT = data['ID_RT'] || '';
+        let idRW = data['ID_RW'] || '';
+        
+        // 🔥 PERBAIKAN: Jika ID_RT/ID_RW kosong, ambil dari kolom RT/RW biasa
+        if (idRT === '' || idRW === '') {
+            idRT = data['RT'] ? data['RT'].toString().trim() : '';
+            idRW = data['RW'] ? data['RW'].toString().trim() : '';
+        }
+        
+        // Normalisasi
+        idRT = idRT.toString().padStart(3, '0');
+        idRW = idRW.toString().padStart(3, '0');
+        
         if (idRT !== currentIDRT || idRW !== currentIDRW) {
             showNotification('Anda tidak memiliki akses untuk menghapus data ini!', true);
             return;
@@ -5542,7 +5372,6 @@ function autoFillOrangTua(index) {
     const nomorKK = currentKKData ? currentKKData['NOMOR KK'] : '';
     if (!nomorKK) return;
     
-    // 🔄 UPDATE: Filter data berdasarkan role
     let dataKK = allData.filter(row => row['NOMOR KK'] === nomorKK);
     dataKK = filterDataByRole(dataKK);
     
@@ -5624,7 +5453,6 @@ window.onload = function() {
     if (!checkSession()) {
         showLoginPage();
     } else {
-        // 🔄 UPDATE: Ambil data petugas dari storage
         getPetugasDataFromStorage();
         loadAllData();
     }
