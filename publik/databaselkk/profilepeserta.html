@@ -2484,30 +2484,128 @@
     </div>
 
     <!-- ============================================
-    JAVASCRIPT - FULL DENGAN DROPDOWN PER USER
+    JAVASCRIPT - FULL DENGAN DROPDOWN PER USER + ANTI INSPECT
     ============================================ -->
     <script>
+        // ================================================================
+        // ANTI RIGHT CLICK & DEV TOOLS PROTECTION
+        // ================================================================
+
+        // Mencegah klik kanan
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            showToast('⚠️ Akses Ditolak', 'Klik kanan tidak diizinkan di halaman ini', 'error');
+            return false;
+        });
+
+        // Mencegah keyboard shortcuts untuk DevTools
+        document.addEventListener('keydown', function(e) {
+            // F12
+            if (e.key === 'F12') {
+                e.preventDefault();
+                showToast('⚠️ Akses Ditolak', 'F12 tidak diizinkan', 'error');
+                return false;
+            }
+            
+            // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
+                e.preventDefault();
+                showToast('⚠️ Akses Ditolak', 'Developer tools tidak diizinkan', 'error');
+                return false;
+            }
+            
+            // Ctrl+U (view source)
+            if (e.ctrlKey && e.key === 'u') {
+                e.preventDefault();
+                showToast('⚠️ Akses Ditolak', 'View source tidak diizinkan', 'error');
+                return false;
+            }
+        });
+
+        // Mencegah drag and drop
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Mencegah pemilihan teks secara massal (kecuali di input/textarea)
+        document.addEventListener('selectstart', function(e) {
+            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
+                return true;
+            }
+            e.preventDefault();
+            return false;
+        });
+
+        // Menonaktifkan tombol kanan di gambar
+        document.querySelectorAll('img').forEach(function(img) {
+            img.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                return false;
+            });
+        });
+
+        // ================================================================
+        // DETECT DEV TOOLS OPEN
+        // ================================================================
+
+        var devtoolsOpen = false;
+        var checkDevTools = function() {
+            var threshold = 160;
+            var widthThreshold = window.outerWidth - window.innerWidth > threshold;
+            var heightThreshold = window.outerHeight - window.innerHeight > threshold;
+            
+            if (widthThreshold || heightThreshold) {
+                if (!devtoolsOpen) {
+                    devtoolsOpen = true;
+                    showToast('⚠️ Detected', 'Developer tools terdeteksi!', 'error');
+                }
+            } else {
+                devtoolsOpen = false;
+            }
+        };
+
+        setInterval(checkDevTools, 1000);
+
+        var debuggerCheck = function() {
+            var start = performance.now();
+            debugger;
+            var end = performance.now();
+            if (end - start > 100) {
+                if (!devtoolsOpen) {
+                    devtoolsOpen = true;
+                    showToast('⚠️ Detected', 'Developer tools terdeteksi!', 'error');
+                }
+            }
+        };
+
+        setInterval(debuggerCheck, 3000);
+
+        // ================================================================
+        // ORIGINAL CODE (tidak diubah)
+        // ================================================================
+
         // ============================================
         // CONFIGURATION
         // ============================================
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwsQWu9u_aOLsNQcRcru_bZ5dv3pJyAIPB0M2Cna6HhYLd_EuaZxpGz1Ce6stTMawN5/exec';
-        const API_BASE_MENU_URL = 'https://script.google.com/macros/s/AKfycbzWLYBFrQpx4ONhrvCaKK35p2BeYvALjqejyRgdIkYcOzOogJnRth-tkeSowrBrx2qL/exec';
+        var API_BASE_URL = 'https://script.google.com/macros/s/AKfycbwsQWu9u_aOLsNQcRcru_bZ5dv3pJyAIPB0M2Cna6HhYLd_EuaZxpGz1Ce6stTMawN5/exec';
+        var API_BASE_MENU_URL = 'https://script.google.com/macros/s/AKfycbzWLYBFrQpx4ONhrvCaKK35p2BeYvALjqejyRgdIkYcOzOogJnRth-tkeSowrBrx2qL/exec';
 
-        const CURRENT_USER = JSON.parse(localStorage.getItem('user') || '{}');
+        var CURRENT_USER = JSON.parse(localStorage.getItem('user') || '{}');
 
-        let biodataData = {};
-        let isLocked = true;
-        let sisaUpdateInterval = null;
-        let beritaData = [];
-        let isDarkMode = localStorage.getItem('darkMode') === 'true';
-        let attachmentFile = null;
-        let pesanData = [];
-        let pesanTerbuka = null;
-        let menuDataCache = [];
+        var biodataData = {};
+        var isLocked = true;
+        var sisaUpdateInterval = null;
+        var beritaData = [];
+        var isDarkMode = localStorage.getItem('darkMode') === 'true';
+        var attachmentFile = null;
+        var pesanData = [];
+        var pesanTerbuka = null;
+        var menuDataCache = [];
 
-        const READONLY_FIELDS = ['bioNoNik', 'bioJenisLkk', 'bioTingkatanLkk', 'bioJabatan', 'bioAlamatEmail'];
-        const RT_RW_FIELDS = ['bioRt', 'bioRw'];
-        const RT_RW_READONLY_TYPES = ['RT', 'RW'];
+        var READONLY_FIELDS = ['bioNoNik', 'bioJenisLkk', 'bioTingkatanLkk', 'bioJabatan', 'bioAlamatEmail'];
+        var RT_RW_FIELDS = ['bioRt', 'bioRw'];
+        var RT_RW_READONLY_TYPES = ['RT', 'RW'];
 
         if (!CURRENT_USER || !CURRENT_USER.id_user) {
             window.location.href = 'login.html';
@@ -2528,8 +2626,8 @@
             } else {
                 document.documentElement.removeAttribute('data-theme');
             }
-            const switchInput = document.getElementById('themeSwitch');
-            const statusText = document.getElementById('themeStatus');
+            var switchInput = document.getElementById('themeSwitch');
+            var statusText = document.getElementById('themeStatus');
             if (switchInput) switchInput.checked = isDarkMode;
             if (statusText) statusText.textContent = isDarkMode ? 'Aktif' : 'Nonaktif';
         }
@@ -2539,10 +2637,10 @@
         // ============================================
         function showToast(title, message, type) {
             type = type || 'success';
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const titleEl = document.getElementById('toastTitle');
-            const messageEl = document.getElementById('toastMessage');
+            var toast = document.getElementById('toast');
+            var icon = document.getElementById('toastIcon');
+            var titleEl = document.getElementById('toastTitle');
+            var messageEl = document.getElementById('toastMessage');
             toast.className = 'toast show';
             toast.classList.add(type === 'success' ? 'toast-success' : 'toast-error');
             icon.textContent = type === 'success' ? '✅' : '❌';
@@ -2568,12 +2666,12 @@
         // ============================================
         // DROPDOWN MENU LAINNYA
         // ============================================
-        let isDropdownOpen = false;
+        var isDropdownOpen = false;
 
         function toggleDropdownMenu() {
             isDropdownOpen = !isDropdownOpen;
-            const content = document.getElementById('dropdownMenuContent');
-            const arrow = document.getElementById('dropdownArrow');
+            var content = document.getElementById('dropdownMenuContent');
+            var arrow = document.getElementById('dropdownArrow');
             if (isDropdownOpen) {
                 content.classList.add('open');
                 arrow.classList.add('open');
@@ -4427,153 +4525,151 @@
         // ============================================
         // LOAD MENU LAINNYA
         // ============================================
- function loadMenuLainnya() {
-    try {
-        console.log('🔄 ===== loadMenuLainnya() START =====');
-        console.log('👤 CURRENT_USER:', CURRENT_USER);
-        
-        var gridContainer = document.getElementById('menuLainnyaGrid');
-        var countBadge = document.getElementById('menuLainnyaCount');
-        var dropdownContent = document.getElementById('dropdownMenuContent');
-
-        console.log('📦 gridContainer:', gridContainer);
-        console.log('📦 countBadge:', countBadge);
-        console.log('📦 dropdownContent:', dropdownContent);
-
-        if (!gridContainer) {
-            console.error('❌ gridContainer tidak ditemukan!');
-            return;
-        }
-
-        gridContainer.innerHTML =
-            '<div class="menu-loading"><div class="spinner"></div><p style="margin-top:12px; color:var(--text-light);">Memuat menu...</p></div>';
-        
-        if (dropdownContent) {
-            dropdownContent.innerHTML =
-                '<div class="menu-loading" style="padding:12px 16px 12px 50px; display:flex; gap:10px; align-items:center; color:rgba(255,255,255,0.4); font-size:13px;"><span class="spinner" style="display:inline-block; width:16px; height:16px; border-width:2px; margin:0;"></span><span>Memuat menu...</span></div>';
-        }
-
-        console.log('📤 Memanggil API Menu dengan user:', CURRENT_USER.id_user);
-        console.log('📤 API_BASE_MENU_URL:', API_BASE_MENU_URL);
-
-        callAPI_Menu('getMenuLainnya', { id_user: CURRENT_USER.id_user })
-            .then(function(result) {
-                console.log('📦 ===== API RESPONSE =====');
-                console.log('📦 Success:', result.success);
-                console.log('📦 Message:', result.message);
-                console.log('📦 Data length:', result.data ? result.data.length : 0);
-                console.log('📦 Full Data:', JSON.stringify(result.data, null, 2));
-                console.log('📦 ===== END RESPONSE =====');
+        function loadMenuLainnya() {
+            try {
+                console.log('🔄 ===== loadMenuLainnya() START =====');
+                console.log('👤 CURRENT_USER:', CURRENT_USER);
                 
-                if (result.success) {
-                    var menus = result.data || [];
-                    console.log('📋 Jumlah menu:', menus.length);
-                    
-                    if (menus.length > 0) {
-                        console.log('📋 Menu pertama:', menus[0]);
-                        console.log('📋 Icon menu pertama:', menus[0].icon);
-                        console.log('📋 Nama menu pertama:', menus[0].nama_menu);
-                    }
-                    
-                    menuDataCache = menus;
-                    if (countBadge) countBadge.textContent = menus.length;
+                var gridContainer = document.getElementById('menuLainnyaGrid');
+                var countBadge = document.getElementById('menuLainnyaCount');
+                var dropdownContent = document.getElementById('dropdownMenuContent');
 
-                    if (menus.length === 0) {
-                        console.log('⚠️ Tidak ada menu');
-                        gridContainer.innerHTML =
-                            '<div class="menu-empty"><div class="icon">📭</div><p style="font-weight:500; font-size:16px;">Belum ada menu</p><p style="font-size:13px;">Menu akan muncul setelah admin menambahkan di spreadsheet</p></div>';
-                        if (dropdownContent) {
-                            dropdownContent.innerHTML =
-                                '<div class="menu-empty-sub">📭 Tidak ada menu tersedia</div>';
-                        }
-                        return;
-                    }
+                console.log('📦 gridContainer:', gridContainer);
+                console.log('📦 countBadge:', countBadge);
+                console.log('📦 dropdownContent:', dropdownContent);
 
-                    console.log('✅ Memproses ' + menus.length + ' menu...');
-                    
-                    var gridHtml = '<div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:20px;">';
-                    for (var i = 0; i < menus.length; i++) {
-                        var menu = menus[i];
-                        console.log(`🔍 Menu ${i+1}: ${menu.nama_menu} | Icon: ${menu.icon || '(kosong)'}`);
-                        
-                        // ===== LOGIKA ICON - TANPA FALLBACK EMOJI =====
-                        var iconHtml = '';
-                        if (menu.icon && menu.icon.trim() !== '') {
-                            // Jika ada URL_ICON, tampilkan gambar
-                            console.log(`✅ Menu ${i+1} memiliki icon: ${menu.icon}`);
-                            iconHtml = '<img src="' + menu.icon + '" alt="' + menu.nama_menu +
-                                '" style="width:48px; height:48px; object-fit:contain; border-radius:8px;" ' +
-                                'onerror="console.log(\'❌ Gagal load icon:\', this.src);this.style.display=\'none\'">';
-                        } else {
-                            // Jika TIDAK ADA URL_ICON, tampilkan KOSONG
-                            console.log(`⚠️ Menu ${i+1} TIDAK memiliki icon`);
-                            iconHtml = '<div style="width:48px; height:48px;"></div>';
-                        }
-                        
-                        gridHtml += '<div class="menu-grid-item" onclick="bukaMenuLainnya(\'' + menu.id +
-                            '\')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:var(--bg-card); border-radius:var(--radius-sm); border:1px solid var(--border-color); cursor:pointer; transition:var(--transition); text-align:center; min-height:140px;">';
-                        gridHtml += '<div class="menu-icon" style="margin-bottom:12px;">' + iconHtml + '</div>';
-                        gridHtml += '<div class="menu-name" style="font-weight:600; font-size:14px; color:var(--text-primary);">' + menu.nama_menu + '</div>';
-                        gridHtml += '<div class="menu-desc" style="font-size:11px; color:var(--text-light); margin-top:4px;">Klik untuk buka</div>';
-                        gridHtml += '</div>';
-                    }
-                    gridHtml += '</div>';
-                    gridContainer.innerHTML = gridHtml;
-                    console.log('✅ Grid HTML selesai dibuat');
-
-                    if (dropdownContent) {
-                        var dropdownHtml = '';
-                        for (var j = 0; j < menus.length; j++) {
-                            var m = menus[j];
-                            
-                            var iconSidebar = '';
-                            if (m.icon && m.icon.trim() !== '') {
-                                iconSidebar = '<img src="' + m.icon + '" alt="' + m.nama_menu +
-                                    '" style="width:20px; height:20px; object-fit:contain; border-radius:4px; vertical-align:middle;" onerror="this.style.display=\'none\'">';
-                            } else {
-                                iconSidebar = '';
-                            }
-                            
-                            dropdownHtml += '<div class="menu-item" onclick="bukaMenuLainnya(\'' + m.id +
-                                '\'); closeSidebar();">';
-                            dropdownHtml += '<span class="icon">' + iconSidebar + '</span>';
-                            dropdownHtml += '<span class="label">' + m.nama_menu + '</span>';
-                            dropdownHtml += '</div>';
-                        }
-                        dropdownContent.innerHTML = dropdownHtml;
-                        console.log('✅ Dropdown selesai dibuat');
-                    }
-                    
-                    console.log('✅ Menu selesai dirender!');
-
-                } else {
-                    console.error('❌ API Error:', result.message);
-                    gridContainer.innerHTML =
-                        '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
-                        (result.message || 'Terjadi kesalahan') + '</p></div>';
-                    if (dropdownContent) {
-                        dropdownContent.innerHTML =
-                            '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
-                    }
+                if (!gridContainer) {
+                    console.error('❌ gridContainer tidak ditemukan!');
+                    return;
                 }
-            })
-            .catch(function(error) {
-                console.error('❌ Error loading menu:', error);
-                console.error('❌ Stack:', error.stack);
+
                 gridContainer.innerHTML =
-                    '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
-                    (error.message || 'Terjadi kesalahan') + '</p></div>';
+                    '<div class="menu-loading"><div class="spinner"></div><p style="margin-top:12px; color:var(--text-light);">Memuat menu...</p></div>';
+                
                 if (dropdownContent) {
                     dropdownContent.innerHTML =
-                        '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
+                        '<div class="menu-loading" style="padding:12px 16px 12px 50px; display:flex; gap:10px; align-items:center; color:rgba(255,255,255,0.4); font-size:13px;"><span class="spinner" style="display:inline-block; width:16px; height:16px; border-width:2px; margin:0;"></span><span>Memuat menu...</span></div>';
                 }
-            });
-            
-    } catch(error) {
-        console.error('❌ CRITICAL ERROR di loadMenuLainnya():', error);
-        console.error('❌ Stack:', error.stack);
-    }
-}
+
+                console.log('📤 Memanggil API Menu dengan user:', CURRENT_USER.id_user);
+                console.log('📤 API_BASE_MENU_URL:', API_BASE_MENU_URL);
+
+                callAPI_Menu('getMenuLainnya', { id_user: CURRENT_USER.id_user })
+                    .then(function(result) {
+                        console.log('📦 ===== API RESPONSE =====');
+                        console.log('📦 Success:', result.success);
+                        console.log('📦 Message:', result.message);
+                        console.log('📦 Data length:', result.data ? result.data.length : 0);
+                        console.log('📦 Full Data:', JSON.stringify(result.data, null, 2));
+                        console.log('📦 ===== END RESPONSE =====');
+                        
+                        if (result.success) {
+                            var menus = result.data || [];
+                            console.log('📋 Jumlah menu:', menus.length);
+                            
+                            if (menus.length > 0) {
+                                console.log('📋 Menu pertama:', menus[0]);
+                                console.log('📋 Icon menu pertama:', menus[0].icon);
+                                console.log('📋 Nama menu pertama:', menus[0].nama_menu);
+                            }
+                            
+                            menuDataCache = menus;
+                            if (countBadge) countBadge.textContent = menus.length;
+
+                            if (menus.length === 0) {
+                                console.log('⚠️ Tidak ada menu');
+                                gridContainer.innerHTML =
+                                    '<div class="menu-empty"><div class="icon">📭</div><p style="font-weight:500; font-size:16px;">Belum ada menu</p><p style="font-size:13px;">Menu akan muncul setelah admin menambahkan di spreadsheet</p></div>';
+                                if (dropdownContent) {
+                                    dropdownContent.innerHTML =
+                                        '<div class="menu-empty-sub">📭 Tidak ada menu tersedia</div>';
+                                }
+                                return;
+                            }
+
+                            console.log('✅ Memproses ' + menus.length + ' menu...');
+                            
+                            var gridHtml = '<div class="menu-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(150px, 1fr)); gap:20px;">';
+                            for (var i = 0; i < menus.length; i++) {
+                                var menu = menus[i];
+                                console.log('🔍 Menu ' + (i+1) + ': ' + menu.nama_menu + ' | Icon: ' + (menu.icon || '(kosong)'));
+                                
+                                // ===== LOGIKA ICON - TANPA FALLBACK EMOJI =====
+                                var iconHtml = '';
+                                if (menu.icon && menu.icon.trim() !== '') {
+                                    console.log('✅ Menu ' + (i+1) + ' memiliki icon: ' + menu.icon);
+                                    iconHtml = '<img src="' + menu.icon + '" alt="' + menu.nama_menu +
+                                        '" style="width:48px; height:48px; object-fit:contain; border-radius:8px;" ' +
+                                        'onerror="console.log(\'❌ Gagal load icon:\', this.src);this.style.display=\'none\'">';
+                                } else {
+                                    console.log('⚠️ Menu ' + (i+1) + ' TIDAK memiliki icon');
+                                    iconHtml = '<div style="width:48px; height:48px;"></div>';
+                                }
+                                
+                                gridHtml += '<div class="menu-grid-item" onclick="bukaMenuLainnya(\'' + menu.id +
+                                    '\')" style="display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px; background:var(--bg-card); border-radius:var(--radius-sm); border:1px solid var(--border-color); cursor:pointer; transition:var(--transition); text-align:center; min-height:140px;">';
+                                gridHtml += '<div class="menu-icon" style="margin-bottom:12px;">' + iconHtml + '</div>';
+                                gridHtml += '<div class="menu-name" style="font-weight:600; font-size:14px; color:var(--text-primary);">' + menu.nama_menu + '</div>';
+                                gridHtml += '<div class="menu-desc" style="font-size:11px; color:var(--text-light); margin-top:4px;">Klik untuk buka</div>';
+                                gridHtml += '</div>';
+                            }
+                            gridHtml += '</div>';
+                            gridContainer.innerHTML = gridHtml;
+                            console.log('✅ Grid HTML selesai dibuat');
+
+                            if (dropdownContent) {
+                                var dropdownHtml = '';
+                                for (var j = 0; j < menus.length; j++) {
+                                    var m = menus[j];
+                                    
+                                    var iconSidebar = '';
+                                    if (m.icon && m.icon.trim() !== '') {
+                                        iconSidebar = '<img src="' + m.icon + '" alt="' + m.nama_menu +
+                                            '" style="width:20px; height:20px; object-fit:contain; border-radius:4px; vertical-align:middle;" onerror="this.style.display=\'none\'">';
+                                    } else {
+                                        iconSidebar = '';
+                                    }
+                                    
+                                    dropdownHtml += '<div class="menu-item" onclick="bukaMenuLainnya(\'' + m.id +
+                                        '\'); closeSidebar();">';
+                                    dropdownHtml += '<span class="icon">' + iconSidebar + '</span>';
+                                    dropdownHtml += '<span class="label">' + m.nama_menu + '</span>';
+                                    dropdownHtml += '</div>';
+                                }
+                                dropdownContent.innerHTML = dropdownHtml;
+                                console.log('✅ Dropdown selesai dibuat');
+                            }
+                            
+                            console.log('✅ Menu selesai dirender!');
+
+                        } else {
+                            console.error('❌ API Error:', result.message);
+                            gridContainer.innerHTML =
+                                '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
+                                (result.message || 'Terjadi kesalahan') + '</p></div>';
+                            if (dropdownContent) {
+                                dropdownContent.innerHTML =
+                                    '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
+                            }
+                        }
+                    })
+                    .catch(function(error) {
+                        console.error('❌ Error loading menu:', error);
+                        console.error('❌ Stack:', error.stack);
+                        gridContainer.innerHTML =
+                            '<div class="menu-empty"><div class="icon">❌</div><p style="font-weight:500; font-size:16px;">Gagal memuat menu</p><p style="font-size:13px;">' +
+                            (error.message || 'Terjadi kesalahan') + '</p></div>';
+                        if (dropdownContent) {
+                            dropdownContent.innerHTML =
+                                '<div class="menu-empty-sub">❌ Gagal memuat menu</div>';
+                        }
+                    });
+                    
+            } catch(error) {
+                console.error('❌ CRITICAL ERROR di loadMenuLainnya():', error);
+                console.error('❌ Stack:', error.stack);
+            }
+        }
 
         // ============================================
         // BUKA MENU LAINNYA DI IFRAME
@@ -4725,7 +4821,7 @@
 
         window.addEventListener('beforeunload', function() { stopSisaUpdateInterval(); });
 
-        console.log('✅ Profile page loaded!');
+        console.log('✅ Profile page loaded with Anti Inspect!');
         console.log('👤 User:', CURRENT_USER.username);
         console.log('🔒 Status:', isLocked ? 'Terkunci' : 'Tidak Terkunci');
         console.log('📨 Filter pesan admin siap pakai dengan TINGKATAN_LKK dan JENIS_LKK!');
