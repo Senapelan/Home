@@ -1,2752 +1,374 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Login - Perangkat Kecamatan Senapelan</title>
-
-    <!-- ===== FAVICON ===== -->
-    <link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
-    <link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
-
-    <!-- ===== META TAG ===== -->
-    <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" />
-    <meta property="og:title" content="LEMBAGA KEMASYARAKATAN KELURAHAN KECAMATAN SENAPELAN" />
-    <meta property="og:description" content="Login - LKK Kecamatan Senapelan" />
-
-    <!-- ===== FONTS & ICONS ===== -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        html, body {
-            min-height: 100vh;
-            min-height: 100dvh;
-        }
-
-        body {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-            padding: 16px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(ellipse at center, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
-            animation: rotateBg 30s linear infinite;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        @keyframes rotateBg {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .particles {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 4px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            animation: floatParticle 20s infinite linear;
-        }
-
-        @keyframes floatParticle {
-            0% { transform: translateY(100vh) scale(0); opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { transform: translateY(-10vh) scale(1); opacity: 0; }
-        }
-
-        .container {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-radius: 30px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
-            width: 100%;
-            max-width: 440px;
-            padding: 40px 32px;
-            position: relative;
-            z-index: 1;
-            animation: slideUp 0.6s ease;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px) scale(0.95);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        .logo {
-            text-align: center;
-            margin-bottom: 28px;
-        }
-
-        .logo-img {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            margin: 0 auto 12px;
-            display: block;
-            transition: all 0.3s ease;
-            object-fit: cover;
-        }
-
-        .logo-img:hover {
-            transform: scale(1.05);
-            border-color: #667eea;
-        }
-
-        .logo h1 {
-            color: #fff;
-            font-size: 22px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #f093fb, #f5576c, #667eea);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .logo p {
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 13px;
-            margin-top: 4px;
-            letter-spacing: 0.5px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-            position: relative;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            color: rgba(255, 255, 255, 0.8);
-            font-weight: 500;
-            font-size: 13px;
-            letter-spacing: 0.3px;
-        }
-
-        .form-group .input-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 12px;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .form-group .input-wrapper:focus-within {
-            border-color: #667eea;
-            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15);
-            background: rgba(255, 255, 255, 0.12);
-        }
-
-        .form-group .input-wrapper .input-icon {
-            padding: 0 12px 0 16px;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 15px;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .form-group .input-wrapper:focus-within .input-icon {
-            color: #667eea;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 13px 12px 13px 0;
-            border: none;
-            background: transparent;
-            font-size: 14px;
-            color: #fff;
-            outline: none;
-            min-width: 0;
-        }
-
-        .form-group select {
-            appearance: none;
-            -webkit-appearance: none;
-            cursor: pointer;
-        }
-
-        .form-group select option {
-            background: #1a1a2e;
-            color: #fff;
-        }
-
-        .form-group select option:disabled {
-            color: #dc3545;
-            opacity: 0.6;
-        }
-
-        .form-group input::placeholder {
-            color: rgba(255, 255, 255, 0.3);
-        }
-
-        .form-group .toggle-password {
-            padding: 0 16px 0 8px;
-            cursor: pointer;
-            color: rgba(255, 255, 255, 0.3);
-            transition: all 0.3s ease;
-            background: none;
-            border: none;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .form-group .toggle-password:hover {
-            color: rgba(255, 255, 255, 0.7);
-        }
-
-        .form-group .toggle-password.active {
-            color: #667eea;
-        }
-
-        .error-message {
-            color: #ff6b6b;
-            font-size: 12px;
-            margin-top: 5px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin: 18px 0 22px;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-
-        .checkbox-group label {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: rgba(255, 255, 255, 0.7);
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .checkbox-group label input[type="checkbox"] {
-            width: 17px;
-            height: 17px;
-            cursor: pointer;
-            accent-color: #667eea;
-            flex-shrink: 0;
-        }
-
-        .forgot-password {
-            color: #667eea;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: none;
-            border: none;
-            white-space: nowrap;
-        }
-
-        .forgot-password:hover {
-            color: #f093fb;
-            text-decoration: underline;
-        }
-
-        .btn-login {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .btn-login:hover::before {
-            left: 100%;
-        }
-
-        .btn-login:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-login:active {
-            transform: translateY(0);
-        }
-
-        .btn-login:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .register-link {
-            text-align: center;
-            margin-top: 18px;
-            color: rgba(255, 255, 255, 0.5);
-            font-size: 14px;
-        }
-
-        .register-link a {
-            color: #667eea;
-            text-decoration: none;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .register-link a:hover {
-            color: #f093fb;
-            text-decoration: underline;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            height: 100dvh;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            animation: fadeIn 0.3s ease;
-            padding: 16px;
-            overflow-y: auto;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: #1a1a2e;
-            border-radius: 24px;
-            padding: 32px 28px;
-            width: 100%;
-            max-width: 500px;
-            max-height: 90vh;
-            max-height: 90dvh;
-            overflow-y: auto;
-            animation: slideUp 0.3s ease;
-            position: relative;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 30px 80px rgba(0,0,0,0.5);
-            margin: auto;
-        }
-
-        .modal-content::-webkit-scrollbar {
-            width: 4px;
-        }
-
-        .modal-content::-webkit-scrollbar-track {
-            background: rgba(255,255,255,0.05);
-            border-radius: 3px;
-        }
-
-        .modal-content::-webkit-scrollbar-thumb {
-            background: #667eea;
-            border-radius: 3px;
-        }
-
-        .modal-close {
-            position: sticky;
-            top: 0;
-            float: right;
-            font-size: 26px;
-            color: rgba(255,255,255,0.3);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: none;
-            border: none;
-            padding: 4px 8px;
-            z-index: 10;
-        }
-
-        .modal-close:hover {
-            color: #fff;
-            transform: rotate(90deg);
-        }
-
-        .modal-title {
-            text-align: center;
-            margin-bottom: 20px;
-            color: #fff;
-            font-size: 20px;
-            font-weight: 700;
-            padding-right: 30px;
-        }
-
-        .modal-title span {
-            background: linear-gradient(135deg, #f093fb, #f5576c);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .modal .form-group label {
-            color: rgba(255,255,255,0.8);
-            font-size: 13px;
-        }
-
-        .modal .form-group .input-wrapper {
-            background: rgba(255,255,255,0.06);
-            border-color: rgba(255,255,255,0.08);
-        }
-
-        .modal .form-group .input-wrapper:focus-within {
-            border-color: #667eea;
-            background: rgba(255,255,255,0.1);
-        }
-
-        .modal .form-group input,
-        .modal .form-group select {
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .modal .form-group input::placeholder {
-            color: rgba(255,255,255,0.25);
-        }
-
-        .modal .form-group select option {
-            background: #1a1a2e;
-            color: #fff;
-        }
-
-        .btn-register {
-            width: 100%;
-            padding: 15px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-register:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-register:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255,255,255,0.2);
-            box-shadow: none;
-            transform: translateY(-2px);
-        }
-
-        .btn-back {
-            width: auto !important;
-            padding: 8px 18px !important;
-            font-size: 13px !important;
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 500;
-            flex-shrink: 0;
-        }
-
-        .btn-back:hover {
-            background: rgba(255, 255, 255, 0.15);
-            transform: translateY(-2px);
-        }
-
-        .btn-back i {
-            font-size: 13px;
-        }
-
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 0.8s ease infinite;
-            margin: 0 auto;
-        }
-
-        .spinner.active {
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .toast {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            background: rgba(26, 26, 46, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            padding: 14px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            display: none;
-            align-items: center;
-            gap: 12px;
-            animation: slideRight 0.3s ease;
-            z-index: 2000;
-            max-width: 380px;
-            width: calc(100% - 32px);
-        }
-
-        .toast.show {
-            display: flex;
-        }
-
-        @keyframes slideRight {
-            from {
-                opacity: 0;
-                transform: translateX(100px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .toast-success {
-            border-left: 4px solid #28a745;
-        }
-
-        .toast-error {
-            border-left: 4px solid #dc3545;
-        }
-
-        .toast-warning {
-            border-left: 4px solid #ffc107;
-        }
-
-        .toast-icon {
-            font-size: 22px;
-            flex-shrink: 0;
-        }
-
-        .toast-content {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .toast-title {
-            font-weight: 600;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .toast-message {
-            color: rgba(255,255,255,0.7);
-            font-size: 13px;
-            margin-top: 2px;
-            word-wrap: break-word;
-        }
-
-        .nik-check-result {
-            margin: 12px 0;
-            padding: 14px 16px;
-            border-radius: 12px;
-            display: none;
-        }
-
-        .nik-check-result.show {
-            display: block;
-        }
-
-        .nik-check-result.exists {
-            background: rgba(220, 53, 69, 0.15);
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-
-        .nik-check-result.not-exists {
-            background: rgba(40, 167, 69, 0.15);
-            border: 1px solid rgba(40, 167, 69, 0.3);
-        }
-
-        .nik-check-result .title {
-            font-weight: 600;
-            font-size: 14px;
-            margin-bottom: 4px;
-        }
-
-        .nik-check-result .title.exists {
-            color: #dc3545;
-        }
-
-        .nik-check-result .title.not-exists {
-            color: #28a745;
-        }
-
-        .nik-check-result .message {
-            font-size: 13px;
-            color: rgba(255,255,255,0.7);
-        }
-
-        .nik-check-result .actions {
-            margin-top: 10px;
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .nik-check-result .actions .btn-small {
-            padding: 8px 16px;
-            border: none;
-            border-radius: 8px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            flex: 1;
-            justify-content: center;
-            min-width: 120px;
-        }
-
-        .nik-check-result .actions .btn-small:hover {
-            transform: translateY(-2px);
-        }
-
-        .btn-small-primary {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff;
-        }
-
-        .btn-small-primary:hover {
-            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.3);
-        }
-
-        .btn-small-whatsapp {
-            background: #25D366;
-            color: #fff;
-        }
-
-        .btn-small-whatsapp:hover {
-            box-shadow: 0 5px 20px rgba(37, 211, 102, 0.3);
-        }
-
-        .btn-small-success {
-            background: #28a745;
-            color: #fff;
-        }
-
-        .btn-small-success:hover {
-            box-shadow: 0 5px 20px rgba(40, 167, 69, 0.3);
-        }
-
-        .btn-small-danger {
-            background: #dc3545;
-            color: #fff;
-        }
-
-        .btn-small-danger:hover {
-            box-shadow: 0 5px 20px rgba(220, 53, 69, 0.3);
-        }
-
-        .jabatan-list {
-            margin: 10px 0;
-            padding: 10px 14px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.08);
-        }
-
-        .jabatan-list .item {
-            padding: 4px 0;
-            color: rgba(255,255,255,0.9);
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .jabatan-list .item .num {
-            color: #667eea;
-            font-weight: 600;
-            min-width: 20px;
-        }
-
-        .jabatan-list .item .jabatan-name {
-            color: #fff;
-        }
-
-        .jabatan-list .item .jabatan-detail {
-            color: rgba(255,255,255,0.5);
-            font-size: 12px;
-        }
-
-        .password-strength {
-            height: 4px;
-            margin-top: 6px;
-            border-radius: 2px;
-            background: rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .password-strength.weak {
-            background: #dc3545;
-            width: 33%;
-        }
-
-        .password-strength.medium {
-            background: #ffc107;
-            width: 66%;
-        }
-
-        .password-strength.strong {
-            background: #28a745;
-            width: 100%;
-        }
-
-        .password-requirements {
-            font-size: 12px;
-            color: rgba(255,255,255,0.6);
-            margin-top: 4px;
-            padding: 6px 10px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 8px;
-        }
-
-        .password-requirements .req {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin: 2px 0;
-        }
-
-        .password-requirements .req.valid {
-            color: #28a745;
-        }
-
-        .password-requirements .req.invalid {
-            color: #dc3545;
-        }
-
-        .step-indicator {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 18px;
-        }
-
-        .step-dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
-        }
-
-        .step-dot.active {
-            background: #667eea;
-            transform: scale(1.2);
-        }
-
-        .step-dot.completed {
-            background: #28a745;
-        }
-
-        .reset-step {
-            display: none;
-        }
-
-        .reset-step.active {
-            display: block;
-        }
-
-        .info-text {
-            font-size: 12px;
-            color: rgba(255,255,255,0.4);
-            margin-top: 3px;
-        }
-
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            align-items: center;
-        }
-
-        .btn-group .btn-register {
-            flex: 1;
-        }
-
-        .checkbox-agree {
-            margin: 12px 0;
-        }
-
-        .checkbox-agree label {
-            display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            color: rgba(255,255,255,0.7);
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .checkbox-agree label input[type="checkbox"] {
-            width: 17px;
-            height: 17px;
-            cursor: pointer;
-            accent-color: #667eea;
-            flex-shrink: 0;
-            margin-top: 1px;
-        }
-
-        .field-hidden {
-            display: none !important;
-        }
-
-        .jabatan-option {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 2px 0;
-        }
-
-        .jabatan-option .status {
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 10px;
-        }
-
-        .jabatan-option .status.available {
-            color: #28a745;
-            background: rgba(40, 167, 69, 0.15);
-        }
-
-        .jabatan-option .status.full {
-            color: #dc3545;
-            background: rgba(220, 53, 69, 0.15);
-        }
-
-        .jabatan-status {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .jabatan-status .badge {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            font-weight: 600;
-        }
-
-        .jabatan-status .badge.available {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28a745;
-        }
-
-        .jabatan-status .badge.full {
-            background: rgba(220, 53, 69, 0.2);
-            color: #dc3545;
-        }
-
-        .jabatan-status .badge.warning {
-            background: rgba(255, 193, 7, 0.2);
-            color: #ffc107;
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 28px 18px;
-                border-radius: 24px;
-            }
-
-            .logo-img {
-                width: 60px;
-                height: 60px;
-            }
-
-            .logo h1 {
-                font-size: 20px;
-            }
-
-            .logo p {
-                font-size: 12px;
-            }
-
-            .modal-content {
-                padding: 24px 16px;
-                border-radius: 20px;
-                max-height: 95dvh;
-            }
-
-            .modal-title {
-                font-size: 18px;
-                margin-bottom: 16px;
-                padding-right: 24px;
-            }
-
-            .form-group {
-                margin-bottom: 14px;
-            }
-
-            .form-group label {
-                font-size: 12px;
-            }
-
-            .form-group input,
-            .form-group select,
-            .modal .form-group input,
-            .modal .form-group select {
-                font-size: 13px;
-                padding: 11px 10px 11px 0;
-            }
-
-            .form-group .input-wrapper .input-icon {
-                padding: 0 10px 0 12px;
-                font-size: 14px;
-            }
-
-            .form-group .toggle-password {
-                padding: 0 12px 0 6px;
-                font-size: 14px;
-            }
-
-            .btn-login,
-            .btn-register {
-                padding: 13px;
-                font-size: 14px;
-            }
-
-            .checkbox-group {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 6px;
-                margin: 14px 0 18px;
-            }
-
-            .checkbox-group label {
-                font-size: 12px;
-            }
-
-            .forgot-password {
-                font-size: 12px;
-            }
-
-            .register-link {
-                font-size: 13px;
-                margin-top: 14px;
-            }
-
-            .nik-check-result .actions .btn-small {
-                flex: 1 1 100%;
-                min-width: 0;
-                padding: 10px 14px;
-                font-size: 12px;
-            }
-
-            .toast {
-                top: 12px;
-                right: 12px;
-                padding: 12px 16px;
-                max-width: calc(100% - 24px);
-            }
-
-            .toast-title {
-                font-size: 13px;
-            }
-
-            .toast-message {
-                font-size: 12px;
-            }
-
-            .btn-group {
-                flex-direction: row;
-                gap: 8px;
-            }
-
-            .btn-group .btn-register {
-                flex: 1;
-                width: 100%;
-            }
-
-            .btn-group .btn-back {
-                flex: 0 0 auto;
-            }
-
-            .password-requirements {
-                font-size: 11px;
-                padding: 5px 8px;
-            }
-
-            .step-indicator {
-                gap: 8px;
-            }
-
-            .step-dot {
-                width: 8px;
-                height: 8px;
-            }
-
-            .nik-check-result {
-                padding: 12px 14px;
-            }
-
-            .nik-check-result .title {
-                font-size: 13px;
-            }
-
-            .nik-check-result .message {
-                font-size: 12px;
-            }
-
-            .jabatan-list .item {
-                font-size: 12px;
-            }
-        }
-
-        @media (max-width: 360px) {
-            .container {
-                padding: 20px 14px;
-            }
-
-            .logo-img {
-                width: 50px;
-                height: 50px;
-            }
-
-            .logo h1 {
-                font-size: 17px;
-            }
-
-            .modal-content {
-                padding: 18px 12px;
-            }
-
-            .form-group input,
-            .form-group select,
-            .modal .form-group input,
-            .modal .form-group select {
-                font-size: 12px;
-                padding: 10px 8px 10px 0;
-            }
-
-            .btn-login,
-            .btn-register {
-                padding: 11px;
-                font-size: 13px;
-            }
-
-            .btn-back {
-                padding: 5px 12px !important;
-                font-size: 11px !important;
-            }
-        }
-
-        @media (min-width: 481px) and (max-width: 768px) {
-            .container {
-                padding: 36px 28px;
-                max-width: 420px;
-            }
-
-            .modal-content {
-                padding: 30px 24px;
-                max-width: 480px;
-            }
-
-            .nik-check-result .actions .btn-small {
-                flex: 1;
-                min-width: 100px;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .container {
-                padding: 45px 40px;
-                max-width: 460px;
-            }
-
-            .modal-content {
-                padding: 40px 36px;
-                max-width: 520px;
-            }
-
-            .nik-check-result .actions .btn-small {
-                flex: 0 1 auto;
-            }
-        }
-
-        @media (max-height: 600px) and (orientation: landscape) {
-            .container {
-                padding: 16px 20px;
-                max-width: 380px;
-            }
-
-            .logo-img {
-                width: 40px;
-                height: 40px;
-                margin-bottom: 6px;
-            }
-
-            .logo h1 {
-                font-size: 16px;
-            }
-
-            .logo p {
-                font-size: 11px;
-                margin-top: 2px;
-            }
-
-            .logo {
-                margin-bottom: 12px;
-            }
-
-            .form-group {
-                margin-bottom: 10px;
-            }
-
-            .form-group input,
-            .form-group select {
-                padding: 8px 10px 8px 0;
-                font-size: 12px;
-            }
-
-            .btn-login {
-                padding: 10px;
-                font-size: 13px;
-            }
-
-            .checkbox-group {
-                margin: 10px 0 14px;
-            }
-
-            .modal-content {
-                padding: 16px 14px;
-                max-height: 95dvh;
-            }
-
-            .modal-title {
-                font-size: 16px;
-                margin-bottom: 10px;
-            }
-
-            .btn-back {
-                padding: 5px 12px !important;
-                font-size: 11px !important;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+  <title>Pendataan LKK Kecamatan Ditutup</title>
+  <style>
+    /* reset & base */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+      background: linear-gradient(145deg, #f6f9fc 0%, #e9f0f5 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      margin: 0;
+    }
+
+    /* kartu utama – full preview yang responsif */
+    .card {
+      max-width: 880px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border-radius: 48px;
+      padding: 40px 36px;
+      box-shadow: 0 30px 60px rgba(0, 20, 40, 0.20), 0 12px 28px rgba(0, 0, 0, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    /* ikon / ilustrasi */
+    .icon-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .icon-badge {
+      background: #1e3a5f;
+      color: white;
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 52px;
+      box-shadow: 0 16px 32px -8px rgba(20, 40, 80, 0.3);
+      transition: transform 0.2s;
+    }
+
+    .icon-badge span {
+      line-height: 1;
+    }
+
+    /* judul */
+    h1 {
+      font-size: clamp(2rem, 6vw, 3.4rem);
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: #0a1e2f;
+      margin-top: 4px;
+      margin-bottom: 12px;
+      line-height: 1.2;
+    }
+
+    .subhead {
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      font-weight: 500;
+      color: #1f4970;
+      background: rgba(30, 58, 95, 0.06);
+      display: inline-block;
+      padding: 8px 26px;
+      border-radius: 60px;
+      letter-spacing: 0.4px;
+      backdrop-filter: blur(4px);
+      border: 1px solid rgba(30, 58, 95, 0.08);
+      margin-bottom: 28px;
+    }
+
+    /* pesan utama */
+    .message-box {
+      background: #ffffffcc;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 28px 20px;
+      border-radius: 32px;
+      margin: 20px 0 30px;
+      border: 1px solid rgba(255, 255, 255, 0.9);
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.02), 0 8px 20px rgba(0,20,40,0.06);
+    }
+
+    .message-box p {
+      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
+      color: #12344a;
+      font-weight: 450;
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .message-box .highlight {
+      display: inline-block;
+      background: #dceaf5;
+      padding: 0 14px;
+      border-radius: 40px;
+      font-weight: 600;
+      color: #0a2942;
+    }
+
+    .message-box .thanks {
+      font-size: clamp(1.3rem, 2.8vw, 1.9rem);
+      font-weight: 600;
+      color: #0c2b44;
+      margin-top: 16px;
+      letter-spacing: -0.3px;
+    }
+
+    .message-box .thanks span {
+      background: linear-gradient(145deg, #1d4a73, #0f314b);
+      color: white;
+      padding: 4px 18px;
+      border-radius: 60px;
+      font-weight: 500;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0,20,40,0.1);
+    }
+
+    /* detail tambahan */
+    .info-grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 16px 28px;
+      background: #f2f7fb;
+      padding: 18px 24px;
+      border-radius: 80px;
+      margin: 20px 0 30px;
+      border: 1px solid #dce6ef;
+      backdrop-filter: blur(2px);
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+      color: #1a3852;
+      font-weight: 500;
+    }
+
+    .info-item i {
+      font-size: 1.4rem;
+      line-height: 1;
+      opacity: 0.7;
+    }
+
+    .info-item .label {
+      font-weight: 400;
+      color: #3f5f7a;
+    }
+
+    .info-item .value {
+      font-weight: 600;
+      background: white;
+      padding: 2px 14px;
+      border-radius: 40px;
+      border: 1px solid #cbdae7;
+    }
+
+    /* tombol / aksi (hanya estetika) */
+    .action-group {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 14px 18px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 36px;
+      border-radius: 80px;
+      font-weight: 600;
+      font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+      background: white;
+      color: #1f4970;
+      border: 1px solid #bacee0;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      transition: 0.15s;
+      cursor: default;
+      backdrop-filter: blur(4px);
+      background: rgba(255, 255, 255, 0.7);
+      min-width: 160px;
+      letter-spacing: 0.3px;
+    }
+
+    .btn-primary {
+      background: #1d4a73;
+      border: 1px solid #1d4a73;
+      color: white;
+      box-shadow: 0 10px 20px -6px rgba(20, 60, 100, 0.3);
+    }
+
+    .btn-primary:hover {
+      background: #123a5a;
+      transform: scale(1.01);
+      box-shadow: 0 14px 28px -8px #0f314b66;
+    }
+
+    .btn-outline {
+      background: transparent;
+      backdrop-filter: blur(4px);
+      border: 1px solid #b0c8dd;
+    }
+
+    .btn-outline:hover {
+      background: #ffffffcc;
+      border-color: #1f4970;
+    }
+
+    /* footer kecil */
+    .footer-note {
+      margin-top: 32px;
+      font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+      color: #3e6280;
+      border-top: 1px solid #d2e0ec;
+      padding-top: 24px;
+      opacity: 0.8;
+      letter-spacing: 0.3px;
+    }
+
+    /* responsif ekstra – touch friendly */
+    @media (max-width: 600px) {
+      .card {
+        padding: 30px 20px;
+        border-radius: 32px;
+      }
+      .icon-badge {
+        width: 80px;
+        height: 80px;
+        font-size: 40px;
+      }
+      .info-grid {
+        flex-direction: column;
+        align-items: center;
+        border-radius: 40px;
+        gap: 10px;
+        padding: 18px 12px;
+      }
+      .btn {
+        width: 100%;
+        min-width: unset;
+        padding: 16px 20px;
+      }
+      .action-group {
+        flex-direction: column;
+        width: 100%;
+      }
+      .message-box {
+        padding: 22px 14px;
+      }
+      .subhead {
+        padding: 6px 18px;
+        font-size: 0.95rem;
+      }
+    }
+
+    @media (max-width: 400px) {
+      .card {
+        padding: 20px 14px;
+        border-radius: 28px;
+      }
+      .icon-badge {
+        width: 68px;
+        height: 68px;
+        font-size: 34px;
+      }
+      h1 {
+        font-size: 1.9rem;
+      }
+    }
+
+    /* smooth hover untuk desktop (sentuhan tetap) */
+    @media (hover: hover) {
+      .btn {
+        cursor: pointer;
+      }
+    }
+
+    /* aksesibilitas */
+    .btn:focus-visible {
+      outline: 3px solid #1f4970;
+      outline-offset: 3px;
+    }
+  </style>
 </head>
 <body>
-
-    <div class="particles" id="particles"></div>
-
-    <div class="container">
-        <div class="logo">
-            <img src="https://senapelan.github.io/Home/assets/metatag/logolkkkecamatan/LOGO%20LKK.png" alt="Logo" class="logo-img">
-            <h1>LKK KECAMATAN</h1>
-            <p>Lembaga Kemasayarakatan Kelurahan</p>
-        </div>
-
-        <form id="loginForm" autocomplete="off">
-            <div class="form-group">
-                <label><i class="fas fa-user" style="margin-right: 6px;"></i> Username atau Email</label>
-                <div class="input-wrapper">
-                    <span class="input-icon"><i class="fas fa-user"></i></span>
-                    <input type="text" id="loginUsername" placeholder="Masukkan username atau email" required>
-                </div>
-                <div class="error-message" id="loginUsernameError">Username/email tidak boleh kosong</div>
-            </div>
-
-            <div class="form-group">
-                <label><i class="fas fa-lock" style="margin-right: 6px;"></i> Password</label>
-                <div class="input-wrapper">
-                    <span class="input-icon"><i class="fas fa-lock"></i></span>
-                    <input type="password" id="loginPassword" placeholder="Masukkan password" required>
-                    <button type="button" class="toggle-password" onclick="togglePasswordVisibility('loginPassword', this)">
-                        <i class="fas fa-eye"></i>
-                    </button>
-                </div>
-                <div class="error-message" id="loginPasswordError">Password tidak boleh kosong</div>
-            </div>
-
-            <div class="checkbox-group">
-                <label>
-                    <input type="checkbox" id="rememberMe"> Ingat Saya
-                </label>
-                <button type="button" class="forgot-password" onclick="openForgotPassword()">Lupa Password?</button>
-            </div>
-
-            <button type="submit" class="btn-login" id="loginBtn">
-                <span id="loginBtnText"><i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Login</span>
-                <span class="spinner" id="loginSpinner"></span>
-            </button>
-        </form>
-
-        <div class="register-link">
-            Belum punya akun? <a onclick="openRegister()">Daftar Sekarang</a>
-        </div>
+  <main class="card" role="main" aria-label="Notifikasi penutupan pendataan LKK Kecamatan">
+    
+    <!-- ikon utama -->
+    <div class="icon-wrapper">
+      <div class="icon-badge" aria-hidden="true">
+        <span>📋</span>
+      </div>
     </div>
 
-    <div class="modal" id="registerModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeRegister()">&times;</button>
-            <h2 class="modal-title">📝 <span id="registerModalTitle">Daftar Akun Baru</span></h2>
+    <!-- judul -->
+    <h1>Pendataan LKK <br style="display: none;">Kecamatan</h1>
+    <div class="subhead">✅ Ditutup</div>
 
-            <div id="registerStep1">
-                <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; text-align:center; font-size:14px;">
-                    Masukkan NIK untuk memeriksa apakah Anda sudah terdaftar
-                </p>
-                <div class="form-group">
-                    <label><i class="fas fa-id-card" style="margin-right: 6px;"></i> Nomor NIK <span style="color:#dc3545;">*</span></label>
-                    <div class="input-wrapper">
-                        <span class="input-icon"><i class="fas fa-id-card"></i></span>
-                        <input type="text" id="regNik" placeholder="Masukkan 16 digit NIK" maxlength="16" required>
-                    </div>
-                    <div class="error-message" id="regNikError">NIK harus 16 digit angka</div>
-                </div>
-
-                <div class="nik-check-result" id="nikCheckResult">
-                    <div class="title" id="nikCheckTitle"></div>
-                    <div class="message" id="nikCheckMessage"></div>
-                    <div id="nikJabatanList" class="jabatan-list" style="display:none;"></div>
-                    <div class="actions" id="nikCheckActions"></div>
-                </div>
-
-                <button type="button" class="btn-register" id="checkNikBtn" onclick="checkNik()">
-                    <span id="checkNikText"><i class="fas fa-search" style="margin-right: 8px;"></i> Periksa NIK</span>
-                    <span class="spinner" id="checkNikSpinner"></span>
-                </button>
-
-                <div style="text-align:center; margin-top:12px;">
-                    <button type="button" class="btn-back" onclick="closeRegister()">
-                        <i class="fas fa-arrow-left"></i> Kembali
-                    </button>
-                </div>
-            </div>
-
-            <div id="registerStep2" style="display:none;">
-                <form id="registerForm" autocomplete="off">
-                    <div class="form-group">
-                        <label>Nama Lengkap <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-user"></i></span>
-                            <input type="text" id="regNama" placeholder="Masukkan nama lengkap" required>
-                        </div>
-                        <div class="error-message" id="regNamaError">Nama harus diisi</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Username <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-user-circle"></i></span>
-                            <input type="text" id="regUsername" placeholder="Masukkan username" required>
-                        </div>
-                        <div class="error-message" id="regUsernameError">Username harus diisi</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Email <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-envelope"></i></span>
-                            <input type="email" id="regEmail" placeholder="Masukkan email" required>
-                        </div>
-                        <div class="error-message" id="regEmailError">Email tidak valid</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>No HP (diawali 62) <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-phone"></i></span>
-                            <input type="text" id="regNoHp" placeholder="Contoh: 628123456789" required>
-                        </div>
-                        <div class="info-text">Masukkan nomor HP tanpa spasi atau tanda hubung</div>
-                        <div class="error-message" id="regNoHpError">No HP harus diisi dan hanya angka</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Password <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-lock"></i></span>
-                            <input type="password" id="regPassword" placeholder="Minimal 8 karakter, huruf besar, angka, & karakter khusus" required>
-                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('regPassword', this)">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="password-strength" id="passwordStrength"></div>
-                        <div class="password-requirements" id="passwordRequirements">
-                            <div class="req invalid" id="reqLength"><span class="icon">❌</span> Minimal 8 karakter</div>
-                            <div class="req invalid" id="reqUppercase"><span class="icon">❌</span> Huruf besar (A-Z)</div>
-                            <div class="req invalid" id="reqLowercase"><span class="icon">❌</span> Huruf kecil (a-z)</div>
-                            <div class="req invalid" id="reqNumber"><span class="icon">❌</span> Angka (0-9)</div>
-                            <div class="req invalid" id="reqSpecial"><span class="icon">❌</span> Karakter khusus (@$!%*?&)</div>
-                        </div>
-                        <div class="error-message" id="regPasswordError">Password harus memenuhi semua persyaratan</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Jenis LKK <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-users"></i></span>
-                            <select id="regJenisLkk" required>
-                                <option value="">Pilih Jenis LKK</option>
-                            </select>
-                        </div>
-                        <div class="error-message" id="regJenisLkkError">Jenis LKK harus dipilih</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Tingkatan LKK <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-layer-group"></i></span>
-                            <select id="regTingkatanLkk" required>
-                                <option value="">Pilih Tingkatan LKK</option>
-                            </select>
-                        </div>
-                        <div class="error-message" id="regTingkatanLkkError">Tingkatan LKK harus dipilih</div>
-                    </div>
-
-                    <div class="form-group field-hidden" id="regRtGroup">
-                        <label>Pilih RT <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-home"></i></span>
-                            <select id="regRt">
-                                <option value="">Pilih RT</option>
-                            </select>
-                        </div>
-                        <div class="error-message" id="regRtError">Silakan pilih RT</div>
-                    </div>
-
-                    <div class="form-group field-hidden" id="regRwGroup">
-                        <label>Pilih RW <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-building"></i></span>
-                            <select id="regRw">
-                                <option value="">Pilih RW</option>
-                            </select>
-                        </div>
-                        <div class="error-message" id="regRwError">Silakan pilih RW</div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Jabatan <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-briefcase"></i></span>
-                            <select id="regJabatan" required>
-                                <option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>
-                            </select>
-                        </div>
-                        <div class="info-text" id="jabatanInfo">Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia</div>
-                        <div class="error-message" id="regJabatanError">Jabatan harus dipilih</div>
-                    </div>
-
-                    <div class="checkbox-agree">
-                        <label>
-                            <input type="checkbox" id="agreeTerms" required>
-                            Saya bersedia bergabung dengan Perangkat Pemerintah Kecamatan Senapelan
-                        </label>
-                        <div class="error-message" id="regAgreeError">Anda harus menyetujui syarat dan ketentuan</div>
-                    </div>
-
-                    <div class="btn-group">
-                        <button type="button" class="btn-back" onclick="goToRegisterStep(1)">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <button type="submit" class="btn-register" id="registerBtn">
-                            <span id="registerBtnText"><i class="fas fa-user-plus" style="margin-right: 8px;"></i> Mendaftar</span>
-                            <span class="spinner" id="registerSpinner"></span>
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
+    <!-- pesan sentral -->
+    <div class="message-box">
+      <p>
+        <span class="highlight">Pendataan LKK Kecamatan</span> telah resmi ditutup.
+      </p>
+      <p style="font-size: clamp(1rem, 1.8vw, 1.3rem); margin-top: 8px;">
+        Seluruh data yang telah diimput akan diproses lebih lanjut.
+      </p>
+      <div class="thanks">
+        <span>🙏 Terima kasih telah mengimput data</span>
+      </div>
     </div>
 
-    <div class="modal" id="forgotModal">
-        <div class="modal-content">
-            <button class="modal-close" onclick="closeForgotPassword()">&times;</button>
-            <h2 class="modal-title">🔑 <span>Reset Password</span></h2>
-
-            <div class="step-indicator">
-                <div class="step-dot active" id="step1Dot"></div>
-                <div class="step-dot" id="step2Dot"></div>
-                <div class="step-dot" id="step3Dot"></div>
-            </div>
-
-            <form id="forgotForm" autocomplete="off">
-                <div class="reset-step active" id="step1">
-                    <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; text-align:center; font-size:14px;">
-                        Masukkan username dan email Anda untuk verifikasi
-                    </p>
-                    <div class="form-group">
-                        <label><i class="fas fa-user" style="margin-right: 6px;"></i> Username <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-user"></i></span>
-                            <input type="text" id="forgotUsername" placeholder="Masukkan username" required>
-                        </div>
-                        <div class="error-message" id="forgotUsernameError">Username harus diisi</div>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-envelope" style="margin-right: 6px;"></i> Email <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-envelope"></i></span>
-                            <input type="email" id="forgotEmail" placeholder="Masukkan email" required>
-                        </div>
-                        <div class="error-message" id="forgotEmailError">Email tidak valid</div>
-                    </div>
-                    <button type="button" class="btn-register" onclick="verifyUser()">
-                        <span id="verifyBtnText"><i class="fas fa-check" style="margin-right: 8px;"></i> Verifikasi</span>
-                        <span class="spinner" id="verifySpinner"></span>
-                    </button>
-                    <div style="text-align:center; margin-top:10px;">
-                        <button type="button" class="btn-back" onclick="closeForgotPassword()">
-                            <i class="fas fa-arrow-left"></i> Kembali
-                        </button>
-                    </div>
-                </div>
-
-                <div class="reset-step" id="step2">
-                    <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; text-align:center; font-size:14px;">
-                        Buat password baru untuk akun Anda
-                    </p>
-                    <div class="form-group">
-                        <label><i class="fas fa-lock" style="margin-right: 6px;"></i> Password Baru <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-lock"></i></span>
-                            <input type="password" id="newPassword" placeholder="Minimal 8 karakter, huruf besar, angka, & karakter khusus" required>
-                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('newPassword', this)">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="password-strength" id="newPasswordStrength"></div>
-                        <div class="password-requirements" id="newPasswordRequirements">
-                            <div class="req invalid" id="newReqLength"><span class="icon">❌</span> Minimal 8 karakter</div>
-                            <div class="req invalid" id="newReqUppercase"><span class="icon">❌</span> Huruf besar (A-Z)</div>
-                            <div class="req invalid" id="newReqLowercase"><span class="icon">❌</span> Huruf kecil (a-z)</div>
-                            <div class="req invalid" id="newReqNumber"><span class="icon">❌</span> Angka (0-9)</div>
-                            <div class="req invalid" id="newReqSpecial"><span class="icon">❌</span> Karakter khusus (@$!%*?&)</div>
-                        </div>
-                        <div class="error-message" id="newPasswordError">Password harus memenuhi semua persyaratan</div>
-                    </div>
-                    <div class="form-group">
-                        <label><i class="fas fa-check-circle" style="margin-right: 6px;"></i> Konfirmasi Password <span style="color:#dc3545;">*</span></label>
-                        <div class="input-wrapper">
-                            <span class="input-icon"><i class="fas fa-check-circle"></i></span>
-                            <input type="password" id="confirmPassword" placeholder="Masukkan ulang password" required>
-                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility('confirmPassword', this)">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <div class="error-message" id="confirmPasswordError">Password tidak cocok</div>
-                    </div>
-                    <div class="btn-group">
-                        <button type="button" class="btn-back" onclick="goToStep(1)">
-                            <i class="fas fa-arrow-left"></i>
-                        </button>
-                        <button type="button" class="btn-register" onclick="resetPassword()">
-                            <span id="resetBtnText"><i class="fas fa-save" style="margin-right: 8px;"></i> Reset Password</span>
-                            <span class="spinner" id="resetSpinner"></span>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="reset-step" id="step3">
-                    <div style="text-align:center; padding:16px 0;">
-                        <div style="font-size:50px; margin-bottom:16px;">✅</div>
-                        <h3 style="color:#28a745; margin-bottom:8px; font-size:20px;">Password Berhasil Direset!</h3>
-                        <p style="color:rgba(255,255,255,0.6); margin-bottom:16px; font-size:14px;">Silakan login dengan password baru Anda</p>
-                        <button type="button" class="btn-register" onclick="closeForgotPassword()" style="width:auto; padding:12px 30px;">
-                            <i class="fas fa-sign-in-alt" style="margin-right: 8px;"></i> Kembali ke Login
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
+    <!-- informasi tambahan (ringkas) -->
+    <div class="info-grid">
+      <div class="info-item">
+        <span aria-hidden="true">📅</span>
+        <span class="label">Periode</span>
+        <span class="value">2026</span>
+      </div>
+      <div class="info-item">
+        <span aria-hidden="true">⏱️</span>
+        <span class="label">Status</span>
+        <span class="value">Tertutup</span>
+      </div>
+      <div class="info-item">
+        <span aria-hidden="true">📊</span>
+        <span class="label">Total imput</span>
+        <span class="value">1.284</span>
+      </div>
     </div>
 
-    <div class="toast" id="toast">
-        <div class="toast-icon" id="toastIcon">✅</div>
-        <div class="toast-content">
-            <div class="toast-title" id="toastTitle">Success</div>
-            <div class="toast-message" id="toastMessage">Operation successful</div>
-        </div>
+    <!-- aksi (hanya visual, tidak fungsional) -->
+    <div class="action-group">
+      <div class="btn btn-primary" role="button" tabindex="0" aria-label="Kembali ke beranda (simulasi)">
+        <span>🏠</span> Beranda
+      </div>
+      <div class="btn btn-outline" role="button" tabindex="0" aria-label="Lihat ringkasan data (simulasi)">
+        <span>📄</span> Ringkasan
+      </div>
     </div>
 
-    <script>
-        // ================================================================
-        // 1. ANTI RIGHT CLICK & DEV TOOLS PROTECTION
-        // ================================================================
-
-        // Mencegah klik kanan
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            
-            return false;
-        });
-
-        // Mencegah keyboard shortcuts untuk DevTools
-        document.addEventListener('keydown', function(e) {
-            // F12
-            if (e.key === 'F12') {
-                e.preventDefault();
-                showToast('⚠️ Akses Ditolak', 'F12 tidak diizinkan', 'warning');
-                return false;
-            }
-            
-            // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'J' || e.key === 'C')) {
-                e.preventDefault();
-                showToast('⚠️ Akses Ditolak', 'Developer tools tidak diizinkan', 'warning');
-                return false;
-            }
-            
-            // Ctrl+U (view source)
-            if (e.ctrlKey && e.key === 'u') {
-                e.preventDefault();
-                showToast('⚠️ Akses Ditolak', 'View source tidak diizinkan', 'warning');
-                return false;
-            }
-        });
-
-        // Mencegah drag and drop (untuk menghindari seret gambar/elemen)
-        document.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // Mencegah pemilihan teks secara massal (opsional)
-        document.addEventListener('selectstart', function(e) {
-            // Izinkan seleksi teks di input/textarea
-            if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.tagName === 'SELECT') {
-                return true;
-            }
-            e.preventDefault();
-            return false;
-        });
-
-        // Menonaktifkan tombol kanan di gambar
-        document.querySelectorAll('img').forEach(img => {
-            img.addEventListener('contextmenu', function(e) {
-                e.preventDefault();
-                return false;
-            });
-        });
-
-        // ================================================================
-        // 2. DETECT DEV TOOLS OPEN (opsional - menggunakan debugger)
-        // ================================================================
-
-        let devtoolsOpen = false;
-        const checkDevTools = () => {
-            const threshold = 160;
-            const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-            const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-            
-            if (widthThreshold || heightThreshold) {
-                if (!devtoolsOpen) {
-                    devtoolsOpen = true;
-                    showToast('⚠️ Detected', 'Developer tools terdeteksi!', 'warning');
-                }
-            } else {
-                devtoolsOpen = false;
-            }
-        };
-
-        // Cek secara periodik
-        setInterval(checkDevTools, 1000);
-
-        // Juga deteksi dengan debugger statement
-        // (ini membuat DevTools lebih mudah terdeteksi)
-        const debuggerCheck = () => {
-            const start = performance.now();
-            debugger;
-            const end = performance.now();
-            if (end - start > 100) {
-                if (!devtoolsOpen) {
-                    devtoolsOpen = true;
-                    showToast('⚠️ Detected', 'Developer tools terdeteksi!', 'warning');
-                }
-            }
-        };
-
-        // Jalankan debugger check secara periodik
-        setInterval(debuggerCheck, 3000);
-
-        // ================================================================
-        // 3. ORIGINAL CODE (tidak diubah)
-        // ================================================================
-
-        const API_BASE_URL = 'https://script.google.com/macros/s/AKfycby8Ptw9o_-KBslvJnlmmdPTvFtt-rA0HWB6al-Ukx4Ju6aW9Q8Dl2-iH7e3iy_jWrSl/exec';
-        const WHATSAPP_NUMBER = '6282170089590';
-        let verifiedUser = null;
-        let dropdownLoaded = false;
-        let nikChecked = false;
-        let nikExists = false;
-        let nikData = null;
-        let availableJabatan = [];
-        let userJabatanList = [];
-        let isCheckingRtRw = false;
-
-        (function createParticles() {
-            const container = document.getElementById('particles');
-            for (let i = 0; i < 50; i++) {
-                const particle = document.createElement('div');
-                particle.className = 'particle';
-                particle.style.left = Math.random() * 100 + '%';
-                particle.style.animationDelay = Math.random() * 20 + 's';
-                particle.style.animationDuration = (15 + Math.random() * 20) + 's';
-                particle.style.width = (2 + Math.random() * 4) + 'px';
-                particle.style.height = particle.style.width;
-                container.appendChild(particle);
-            }
-        })();
-
-        function showToast(title, message, type = 'success') {
-            const toast = document.getElementById('toast');
-            const icon = document.getElementById('toastIcon');
-            const titleEl = document.getElementById('toastTitle');
-            const messageEl = document.getElementById('toastMessage');
-
-            toast.className = 'toast show';
-            toast.classList.add(type === 'success' ? 'toast-success' : type === 'warning' ? 'toast-warning' : 'toast-error');
-            icon.textContent = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌';
-            titleEl.textContent = title;
-            messageEl.textContent = message;
-
-            clearTimeout(toast.timeout);
-            toast.timeout = setTimeout(() => {
-                toast.classList.remove('show');
-            }, 5000);
-        }
-
-        function togglePasswordVisibility(inputId, button) {
-            const input = document.getElementById(inputId);
-            const icon = button.querySelector('i');
-            
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.className = 'fas fa-eye-slash';
-                button.classList.add('active');
-            } else {
-                input.type = 'password';
-                icon.className = 'fas fa-eye';
-                button.classList.remove('active');
-            }
-        }
-
-        function validateField(input, errorId, condition, message) {
-            const errorEl = document.getElementById(errorId);
-            if (!condition) {
-                input.classList.add('error');
-                input.classList.remove('success');
-                errorEl.textContent = message;
-                errorEl.classList.add('show');
-                return false;
-            } else {
-                input.classList.remove('error');
-                input.classList.add('success');
-                errorEl.classList.remove('show');
-                return true;
-            }
-        }
-
-        function setLoading(button, spinner, textElement, loading) {
-            if (loading) {
-                button.disabled = true;
-                if (textElement) textElement.style.display = 'none';
-                if (spinner) spinner.classList.add('active');
-            } else {
-                button.disabled = false;
-                if (textElement) textElement.style.display = 'inline';
-                if (spinner) spinner.classList.remove('active');
-            }
-        }
-
-        function validatePassword(password) {
-            return {
-                length: password.length >= 8,
-                uppercase: /[A-Z]/.test(password),
-                lowercase: /[a-z]/.test(password),
-                number: /\d/.test(password),
-                special: /[@$!%*?&]/.test(password)
-            };
-        }
-
-        function updatePasswordRequirements(inputId, reqPrefix) {
-            const input = document.getElementById(inputId);
-            const patterns = validatePassword(input.value);
-            
-            const reqs = ['Length', 'Uppercase', 'Lowercase', 'Number', 'Special'];
-            let allValid = true;
-            
-            reqs.forEach(req => {
-                const el = document.getElementById(reqPrefix + req);
-                if (el) {
-                    const icon = el.querySelector('.icon');
-                    const isValid = patterns[req.toLowerCase()];
-                    if (isValid) {
-                        el.className = 'req valid';
-                        if (icon) icon.textContent = '✅';
-                    } else {
-                        el.className = 'req invalid';
-                        if (icon) icon.textContent = '❌';
-                        allValid = false;
-                    }
-                }
-            });
-            
-            return allValid;
-        }
-
-        async function callAPI(action, data = {}) {
-            try {
-                const url = new URL(API_BASE_URL);
-                
-                const formData = new FormData();
-                formData.append('action', action);
-                for (let key in data) {
-                    formData.append(key, data[key]);
-                }
-
-                const response = await fetch(url.toString(), {
-                    method: 'POST',
-                    mode: 'cors',
-                    body: formData
-                });
-
-                const result = await response.json();
-                return result;
-
-            } catch (error) {
-                console.error('❌ API Error:', error);
-                return { success: false, message: 'Terjadi kesalahan: ' + error.message };
-            }
-        }
-
-        async function loadDropdown() {
-            try {
-                const result = await callAPI('getDropdown', {});
-                
-                if (result.success && result.data) {
-                    const jenisLkk = result.data.jenis_lkk || [];
-                    const tingkatanLkk = result.data.tingkatan_lkk || [];
-                    const rt = result.data.rt || [];
-                    const rw = result.data.rw || [];
-                    
-                    const jenisSelect = document.getElementById('regJenisLkk');
-                    jenisSelect.innerHTML = '<option value="">Pilih Jenis LKK</option>';
-                    for (const item of jenisLkk) {
-                        if (item && item.trim() !== '') {
-                            const option = document.createElement('option');
-                            option.value = item.trim().toUpperCase();
-                            option.textContent = item.trim();
-                            jenisSelect.appendChild(option);
-                        }
-                    }
-                    
-                    const tingkatanSelect = document.getElementById('regTingkatanLkk');
-                    tingkatanSelect.innerHTML = '<option value="">Pilih Tingkatan LKK</option>';
-                    for (const item of tingkatanLkk) {
-                        if (item && item.trim() !== '') {
-                            const option = document.createElement('option');
-                            option.value = item.trim();
-                            option.textContent = item.trim();
-                            tingkatanSelect.appendChild(option);
-                        }
-                    }
-                    
-                    const rtSelect = document.getElementById('regRt');
-                    rtSelect.innerHTML = '<option value="">Pilih RT</option>';
-                    for (const item of rt) {
-                        if (item && item.trim() !== '') {
-                            const value = item.trim();
-                            const option = document.createElement('option');
-                            option.value = value;
-                            option.textContent = 'RT ' + value;
-                            rtSelect.appendChild(option);
-                        }
-                    }
-                    
-                    const rwSelect = document.getElementById('regRw');
-                    rwSelect.innerHTML = '<option value="">Pilih RW</option>';
-                    for (const item of rw) {
-                        if (item && item.trim() !== '') {
-                            const value = item.trim();
-                            const option = document.createElement('option');
-                            option.value = value;
-                            option.textContent = 'RW ' + value;
-                            rwSelect.appendChild(option);
-                        }
-                    }
-                    
-                    dropdownLoaded = true;
-                } else {
-                    loadDefaultDropdown();
-                }
-            } catch (error) {
-                loadDefaultDropdown();
-            }
-        }
-
-        function loadDefaultDropdown() {
-            const jenisData = ['RT', 'RW', 'DASAWISMA', 'PKK', 'POSYANDU', 'KARANG TARUNA', 'LPM', 'LPS', 'UEK-SP'];
-            const tingkatanData = ['KECAMATAN SENAPELAN', 'KELURAHAN KAMPUNG BANDAR', 'KELURAHAN KAMPUNG BARU', 'KELURAHAN KAMPUNG DALAM', 'KELURAHAN PADANG BULAN', 'KELURAHAN PADANG TERUBUK', 'KELURAHAN SAGO'];
-            
-            const rtData = ['001', '002', '003', '004', '005', '006', '007', '008', '009', '010', '011', '012', '013', '014', '015'];
-            const rwData = ['001', '002', '003', '004', '005'];
-            
-            const jenisSelect = document.getElementById('regJenisLkk');
-            jenisSelect.innerHTML = '<option value="">Pilih Jenis LKK</option>';
-            for (const item of jenisData) {
-                const option = document.createElement('option');
-                option.value = item;
-                option.textContent = item;
-                jenisSelect.appendChild(option);
-            }
-            
-            const tingkatanSelect = document.getElementById('regTingkatanLkk');
-            tingkatanSelect.innerHTML = '<option value="">Pilih Tingkatan LKK</option>';
-            for (const item of tingkatanData) {
-                const option = document.createElement('option');
-                option.value = item;
-                option.textContent = item;
-                tingkatanSelect.appendChild(option);
-            }
-            
-            const rtSelect = document.getElementById('regRt');
-            rtSelect.innerHTML = '<option value="">Pilih RT</option>';
-            for (const item of rtData) {
-                const option = document.createElement('option');
-                option.value = item;
-                option.textContent = 'RT ' + item;
-                rtSelect.appendChild(option);
-            }
-            
-            const rwSelect = document.getElementById('regRw');
-            rwSelect.innerHTML = '<option value="">Pilih RW</option>';
-            for (const item of rwData) {
-                const option = document.createElement('option');
-                option.value = item;
-                option.textContent = 'RW ' + item;
-                rwSelect.appendChild(option);
-            }
-        }
-
-        async function getAvailableJabatan() {
-            const jenisLkk = document.getElementById('regJenisLkk').value;
-            const tingkatanLkk = document.getElementById('regTingkatanLkk').value;
-            const rt = document.getElementById('regRt').value;
-            const rw = document.getElementById('regRw').value;
-
-            if (!jenisLkk || !tingkatanLkk) {
-                return;
-            }
-
-            if (jenisLkk === 'RT') {
-                if (!rt || !rw) {
-                    document.getElementById('regJabatan').innerHTML = '<option value="">Pilih RT dan RW terlebih dahulu</option>';
-                    document.getElementById('jabatanInfo').textContent = '⏳ Silakan pilih RT dan RW terlebih dahulu';
-                    return;
-                }
-            }
-
-            if (jenisLkk === 'RW') {
-                if (!rw) {
-                    document.getElementById('regJabatan').innerHTML = '<option value="">Pilih RW terlebih dahulu</option>';
-                    document.getElementById('jabatanInfo').textContent = '⏳ Silakan pilih RW terlebih dahulu';
-                    return;
-                }
-            }
-
-            const jabatanSelect = document.getElementById('regJabatan');
-            jabatanSelect.innerHTML = '<option value="">Memuat data jabatan...</option>';
-            document.getElementById('jabatanInfo').textContent = '⏳ Memuat data jabatan...';
-
-            try {
-                const data = {
-                    JENIS_LKK: jenisLkk,
-                    TINGKATAN_LKK: tingkatanLkk
-                };
-
-                if (jenisLkk === 'RT' && rt && rw) {
-                    data.RT = rt;
-                    data.RW = rw;
-                } else if (jenisLkk === 'RW' && rw) {
-                    data.RW = rw;
-                }
-
-                const result = await callAPI('getAvailableJabatan', data);
-
-                if (result.success && result.data) {
-                    const jabatanList = result.data.jabatan || [];
-                    const info = result.data.info || {};
-                    
-                    availableJabatan = jabatanList;
-                    
-                    let options = '<option value="">Pilih Jabatan</option>';
-                    let infoText = '';
-                    let hasAvailable = false;
-                    let totalAvailable = 0;
-                    let totalFull = 0;
-
-                    for (const jabatan of jabatanList) {
-                        const isAvailable = jabatan.sisa > 0;
-                        const statusText = isAvailable ? `✅ Tersisa ${jabatan.sisa} dari ${jabatan.limit}` : `❌ Penuh (${jabatan.terpakai}/${jabatan.limit})`;
-                        const disabled = !isAvailable ? 'disabled' : '';
-                        
-                        options += `<option value="${jabatan.jabatan}" ${disabled}>${jabatan.jabatan} - ${statusText}</option>`;
-                        
-                        if (isAvailable) {
-                            hasAvailable = true;
-                            totalAvailable++;
-                        } else if (jabatan.limit > 0) {
-                            totalFull++;
-                        }
-                    }
-
-                    jabatanSelect.innerHTML = options;
-
-                    if (hasAvailable) {
-                        if (info.isRt) {
-                            infoText = `✅ Terdapat ${totalAvailable} jabatan tersedia dari ${info.totalJabatan} total jabatan untuk RT ${info.rt} RW ${info.rw}`;
-                        } else {
-                            infoText = `✅ Terdapat ${totalAvailable} jabatan tersedia dari ${info.totalJabatan} total jabatan`;
-                        }
-                    } else if (totalFull > 0) {
-                        if (info.isRt) {
-                            infoText = `⚠️ Semua ${totalFull} jabatan sudah penuh untuk RT ${info.rt} RW ${info.rw}!`;
-                        } else {
-                            infoText = `⚠️ Semua ${totalFull} jabatan sudah penuh!`;
-                        }
-                    } else {
-                        infoText = '⚠️ Tidak ada jabatan tersedia';
-                    }
-                    
-                    document.getElementById('jabatanInfo').textContent = infoText;
-
-                } else {
-                    jabatanSelect.innerHTML = '<option value="">Tidak ada jabatan tersedia</option>';
-                    document.getElementById('jabatanInfo').textContent = '❌ ' + (result.message || 'Gagal memuat data jabatan');
-                }
-
-            } catch (error) {
-                console.error('Error getting available jabatan:', error);
-                jabatanSelect.innerHTML = '<option value="">Error memuat data</option>';
-                document.getElementById('jabatanInfo').textContent = '❌ Terjadi kesalahan';
-            }
-        }
-
-        async function checkNik() {
-            const nikInput = document.getElementById('regNik');
-            const nik = nikInput.value.trim();
-            
-            if (!validateField(nikInput, 'regNikError', /^\d{16}$/.test(nik), 'NIK harus 16 digit angka')) {
-                return;
-            }
-
-            const btn = document.getElementById('checkNikBtn');
-            setLoading(btn, document.getElementById('checkNikSpinner'), document.getElementById('checkNikText'), true);
-
-            try {
-                const result = await callAPI('checkNik', { NIK: nik });
-
-                const resultDiv = document.getElementById('nikCheckResult');
-                const title = document.getElementById('nikCheckTitle');
-                const message = document.getElementById('nikCheckMessage');
-                const actions = document.getElementById('nikCheckActions');
-                const jabatanList = document.getElementById('nikJabatanList');
-
-                resultDiv.className = 'nik-check-result show';
-
-                if (result.success && result.data) {
-                    if (result.data.exists) {
-                        nikExists = true;
-                        nikData = result.data;
-                        
-                        resultDiv.className = 'nik-check-result show exists';
-                        title.className = 'title exists';
-                        title.textContent = '⚠️ NIK Sudah Terdaftar';
-                        
-                        const jabatans = result.data.jabatan || [];
-                        userJabatanList = jabatans;
-                        
-                        if (jabatans.length > 0) {
-                            let jabatanHtml = '<div style="margin-bottom:8px;font-weight:600;color:rgba(255,255,255,0.8);">📋 Data Jabatan Anda:</div>';
-                            jabatans.forEach((jab, index) => {
-                                const rtText = jab.rt ? ` RT ${jab.rt}` : '';
-                                const rwText = jab.rw ? ` RW ${jab.rw}` : '';
-                                jabatanHtml += `
-                                    <div class="item">
-                                        <span class="num">${index + 1}.</span>
-                                        <span class="jabatan-name">${jab.jabatan}</span>
-                                        <span class="jabatan-detail">${jab.jenis_lkk}${rtText}${rwText} - ${jab.tingkatan_lkk}</span>
-                                    </div>
-                                `;
-                            });
-                            jabatanList.innerHTML = jabatanHtml;
-                            jabatanList.style.display = 'block';
-                            message.textContent = `NIK ${nik} sudah terdaftar dengan ${jabatans.length} jabatan.`;
-                        } else {
-                            jabatanList.style.display = 'none';
-                            message.textContent = `NIK ${nik} sudah terdaftar di sistem.`;
-                        }
-                        
-                        actions.innerHTML = `
-                            <button class="btn-small btn-small-success" onclick="goToRegisterStep(2)">
-                                <i class="fas fa-user-plus"></i> Daftarkan Jabatan Lain
-                            </button>
-                            <a href="https://wa.me/${WHATSAPP_NUMBER}?text=Assalamualaikum%20Admin%2C%20mohon%20bantuannya%20akun%20saya%20di%20LKK%20Kecamatan%20sudah%20terdaftar%20mohon%20konfirmasi%20permintaan%20username%20dan%20password.%20Berikut%20nomor%20NIK%20saya%3A%20${nik}" 
-                               target="_blank" class="btn-small btn-small-whatsapp">
-                                <i class="fab fa-whatsapp"></i> Hubungi Admin
-                            </a>
-                            <button class="btn-small btn-small-primary" onclick="closeRegister()">
-                                <i class="fas fa-sign-in-alt"></i> Login
-                            </button>
-                        `;
-                        
-                        showToast('⚠️ NIK Terdaftar', `NIK ${nik} sudah terdaftar dengan ${jabatans.length} jabatan`, 'warning');
-                        
-                    } else {
-                        nikExists = false;
-                        nikData = null;
-                        userJabatanList = [];
-                        
-                        resultDiv.className = 'nik-check-result show not-exists';
-                        title.className = 'title not-exists';
-                        title.textContent = '✅ NIK Belum Terdaftar';
-                        message.textContent = `NIK ${nik} belum terdaftar. Silakan lanjutkan pendaftaran.`;
-                        jabatanList.style.display = 'none';
-                        
-                        actions.innerHTML = `
-                            <button class="btn-small btn-small-success" onclick="goToRegisterStep(2)">
-                                <i class="fas fa-user-plus"></i> Lanjutkan Pendaftaran
-                            </button>
-                        `;
-                        
-                        showToast('✅ NIK Valid', 'Silakan lanjutkan pendaftaran', 'success');
-                    }
-                } else {
-                    showToast('❌ Error', result.message || 'Terjadi kesalahan saat memeriksa NIK', 'error');
-                }
-                
-                nikChecked = true;
-
-            } catch (error) {
-                showToast('❌ Error', 'Terjadi kesalahan saat memeriksa NIK', 'error');
-            } finally {
-                setLoading(btn, document.getElementById('checkNikSpinner'), document.getElementById('checkNikText'), false);
-            }
-        }
-
-        function goToRegisterStep(step) {
-            const step1 = document.getElementById('registerStep1');
-            const step2 = document.getElementById('registerStep2');
-            const title = document.getElementById('registerModalTitle');
-            
-            if (step === 1) {
-                step1.style.display = 'block';
-                step2.style.display = 'none';
-                title.textContent = 'Daftar Akun Baru';
-            } else {
-                if (!nikChecked) {
-                    showToast('⚠️ Periksa NIK Dulu', 'Silakan periksa NIK terlebih dahulu', 'warning');
-                    return;
-                }
-                step1.style.display = 'none';
-                step2.style.display = 'block';
-                title.textContent = 'Lengkapi Data Diri';
-                if (!dropdownLoaded) loadDropdown();
-                
-                const nikInput = document.getElementById('regNik');
-                document.getElementById('regNikHidden')?.remove();
-                const nikHidden = document.createElement('input');
-                nikHidden.type = 'hidden';
-                nikHidden.id = 'regNikHidden';
-                nikHidden.value = nikInput.value.trim();
-                document.getElementById('registerForm').appendChild(nikHidden);
-            }
-        }
-
-        document.getElementById('regNik').addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '').slice(0, 16);
-            document.getElementById('nikCheckResult').className = 'nik-check-result';
-            nikChecked = false;
-            nikExists = false;
-        });
-
-        function validateLogin() {
-            const username = document.getElementById('loginUsername');
-            const password = document.getElementById('loginPassword');
-            let valid = true;
-
-            if (!validateField(username, 'loginUsernameError', username.value.trim() !== '', 'Username/email tidak boleh kosong')) {
-                valid = false;
-            }
-
-            if (!validateField(password, 'loginPasswordError', password.value.trim() !== '', 'Password tidak boleh kosong')) {
-                valid = false;
-            }
-
-            return valid;
-        }
-
-        function validateRegister() {
-            const nama = document.getElementById('regNama');
-            const username = document.getElementById('regUsername');
-            const password = document.getElementById('regPassword');
-            const email = document.getElementById('regEmail');
-            const noHp = document.getElementById('regNoHp');
-            const jenisLkk = document.getElementById('regJenisLkk');
-            const tingkatanLkk = document.getElementById('regTingkatanLkk');
-            const jabatan = document.getElementById('regJabatan');
-            const agree = document.getElementById('agreeTerms');
-            let valid = true;
-
-            if (!validateField(nama, 'regNamaError', nama.value.trim() !== '', 'Nama harus diisi')) valid = false;
-            if (!validateField(username, 'regUsernameError', username.value.trim() !== '', 'Username harus diisi')) valid = false;
-            
-            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-            if (!validateField(password, 'regPasswordError', passwordPattern.test(password.value), 
-                'Password harus memenuhi semua persyaratan')) {
-                valid = false;
-            }
-            
-            if (!validateField(email, 'regEmailError', /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value), 'Email tidak valid')) valid = false;
-            if (!validateField(noHp, 'regNoHpError', noHp.value.trim() !== '' && /^[0-9]+$/.test(noHp.value.trim()), 'No HP harus diisi dan hanya angka')) valid = false;
-            if (!validateField(jenisLkk, 'regJenisLkkError', jenisLkk.value !== '', 'Jenis LKK harus dipilih')) valid = false;
-            if (!validateField(tingkatanLkk, 'regTingkatanLkkError', tingkatanLkk.value !== '', 'Tingkatan LKK harus dipilih')) valid = false;
-
-            const selectedJenis = jenisLkk.value;
-            if (selectedJenis === 'RT') {
-                const rt = document.getElementById('regRt');
-                const rw = document.getElementById('regRw');
-                if (!validateField(rt, 'regRtError', rt.value !== '', 'Silakan pilih RT')) valid = false;
-                if (!validateField(rw, 'regRwError', rw.value !== '', 'Silakan pilih RW')) valid = false;
-            } else if (selectedJenis === 'RW') {
-                const rw = document.getElementById('regRw');
-                if (!validateField(rw, 'regRwError', rw.value !== '', 'Silakan pilih RW')) valid = false;
-            }
-
-            if (!validateField(jabatan, 'regJabatanError', jabatan.value !== '', 'Jabatan harus dipilih')) valid = false;
-
-            if (!agree.checked) {
-                document.getElementById('regAgreeError').classList.add('show');
-                valid = false;
-            } else {
-                document.getElementById('regAgreeError').classList.remove('show');
-            }
-
-            return valid;
-        }
-
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            if (!validateLogin()) {
-                showToast('Validasi Gagal', 'Harap periksa kembali input Anda', 'error');
-                return;
-            }
-
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value.trim();
-            const remember = document.getElementById('rememberMe').checked;
-
-            const loginBtn = document.getElementById('loginBtn');
-            setLoading(loginBtn, document.getElementById('loginSpinner'), document.getElementById('loginBtnText'), true);
-
-            try {
-                const result = await callAPI('login', { USERNAME: username, PASSWORD: password });
-
-                if (result.success) {
-                    showToast('✅ Login Berhasil', 'Selamat datang di sistem!', 'success');
-
-                    const userData = result.data || {};
-                    const user = {
-                        username: userData.username || username,
-                        role: userData.role || 'user',
-                        email: userData.email || '',
-                        no_hp: userData.no_hp || '',
-                        id_user: userData.id_user || '',
-                        jenis_lkk: userData.jenis_lkk || '',
-                        tingkatan_lkk: userData.tingkatan_lkk || '',
-                        nik: userData.nik || '',
-                        nama: userData.nama || '',
-                        jabatan: userData.jabatan || '',
-                        rt: userData.rt || '',
-                        rw: userData.rw || ''
-                    };
-
-                    localStorage.setItem('user', JSON.stringify(user));
-
-                    if (remember) {
-                        localStorage.setItem('remembered', username);
-                    } else {
-                        localStorage.removeItem('remembered');
-                    }
-
-                    setTimeout(() => {
-                        window.location.href = 'profilepeserta.html';
-                    }, 1500);
-                } else {
-                    showToast('❌ Login Gagal', result.message || 'Username atau password salah', 'error');
-                    document.getElementById('loginPassword').value = '';
-                    document.getElementById('loginPassword').focus();
-                }
-            } catch (error) {
-                showToast('❌ Error', 'Terjadi kesalahan, silakan coba lagi', 'error');
-            } finally {
-                setLoading(loginBtn, document.getElementById('loginSpinner'), document.getElementById('loginBtnText'), false);
-            }
-        });
-
-        document.getElementById('registerForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            if (!validateRegister()) {
-                showToast('Validasi Gagal', 'Harap periksa kembali input Anda', 'error');
-                return;
-            }
-
-            const idUser = 'USR' + Date.now().toString().slice(-6);
-            const nik = document.getElementById('regNikHidden')?.value || document.getElementById('regNik').value.trim();
-            const jenisLkk = document.getElementById('regJenisLkk').value;
-            const tingkatanLkk = document.getElementById('regTingkatanLkk').value;
-
-            const data = {
-                NAMA: document.getElementById('regNama').value.trim(),
-                USERNAME: document.getElementById('regUsername').value.trim(),
-                PASSWORD: document.getElementById('regPassword').value.trim(),
-                EMAIL: document.getElementById('regEmail').value.trim(),
-                NO_HP: document.getElementById('regNoHp').value.trim(),
-                ID_USER: idUser,
-                NIK: nik,
-                JENIS_LKK: jenisLkk,
-                TINGKATAN_LKK: tingkatanLkk,
-                JABATAN: document.getElementById('regJabatan').value
-            };
-
-            if (jenisLkk === 'RT') {
-                data.RT = document.getElementById('regRt').value;
-                data.RW = document.getElementById('regRw').value;
-            } else if (jenisLkk === 'RW') {
-                data.RW = document.getElementById('regRw').value;
-            }
-
-            const registerBtn = document.getElementById('registerBtn');
-            setLoading(registerBtn, document.getElementById('registerSpinner'), document.getElementById('registerBtnText'), true);
-
-            try {
-                const result = await callAPI('register', data);
-
-                if (result.success) {
-                    showToast('✅ Pendaftaran Berhasil', `ID User: ${idUser}. Silakan login.`, 'success');
-                    closeRegister();
-                    document.getElementById('registerForm').reset();
-                    document.getElementById('regNik').value = '';
-
-                    document.querySelectorAll('#registerForm .form-group input, #registerForm .form-group select')
-                        .forEach(el => {
-                            el.classList.remove('success', 'error');
-                        });
-                    document.getElementById('agreeTerms').checked = false;
-                    document.getElementById('passwordStrength').className = 'password-strength';
-                    document.getElementById('nikCheckResult').className = 'nik-check-result';
-                    document.getElementById('nikJabatanList').style.display = 'none';
-                    document.getElementById('regJabatan').innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
-                    document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
-
-                    document.getElementById('loginUsername').value = data.USERNAME;
-                    document.getElementById('loginPassword').focus();
-                } else {
-                    showToast('❌ Pendaftaran Gagal', result.message || 'Terjadi kesalahan', 'error');
-                }
-            } catch (error) {
-                showToast('❌ Error', 'Terjadi kesalahan, silakan coba lagi', 'error');
-            } finally {
-                setLoading(registerBtn, document.getElementById('registerSpinner'), document.getElementById('registerBtnText'), false);
-            }
-        });
-
-        document.getElementById('regJenisLkk').addEventListener('change', function() {
-            const selected = this.value;
-            const rtGroup = document.getElementById('regRtGroup');
-            const rwGroup = document.getElementById('regRwGroup');
-            const jabatanSelect = document.getElementById('regJabatan');
-            
-            rtGroup.classList.add('field-hidden');
-            rwGroup.classList.add('field-hidden');
-            document.getElementById('regRt').value = '';
-            document.getElementById('regRw').value = '';
-            document.getElementById('regRtError').classList.remove('show');
-            document.getElementById('regRwError').classList.remove('show');
-
-            if (selected === 'RT') {
-                rtGroup.classList.remove('field-hidden');
-                rwGroup.classList.remove('field-hidden');
-            } else if (selected === 'RW') {
-                rwGroup.classList.remove('field-hidden');
-            }
-
-            jabatanSelect.innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
-            document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
-            availableJabatan = [];
-
-            const tingkatan = document.getElementById('regTingkatanLkk').value;
-            if (selected && tingkatan) {
-                const rt = document.getElementById('regRt').value;
-                const rw = document.getElementById('regRw').value;
-                if (selected === 'RT' && (!rt || !rw)) return;
-                if (selected === 'RW' && !rw) return;
-                getAvailableJabatan();
-            }
-        });
-
-        document.getElementById('regTingkatanLkk').addEventListener('change', function() {
-            const jenis = document.getElementById('regJenisLkk').value;
-            if (!jenis || !this.value) return;
-            
-            const rt = document.getElementById('regRt').value;
-            const rw = document.getElementById('regRw').value;
-            
-            if (jenis === 'RT' && (!rt || !rw)) {
-                document.getElementById('regJabatan').innerHTML = '<option value="">Pilih RT dan RW terlebih dahulu</option>';
-                document.getElementById('jabatanInfo').textContent = '⏳ Silakan pilih RT dan RW terlebih dahulu';
-                return;
-            }
-            
-            if (jenis === 'RW' && !rw) {
-                document.getElementById('regJabatan').innerHTML = '<option value="">Pilih RW terlebih dahulu</option>';
-                document.getElementById('jabatanInfo').textContent = '⏳ Silakan pilih RW terlebih dahulu';
-                return;
-            }
-            
-            getAvailableJabatan();
-        });
-
-        document.getElementById('regRt').addEventListener('change', function() {
-            const jenis = document.getElementById('regJenisLkk').value;
-            const tingkatan = document.getElementById('regTingkatanLkk').value;
-            const rw = document.getElementById('regRw').value;
-            
-            if (jenis === 'RT' && tingkatan && this.value && rw) {
-                getAvailableJabatan();
-            }
-        });
-
-        document.getElementById('regRw').addEventListener('change', function() {
-            const jenis = document.getElementById('regJenisLkk').value;
-            const tingkatan = document.getElementById('regTingkatanLkk').value;
-            const rt = document.getElementById('regRt').value;
-            
-            if (jenis === 'RT' && tingkatan && rt && this.value) {
-                getAvailableJabatan();
-            } else if (jenis === 'RW' && tingkatan && this.value) {
-                getAvailableJabatan();
-            }
-        });
-
-        document.getElementById('regPassword').addEventListener('input', function() {
-            const allValid = updatePasswordRequirements('regPassword', 'req');
-            const indicator = document.getElementById('passwordStrength');
-            const errorEl = document.getElementById('regPasswordError');
-            
-            indicator.className = 'password-strength';
-            
-            if (this.value.length === 0) {
-                indicator.className = 'password-strength';
-                errorEl.textContent = 'Password harus diisi';
-                errorEl.classList.add('show');
-                return;
-            }
-            
-            if (allValid) {
-                indicator.classList.add('strong');
-                errorEl.textContent = '✅ Password kuat!';
-                errorEl.classList.remove('show');
-                this.classList.remove('error');
-                this.classList.add('success');
-            } else {
-                const strength = Object.values(validatePassword(this.value)).filter(v => v === true).length;
-                if (strength <= 2) indicator.classList.add('weak');
-                else if (strength <= 3) indicator.classList.add('medium');
-                else indicator.classList.add('strong');
-                
-                errorEl.textContent = '❌ Password belum memenuhi semua persyaratan';
-                errorEl.classList.add('show');
-                this.classList.add('error');
-                this.classList.remove('success');
-            }
-        });
-
-        document.getElementById('regNoHp').addEventListener('input', function() {
-            this.value = this.value.replace(/[^0-9]/g, '');
-        });
-
-        async function verifyUser() {
-            const usernameInput = document.getElementById('forgotUsername');
-            const emailInput = document.getElementById('forgotEmail');
-            const btn = document.querySelector('#step1 .btn-register:not(.btn-back)');
-            let valid = true;
-
-            if (!validateField(usernameInput, 'forgotUsernameError', usernameInput.value.trim() !== '', 'Username harus diisi')) {
-                valid = false;
-            }
-            if (!validateField(emailInput, 'forgotEmailError', 
-                /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailInput.value.trim()), 
-                'Email tidak valid')) {
-                valid = false;
-            }
-
-            if (!valid) return;
-
-            setLoading(btn, document.getElementById('verifySpinner'), document.getElementById('verifyBtnText'), true);
-
-            try {
-                const result = await callAPI('checkUser', {
-                    USERNAME: usernameInput.value.trim(),
-                    EMAIL: emailInput.value.trim()
-                });
-
-                if (result.success) {
-                    verifiedUser = usernameInput.value.trim();
-                    showToast('✅ Verifikasi Berhasil', 'Username dan email cocok!', 'success');
-                    goToStep(2);
-                } else {
-                    showToast('❌ Verifikasi Gagal', 'Username dan email tidak cocok', 'error');
-                }
-            } catch (error) {
-                showToast('❌ Error', 'Terjadi kesalahan, silakan coba lagi', 'error');
-            } finally {
-                setLoading(btn, document.getElementById('verifySpinner'), document.getElementById('verifyBtnText'), false);
-            }
-        }
-
-        async function resetPassword() {
-            const newPass = document.getElementById('newPassword');
-            const confirmPass = document.getElementById('confirmPassword');
-            let valid = true;
-
-            const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
-            if (!validateField(newPass, 'newPasswordError', passwordPattern.test(newPass.value), 
-                'Password harus memenuhi semua persyaratan')) {
-                valid = false;
-            }
-
-            if (!validateField(confirmPass, 'confirmPasswordError', 
-                confirmPass.value === newPass.value && confirmPass.value.length >= 8, 
-                'Password tidak cocok')) {
-                valid = false;
-            }
-
-            if (!valid) return;
-
-            const btn = document.querySelector('#step2 .btn-register:not(.btn-back)');
-
-            setLoading(btn, document.getElementById('resetSpinner'), document.getElementById('resetBtnText'), true);
-
-            try {
-                const result = await callAPI('resetPassword', {
-                    USERNAME: verifiedUser,
-                    NEW_PASSWORD: newPass.value
-                });
-
-                if (result.success) {
-                    showToast('✅ Password Direset', 'Password berhasil diubah! Silakan login.', 'success');
-                    goToStep(3);
-                    setTimeout(() => {
-                        closeForgotPassword();
-                    }, 3000);
-                } else {
-                    showToast('❌ Gagal', result.message || 'Terjadi kesalahan', 'error');
-                }
-            } catch (error) {
-                showToast('❌ Error', 'Terjadi kesalahan, silakan coba lagi', 'error');
-            } finally {
-                setLoading(btn, document.getElementById('resetSpinner'), document.getElementById('resetBtnText'), false);
-            }
-        }
-
-        function goToStep(step) {
-            const steps = ['step1', 'step2', 'step3'];
-            const dots = ['step1Dot', 'step2Dot', 'step3Dot'];
-
-            steps.forEach((id, index) => {
-                const el = document.getElementById(id);
-                const dot = document.getElementById(dots[index]);
-                el.classList.remove('active');
-                dot.classList.remove('active', 'completed');
-
-                if (index + 1 < step) {
-                    dot.classList.add('completed');
-                }
-            });
-
-            const currentStep = document.getElementById(steps[step - 1]);
-            const currentDot = document.getElementById(dots[step - 1]);
-            currentStep.classList.add('active');
-            currentDot.classList.add('active');
-
-            if (step === 2) {
-                document.getElementById('newPassword').focus();
-            }
-        }
-
-        document.getElementById('newPassword').addEventListener('input', function() {
-            const allValid = updatePasswordRequirements('newPassword', 'newReq');
-            const indicator = document.getElementById('newPasswordStrength');
-            const errorEl = document.getElementById('newPasswordError');
-            
-            indicator.className = 'password-strength';
-            
-            if (this.value.length === 0) {
-                indicator.className = 'password-strength';
-                errorEl.textContent = 'Password harus diisi';
-                errorEl.classList.add('show');
-                return;
-            }
-            
-            if (allValid) {
-                indicator.classList.add('strong');
-                errorEl.textContent = '✅ Password kuat!';
-                errorEl.classList.remove('show');
-                this.classList.remove('error');
-                this.classList.add('success');
-            } else {
-                const strength = Object.values(validatePassword(this.value)).filter(v => v === true).length;
-                if (strength <= 2) indicator.classList.add('weak');
-                else if (strength <= 3) indicator.classList.add('medium');
-                else indicator.classList.add('strong');
-                
-                errorEl.textContent = '❌ Password belum memenuhi semua persyaratan';
-                errorEl.classList.add('show');
-                this.classList.add('error');
-                this.classList.remove('success');
-            }
-        });
-
-        document.getElementById('confirmPassword').addEventListener('input', function() {
-            const newPass = document.getElementById('newPassword');
-            if (this.value.length > 0 && this.value !== newPass.value) {
-                this.classList.add('error');
-                this.classList.remove('success');
-                document.getElementById('confirmPasswordError').classList.add('show');
-            } else if (this.value.length > 0 && this.value === newPass.value) {
-                this.classList.remove('error');
-                this.classList.add('success');
-                document.getElementById('confirmPasswordError').classList.remove('show');
-            }
-        });
-
-        function openRegister() {
-            document.getElementById('registerModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            document.getElementById('registerStep1').style.display = 'block';
-            document.getElementById('registerStep2').style.display = 'none';
-            document.getElementById('regNik').value = '';
-            document.getElementById('nikCheckResult').className = 'nik-check-result';
-            document.getElementById('nikJabatanList').style.display = 'none';
-            nikChecked = false;
-            nikExists = false;
-            nikData = null;
-            userJabatanList = [];
-            document.getElementById('registerModalTitle').textContent = 'Daftar Akun Baru';
-            document.getElementById('regJabatan').innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
-            document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
-            if (!dropdownLoaded) loadDropdown();
-        }
-
-        function closeRegister() {
-            document.getElementById('registerModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-            document.getElementById('registerForm').reset();
-            document.querySelectorAll('#registerForm .form-group input, #registerForm .form-group select')
-                .forEach(el => {
-                    el.classList.remove('success', 'error');
-                });
-            document.getElementById('passwordStrength').className = 'password-strength';
-            document.getElementById('nikCheckResult').className = 'nik-check-result';
-            document.getElementById('nikJabatanList').style.display = 'none';
-            document.getElementById('regRtGroup').classList.add('field-hidden');
-            document.getElementById('regRwGroup').classList.add('field-hidden');
-            document.getElementById('regJabatan').innerHTML = '<option value="">Pilih Jenis LKK & Tingkatan LKK terlebih dahulu</option>';
-            document.getElementById('jabatanInfo').textContent = 'Silakan pilih Jenis LKK dan Tingkatan LKK untuk melihat jabatan yang tersedia';
-        }
-
-        function openForgotPassword() {
-            document.getElementById('forgotModal').classList.add('active');
-            document.body.style.overflow = 'hidden';
-            verifiedUser = null;
-            goToStep(1);
-            document.getElementById('forgotUsername').value = '';
-            document.getElementById('forgotEmail').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmPassword').value = '';
-            document.getElementById('newPasswordStrength').className = 'password-strength';
-            document.getElementById('forgotUsernameError').classList.remove('show');
-            document.getElementById('forgotEmailError').classList.remove('show');
-            document.getElementById('newPasswordError').classList.remove('show');
-            document.getElementById('confirmPasswordError').classList.remove('show');
-            document.querySelectorAll('#step2 .form-group input').forEach(el => {
-                el.classList.remove('success', 'error');
-            });
-        }
-
-        function closeForgotPassword() {
-            document.getElementById('forgotModal').classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-
-        window.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
-                e.target.classList.remove('active');
-                document.body.style.overflow = 'auto';
-            }
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') {
-                document.querySelectorAll('.modal.active').forEach(modal => {
-                    modal.classList.remove('active');
-                    document.body.style.overflow = 'auto';
-                });
-            }
-        });
-
-        document.querySelectorAll('#loginForm .form-group input')
-            .forEach(input => {
-                input.addEventListener('input', function() {
-                    if (this.value.trim() !== '') {
-                        this.classList.remove('error');
-                        this.classList.add('success');
-                        const errorId = this.id + 'Error';
-                        const errorEl = document.getElementById(errorId);
-                        if (errorEl) errorEl.classList.remove('show');
-                    } else {
-                        this.classList.remove('success');
-                    }
-                });
-            });
-
-        window.addEventListener('DOMContentLoaded', () => {
-            loadDropdown();
-            
-            const remembered = localStorage.getItem('remembered');
-            if (remembered) {
-                document.getElementById('loginUsername').value = remembered;
-                document.getElementById('rememberMe').checked = true;
-            }
-
-            const user = localStorage.getItem('user');
-            if (user) {
-                window.location.href = 'profilepeserta.html';
-            }
-
-            document.getElementById('regNik').addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') {
-                    e.preventDefault();
-                    checkNik();
-                }
-            });
-        });
-
-        console.log('✅ Sistem Login Premium Siap Digunakan!');
-        console.log('📋 Fitur: Show/Hide Password, Cek NIK dengan Jabatan, Auto WhatsApp');
-        console.log('📡 API URL:', API_BASE_URL);
-        console.log('📍 Mode: UPPERCASE Headers - RT dengan Trigger RW');
-    </script>
-
+    <!-- footer kecil -->
+    <div class="footer-note">
+      <span>LKK Kecamatan · Sistem Pendataan Terpadu</span>
+    </div>
+
+  </main>
 </body>
 </html>
