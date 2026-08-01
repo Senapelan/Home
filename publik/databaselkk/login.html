@@ -2,10 +2,9 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
-  <title>Pendataan LKK Kecamatan Ditutup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maintenance · LKK Kecamatan</title>
   <style>
-    /* reset & base */
     * {
       margin: 0;
       padding: 0;
@@ -13,362 +12,184 @@
     }
 
     body {
-      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
-      background: linear-gradient(145deg, #f6f9fc 0%, #e9f0f5 100%);
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f2f6fa;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      margin: 0;
+      padding: 24px;
     }
 
-    /* kartu utama – full preview yang responsif */
     .card {
-      max-width: 880px;
+      max-width: 520px;
       width: 100%;
-      background: rgba(255, 255, 255, 0.85);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      border-radius: 48px;
-      padding: 40px 36px;
-      box-shadow: 0 30px 60px rgba(0, 20, 40, 0.20), 0 12px 28px rgba(0, 0, 0, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.5);
-      transition: all 0.2s ease;
+      background: white;
+      border-radius: 32px;
+      padding: 48px 36px;
+      box-shadow: 0 20px 48px rgba(0, 20, 40, 0.10);
       text-align: center;
     }
 
-    /* ikon / ilustrasi */
-    .icon-wrapper {
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .icon {
+      font-size: 72px;
+      line-height: 1;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0b2236;
+      margin-bottom: 6px;
+    }
+
+    .sub {
+      font-size: 16px;
+      font-weight: 500;
+      color: #1f4970;
+      background: #eaf1f8;
+      display: inline-block;
+      padding: 4px 24px;
+      border-radius: 40px;
       margin-bottom: 24px;
     }
 
-    .icon-badge {
-      background: #1e3a5f;
-      color: white;
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 52px;
-      box-shadow: 0 16px 32px -8px rgba(20, 40, 80, 0.3);
-      transition: transform 0.2s;
-    }
-
-    .icon-badge span {
-      line-height: 1;
-    }
-
-    /* judul */
-    h1 {
-      font-size: clamp(2rem, 6vw, 3.4rem);
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      color: #0a1e2f;
-      margin-top: 4px;
-      margin-bottom: 12px;
-      line-height: 1.2;
-    }
-
-    .subhead {
-      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
-      font-weight: 500;
-      color: #1f4970;
-      background: rgba(30, 58, 95, 0.06);
-      display: inline-block;
-      padding: 8px 26px;
-      border-radius: 60px;
-      letter-spacing: 0.4px;
-      backdrop-filter: blur(4px);
-      border: 1px solid rgba(30, 58, 95, 0.08);
+    .message {
+      background: #f8fafc;
+      padding: 28px 20px;
+      border-radius: 24px;
+      border: 1px solid #e9eef3;
       margin-bottom: 28px;
     }
 
-    /* pesan utama */
-    .message-box {
-      background: #ffffffcc;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-      padding: 28px 20px;
-      border-radius: 32px;
-      margin: 20px 0 30px;
-      border: 1px solid rgba(255, 255, 255, 0.9);
-      box-shadow: inset 0 2px 6px rgba(0,0,0,0.02), 0 8px 20px rgba(0,20,40,0.06);
+    .message p {
+      font-size: 18px;
+      color: #1a3852;
+      line-height: 1.7;
     }
 
-    .message-box p {
-      font-size: clamp(1.1rem, 2.2vw, 1.5rem);
-      color: #12344a;
-      font-weight: 450;
-      line-height: 1.6;
-      margin-bottom: 8px;
-    }
-
-    .message-box .highlight {
-      display: inline-block;
-      background: #dceaf5;
-      padding: 0 14px;
-      border-radius: 40px;
-      font-weight: 600;
-      color: #0a2942;
-    }
-
-    .message-box .thanks {
-      font-size: clamp(1.3rem, 2.8vw, 1.9rem);
+    .message .thanks {
+      font-size: 20px;
       font-weight: 600;
       color: #0c2b44;
-      margin-top: 16px;
-      letter-spacing: -0.3px;
+      margin-top: 12px;
     }
 
-    .message-box .thanks span {
-      background: linear-gradient(145deg, #1d4a73, #0f314b);
+    .message .thanks span {
+      background: #1d4a73;
       color: white;
-      padding: 4px 18px;
-      border-radius: 60px;
-      font-weight: 500;
-      display: inline-block;
-      box-shadow: 0 4px 8px rgba(0,20,40,0.1);
-    }
-
-    /* detail tambahan */
-    .info-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 16px 28px;
-      background: #f2f7fb;
-      padding: 18px 24px;
-      border-radius: 80px;
-      margin: 20px 0 30px;
-      border: 1px solid #dce6ef;
-      backdrop-filter: blur(2px);
-    }
-
-    .info-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: clamp(0.9rem, 1.6vw, 1.1rem);
-      color: #1a3852;
-      font-weight: 500;
-    }
-
-    .info-item i {
-      font-size: 1.4rem;
-      line-height: 1;
-      opacity: 0.7;
-    }
-
-    .info-item .label {
-      font-weight: 400;
-      color: #3f5f7a;
-    }
-
-    .info-item .value {
-      font-weight: 600;
-      background: white;
-      padding: 2px 14px;
+      padding: 2px 20px;
       border-radius: 40px;
-      border: 1px solid #cbdae7;
+      display: inline-block;
     }
 
-    /* tombol / aksi (hanya estetika) */
-    .action-group {
+    .btn-group {
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 14px 18px;
-      margin-top: 8px;
+      gap: 12px;
     }
 
     .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      padding: 14px 36px;
-      border-radius: 80px;
+      display: inline-block;
+      padding: 14px 40px;
+      border-radius: 60px;
       font-weight: 600;
-      font-size: clamp(0.95rem, 1.6vw, 1.1rem);
+      font-size: 16px;
       background: white;
       color: #1f4970;
-      border: 1px solid #bacee0;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);
+      border: 1px solid #cbdae7;
       transition: 0.15s;
+      min-width: 140px;
       cursor: default;
-      backdrop-filter: blur(4px);
-      background: rgba(255, 255, 255, 0.7);
-      min-width: 160px;
-      letter-spacing: 0.3px;
     }
 
     .btn-primary {
       background: #1d4a73;
-      border: 1px solid #1d4a73;
+      border-color: #1d4a73;
       color: white;
-      box-shadow: 0 10px 20px -6px rgba(20, 60, 100, 0.3);
-    }
-
-    .btn-primary:hover {
-      background: #123a5a;
-      transform: scale(1.01);
-      box-shadow: 0 14px 28px -8px #0f314b66;
+      box-shadow: 0 6px 16px rgba(20, 60, 100, 0.15);
     }
 
     .btn-outline {
       background: transparent;
-      backdrop-filter: blur(4px);
-      border: 1px solid #b0c8dd;
     }
 
-    .btn-outline:hover {
-      background: #ffffffcc;
-      border-color: #1f4970;
+    .footer {
+      margin-top: 28px;
+      font-size: 14px;
+      color: #7a94aa;
+      border-top: 1px solid #e6edf5;
+      padding-top: 20px;
     }
 
-    /* footer kecil */
-    .footer-note {
-      margin-top: 32px;
-      font-size: clamp(0.8rem, 1.2vw, 0.95rem);
-      color: #3e6280;
-      border-top: 1px solid #d2e0ec;
-      padding-top: 24px;
-      opacity: 0.8;
-      letter-spacing: 0.3px;
-    }
-
-    /* responsif ekstra – touch friendly */
-    @media (max-width: 600px) {
+    @media (max-width: 480px) {
       .card {
-        padding: 30px 20px;
-        border-radius: 32px;
+        padding: 32px 20px;
+        border-radius: 24px;
       }
-      .icon-badge {
-        width: 80px;
-        height: 80px;
-        font-size: 40px;
+      .icon {
+        font-size: 56px;
       }
-      .info-grid {
-        flex-direction: column;
-        align-items: center;
-        border-radius: 40px;
-        gap: 10px;
-        padding: 18px 12px;
+      h1 {
+        font-size: 24px;
+      }
+      .message p {
+        font-size: 16px;
+      }
+      .message .thanks {
+        font-size: 17px;
       }
       .btn {
         width: 100%;
         min-width: unset;
-        padding: 16px 20px;
+        padding: 14px 20px;
       }
-      .action-group {
+      .btn-group {
         flex-direction: column;
         width: 100%;
       }
-      .message-box {
-        padding: 22px 14px;
-      }
-      .subhead {
-        padding: 6px 18px;
-        font-size: 0.95rem;
-      }
     }
 
-    @media (max-width: 400px) {
-      .card {
-        padding: 20px 14px;
-        border-radius: 28px;
-      }
-      .icon-badge {
-        width: 68px;
-        height: 68px;
-        font-size: 34px;
-      }
-      h1 {
-        font-size: 1.9rem;
-      }
-    }
-
-    /* smooth hover untuk desktop (sentuhan tetap) */
     @media (hover: hover) {
       .btn {
         cursor: pointer;
       }
-    }
-
-    /* aksesibilitas */
-    .btn:focus-visible {
-      outline: 3px solid #1f4970;
-      outline-offset: 3px;
+      .btn-primary:hover {
+        background: #123a5a;
+        transform: scale(1.02);
+      }
+      .btn-outline:hover {
+        background: #f0f6fc;
+        border-color: #1f4970;
+      }
     }
   </style>
 </head>
 <body>
-  <main class="card" role="main" aria-label="Notifikasi penutupan pendataan LKK Kecamatan">
-    
-    <!-- ikon utama -->
-    <div class="icon-wrapper">
-      <div class="icon-badge" aria-hidden="true">
-        <span>📋</span>
-      </div>
-    </div>
 
-    <!-- judul -->
-    <h1>Pendataan LKK <br style="display: none;">Kecamatan</h1>
-    <div class="subhead">✅ Ditutup</div>
+  <main class="card">
+    <span class="icon" aria-hidden="true">🔧</span>
 
-    <!-- pesan sentral -->
-    <div class="message-box">
-      <p>
-        <span class="highlight">Pendataan LKK Kecamatan</span> telah ditutup.
-      </p>
-      <p style="font-size: clamp(1rem, 1.8vw, 1.3rem); margin-top: 8px;">
-        Terimakasih.
-      </p>
+    <h1>LKK Kecamatan</h1>
+    <div class="sub">⚡ Maintenance | Pemeliharaan</div>
+
+    <div class="message">
+      <p>Sistem sedang dalam pemeliharaan.<br>Kami akan kembali segera.</p>
       <div class="thanks">
-        <span>🙏 Terima kasih telah mengimput data</span>
+        <span>🙏 Terima kasih</span>
       </div>
     </div>
 
-    <!-- informasi tambahan (ringkas) -->
-    <div class="info-grid">
-      <div class="info-item">
-        <span aria-hidden="true">📅</span>
-        <span class="label">Periode</span>
-        <span class="value">2026</span>
-      </div>
-      <div class="info-item">
-        <span aria-hidden="true">⏱️</span>
-        <span class="label">Status</span>
-        <span class="value">Selesai</span>
-      </div>
-      <div class="info-item">
-        <span aria-hidden="true">📊</span>
-        <span class="label">Total imput</span>
-        <span class="value">510</span>
-      </div>
+    <div class="btn-group">
+      <div class="btn btn-primary" role="button">🔄 Refresh</div>
+      <div class="btn btn-outline" role="button">📞 Hubungi</div>
     </div>
 
-    <!-- aksi (hanya visual, tidak fungsional) -->
-    <div class="action-group">
-      <div class="btn btn-primary" role="button" tabindex="0" aria-label="Kembali ke beranda (simulasi)">
-        <span>🏠</span> Beranda
-      </div>
-      <div class="btn btn-outline" role="button" tabindex="0" aria-label="Lihat ringkasan data (simulasi)">
-        <span>📄</span> Ringkasan
-      </div>
-    </div>
-
-    <!-- footer kecil -->
-    <div class="footer-note">
-      <span>LKK Kecamatan</span>
-    </div>
-
+    <div class="footer">LKK Kecamatan · Sistem Pendataan</div>
   </main>
+
 </body>
 </html>
