@@ -1,0 +1,1231 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+
+<!-- ===== FAVICON ===== -->
+<link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" />
+<link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" />
+<meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" />
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Peta Administrasi & Dashboard - Kecamatan Senapelan</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
+        
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 100;
+        }
+        .header h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .header h1 i { color: #ffd54f; }
+        .header-info { display: flex; align-items: center; gap: 15px; font-size: 13px; flex-wrap: wrap; }
+        .header-info .badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+        }
+        .header-info .badge i { margin-right: 5px; }
+        .status-dot {
+            display: inline-block;
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            background: #4caf50;
+            margin-right: 5px;
+            animation: pulse-dot 2s infinite;
+        }
+        @keyframes pulse-dot {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.4; }
+        }
+        .last-update { font-size: 11px; opacity: 0.8; }
+        
+        /* ============================================================
+           MAIN LAYOUT
+           ============================================================ */
+        .app-container { display: flex; height: calc(100vh - 70px); position: relative; }
+        
+        /* ============================================================
+           SIDEBAR TOGGLE BUTTON
+           ============================================================ */
+        .sidebar-toggle-btn {
+            position: fixed;
+            left: 340px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 999;
+            background: #1a237e;
+            color: white;
+            border: none;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 6px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        .sidebar-toggle-btn:hover {
+            background: #0d47a1;
+            padding-right: 10px;
+        }
+        .sidebar-toggle-btn.closed {
+            left: 0;
+        }
+        .sidebar-toggle-btn .icon-only {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        /* ============================================================
+           SIDEBAR
+           ============================================================ */
+        .sidebar {
+            width: 340px;
+            min-width: 340px;
+            background: white;
+            overflow-y: auto;
+            padding: 15px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+            z-index: 10;
+            transition: transform 0.3s ease, margin-left 0.3s ease;
+        }
+        .sidebar::-webkit-scrollbar { width: 5px; }
+        .sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
+        
+        .sidebar.closed {
+            transform: translateX(-340px);
+            margin-left: -340px;
+        }
+        
+        .sidebar-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e0e0e0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .sidebar-title span {
+            background: #1976d2;
+            color: white;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+        
+        /* ============================================================
+           STATS - 2 BARIS
+           ============================================================ */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 4px;
+            margin-bottom: 12px;
+        }
+        .stats-item {
+            background: #f8f9fa;
+            border-radius: 4px;
+            padding: 4px 4px;
+            text-align: center;
+            border: 1px solid #e8e8e8;
+            min-width: 0;
+        }
+        .stats-item .number { font-size: 14px; font-weight: 700; color: #1a237e; }
+        .stats-item .label { font-size: 7px; color: #888; text-transform: uppercase; letter-spacing: 0.2px; }
+        
+        /* ============================================================
+           LAYER CONTROL
+           ============================================================ */
+        .layer-group {
+            margin-bottom: 10px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .layer-group-header {
+            padding: 8px 12px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8f9fa;
+            font-weight: 500;
+            font-size: 13px;
+        }
+        .layer-group-header:hover { background: #e8eaf6; }
+        .layer-group-header .color-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 8px;
+        }
+        .layer-group-header .count-badge {
+            background: #e0e0e0;
+            padding: 1px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            color: #666;
+        }
+        .layer-group-body { padding: 5px 0; background: white; }
+        .layer-group-body.hidden { display: none; }
+        .layer-group-header .toggle-icon { transition: transform 0.3s; font-size: 12px; }
+        .layer-group-header .toggle-icon.collapsed { transform: rotate(-90deg); }
+        
+        .layer-item {
+            padding: 6px 15px 6px 35px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            border-left: 3px solid transparent;
+        }
+        .layer-item:hover { background: #f5f5f5; }
+        .layer-item input[type="checkbox"] {
+            width: 15px; height: 15px;
+            cursor: pointer;
+            accent-color: #1976d2;
+        }
+        .layer-item .sub-dot {
+            width: 10px; height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        .layer-item .item-count {
+            font-size: 10px;
+            color: #999;
+            background: #f0f0f0;
+            padding: 1px 8px;
+            border-radius: 10px;
+        }
+        
+        /* ============================================================
+           LEGEND
+           ============================================================ */
+        .legend-section {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid #e8e8e8;
+        }
+        .legend-title { font-size: 12px; font-weight: 600; color: #666; margin-bottom: 6px; }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            color: #555;
+            padding: 2px 0;
+        }
+        .legend-item .legend-color {
+            width: 14px; height: 14px;
+            border-radius: 4px;
+            flex-shrink: 0;
+        }
+        
+        /* ============================================================
+           MAP
+           ============================================================ */
+        #map { flex: 1; height: 100%; background: #e5e3df; }
+        
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        .sidebar-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 5px;
+        }
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: 0;
+                top: 70px;
+                height: calc(100vh - 70px);
+                transform: translateX(-100%);
+                width: 300px;
+                min-width: 300px;
+                z-index: 1000;
+                box-shadow: 2px 0 20px rgba(0,0,0,0.2);
+                margin-left: 0;
+            }
+            .sidebar.open { transform: translateX(0); }
+            .sidebar.closed { transform: translateX(-100%); margin-left: 0; }
+            .sidebar-toggle { display: block; }
+            .header h1 { font-size: 15px; }
+            .sidebar-toggle-btn {
+                left: 0;
+                top: 50%;
+                border-radius: 0 8px 8px 0;
+                padding: 10px 5px;
+                font-size: 14px;
+            }
+            .sidebar-toggle-btn.closed { left: 0; }
+        }
+        
+        /* ============================================================
+           POPUP
+           ============================================================ */
+        .custom-popup .popup-title {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1a237e;
+            margin-bottom: 3px;
+        }
+        .custom-popup .popup-category {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 5px;
+        }
+        .custom-popup .popup-desc { font-size: 12px; color: #555; margin: 5px 0; }
+        .custom-popup .popup-photo {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 6px;
+            margin-top: 5px;
+            border: 1px solid #e0e0e0;
+            display: block;
+        }
+        .custom-popup .popup-photo-placeholder {
+            width: 100%;
+            min-height: 60px;
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+            border-radius: 6px;
+            margin-top: 5px;
+            border: 1px dashed #ddd;
+        }
+        .custom-popup .popup-meta {
+            font-size: 10px;
+            color: #999;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 5px;
+            padding-top: 5px;
+            border-top: 1px solid #eee;
+        }
+        .custom-popup .popup-meta span { display: flex; align-items: center; gap: 3px; }
+        .custom-popup .kasus-list {
+            margin: 5px 0;
+            padding: 8px 10px;
+            background: #f5f5f5;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .custom-popup .kasus-list strong { font-size: 11px; }
+        .custom-popup .kasus-list ul { margin: 3px 0 0 15px; padding: 0; }
+        .custom-popup .kasus-list li { margin: 2px 0; }
+        
+        /* ============================================================
+           LOADING
+           ============================================================ */
+        .loading-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255,255,255,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
+        .loading-spinner {
+            width: 50px; height: 50px;
+            border: 4px solid #e0e0e0;
+            border-top-color: #1976d2;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-text { margin-top: 15px; color: #333; font-size: 14px; }
+        .loading-progress { margin-top: 8px; font-size: 12px; color: #888; }
+        .loading-error { color: #f44336; font-size: 13px; margin-top: 10px; }
+    </style>
+</head>
+<body>
+
+<!-- ============================================================
+     LOADING OVERLAY
+     ============================================================ -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+    <div class="loading-text">🔄 Memuat Data Peta...</div>
+    <div class="loading-progress" id="loadingProgress">Menghubungkan ke Google Sheets</div>
+    <div class="loading-error" id="loadingError"></div>
+</div>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header class="header">
+    <div style="display:flex;align-items:center;gap:10px;">
+        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
+            <i class="fas fa-bars"></i>
+        </button>
+        <img src="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" 
+             alt="Logo Peta Kecamatan Senapelan" 
+             style="height:35px;width:35px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.3);" />
+        <h1><i class="fas fa-map-marked-alt"></i> Kecamatan Senapelan</h1>
+    </div>
+    <div class="header-info">
+        <span class="badge"><span class="status-dot"></span> Live</span>
+        <span class="badge" id="totalDataBadge"><i class="fas fa-database"></i> 0 Data</span>
+        <span class="badge last-update" id="lastUpdate"><i class="far fa-clock"></i> Loading...</span>
+    </div>
+</header>
+
+<!-- ============================================================
+     APP CONTAINER
+     ============================================================ -->
+<div class="app-container">
+
+    <!-- ===== SIDEBAR TOGGLE BUTTON ===== -->
+    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Tutup Sidebar">
+        <span class="icon-only">«</span>
+    </button>
+
+    <!-- ============================================================
+         SIDEBAR
+         ============================================================ -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-title">
+            <span><i class="fas fa-layer-group"></i> LAYER PETA</span>
+            <span id="layerTotalCount">0</span>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-bar" id="statsBar">
+            <div class="stats-item" style="border-left:3px solid #1a237e;">
+                <div class="number" id="statTotal">0</div>
+                <div class="label">Total</div>
+            </div>
+            <div class="stats-item" style="border-left:3px solid #1976D2;">
+                <div class="number" id="statPEMERINTAHAN">0</div>
+                <div class="label">Pemerintahan</div>
+            </div>
+            <div class="stats-item" style="border-left:3px solid #4CAF50;">
+                <div class="number" id="statPENDIDIKAN">0</div>
+                <div class="label">Pendidikan</div>
+            </div>
+            <div class="stats-item" style="border-left:3px solid #F44336;">
+                <div class="number" id="statKESEHATAN">0</div>
+                <div class="label">Kesehatan</div>
+            </div>
+            <div class="stats-item" style="border-left:3px solid #9C27B0;">
+                <div class="number" id="statIBADAH">0</div>
+                <div class="label">Ibadah</div>
+            </div>
+            <!-- 6 kategori tambahan akan dibuat oleh JavaScript -->
+        </div>
+
+        <!-- LAYER CONTROLS -->
+        <div id="layerControls"></div>
+
+        <!-- LEGEND -->
+        <div class="legend-section">
+            <div class="legend-title"><i class="fas fa-palette"></i> LEGEND</div>
+            <div id="legendContainer"></div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MAP
+         ============================================================ -->
+    <div id="map"></div>
+</div>
+
+<!-- ============================================================
+     SCRIPTS
+     ============================================================ -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-omnivore/0.3.4/leaflet-omnivore.min.js"></script>
+
+<script>
+// ============================================================
+// KONFIGURASI - GANTI DENGAN URL APPS SCRIPT ANDA!
+// ============================================================
+
+// GANTI URL INI dengan URL Web App hasil deploy Apps Script Anda
+const API_URL = 'https://script.google.com/macros/s/AKfycbzEogJPq4yF5WRGjg4GFuGcOoG2Uf2QgNPoc40WOgrTgsrq9LIDgoiHnqeUfA36Ny-wPA/exec';
+
+// URL KML dari GitHub (RAW - sudah dihilangkan refs/heads/)
+const KML_URL = 'https://raw.githubusercontent.com/Senapelan/Home/main/publik/peta/PETA%20ADMINISTRASI%20KECAMATAN%20SENAPELAN.kml';
+
+// ============================================================
+// WARNA KATEGORI
+// ============================================================
+
+const KATEGORI_WARNA = {
+    'PEMERINTAHAN': '#1976D2',
+    'PENDIDIKAN': '#4CAF50',
+    'KESEHATAN': '#F44336',
+    'TEMPAT IBADAH': '#9C27B0',
+    'EKONOMI': '#FF9800',
+    'INFRASTRUKTUR': '#607D8B',
+    'KEAMANAN': '#D32F2F',
+    'KEBENCANAAN': '#FF5722',
+    'PARIWISATA': '#00BCD4',
+    'OLAHRAGA': '#8BC34A'
+};
+
+const KATEGORI_IKON = {
+    'PEMERINTAHAN': '🏛️',
+    'PENDIDIKAN': '📚',
+    'KESEHATAN': '🏥',
+    'TEMPAT IBADAH': '🕌',
+    'EKONOMI': '🏪',
+    'INFRASTRUKTUR': '🏗️',
+    'KEAMANAN': '🚔',
+    'KEBENCANAAN': '⚠️',
+    'PARIWISATA': '🏝️',
+    'OLAHRAGA': '⚽'
+};
+
+// ============================================================
+// SUB IKON (CASE-INSENSITIVE)
+// ============================================================
+
+function getSubIcon(subKategori) {
+    var key = (subKategori || '').toLowerCase().trim();
+    var map = {
+        'kantor kecamatan': '🏛️',
+        'kantor kelurahan': '🏢',
+        'kantor rw': '📋',
+        'kantor rt': '📌',
+        'bpd': '📋',
+        'sd': '📕',
+        'smp': '📘',
+        'sma': '📙',
+        'smk': '📗',
+        'universitas': '🎓',
+        'pondok pesantren': '🕌',
+        'tpa': '📖',
+        'paud': '🧸',
+        'puskesmas': '🏥',
+        'pustu': '🏥',
+        'posyandu': '👶',
+        'rumah sakit': '🏥',
+        'klinik': '🏥',
+        'apotek': '💊',
+        'laboratorium': '🔬',
+        'masjid': '🕌',
+        'musholla': '🕋',
+        'gereja': '⛪',
+        'vihara': '🕍',
+        'pura': '🛕',
+        'klenteng': '🏯',
+        'pasar': '🏪',
+        'toko': '🛒',
+        'warung': '🍽️',
+        'restoran': '🍴',
+        'bank': '🏦',
+        'atm': '🏧',
+        'spbu': '⛽',
+        'koperasi': '🤝',
+        'umkm': '🏪',
+        'jalan baik': '✅',
+        'jalan rusak': '🔧',
+        'jembatan': '🌉',
+        'drainase baik': '✅',
+        'drainase rusak': '⚠️',
+        'gedung': '🏗️',
+        'listrik': '⚡',
+        'air bersih': '💧',
+        'pos kamling': '🔒',
+        'polsek': '👮',
+        'koramil': '🪖',
+        'rawan kejahatan': '🚨',
+        'titik aman': '🛡️',
+        'banjir': '💧',
+        'kebakaran': '🔥',
+        'gempa': '🌊',
+        'longsor': '⛰️',
+        'puting beliung': '🌪️',
+        'taman kota': '🌳',
+        'wisata kuliner': '🍜',
+        'wisata sejarah': '🏛️',
+        'wisata alam': '🌿',
+        'budaya': '🎭',
+        'lapangan sepak bola': '⚽',
+        'lapangan futsal': '⚽',
+        'lapangan voli': '🏐',
+        'lapangan badminton': '🏸',
+        'gedung olahraga': '🏟️',
+        'kolam renang': '🏊',
+        'fitness center': '💪'
+    };
+    return map[key] || '📍';
+}
+
+function getSubColor(sub) {
+    var key = (sub || '').toLowerCase().trim();
+    var map = {
+        'kantor kecamatan': '#1565C0',
+        'kantor kelurahan': '#1E88E5',
+        'kantor rw': '#42A5F5',
+        'kantor rt': '#90CAF9',
+        'sd': '#2E7D32',
+        'smp': '#388E3C',
+        'sma': '#43A047',
+        'smk': '#66BB6A',
+        'puskesmas': '#C62828',
+        'posyandu': '#EF5350',
+        'masjid': '#6A1B9A',
+        'musholla': '#8E24AA',
+        'gereja': '#AB47BC'
+    };
+    return map[key] || '#757575';
+}
+
+// ============================================================
+// FUNGSI: KONVERSI LINK GOOGLE DRIVE KE THUMBNAIL
+// ============================================================
+
+function getGoogleDriveImageUrl(url) {
+    if (!url || url === '') return null;
+    
+    if (url.indexOf('drive.google.com') !== -1) {
+        var fileId = null;
+        var match1 = url.match(/\/file\/d\/([^\/]+)\//);
+        if (match1) fileId = match1[1];
+        var match2 = url.match(/[?&]id=([^&]+)/);
+        if (match2 && !fileId) fileId = match2[1];
+        if (fileId) {
+            return 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w1600';
+        }
+    }
+    return url;
+}
+
+// ============================================================
+// VARIABEL GLOBAL
+// ============================================================
+
+var map, kmlLayer, markerLayers = {}, allData = [];
+
+// ============================================================
+// INISIALISASI MAP
+// ============================================================
+
+function initMap() {
+    map = L.map('map', {
+        center: [0.5389, 101.4466],
+        zoom: 14,
+        zoomControl: true
+    });
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '© OpenStreetMap'
+    }).addTo(map);
+
+    L.control.zoom({ position: 'topright' }).addTo(map);
+    L.control.scale({ position: 'bottomleft', metric: true, imperial: false }).addTo(map);
+
+    // ============================================================
+    // SIDEBAR TOGGLE
+    // ============================================================
+    var sidebar = document.getElementById('sidebar');
+    var toggleBtn = document.getElementById('sidebarToggleBtn');
+    var isOpen = true;
+
+    function toggleSidebar() {
+        isOpen = !isOpen;
+        if (isOpen) {
+            sidebar.classList.remove('closed');
+            toggleBtn.classList.remove('closed');
+            toggleBtn.innerHTML = '<span class="icon-only">«</span>';
+            toggleBtn.title = 'Tutup Sidebar';
+        } else {
+            sidebar.classList.add('closed');
+            toggleBtn.classList.add('closed');
+            toggleBtn.innerHTML = '<span class="icon-only">»</span>';
+            toggleBtn.title = 'Buka Sidebar';
+        }
+    }
+
+    toggleBtn.addEventListener('click', toggleSidebar);
+
+    // Hamburger menu toggle (mobile)
+    document.getElementById('sidebarToggle').addEventListener('click', function() {
+        sidebar.classList.toggle('open');
+        var isOpenNow = sidebar.classList.contains('open');
+        if (isOpenNow) {
+            sidebar.classList.remove('closed');
+            toggleBtn.classList.remove('closed');
+            toggleBtn.innerHTML = '<span class="icon-only">«</span>';
+            toggleBtn.title = 'Tutup Sidebar';
+        } else {
+            sidebar.classList.add('closed');
+            toggleBtn.classList.add('closed');
+            toggleBtn.innerHTML = '<span class="icon-only">»</span>';
+            toggleBtn.title = 'Buka Sidebar';
+        }
+    });
+
+    document.addEventListener('click', function(e) {
+        var sidebar = document.getElementById('sidebar');
+        var toggle = document.getElementById('sidebarToggle');
+        if (window.innerWidth <= 768) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target) && !toggleBtn.contains(e.target)) {
+                sidebar.classList.remove('open');
+                sidebar.classList.add('closed');
+                toggleBtn.classList.add('closed');
+                toggleBtn.innerHTML = '<span class="icon-only">»</span>';
+                toggleBtn.title = 'Buka Sidebar';
+                isOpen = false;
+            }
+        }
+    });
+
+    loadKML();
+    loadData();
+}
+
+// ============================================================
+// LOAD KML
+// ============================================================
+
+function loadKML() {
+    document.getElementById('loadingProgress').textContent = 'Memuat data KML administrasi...';
+    
+    fetch(KML_URL)
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.text();
+        })
+        .then(function(kmlText) {
+            var parser = new DOMParser();
+            var kmlDoc = parser.parseFromString(kmlText, 'text/xml');
+            
+            var parseError = kmlDoc.getElementsByTagName('parsererror');
+            if (parseError.length > 0) {
+                throw new Error('Error parsing KML');
+            }
+            
+            kmlLayer = omnivore.kml.parse(kmlDoc);
+            
+            if (kmlLayer) {
+                kmlLayer.eachLayer(function(layer) {
+                    if (layer instanceof L.Polygon || layer instanceof L.MultiPolygon) {
+                        layer.setStyle({
+                            color: '#1976d2',
+                            weight: 2,
+                            opacity: 0.8,
+                            fillColor: '#1976d2',
+                            fillOpacity: 0.1
+                        });
+                        
+                        var name = 'Wilayah';
+                        if (layer.feature && layer.feature.properties) {
+                            if (layer.feature.properties.name) name = layer.feature.properties.name;
+                            else if (layer.feature.properties.Nama) name = layer.feature.properties.Nama;
+                        }
+                        layer.bindPopup('<div style="font-weight:600;color:#1a237e;font-size:13px;">🏛️ ' + name + '</div><div style="font-size:11px;color:#888;">Wilayah Administrasi Kecamatan Senapelan</div>');
+                    }
+                });
+                
+                kmlLayer.addTo(map);
+                document.getElementById('loadingProgress').textContent = '✅ KML dimuat';
+            }
+        })
+        .catch(function(error) {
+            console.error('Error loading KML:', error);
+            document.getElementById('loadingProgress').textContent = '⚠️ KML: ' + error.message;
+        });
+}
+
+// ============================================================
+// LOAD DATA DARI GOOGLE SHEETS
+// ============================================================
+
+function loadData() {
+    document.getElementById('loadingProgress').textContent = 'Mengambil data dari Google Sheets...';
+    document.getElementById('loadingError').textContent = '';
+    
+    fetch(API_URL + '?action=all&t=' + Date.now())
+        .then(function(response) {
+            if (!response.ok) throw new Error('HTTP ' + response.status);
+            return response.json();
+        })
+        .then(function(data) {
+            console.log('📥 Data dari API:', data);
+            
+            if (data.error) throw new Error(data.error);
+            if (!data.data || data.data.length === 0) {
+                throw new Error('Tidak ada data di Google Sheets. Silakan isi data terlebih dahulu.');
+            }
+            
+            allData = data.data;
+            
+            document.getElementById('loadingProgress').textContent = '✅ ' + allData.length + ' data dimuat';
+            
+            // Buat stats tambahan
+            createAdditionalStats();
+            
+            updateStats(allData);
+            buildLayerControls(allData);
+            renderMarkers(allData);
+            updateLegend(allData);
+            
+            document.getElementById('totalDataBadge').innerHTML = '<i class="fas fa-database"></i> ' + allData.length + ' Data';
+            document.getElementById('lastUpdate').innerHTML = '<i class="far fa-clock"></i> ' + new Date().toLocaleString('id-ID');
+            
+            setTimeout(function() {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 500);
+        })
+        .catch(function(error) {
+            console.error('❌ Error load data:', error);
+            document.getElementById('loadingError').textContent = '❌ ' + error.message;
+            document.getElementById('loadingProgress').textContent = '⚠️ Gagal memuat data';
+            
+            if (error.message.includes('HTTP 404')) {
+                document.getElementById('loadingError').textContent = '❌ API URL tidak ditemukan. Periksa URL Apps Script Anda.';
+            } else if (error.message.includes('HTTP 403')) {
+                document.getElementById('loadingError').textContent = '❌ Akses ditolak. Bagikan Google Sheets ke publik.';
+            }
+            
+            setTimeout(function() {
+                document.getElementById('loadingOverlay').classList.add('hidden');
+            }, 3000);
+        });
+}
+
+// ============================================================
+// BUAT STATS TAMBAHAN (6 KATEGORI)
+// ============================================================
+
+function createAdditionalStats() {
+    var statsBar = document.getElementById('statsBar');
+    var tambahan = [
+        { id: 'statEKONOMI', label: 'Ekonomi', warna: '#FF9800' },
+        { id: 'statINFRASTRUKTUR', label: 'Infrastruktur', warna: '#607D8B' },
+        { id: 'statKEAMANAN', label: 'Keamanan', warna: '#D32F2F' },
+        { id: 'statKEBENCANAAN', label: 'Kebencanaan', warna: '#FF5722' },
+        { id: 'statPARIWISATA', label: 'Pariwisata', warna: '#00BCD4' },
+        { id: 'statOLAHRAGA', label: 'Olahraga', warna: '#8BC34A' }
+    ];
+    
+    tambahan.forEach(function(item) {
+        var existingEl = document.getElementById(item.id);
+        if (!existingEl) {
+            var div = document.createElement('div');
+            div.className = 'stats-item';
+            div.id = item.id;
+            div.style.borderLeft = '3px solid ' + item.warna;
+            div.innerHTML = '<div class="number" id="' + item.id + '_num">0</div><div class="label">' + item.label + '</div>';
+            statsBar.appendChild(div);
+        }
+    });
+}
+
+// ============================================================
+// UPDATE STATISTIK - SEMUA 10 KATEGORI + TOTAL KASUS
+// ============================================================
+
+function updateStats(data) {
+    var stats = {
+        total: data.length,
+        totalKasus: 0,
+        'PEMERINTAHAN': 0,
+        'PENDIDIKAN': 0,
+        'KESEHATAN': 0,
+        'TEMPAT IBADAH': 0,
+        'EKONOMI': 0,
+        'INFRASTRUKTUR': 0,
+        'KEAMANAN': 0,
+        'KEBENCANAAN': 0,
+        'PARIWISATA': 0,
+        'OLAHRAGA': 0
+    };
+    
+    data.forEach(function(item) {
+        var kat = (item.kategori || '').toUpperCase();
+        if (stats[kat] !== undefined) {
+            stats[kat]++;
+        }
+        var daftarKasus = item.daftar_kasus || '';
+        if (daftarKasus && daftarKasus.trim() !== '') {
+            var list = daftarKasus.split(';').map(function(k) { return k.trim(); }).filter(function(k) { return k !== ''; });
+            stats.totalKasus += list.length;
+        }
+    });
+    
+    document.getElementById('statTotal').textContent = stats.total;
+    document.getElementById('statPEMERINTAHAN').textContent = stats['PEMERINTAHAN'];
+    document.getElementById('statPENDIDIKAN').textContent = stats['PENDIDIKAN'];
+    document.getElementById('statKESEHATAN').textContent = stats['KESEHATAN'];
+    document.getElementById('statIBADAH').textContent = stats['TEMPAT IBADAH'];
+    document.getElementById('layerTotalCount').textContent = stats.total + ' (🔥 ' + stats.totalKasus + ' kasus)';
+    
+    var tambahan = ['EKONOMI', 'INFRASTRUKTUR', 'KEAMANAN', 'KEBENCANAAN', 'PARIWISATA', 'OLAHRAGA'];
+    tambahan.forEach(function(kat) {
+        var el = document.getElementById('stat' + kat + '_num');
+        if (el) {
+            el.textContent = stats[kat] || 0;
+        }
+    });
+}
+
+// ============================================================
+// BUILD LAYER CONTROLS
+// ============================================================
+
+function buildLayerControls(data) {
+    var container = document.getElementById('layerControls');
+    container.innerHTML = '';
+    
+    var groups = {};
+    data.forEach(function(item) {
+        var kat = (item.kategori || 'Lainnya').toUpperCase();
+        if (!groups[kat]) groups[kat] = [];
+        groups[kat].push(item);
+    });
+    
+    var order = ['PEMERINTAHAN', 'PENDIDIKAN', 'KESEHATAN', 'TEMPAT IBADAH', 'EKONOMI', 'INFRASTRUKTUR', 'KEAMANAN', 'KEBENCANAAN', 'PARIWISATA', 'OLAHRAGA'];
+    
+    var sortedKeys = Object.keys(groups).sort(function(a, b) {
+        var idxA = order.indexOf(a), idxB = order.indexOf(b);
+        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+    });
+    
+    sortedKeys.forEach(function(kat) {
+        var items = groups[kat];
+        var color = KATEGORI_WARNA[kat] || '#757575';
+        var icon = KATEGORI_IKON[kat] || '📌';
+        
+        var groupDiv = document.createElement('div');
+        groupDiv.className = 'layer-group';
+        
+        var header = document.createElement('div');
+        header.className = 'layer-group-header';
+        header.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span class="color-dot" style="background:' + color + ';"></span><span>' + icon + ' ' + kat + '</span><span class="count-badge">' + items.length + '</span></div><span class="toggle-icon">▼</span>';
+        header.addEventListener('click', function() {
+            var body = this.nextElementSibling;
+            body.classList.toggle('hidden');
+            var icon = this.querySelector('.toggle-icon');
+            icon.classList.toggle('collapsed');
+        });
+        groupDiv.appendChild(header);
+        
+        var body = document.createElement('div');
+        body.className = 'layer-group-body';
+        
+        var allItem = document.createElement('div');
+        allItem.className = 'layer-item active';
+        allItem.style.borderLeftColor = color;
+        allItem.innerHTML = '<input type="checkbox" checked data-group="' + kat + '" data-type="all" /><span style="font-weight:500;font-size:12px;">Semua ' + kat + '</span>';
+        allItem.querySelector('input').addEventListener('change', function() {
+            var checked = this.checked;
+            var group = this.dataset.group;
+            body.querySelectorAll('input[data-group="' + group + '"][data-type="sub"]').forEach(function(cb) {
+                cb.checked = checked;
+                cb.dispatchEvent(new Event('change'));
+            });
+        });
+        body.appendChild(allItem);
+        
+        var subGroups = {};
+        items.forEach(function(item) {
+            var sub = (item.sub_kategori || 'Lainnya');
+            if (!subGroups[sub]) subGroups[sub] = [];
+            subGroups[sub].push(item);
+        });
+        
+        var subOrder = ['Kantor Kecamatan', 'Kantor Kelurahan', 'Kantor RW', 'Kantor RT', 'SD', 'SMP', 'SMA', 'SMK', 'Puskesmas', 'Posyandu', 'Masjid', 'Musholla', 'Gereja'];
+        var sortedSub = Object.keys(subGroups).sort(function(a, b) {
+            var idxA = subOrder.indexOf(a), idxB = subOrder.indexOf(b);
+            if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+            if (idxA === -1) return 1;
+            if (idxB === -1) return -1;
+            return idxA - idxB;
+        });
+        
+        sortedSub.forEach(function(sub) {
+            var subItems = subGroups[sub];
+            var subColor = getSubColor(sub);
+            var subIcon = getSubIcon(sub);
+            
+            var itemDiv = document.createElement('div');
+            itemDiv.className = 'layer-item active';
+            itemDiv.style.borderLeftColor = subColor;
+            itemDiv.innerHTML = '<input type="checkbox" checked data-group="' + kat + '" data-type="sub" data-sub="' + sub + '" /><span class="sub-dot" style="background:' + subColor + ';"></span><span class="item-label">' + subIcon + ' ' + sub + '</span><span class="item-count">' + subItems.length + '</span>';
+            
+            var checkbox = itemDiv.querySelector('input');
+            checkbox.addEventListener('change', function() {
+                toggleSubLayer(this.dataset.group, this.dataset.sub, this.checked);
+            });
+            
+            body.appendChild(itemDiv);
+        });
+        
+        groupDiv.appendChild(body);
+        container.appendChild(groupDiv);
+    });
+}
+
+// ============================================================
+// RENDER MARKERS
+// ============================================================
+
+function renderMarkers(data) {
+    Object.keys(markerLayers).forEach(function(key) {
+        if (markerLayers[key]) map.removeLayer(markerLayers[key]);
+    });
+    markerLayers = {};
+    
+    var grouped = {};
+    data.forEach(function(item) {
+        var kat = (item.kategori || 'Lainnya').toUpperCase();
+        var sub = (item.sub_kategori || 'Lainnya');
+        var key = kat + '|' + sub;
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(item);
+    });
+    
+    Object.keys(grouped).forEach(function(key) {
+        var parts = key.split('|');
+        var kat = parts[0], sub = parts[1];
+        var items = grouped[key];
+        var color = getSubColor(sub) || KATEGORI_WARNA[kat] || '#757575';
+        var icon = getSubIcon(sub);
+        
+        var layerGroup = L.layerGroup();
+        
+        items.forEach(function(item) {
+            var lat = parseFloat(item.latitude);
+            var lng = parseFloat(item.longitude);
+            if (isNaN(lat) || isNaN(lng)) return;
+            
+            var marker = L.marker([lat, lng], {
+                icon: createCustomIcon(color, icon, item)
+            });
+            
+            marker.bindPopup(createPopupContent(item), { maxWidth: 350, className: 'custom-popup' });
+            layerGroup.addLayer(marker);
+        });
+        
+        markerLayers[key] = layerGroup;
+        layerGroup.addTo(map);
+    });
+}
+
+// ============================================================
+// CREATE CUSTOM ICON
+// ============================================================
+
+function createCustomIcon(color, icon, item) {
+    var size = 30;
+    var daftarKasus = item.daftar_kasus || '';
+    var kasusList = [];
+    if (daftarKasus && daftarKasus.trim() !== '') {
+        kasusList = daftarKasus.split(';').map(function(k) { return k.trim(); }).filter(function(k) { return k !== ''; });
+    }
+    var jumlah = kasusList.length;
+    var hasKasus = jumlah > 0;
+    var markerColor = hasKasus ? '#D32F2F' : color;
+    var displayText = hasKasus ? jumlah : icon;
+    var fontSize = hasKasus ? (jumlah > 99 ? 10 : 12) : 12;
+    
+    var html = '<div style="' +
+        'width:' + size + 'px;' +
+        'height:' + size + 'px;' +
+        'background:' + markerColor + ';' +
+        'border-radius:50%;' +
+        'display:flex;' +
+        'align-items:center;' +
+        'justify-content:center;' +
+        'color:white;' +
+        'font-size:' + fontSize + 'px;' +
+        'font-weight:bold;' +
+        'border:2px solid white;' +
+        'box-shadow:0 2px 8px rgba(0,0,0,0.3);' +
+        (hasKasus ? 'animation:pulse-marker 1.5s infinite;' : '') +
+        'transform:scale(' + (hasKasus ? 1.15 : 1) + ');' +
+    '">' + displayText + '</div>';
+    
+    if (hasKasus) {
+        html += '<style>' +
+            '@keyframes pulse-marker {' +
+                '0%, 100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }' +
+                '50% { box-shadow: 0 0 0 15px rgba(211, 47, 47, 0); }' +
+            '}' +
+        '</style>';
+    }
+    
+    return L.divIcon({
+        html: html,
+        className: 'custom-marker',
+        iconSize: [size, size],
+        iconAnchor: [size/2, size]
+    });
+}
+
+// ============================================================
+// CREATE POPUP CONTENT
+// ============================================================
+
+function createPopupContent(item) {
+    var kategori = item.kategori || 'Lainnya';
+    var sub = item.sub_kategori || 'Lainnya';
+    var color = KATEGORI_WARNA[kategori] || '#757575';
+    var icon = getSubIcon(sub);
+    var foto = item.foto_url || '';
+    var nama = item.nama || 'Lokasi';
+    var deskripsi = item.deskripsi || 'Tidak ada deskripsi';
+    var alamat = item.alamat || '';
+    var daftarKasus = item.daftar_kasus || '';
+    var status = item.status || '-';
+    var jenis = item.jenis || '';
+    var keterangan = item.keterangan || '';
+    var rw = item.rw || '';
+    var rt = item.rt || '';
+    
+    var kasusList = [];
+    if (daftarKasus && daftarKasus.trim() !== '') {
+        kasusList = daftarKasus.split(';').map(function(k) { return k.trim(); }).filter(function(k) { return k !== ''; });
+    }
+    var jumlah = kasusList.length;
+    
+    var fotoUrl = getGoogleDriveImageUrl(foto);
+    var photoHtml = '';
+    if (fotoUrl) {
+        photoHtml = '<img src="' + fotoUrl + '" class="popup-photo" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'" /><div class="popup-photo-placeholder" style="display:none;">📷 Gagal memuat foto</div>';
+    } else {
+        photoHtml = '<div class="popup-photo-placeholder">📷 Tidak ada foto</div>';
+    }
+    
+    var kasusStatus = '';
+    if (jumlah > 0) {
+        kasusStatus = '<div style="background:#FFEBEE;border-left:4px solid #D32F2F;padding:6px 10px;margin:5px 0;border-radius:4px;font-size:12px;font-weight:600;color:#D32F2F;">🔴 ' + jumlah + ' Kasus Terjadi di Lokasi Ini!</div>';
+    } else {
+        kasusStatus = '<div style="background:#E8F5E9;border-left:4px solid #4CAF50;padding:6px 10px;margin:5px 0;border-radius:4px;font-size:12px;font-weight:600;color:#2E7D32;">✅ Tidak Ada Kasus</div>';
+    }
+    
+    var kasusHtml = '';
+    if (kasusList.length > 0) {
+        kasusHtml = '<div class="kasus-list" style="background:#FFF3E0;border-radius:4px;padding:8px 10px;margin:5px 0;font-size:11px;"><strong style="color:#E65100;">📋 Daftar Kasus (' + kasusList.length + ')</strong><ul style="margin:3px 0 0 15px;padding:0;list-style:disc;">' + 
+            kasusList.map(function(k) { return '<li style="margin:2px 0;color:#555;">' + k + '</li>'; }).join('') + 
+        '</ul></div>';
+    }
+    
+    var infoTambahan = '';
+    if (rw) infoTambahan += '<span><i class="fas fa-layer-group"></i> RW ' + rw + '</span>';
+    if (rt) infoTambahan += '<span><i class="fas fa-home"></i> RT ' + rt + '</span>';
+    if (jenis) infoTambahan += '<span><i class="fas fa-tag"></i> ' + jenis + '</span>';
+    if (keterangan) infoTambahan += '<span><i class="fas fa-info-circle"></i> ' + keterangan + '</span>';
+    
+    return '' +
+        '<div class="popup-title">' + icon + ' ' + nama + '</div>' +
+        '<span class="popup-category" style="background:' + color + ';">' + kategori + ' - ' + sub + '</span>' +
+        kasusStatus +
+        '<div class="popup-desc">' + deskripsi + '</div>' +
+        (alamat ? '<div style="font-size:11px;color:#888;margin:3px 0;">📍 ' + alamat + '</div>' : '') +
+        photoHtml +
+        kasusHtml +
+        '<div class="popup-meta">' +
+            '<span><i class="fas fa-chart-bar"></i> ' + jumlah + ' kasus</span>' +
+            '<span><i class="fas fa-circle" style="color:' + (status === 'Aktif' ? '#4caf50' : status === 'Dalam Perbaikan' ? '#ff9800' : '#9e9e9e') + ';"></i> ' + status + '</span>' +
+            infoTambahan +
+        '</div>';
+}
+
+// ============================================================
+// TOGGLE SUB LAYER
+// ============================================================
+
+function toggleSubLayer(kategori, subKategori, visible) {
+    var key = kategori + '|' + subKategori;
+    if (markerLayers[key]) {
+        if (visible) markerLayers[key].addTo(map);
+        else map.removeLayer(markerLayers[key]);
+    }
+}
+
+// ============================================================
+// UPDATE LEGEND
+// ============================================================
+
+function updateLegend(data) {
+    var container = document.getElementById('legendContainer');
+    container.innerHTML = '';
+    
+    var subs = {};
+    data.forEach(function(item) {
+        var sub = item.sub_kategori || 'Lainnya';
+        if (!subs[sub]) subs[sub] = true;
+    });
+    
+    var subOrder = ['Kantor Kecamatan', 'Kantor Kelurahan', 'Kantor RW', 'Kantor RT', 'SD', 'SMP', 'SMA', 'SMK', 'Puskesmas', 'Posyandu', 'Masjid', 'Musholla', 'Gereja'];
+    var sorted = Object.keys(subs).sort(function(a, b) {
+        var idxA = subOrder.indexOf(a), idxB = subOrder.indexOf(b);
+        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
+        if (idxA === -1) return 1;
+        if (idxB === -1) return -1;
+        return idxA - idxB;
+    });
+    
+    sorted.forEach(function(sub) {
+        var color = getSubColor(sub) || '#757575';
+        var icon = getSubIcon(sub);
+        var div = document.createElement('div');
+        div.className = 'legend-item';
+        div.innerHTML = '<span class="legend-color" style="background:' + color + ';"></span>' + icon + ' ' + sub;
+        container.appendChild(div);
+    });
+}
+
+// ============================================================
+// START
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', initMap);
+</script>
+
+</body>
+</html>
