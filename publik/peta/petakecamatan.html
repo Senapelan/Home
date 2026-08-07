@@ -1,1231 +1,1988 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8" />
-
-<!-- ===== FAVICON ===== -->
-<link rel="icon" type="image/png" href="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" />
-<link rel="apple-touch-icon" href="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" />
-<meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" />
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Peta Administrasi & Dashboard - Kecamatan Senapelan</title>
-    
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-    
-    <style>
-        /* ============================================================
-           RESET & BASE
-           ============================================================ */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; }
-        
-        /* ============================================================
-           HEADER
-           ============================================================ */
-        .header {
-            background: linear-gradient(135deg, #1a237e, #0d47a1);
-            color: white;
-            padding: 12px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-            position: relative;
-            z-index: 100;
-        }
-        .header h1 { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
-        .header h1 i { color: #ffd54f; }
-        .header-info { display: flex; align-items: center; gap: 15px; font-size: 13px; flex-wrap: wrap; }
-        .header-info .badge {
-            background: rgba(255,255,255,0.2);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-        }
-        .header-info .badge i { margin-right: 5px; }
-        .status-dot {
-            display: inline-block;
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            background: #4caf50;
-            margin-right: 5px;
-            animation: pulse-dot 2s infinite;
-        }
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.4; }
-        }
-        .last-update { font-size: 11px; opacity: 0.8; }
-        
-        /* ============================================================
-           MAIN LAYOUT
-           ============================================================ */
-        .app-container { display: flex; height: calc(100vh - 70px); position: relative; }
-        
-        /* ============================================================
-           SIDEBAR TOGGLE BUTTON
-           ============================================================ */
-        .sidebar-toggle-btn {
-            position: fixed;
-            left: 340px;
-            top: 50%;
-            transform: translateY(-50%);
-            z-index: 999;
-            background: #1a237e;
-            color: white;
-            border: none;
-            border-radius: 0 8px 8px 0;
-            padding: 12px 6px;
-            font-size: 16px;
-            cursor: pointer;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
-            transition: all 0.3s ease;
-        }
-        .sidebar-toggle-btn:hover {
-            background: #0d47a1;
-            padding-right: 10px;
-        }
-        .sidebar-toggle-btn.closed {
-            left: 0;
-        }
-        .sidebar-toggle-btn .icon-only {
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        /* ============================================================
-           SIDEBAR
-           ============================================================ */
-        .sidebar {
-            width: 340px;
-            min-width: 340px;
-            background: white;
-            overflow-y: auto;
-            padding: 15px;
-            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
-            z-index: 10;
-            transition: transform 0.3s ease, margin-left 0.3s ease;
-        }
-        .sidebar::-webkit-scrollbar { width: 5px; }
-        .sidebar::-webkit-scrollbar-thumb { background: #ccc; border-radius: 10px; }
-        
-        .sidebar.closed {
-            transform: translateX(-340px);
-            margin-left: -340px;
-        }
-        
-        .sidebar-title {
-            font-size: 14px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #e0e0e0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .sidebar-title span {
-            background: #1976d2;
-            color: white;
-            padding: 2px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-        }
-        
-        /* ============================================================
-           STATS - 2 BARIS
-           ============================================================ */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 4px;
-            margin-bottom: 12px;
-        }
-        .stats-item {
-            background: #f8f9fa;
-            border-radius: 4px;
-            padding: 4px 4px;
-            text-align: center;
-            border: 1px solid #e8e8e8;
-            min-width: 0;
-        }
-        .stats-item .number { font-size: 14px; font-weight: 700; color: #1a237e; }
-        .stats-item .label { font-size: 7px; color: #888; text-transform: uppercase; letter-spacing: 0.2px; }
-        
-        /* ============================================================
-           LAYER CONTROL
-           ============================================================ */
-        .layer-group {
-            margin-bottom: 10px;
-            border: 1px solid #e8e8e8;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .layer-group-header {
-            padding: 8px 12px;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f8f9fa;
-            font-weight: 500;
-            font-size: 13px;
-        }
-        .layer-group-header:hover { background: #e8eaf6; }
-        .layer-group-header .color-dot {
-            width: 12px; height: 12px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 8px;
-        }
-        .layer-group-header .count-badge {
-            background: #e0e0e0;
-            padding: 1px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            color: #666;
-        }
-        .layer-group-body { padding: 5px 0; background: white; }
-        .layer-group-body.hidden { display: none; }
-        .layer-group-header .toggle-icon { transition: transform 0.3s; font-size: 12px; }
-        .layer-group-header .toggle-icon.collapsed { transform: rotate(-90deg); }
-        
-        .layer-item {
-            padding: 6px 15px 6px 35px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-size: 12px;
-            border-left: 3px solid transparent;
-        }
-        .layer-item:hover { background: #f5f5f5; }
-        .layer-item input[type="checkbox"] {
-            width: 15px; height: 15px;
-            cursor: pointer;
-            accent-color: #1976d2;
-        }
-        .layer-item .sub-dot {
-            width: 10px; height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-            flex-shrink: 0;
-        }
-        .layer-item .item-count {
-            font-size: 10px;
-            color: #999;
-            background: #f0f0f0;
-            padding: 1px 8px;
-            border-radius: 10px;
-        }
-        
-        /* ============================================================
-           LEGEND
-           ============================================================ */
-        .legend-section {
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 2px solid #e8e8e8;
-        }
-        .legend-title { font-size: 12px; font-weight: 600; color: #666; margin-bottom: 6px; }
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 11px;
-            color: #555;
-            padding: 2px 0;
-        }
-        .legend-item .legend-color {
-            width: 14px; height: 14px;
-            border-radius: 4px;
-            flex-shrink: 0;
-        }
-        
-        /* ============================================================
-           MAP
-           ============================================================ */
-        #map { flex: 1; height: 100%; background: #e5e3df; }
-        
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
-        .sidebar-toggle {
-            display: none;
-            background: none;
-            border: none;
-            color: white;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-        }
-        @media (max-width: 768px) {
-            .sidebar {
-                position: fixed;
-                left: 0;
-                top: 70px;
-                height: calc(100vh - 70px);
-                transform: translateX(-100%);
-                width: 300px;
-                min-width: 300px;
-                z-index: 1000;
-                box-shadow: 2px 0 20px rgba(0,0,0,0.2);
-                margin-left: 0;
-            }
-            .sidebar.open { transform: translateX(0); }
-            .sidebar.closed { transform: translateX(-100%); margin-left: 0; }
-            .sidebar-toggle { display: block; }
-            .header h1 { font-size: 15px; }
-            .sidebar-toggle-btn {
-                left: 0;
-                top: 50%;
-                border-radius: 0 8px 8px 0;
-                padding: 10px 5px;
-                font-size: 14px;
-            }
-            .sidebar-toggle-btn.closed { left: 0; }
-        }
-        
-        /* ============================================================
-           POPUP
-           ============================================================ */
-        .custom-popup .popup-title {
-            font-weight: 600;
-            font-size: 14px;
-            color: #1a237e;
-            margin-bottom: 3px;
-        }
-        .custom-popup .popup-category {
-            display: inline-block;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: 600;
-            color: white;
-            margin-bottom: 5px;
-        }
-        .custom-popup .popup-desc { font-size: 12px; color: #555; margin: 5px 0; }
-        .custom-popup .popup-photo {
-            max-width: 100%;
-            max-height: 200px;
-            border-radius: 6px;
-            margin-top: 5px;
-            border: 1px solid #e0e0e0;
-            display: block;
-        }
-        .custom-popup .popup-photo-placeholder {
-            width: 100%;
-            min-height: 60px;
-            background: #f5f5f5;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-size: 12px;
-            border-radius: 6px;
-            margin-top: 5px;
-            border: 1px dashed #ddd;
-        }
-        .custom-popup .popup-meta {
-            font-size: 10px;
-            color: #999;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            margin-top: 5px;
-            padding-top: 5px;
-            border-top: 1px solid #eee;
-        }
-        .custom-popup .popup-meta span { display: flex; align-items: center; gap: 3px; }
-        .custom-popup .kasus-list {
-            margin: 5px 0;
-            padding: 8px 10px;
-            background: #f5f5f5;
-            border-radius: 4px;
-            font-size: 11px;
-        }
-        .custom-popup .kasus-list strong { font-size: 11px; }
-        .custom-popup .kasus-list ul { margin: 3px 0 0 15px; padding: 0; }
-        .custom-popup .kasus-list li { margin: 2px 0; }
-        
-        /* ============================================================
-           LOADING
-           ============================================================ */
-        .loading-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(255,255,255,0.9);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s;
-        }
-        .loading-overlay.hidden { opacity: 0; pointer-events: none; }
-        .loading-spinner {
-            width: 50px; height: 50px;
-            border: 4px solid #e0e0e0;
-            border-top-color: #1976d2;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-text { margin-top: 15px; color: #333; font-size: 14px; }
-        .loading-progress { margin-top: 8px; font-size: 12px; color: #888; }
-        .loading-error { color: #f44336; font-size: 13px; margin-top: 10px; }
-    </style>
-</head>
-<body>
-
-<!-- ============================================================
-     LOADING OVERLAY
-     ============================================================ -->
-<div class="loading-overlay" id="loadingOverlay">
-    <div class="loading-spinner"></div>
-    <div class="loading-text">🔄 Memuat Data Peta...</div>
-    <div class="loading-progress" id="loadingProgress">Menghubungkan ke Google Sheets</div>
-    <div class="loading-error" id="loadingError"></div>
-</div>
-
-<!-- ============================================================
-     HEADER
-     ============================================================ -->
-<header class="header">
-    <div style="display:flex;align-items:center;gap:10px;">
-        <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle Sidebar">
-            <i class="fas fa-bars"></i>
-        </button>
-        <img src="https://senapelan.github.io/Home/assets/metatag/petadministrasikecamatan/petaadministrasi512x512.png" 
-             alt="Logo Peta Kecamatan Senapelan" 
-             style="height:35px;width:35px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,0.3);" />
-        <h1><i class="fas fa-map-marked-alt"></i> Kecamatan Senapelan</h1>
-    </div>
-    <div class="header-info">
-        <span class="badge"><span class="status-dot"></span> Live</span>
-        <span class="badge" id="totalDataBadge"><i class="fas fa-database"></i> 0 Data</span>
-        <span class="badge last-update" id="lastUpdate"><i class="far fa-clock"></i> Loading...</span>
-    </div>
-</header>
-
-<!-- ============================================================
-     APP CONTAINER
-     ============================================================ -->
-<div class="app-container">
-
-    <!-- ===== SIDEBAR TOGGLE BUTTON ===== -->
-    <button class="sidebar-toggle-btn" id="sidebarToggleBtn" title="Tutup Sidebar">
-        <span class="icon-only">«</span>
-    </button>
-
-    <!-- ============================================================
-         SIDEBAR
-         ============================================================ -->
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-title">
-            <span><i class="fas fa-layer-group"></i> LAYER PETA</span>
-            <span id="layerTotalCount">0</span>
-        </div>
-
-        <!-- STATS -->
-        <div class="stats-bar" id="statsBar">
-            <div class="stats-item" style="border-left:3px solid #1a237e;">
-                <div class="number" id="statTotal">0</div>
-                <div class="label">Total</div>
-            </div>
-            <div class="stats-item" style="border-left:3px solid #1976D2;">
-                <div class="number" id="statPEMERINTAHAN">0</div>
-                <div class="label">Pemerintahan</div>
-            </div>
-            <div class="stats-item" style="border-left:3px solid #4CAF50;">
-                <div class="number" id="statPENDIDIKAN">0</div>
-                <div class="label">Pendidikan</div>
-            </div>
-            <div class="stats-item" style="border-left:3px solid #F44336;">
-                <div class="number" id="statKESEHATAN">0</div>
-                <div class="label">Kesehatan</div>
-            </div>
-            <div class="stats-item" style="border-left:3px solid #9C27B0;">
-                <div class="number" id="statIBADAH">0</div>
-                <div class="label">Ibadah</div>
-            </div>
-            <!-- 6 kategori tambahan akan dibuat oleh JavaScript -->
-        </div>
-
-        <!-- LAYER CONTROLS -->
-        <div id="layerControls"></div>
-
-        <!-- LEGEND -->
-        <div class="legend-section">
-            <div class="legend-title"><i class="fas fa-palette"></i> LEGEND</div>
-            <div id="legendContainer"></div>
-        </div>
-    </div>
-
-    <!-- ============================================================
-         MAP
-         ============================================================ -->
-    <div id="map"></div>
-</div>
-
-<!-- ============================================================
-     SCRIPTS
-     ============================================================ -->
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-omnivore/0.3.4/leaflet-omnivore.min.js"></script>
-
-<script>
-// ============================================================
-// KONFIGURASI - GANTI DENGAN URL APPS SCRIPT ANDA!
-// ============================================================
-
-// GANTI URL INI dengan URL Web App hasil deploy Apps Script Anda
-const API_URL = 'https://script.google.com/macros/s/AKfycbwl3cIlWeduASIo232UQ-_xfCk5v4uiVswmhR9vT35XG5ONflNdoE5kRzMgh59RHeeE4Q/exec';
-
-// URL KML dari GitHub (RAW - sudah dihilangkan refs/heads/)
-const KML_URL = 'https://raw.githubusercontent.com/Senapelan/Home/main/publik/peta/PETA%20ADMINISTRASI%20KECAMATAN%20SENAPELAN.kml';
-
-// ============================================================
-// WARNA KATEGORI
-// ============================================================
-
-const KATEGORI_WARNA = {
-    'PEMERINTAHAN': '#1976D2',
-    'PENDIDIKAN': '#4CAF50',
-    'KESEHATAN': '#F44336',
-    'TEMPAT IBADAH': '#9C27B0',
-    'EKONOMI': '#FF9800',
-    'INFRASTRUKTUR': '#607D8B',
-    'KEAMANAN': '#D32F2F',
-    'KEBENCANAAN': '#FF5722',
-    'PARIWISATA': '#00BCD4',
-    'OLAHRAGA': '#8BC34A'
-};
-
-const KATEGORI_IKON = {
-    'PEMERINTAHAN': '🏛️',
-    'PENDIDIKAN': '📚',
-    'KESEHATAN': '🏥',
-    'TEMPAT IBADAH': '🕌',
-    'EKONOMI': '🏪',
-    'INFRASTRUKTUR': '🏗️',
-    'KEAMANAN': '🚔',
-    'KEBENCANAAN': '⚠️',
-    'PARIWISATA': '🏝️',
-    'OLAHRAGA': '⚽'
-};
-
-// ============================================================
-// SUB IKON (CASE-INSENSITIVE)
-// ============================================================
-
-function getSubIcon(subKategori) {
-    var key = (subKategori || '').toLowerCase().trim();
-    var map = {
-        'kantor kecamatan': '🏛️',
-        'kantor kelurahan': '🏢',
-        'kantor rw': '📋',
-        'kantor rt': '📌',
-        'bpd': '📋',
-        'sd': '📕',
-        'smp': '📘',
-        'sma': '📙',
-        'smk': '📗',
-        'universitas': '🎓',
-        'pondok pesantren': '🕌',
-        'tpa': '📖',
-        'paud': '🧸',
-        'puskesmas': '🏥',
-        'pustu': '🏥',
-        'posyandu': '👶',
-        'rumah sakit': '🏥',
-        'klinik': '🏥',
-        'apotek': '💊',
-        'laboratorium': '🔬',
-        'masjid': '🕌',
-        'musholla': '🕋',
-        'gereja': '⛪',
-        'vihara': '🕍',
-        'pura': '🛕',
-        'klenteng': '🏯',
-        'pasar': '🏪',
-        'toko': '🛒',
-        'warung': '🍽️',
-        'restoran': '🍴',
-        'bank': '🏦',
-        'atm': '🏧',
-        'spbu': '⛽',
-        'koperasi': '🤝',
-        'umkm': '🏪',
-        'jalan baik': '✅',
-        'jalan rusak': '🔧',
-        'jembatan': '🌉',
-        'drainase baik': '✅',
-        'drainase rusak': '⚠️',
-        'gedung': '🏗️',
-        'listrik': '⚡',
-        'air bersih': '💧',
-        'pos kamling': '🔒',
-        'polsek': '👮',
-        'koramil': '🪖',
-        'rawan kejahatan': '🚨',
-        'titik aman': '🛡️',
-        'banjir': '💧',
-        'kebakaran': '🔥',
-        'gempa': '🌊',
-        'longsor': '⛰️',
-        'puting beliung': '🌪️',
-        'taman kota': '🌳',
-        'wisata kuliner': '🍜',
-        'wisata sejarah': '🏛️',
-        'wisata alam': '🌿',
-        'budaya': '🎭',
-        'lapangan sepak bola': '⚽',
-        'lapangan futsal': '⚽',
-        'lapangan voli': '🏐',
-        'lapangan badminton': '🏸',
-        'gedung olahraga': '🏟️',
-        'kolam renang': '🏊',
-        'fitness center': '💪'
-    };
-    return map[key] || '📍';
-}
-
-function getSubColor(sub) {
-    var key = (sub || '').toLowerCase().trim();
-    var map = {
-        'kantor kecamatan': '#1565C0',
-        'kantor kelurahan': '#1E88E5',
-        'kantor rw': '#42A5F5',
-        'kantor rt': '#90CAF9',
-        'sd': '#2E7D32',
-        'smp': '#388E3C',
-        'sma': '#43A047',
-        'smk': '#66BB6A',
-        'puskesmas': '#C62828',
-        'posyandu': '#EF5350',
-        'masjid': '#6A1B9A',
-        'musholla': '#8E24AA',
-        'gereja': '#AB47BC'
-    };
-    return map[key] || '#757575';
-}
-
-// ============================================================
-// FUNGSI: KONVERSI LINK GOOGLE DRIVE KE THUMBNAIL
-// ============================================================
-
-function getGoogleDriveImageUrl(url) {
-    if (!url || url === '') return null;
-    
-    if (url.indexOf('drive.google.com') !== -1) {
-        var fileId = null;
-        var match1 = url.match(/\/file\/d\/([^\/]+)\//);
-        if (match1) fileId = match1[1];
-        var match2 = url.match(/[?&]id=([^&]+)/);
-        if (match2 && !fileId) fileId = match2[1];
-        if (fileId) {
-            return 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w1600';
-        }
-    }
-    return url;
-}
-
-// ============================================================
-// VARIABEL GLOBAL
-// ============================================================
-
-var map, kmlLayer, markerLayers = {}, allData = [];
-
-// ============================================================
-// INISIALISASI MAP
-// ============================================================
-
-function initMap() {
-    map = L.map('map', {
-        center: [0.5389, 101.4466],
-        zoom: 14,
-        zoomControl: true
-    });
-
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 19,
-        attribution: '© OpenStreetMap'
-    }).addTo(map);
-
-    L.control.zoom({ position: 'topright' }).addTo(map);
-    L.control.scale({ position: 'bottomleft', metric: true, imperial: false }).addTo(map);
-
-    // ============================================================
-    // SIDEBAR TOGGLE
-    // ============================================================
-    var sidebar = document.getElementById('sidebar');
-    var toggleBtn = document.getElementById('sidebarToggleBtn');
-    var isOpen = true;
-
-    function toggleSidebar() {
-        isOpen = !isOpen;
-        if (isOpen) {
-            sidebar.classList.remove('closed');
-            toggleBtn.classList.remove('closed');
-            toggleBtn.innerHTML = '<span class="icon-only">«</span>';
-            toggleBtn.title = 'Tutup Sidebar';
-        } else {
-            sidebar.classList.add('closed');
-            toggleBtn.classList.add('closed');
-            toggleBtn.innerHTML = '<span class="icon-only">»</span>';
-            toggleBtn.title = 'Buka Sidebar';
-        }
-    }
-
-    toggleBtn.addEventListener('click', toggleSidebar);
-
-    // Hamburger menu toggle (mobile)
-    document.getElementById('sidebarToggle').addEventListener('click', function() {
-        sidebar.classList.toggle('open');
-        var isOpenNow = sidebar.classList.contains('open');
-        if (isOpenNow) {
-            sidebar.classList.remove('closed');
-            toggleBtn.classList.remove('closed');
-            toggleBtn.innerHTML = '<span class="icon-only">«</span>';
-            toggleBtn.title = 'Tutup Sidebar';
-        } else {
-            sidebar.classList.add('closed');
-            toggleBtn.classList.add('closed');
-            toggleBtn.innerHTML = '<span class="icon-only">»</span>';
-            toggleBtn.title = 'Buka Sidebar';
-        }
-    });
-
-    document.addEventListener('click', function(e) {
-        var sidebar = document.getElementById('sidebar');
-        var toggle = document.getElementById('sidebarToggle');
-        if (window.innerWidth <= 768) {
-            if (!sidebar.contains(e.target) && !toggle.contains(e.target) && !toggleBtn.contains(e.target)) {
-                sidebar.classList.remove('open');
-                sidebar.classList.add('closed');
-                toggleBtn.classList.add('closed');
-                toggleBtn.innerHTML = '<span class="icon-only">»</span>';
-                toggleBtn.title = 'Buka Sidebar';
-                isOpen = false;
-            }
-        }
-    });
-
-    loadKML();
-    loadData();
-}
-
-// ============================================================
-// LOAD KML
-// ============================================================
-
-function loadKML() {
-    document.getElementById('loadingProgress').textContent = 'Memuat data KML administrasi...';
-    
-    fetch(KML_URL)
-        .then(function(response) {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.text();
-        })
-        .then(function(kmlText) {
-            var parser = new DOMParser();
-            var kmlDoc = parser.parseFromString(kmlText, 'text/xml');
-            
-            var parseError = kmlDoc.getElementsByTagName('parsererror');
-            if (parseError.length > 0) {
-                throw new Error('Error parsing KML');
-            }
-            
-            kmlLayer = omnivore.kml.parse(kmlDoc);
-            
-            if (kmlLayer) {
-                kmlLayer.eachLayer(function(layer) {
-                    if (layer instanceof L.Polygon || layer instanceof L.MultiPolygon) {
-                        layer.setStyle({
-                            color: '#1976d2',
-                            weight: 2,
-                            opacity: 0.8,
-                            fillColor: '#1976d2',
-                            fillOpacity: 0.1
-                        });
-                        
-                        var name = 'Wilayah';
-                        if (layer.feature && layer.feature.properties) {
-                            if (layer.feature.properties.name) name = layer.feature.properties.name;
-                            else if (layer.feature.properties.Nama) name = layer.feature.properties.Nama;
-                        }
-                        layer.bindPopup('<div style="font-weight:600;color:#1a237e;font-size:13px;">🏛️ ' + name + '</div><div style="font-size:11px;color:#888;">Wilayah Administrasi Kecamatan Senapelan</div>');
-                    }
-                });
-                
-                kmlLayer.addTo(map);
-                document.getElementById('loadingProgress').textContent = '✅ KML dimuat';
-            }
-        })
-        .catch(function(error) {
-            console.error('Error loading KML:', error);
-            document.getElementById('loadingProgress').textContent = '⚠️ KML: ' + error.message;
-        });
-}
-
-// ============================================================
-// LOAD DATA DARI GOOGLE SHEETS
-// ============================================================
-
-function loadData() {
-    document.getElementById('loadingProgress').textContent = 'Mengambil data dari Google Sheets...';
-    document.getElementById('loadingError').textContent = '';
-    
-    fetch(API_URL + '?action=all&t=' + Date.now())
-        .then(function(response) {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.json();
-        })
-        .then(function(data) {
-            console.log('📥 Data dari API:', data);
-            
-            if (data.error) throw new Error(data.error);
-            if (!data.data || data.data.length === 0) {
-                throw new Error('Tidak ada data di Google Sheets. Silakan isi data terlebih dahulu.');
-            }
-            
-            allData = data.data;
-            
-            document.getElementById('loadingProgress').textContent = '✅ ' + allData.length + ' data dimuat';
-            
-            // Buat stats tambahan
-            createAdditionalStats();
-            
-            updateStats(allData);
-            buildLayerControls(allData);
-            renderMarkers(allData);
-            updateLegend(allData);
-            
-            document.getElementById('totalDataBadge').innerHTML = '<i class="fas fa-database"></i> ' + allData.length + ' Data';
-            document.getElementById('lastUpdate').innerHTML = '<i class="far fa-clock"></i> ' + new Date().toLocaleString('id-ID');
-            
-            setTimeout(function() {
-                document.getElementById('loadingOverlay').classList.add('hidden');
-            }, 500);
-        })
-        .catch(function(error) {
-            console.error('❌ Error load data:', error);
-            document.getElementById('loadingError').textContent = '❌ ' + error.message;
-            document.getElementById('loadingProgress').textContent = '⚠️ Gagal memuat data';
-            
-            if (error.message.includes('HTTP 404')) {
-                document.getElementById('loadingError').textContent = '❌ API URL tidak ditemukan. Periksa URL Apps Script Anda.';
-            } else if (error.message.includes('HTTP 403')) {
-                document.getElementById('loadingError').textContent = '❌ Akses ditolak. Bagikan Google Sheets ke publik.';
-            }
-            
-            setTimeout(function() {
-                document.getElementById('loadingOverlay').classList.add('hidden');
-            }, 3000);
-        });
-}
-
-// ============================================================
-// BUAT STATS TAMBAHAN (6 KATEGORI)
-// ============================================================
-
-function createAdditionalStats() {
-    var statsBar = document.getElementById('statsBar');
-    var tambahan = [
-        { id: 'statEKONOMI', label: 'Ekonomi', warna: '#FF9800' },
-        { id: 'statINFRASTRUKTUR', label: 'Infrastruktur', warna: '#607D8B' },
-        { id: 'statKEAMANAN', label: 'Keamanan', warna: '#D32F2F' },
-        { id: 'statKEBENCANAAN', label: 'Kebencanaan', warna: '#FF5722' },
-        { id: 'statPARIWISATA', label: 'Pariwisata', warna: '#00BCD4' },
-        { id: 'statOLAHRAGA', label: 'Olahraga', warna: '#8BC34A' }
-    ];
-    
-    tambahan.forEach(function(item) {
-        var existingEl = document.getElementById(item.id);
-        if (!existingEl) {
-            var div = document.createElement('div');
-            div.className = 'stats-item';
-            div.id = item.id;
-            div.style.borderLeft = '3px solid ' + item.warna;
-            div.innerHTML = '<div class="number" id="' + item.id + '_num">0</div><div class="label">' + item.label + '</div>';
-            statsBar.appendChild(div);
-        }
-    });
-}
-
-// ============================================================
-// UPDATE STATISTIK - SEMUA 10 KATEGORI + TOTAL KASUS
-// ============================================================
-
-function updateStats(data) {
-    var stats = {
-        total: data.length,
-        totalKasus: 0,
-        'PEMERINTAHAN': 0,
-        'PENDIDIKAN': 0,
-        'KESEHATAN': 0,
-        'TEMPAT IBADAH': 0,
-        'EKONOMI': 0,
-        'INFRASTRUKTUR': 0,
-        'KEAMANAN': 0,
-        'KEBENCANAAN': 0,
-        'PARIWISATA': 0,
-        'OLAHRAGA': 0
-    };
-    
-    data.forEach(function(item) {
-        var kat = (item.kategori || '').toUpperCase();
-        if (stats[kat] !== undefined) {
-            stats[kat]++;
-        }
-        var daftarKasus = item.daftar_kasus || '';
-        if (daftarKasus && daftarKasus.trim() !== '') {
-            var list = daftarKasus.split(';').map(function(k) { return k.trim(); }).filter(function(k) { return k !== ''; });
-            stats.totalKasus += list.length;
-        }
-    });
-    
-    document.getElementById('statTotal').textContent = stats.total;
-    document.getElementById('statPEMERINTAHAN').textContent = stats['PEMERINTAHAN'];
-    document.getElementById('statPENDIDIKAN').textContent = stats['PENDIDIKAN'];
-    document.getElementById('statKESEHATAN').textContent = stats['KESEHATAN'];
-    document.getElementById('statIBADAH').textContent = stats['TEMPAT IBADAH'];
-    document.getElementById('layerTotalCount').textContent = stats.total + ' (🔥 ' + stats.totalKasus + ' kasus)';
-    
-    var tambahan = ['EKONOMI', 'INFRASTRUKTUR', 'KEAMANAN', 'KEBENCANAAN', 'PARIWISATA', 'OLAHRAGA'];
-    tambahan.forEach(function(kat) {
-        var el = document.getElementById('stat' + kat + '_num');
-        if (el) {
-            el.textContent = stats[kat] || 0;
-        }
-    });
-}
-
-// ============================================================
-// BUILD LAYER CONTROLS
-// ============================================================
-
-function buildLayerControls(data) {
-    var container = document.getElementById('layerControls');
-    container.innerHTML = '';
-    
-    var groups = {};
-    data.forEach(function(item) {
-        var kat = (item.kategori || 'Lainnya').toUpperCase();
-        if (!groups[kat]) groups[kat] = [];
-        groups[kat].push(item);
-    });
-    
-    var order = ['PEMERINTAHAN', 'PENDIDIKAN', 'KESEHATAN', 'TEMPAT IBADAH', 'EKONOMI', 'INFRASTRUKTUR', 'KEAMANAN', 'KEBENCANAAN', 'PARIWISATA', 'OLAHRAGA'];
-    
-    var sortedKeys = Object.keys(groups).sort(function(a, b) {
-        var idxA = order.indexOf(a), idxB = order.indexOf(b);
-        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
-        if (idxA === -1) return 1;
-        if (idxB === -1) return -1;
-        return idxA - idxB;
-    });
-    
-    sortedKeys.forEach(function(kat) {
-        var items = groups[kat];
-        var color = KATEGORI_WARNA[kat] || '#757575';
-        var icon = KATEGORI_IKON[kat] || '📌';
-        
-        var groupDiv = document.createElement('div');
-        groupDiv.className = 'layer-group';
-        
-        var header = document.createElement('div');
-        header.className = 'layer-group-header';
-        header.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span class="color-dot" style="background:' + color + ';"></span><span>' + icon + ' ' + kat + '</span><span class="count-badge">' + items.length + '</span></div><span class="toggle-icon">▼</span>';
-        header.addEventListener('click', function() {
-            var body = this.nextElementSibling;
-            body.classList.toggle('hidden');
-            var icon = this.querySelector('.toggle-icon');
-            icon.classList.toggle('collapsed');
-        });
-        groupDiv.appendChild(header);
-        
-        var body = document.createElement('div');
-        body.className = 'layer-group-body';
-        
-        var allItem = document.createElement('div');
-        allItem.className = 'layer-item active';
-        allItem.style.borderLeftColor = color;
-        allItem.innerHTML = '<input type="checkbox" checked data-group="' + kat + '" data-type="all" /><span style="font-weight:500;font-size:12px;">Semua ' + kat + '</span>';
-        allItem.querySelector('input').addEventListener('change', function() {
-            var checked = this.checked;
-            var group = this.dataset.group;
-            body.querySelectorAll('input[data-group="' + group + '"][data-type="sub"]').forEach(function(cb) {
-                cb.checked = checked;
-                cb.dispatchEvent(new Event('change'));
-            });
-        });
-        body.appendChild(allItem);
-        
-        var subGroups = {};
-        items.forEach(function(item) {
-            var sub = (item.sub_kategori || 'Lainnya');
-            if (!subGroups[sub]) subGroups[sub] = [];
-            subGroups[sub].push(item);
-        });
-        
-        var subOrder = ['Kantor Kecamatan', 'Kantor Kelurahan', 'Kantor RW', 'Kantor RT', 'SD', 'SMP', 'SMA', 'SMK', 'Puskesmas', 'Posyandu', 'Masjid', 'Musholla', 'Gereja'];
-        var sortedSub = Object.keys(subGroups).sort(function(a, b) {
-            var idxA = subOrder.indexOf(a), idxB = subOrder.indexOf(b);
-            if (idxA === -1 && idxB === -1) return a.localeCompare(b);
-            if (idxA === -1) return 1;
-            if (idxB === -1) return -1;
-            return idxA - idxB;
-        });
-        
-        sortedSub.forEach(function(sub) {
-            var subItems = subGroups[sub];
-            var subColor = getSubColor(sub);
-            var subIcon = getSubIcon(sub);
-            
-            var itemDiv = document.createElement('div');
-            itemDiv.className = 'layer-item active';
-            itemDiv.style.borderLeftColor = subColor;
-            itemDiv.innerHTML = '<input type="checkbox" checked data-group="' + kat + '" data-type="sub" data-sub="' + sub + '" /><span class="sub-dot" style="background:' + subColor + ';"></span><span class="item-label">' + subIcon + ' ' + sub + '</span><span class="item-count">' + subItems.length + '</span>';
-            
-            var checkbox = itemDiv.querySelector('input');
-            checkbox.addEventListener('change', function() {
-                toggleSubLayer(this.dataset.group, this.dataset.sub, this.checked);
-            });
-            
-            body.appendChild(itemDiv);
-        });
-        
-        groupDiv.appendChild(body);
-        container.appendChild(groupDiv);
-    });
-}
-
-// ============================================================
-// RENDER MARKERS
-// ============================================================
-
-function renderMarkers(data) {
-    Object.keys(markerLayers).forEach(function(key) {
-        if (markerLayers[key]) map.removeLayer(markerLayers[key]);
-    });
-    markerLayers = {};
-    
-    var grouped = {};
-    data.forEach(function(item) {
-        var kat = (item.kategori || 'Lainnya').toUpperCase();
-        var sub = (item.sub_kategori || 'Lainnya');
-        var key = kat + '|' + sub;
-        if (!grouped[key]) grouped[key] = [];
-        grouped[key].push(item);
-    });
-    
-    Object.keys(grouped).forEach(function(key) {
-        var parts = key.split('|');
-        var kat = parts[0], sub = parts[1];
-        var items = grouped[key];
-        var color = getSubColor(sub) || KATEGORI_WARNA[kat] || '#757575';
-        var icon = getSubIcon(sub);
-        
-        var layerGroup = L.layerGroup();
-        
-        items.forEach(function(item) {
-            var lat = parseFloat(item.latitude);
-            var lng = parseFloat(item.longitude);
-            if (isNaN(lat) || isNaN(lng)) return;
-            
-            var marker = L.marker([lat, lng], {
-                icon: createCustomIcon(color, icon, item)
-            });
-            
-            marker.bindPopup(createPopupContent(item), { maxWidth: 350, className: 'custom-popup' });
-            layerGroup.addLayer(marker);
-        });
-        
-        markerLayers[key] = layerGroup;
-        layerGroup.addTo(map);
-    });
-}
-
-// ============================================================
-// CREATE CUSTOM ICON
-// ============================================================
-
-function createCustomIcon(color, icon, item) {
-    var size = 30;
-    var daftarKasus = item.daftar_kasus || '';
-    var kasusList = [];
-    if (daftarKasus && daftarKasus.trim() !== '') {
-        kasusList = daftarKasus.split(';').map(function(k) { return k.trim(); }).filter(function(k) { return k !== ''; });
-    }
-    var jumlah = kasusList.length;
-    var hasKasus = jumlah > 0;
-    var markerColor = hasKasus ? '#D32F2F' : color;
-    var displayText = hasKasus ? jumlah : icon;
-    var fontSize = hasKasus ? (jumlah > 99 ? 10 : 12) : 12;
-    
-    var html = '<div style="' +
-        'width:' + size + 'px;' +
-        'height:' + size + 'px;' +
-        'background:' + markerColor + ';' +
-        'border-radius:50%;' +
-        'display:flex;' +
-        'align-items:center;' +
-        'justify-content:center;' +
-        'color:white;' +
-        'font-size:' + fontSize + 'px;' +
-        'font-weight:bold;' +
-        'border:2px solid white;' +
-        'box-shadow:0 2px 8px rgba(0,0,0,0.3);' +
-        (hasKasus ? 'animation:pulse-marker 1.5s infinite;' : '') +
-        'transform:scale(' + (hasKasus ? 1.15 : 1) + ');' +
-    '">' + displayText + '</div>';
-    
-    if (hasKasus) {
-        html += '<style>' +
-            '@keyframes pulse-marker {' +
-                '0%, 100% { box-shadow: 0 0 0 0 rgba(211, 47, 47, 0.7); }' +
-                '50% { box-shadow: 0 0 0 15px rgba(211, 47, 47, 0); }' +
-            '}' +
-        '</style>';
-    }
-    
-    return L.divIcon({
-        html: html,
-        className: 'custom-marker',
-        iconSize: [size, size],
-        iconAnchor: [size/2, size]
-    });
-}
-
-// ============================================================
-// CREATE POPUP CONTENT
-// ============================================================
-
-function createPopupContent(item) {
-    var kategori = item.kategori || 'Lainnya';
-    var sub = item.sub_kategori || 'Lainnya';
-    var color = KATEGORI_WARNA[kategori] || '#757575';
-    var icon = getSubIcon(sub);
-    var foto = item.foto_url || '';
-    var nama = item.nama || 'Lokasi';
-    var deskripsi = item.deskripsi || 'Tidak ada deskripsi';
-    var alamat = item.alamat || '';
-    var daftarKasus = item.daftar_kasus || '';
-    var status = item.status || '-';
-    var jenis = item.jenis || '';
-    var keterangan = item.keterangan || '';
-    var rw = item.rw || '';
-    var rt = item.rt || '';
-    
-    var kasusList = [];
-    if (daftarKasus && daftarKasus.trim() !== '') {
-        kasusList = daftarKasus.split(';').map(function(k) { return k.trim(); }).filter(function(k) { return k !== ''; });
-    }
-    var jumlah = kasusList.length;
-    
-    var fotoUrl = getGoogleDriveImageUrl(foto);
-    var photoHtml = '';
-    if (fotoUrl) {
-        photoHtml = '<img src="' + fotoUrl + '" class="popup-photo" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'block\'" /><div class="popup-photo-placeholder" style="display:none;">📷 Gagal memuat foto</div>';
-    } else {
-        photoHtml = '<div class="popup-photo-placeholder">📷 Tidak ada foto</div>';
-    }
-    
-    var kasusStatus = '';
-    if (jumlah > 0) {
-        kasusStatus = '<div style="background:#FFEBEE;border-left:4px solid #D32F2F;padding:6px 10px;margin:5px 0;border-radius:4px;font-size:12px;font-weight:600;color:#D32F2F;">🔴 ' + jumlah + ' Kasus Terjadi di Lokasi Ini!</div>';
-    } else {
-        kasusStatus = '<div style="background:#E8F5E9;border-left:4px solid #4CAF50;padding:6px 10px;margin:5px 0;border-radius:4px;font-size:12px;font-weight:600;color:#2E7D32;">✅ Tidak Ada Kasus</div>';
-    }
-    
-    var kasusHtml = '';
-    if (kasusList.length > 0) {
-        kasusHtml = '<div class="kasus-list" style="background:#FFF3E0;border-radius:4px;padding:8px 10px;margin:5px 0;font-size:11px;"><strong style="color:#E65100;">📋 Daftar Kasus (' + kasusList.length + ')</strong><ul style="margin:3px 0 0 15px;padding:0;list-style:disc;">' + 
-            kasusList.map(function(k) { return '<li style="margin:2px 0;color:#555;">' + k + '</li>'; }).join('') + 
-        '</ul></div>';
-    }
-    
-    var infoTambahan = '';
-    if (rw) infoTambahan += '<span><i class="fas fa-layer-group"></i> RW ' + rw + '</span>';
-    if (rt) infoTambahan += '<span><i class="fas fa-home"></i> RT ' + rt + '</span>';
-    if (jenis) infoTambahan += '<span><i class="fas fa-tag"></i> ' + jenis + '</span>';
-    if (keterangan) infoTambahan += '<span><i class="fas fa-info-circle"></i> ' + keterangan + '</span>';
-    
-    return '' +
-        '<div class="popup-title">' + icon + ' ' + nama + '</div>' +
-        '<span class="popup-category" style="background:' + color + ';">' + kategori + ' - ' + sub + '</span>' +
-        kasusStatus +
-        '<div class="popup-desc">' + deskripsi + '</div>' +
-        (alamat ? '<div style="font-size:11px;color:#888;margin:3px 0;">📍 ' + alamat + '</div>' : '') +
-        photoHtml +
-        kasusHtml +
-        '<div class="popup-meta">' +
-            '<span><i class="fas fa-chart-bar"></i> ' + jumlah + ' kasus</span>' +
-            '<span><i class="fas fa-circle" style="color:' + (status === 'Aktif' ? '#4caf50' : status === 'Dalam Perbaikan' ? '#ff9800' : '#9e9e9e') + ';"></i> ' + status + '</span>' +
-            infoTambahan +
-        '</div>';
-}
-
-// ============================================================
-// TOGGLE SUB LAYER
-// ============================================================
-
-function toggleSubLayer(kategori, subKategori, visible) {
-    var key = kategori + '|' + subKategori;
-    if (markerLayers[key]) {
-        if (visible) markerLayers[key].addTo(map);
-        else map.removeLayer(markerLayers[key]);
-    }
-}
-
-// ============================================================
-// UPDATE LEGEND
-// ============================================================
-
-function updateLegend(data) {
-    var container = document.getElementById('legendContainer');
-    container.innerHTML = '';
-    
-    var subs = {};
-    data.forEach(function(item) {
-        var sub = item.sub_kategori || 'Lainnya';
-        if (!subs[sub]) subs[sub] = true;
-    });
-    
-    var subOrder = ['Kantor Kecamatan', 'Kantor Kelurahan', 'Kantor RW', 'Kantor RT', 'SD', 'SMP', 'SMA', 'SMK', 'Puskesmas', 'Posyandu', 'Masjid', 'Musholla', 'Gereja'];
-    var sorted = Object.keys(subs).sort(function(a, b) {
-        var idxA = subOrder.indexOf(a), idxB = subOrder.indexOf(b);
-        if (idxA === -1 && idxB === -1) return a.localeCompare(b);
-        if (idxA === -1) return 1;
-        if (idxB === -1) return -1;
-        return idxA - idxB;
-    });
-    
-    sorted.forEach(function(sub) {
-        var color = getSubColor(sub) || '#757575';
-        var icon = getSubIcon(sub);
-        var div = document.createElement('div');
-        div.className = 'legend-item';
-        div.innerHTML = '<span class="legend-color" style="background:' + color + ';"></span>' + icon + ' ' + sub;
-        container.appendChild(div);
-    });
-}
-
-// ============================================================
-// START
-// ============================================================
-
-document.addEventListener('DOMContentLoaded', initMap);
-</script>
-
-</body>
-</html>
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document id="1ZOvjcsLkDu7Fn700Fh8zFXS15JXybswd">
+	<name>PETA ADMINISTRASI KECAMATAN SENAPELAN</name>
+	<gx:CascadingStyle kml:id="__managed_style_0652302024410F8ABF91_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402dc0fb</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_0BDB0075C94110D35C73_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_0BDB0075C94110D35C73_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LabelStyle>
+			</LabelStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+			<BalloonStyle>
+			</BalloonStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_07027E4D4A410F58F0E4_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffbc47ab</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40bc47ab</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_07027E4D4A410F58F0E4_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffbc47ab</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40bc47ab</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_122408B144410F58F0E8_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff9aa626</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>409aa626</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_081FF1C6E3410F58F0E8_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffd27619</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40d27619</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_122408B144410F58F0E8_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff9aa626</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>409aa626</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_081FF1C6E3410F58F0E8_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffd27619</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40d27619</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_081FF1C6E3410F58F0E8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_081FF1C6E3410F58F0E8_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_081FF1C6E3410F58F0E8_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_122408B144410F58F0E8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_122408B144410F58F0E8_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_122408B144410F58F0E8_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_23E385D268410F58F0E1_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>fff5a542</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40f5a542</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_15B8EC3DFD410F58F0E3_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff6abb66</color>
+				<width>12</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406abb66</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_03F42CAAEC410F99D0A6_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffa21f7b</color>
+				<width>12</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40a21f7b</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1D5A16CB66410F58F0E1_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff3c8e38</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>403c8e38</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_03F42CAAEC410F99D0A6_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffa21f7b</color>
+				<width>8</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40a21f7b</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_03F42CAAEC410F99D0A6">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_03F42CAAEC410F99D0A6_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_03F42CAAEC410F99D0A6_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_0CD6A7F43C410F99901C_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff6b7900</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406b7900</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_0CD6A7F43C410F99901C_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff6b7900</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406b7900</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0CD6A7F43C410F99901C">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_0CD6A7F43C410F99901C_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_0CD6A7F43C410F99901C_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_03EC46FAAE410F58F0E1_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffd27619</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40d27619</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_15B8EC3DFD410F58F0E3_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff6abb66</color>
+				<width>8</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406abb66</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_119F98A320410F58F0E0_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff007cf5</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40007cf5</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_119F98A320410F58F0E0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_119F98A320410F58F0E0_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_119F98A320410F58F0E0_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_006A4446E9410F7BCDCC">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_006A4446E9410F7BCDCC_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_006A4446E9410F7BCDCC_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_03EC46FAAE410F58F0E1_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffd27619</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40d27619</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_2957D2CF45410F58F0E0_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff58eeff</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>4058eeff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_03EC46FAAE410F58F0E1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_03EC46FAAE410F58F0E1_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_03EC46FAAE410F58F0E1_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_299907D641410F58F0E8">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_299907D641410F58F0E8_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_299907D641410F58F0E8_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_006A4446E9410F7BCDCC_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff6abb66</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406abb66</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_299907D641410F58F0E8_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffbc47ab</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40a21f7b</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_1D5A16CB66410F58F0E1_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff3c8e38</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>403c8e38</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_299907D641410F58F0E8_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffbc47ab</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40a21f7b</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_1D5A16CB66410F58F0E1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_1D5A16CB66410F58F0E1_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_1D5A16CB66410F58F0E1_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_2957D2CF45410F58F0E0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_2957D2CF45410F58F0E0_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2957D2CF45410F58F0E0_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_17A401BD83410F58F0E4">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_17A401BD83410F58F0E4_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_17A401BD83410F58F0E4_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_17A401BD83410F58F0E4_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff26a7ff</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>4026a7ff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_17A401BD83410F58F0E4_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff26a7ff</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>4026a7ff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_0C9F364A2A410F58F0E0_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffeeeeee</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_2F50D08C80410F58F0E3_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffbc47ab</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40bc47ab</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_2F50D08C80410F58F0E3_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffbc47ab</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40bc47ab</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0C9F364A2A410F58F0E0">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_0C9F364A2A410F58F0E0_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_0C9F364A2A410F58F0E0_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_0C9F364A2A410F58F0E0_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffeeeeee</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_23E385D268410F58F0E1_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>fff5a542</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40f5a542</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_24351ED98E410F58F0E4">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_24351ED98E410F58F0E4_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_24351ED98E410F58F0E4_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_07027E4D4A410F58F0E4">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_07027E4D4A410F58F0E4_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_07027E4D4A410F58F0E4_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_2957D2CF45410F58F0E0_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff58eeff</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>4058eeff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_01F4089184410F58F0E6_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>12</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_00631C312D410F58F0DE_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>6</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_00631C312D410F58F0DE">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_00631C312D410F58F0DE_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_00631C312D410F58F0DE_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_24351ED98E410F58F0E4_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffa21f7b</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40a21f7b</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_15B8EC3DFD410F58F0E3">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_15B8EC3DFD410F58F0E3_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_15B8EC3DFD410F58F0E3_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_2F50D08C80410F58F0E3">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_2F50D08C80410F58F0E3_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_2F50D08C80410F58F0E3_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_01F4089184410F58F0E6_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff2f2fd3</color>
+				<width>8</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402f2fd3</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_01F4089184410F58F0E6">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_01F4089184410F58F0E6_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_01F4089184410F58F0E6_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_0652302024410F8ABF91_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>402dc0fb</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0652302024410F8ABF91">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_0652302024410F8ABF91_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_0652302024410F8ABF91_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_00631C312D410F58F0DE_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff2dc0fb</color>
+				<width>4</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40ffffff</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<StyleMap id="__managed_style_0BDB0075C94110D35C73">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_0BDB0075C94110D35C73_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_0BDB0075C94110D35C73_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<StyleMap id="__managed_style_23E385D268410F58F0E1">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#__managed_style_23E385D268410F58F0E1_normal</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#__managed_style_23E385D268410F58F0E1_highlight</styleUrl>
+		</Pair>
+	</StyleMap>
+	<gx:CascadingStyle kml:id="__managed_style_119F98A320410F58F0E0_highlight">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<scale>1.2</scale>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff007cf5</color>
+				<width>3</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40007cf5</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_006A4446E9410F7BCDCC_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ff6abb66</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>406abb66</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<gx:CascadingStyle kml:id="__managed_style_24351ED98E410F58F0E4_normal">
+		<styleUrl>https://earth.google.com/balloon_components/base/1.1.0.0/card_template.kml#main</styleUrl>
+		<Style>
+			<IconStyle>
+				<Icon>
+					<href>https://earth.google.com/earth/document/icon?color=1976d2&amp;id=2000&amp;scale=4</href>
+				</Icon>
+				<hotSpot x="64" y="128" xunits="pixels" yunits="insetPixels"/>
+			</IconStyle>
+			<LineStyle>
+				<color>ffa21f7b</color>
+				<width>2</width>
+			</LineStyle>
+			<PolyStyle>
+				<color>40a21f7b</color>
+			</PolyStyle>
+		</Style>
+	</gx:CascadingStyle>
+	<Folder id="041AC9E8BC4101D2B0D8">
+		<name>KONTEN PETA</name>
+		<open>1</open>
+		<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+		<Folder id="0EE84365634101C808AE">
+			<name>00 BATAS WILAYAH</name>
+			<open>1</open>
+			<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+			<Folder id="02412D75084101B99C58">
+				<name>KECAMATAN</name>
+				<open>1</open>
+				<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+				<Placemark id="09EAC43EFF410184A9C0">
+					<name>BATAS WILAYAH KECAMATAN SENAPELAN</name>
+					<LookAt>
+						<longitude>101.4466451098056</longitude>
+						<latitude>0.5389549986478643</latitude>
+						<altitude>0.1014672252219939</altitude>
+						<heading>9.264602702785171</heading>
+						<tilt>1.873255027263052</tilt>
+						<gx:fovy>35</gx:fovy>
+						<range>569.4053814170184</range>
+						<altitudeMode>absolute</altitudeMode>
+					</LookAt>
+					<styleUrl>#__managed_style_01F4089184410F58F0E6</styleUrl>
+					<Polygon>
+						<outerBoundaryIs>
+							<LinearRing>
+								<coordinates>
+									101.4465089120502,0.5391591460145522,0 101.4459276266629,0.5393599973676481,0 101.4445525587808,0.5400369308483435,0 101.4430519727422,0.5406461871551443,0 101.4417672718624,0.5408426683445903,0 101.4398423604798,0.541008279537986,0 101.4382651075711,0.54119610349214,0 101.4365292795356,0.5414802328764042,0 101.4352300355992,0.5419127815337982,0 101.433872879859,0.5424736218668511,0 101.4334905642096,0.5428173238610141,0 101.4331848275715,0.5432058579985461,0 101.4325506226633,0.5438839777082449,0 101.4319954937113,0.5443837599020054,0 101.4312083142709,0.5447977719084545,0 101.4305815299876,0.5449807987470566,0 101.4295832465065,0.5451064092195904,0 101.4295389653271,0.5447458588301325,0 101.4295106355284,0.5446430387003783,0 101.4293726598291,0.5443599347363832,0 101.4291871998764,0.5441641057759539,0 101.429034708384,0.5440302542639086,0 101.4287680355081,0.5434823110664918,0 101.4285853459545,0.5430667632680053,0 101.4283755251907,0.5427012231764579,0 101.4282059008592,0.5423616856306211,0 101.4281582177686,0.5420944448750828,0 101.428158781403,0.5419443135701006,0 101.4282165380357,0.5417779064987307,0 101.4282088247214,0.5415630584685762,0 101.4282647071597,0.5411554234909489,0 101.4282860567885,0.5408214728224179,0 101.4282783808916,0.5406034746109025,0 101.4282236558987,0.5403924671435215,0 101.4281231164275,0.5401333202257584,0 101.4280409063974,0.5397941738746946,0 101.4279755700082,0.5392799634817912,0 101.4279498005826,0.53910062884631,0 101.4278986438541,0.5386586612085127,0 101.4278067527157,0.5381004535040057,0 101.4277960977319,0.5375735689746731,0 101.4277968253605,0.5367581646229697,0 101.4277667460543,0.5359901922211064,0 101.427743699426,0.5351488698195593,0 101.4277939769383,0.533526791235522,0 101.4277994118645,0.531885574673857,0 101.4277809919561,0.530602729938882,0 101.4278034743001,0.5298058266461056,0 101.427785110721,0.5282034574321256,0 101.4287248683352,0.5282043111141805,0 101.4295688974229,0.5282025514060341,0 101.4305076291278,0.5282172339689779,0 101.4310279177621,0.5282291980509984,0 101.4315487366188,0.5282406363194746,0 101.4319586902108,0.528243484102589,0 101.4322934987752,0.5282469898790101,0 101.4326247050618,0.5282449528107014,0 101.432877142538,0.5282339269388692,0 101.4331083369029,0.528210924542958,0 101.4331304112884,0.5281850989501932,0 101.4331301255429,0.5279441491813652,0 101.4338006114218,0.5279726002975412,0 101.4344361822156,0.5279864791324197,0 101.4344502890077,0.5284906558314553,0 101.4351950570979,0.5284918524706099,0 101.4358609929194,0.5284803746945196,0 101.4373918941172,0.5284510805574362,0 101.4396624895371,0.5284404149602103,0 101.440681536594,0.5284361512611148,0 101.4415116393446,0.5284032106599797,0 101.4420551755009,0.5283832830615908,0 101.442333067878,0.5283631974058747,0 101.4424533625059,0.5283526770747269,0 101.4424936359867,0.5283848908281178,0 101.4425147864136,0.5285973634446989,0 101.4425457197026,0.5289304885443445,0 101.4425933003233,0.5295797465658522,0 101.4426951241702,0.5307905815727608,0 101.4427410253391,0.5313981944926638,0 101.4427765779854,0.5318370027555034,0 101.4427976149341,0.53206681087634,0 101.4428137830239,0.5322100743566293,0 101.4428502387531,0.5322556430258385,0 101.4428965963045,0.5322788067973976,0 101.443056627058,0.5322780368541959,0 101.4432228489828,0.5322688826169134,0 101.4437723139393,0.5322604983335749,0 101.4448764824334,0.5322543267145986,0 101.4458522199937,0.532251643102686,0 101.4475693687049,0.5322333538475847,0 101.4476060932143,0.5391870982348773,0 101.4465089120502,0.5391591460145522,0 
+								</coordinates>
+							</LinearRing>
+						</outerBoundaryIs>
+					</Polygon>
+				</Placemark>
+			</Folder>
+			<Folder id="0DEAEB677A41018CC284">
+				<name>KELURAHAN</name>
+				<open>1</open>
+				<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+				<Folder id="08610360D24101CFBDB4">
+					<name>KAMPUNG BANDAR</name>
+					<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+					<Placemark id="038495972C4101A74617">
+						<name>KAMPUNG BANDAR</name>
+						<description><![CDATA[<div>Kelurahan Kampung Bandar<br></div>]]></description>
+						<LookAt>
+							<longitude>101.4428273641756</longitude>
+							<latitude>0.5359557219215612</latitude>
+							<altitude>5.668833762371966</altitude>
+							<heading>20.4197162506057</heading>
+							<tilt>3.746568258078549</tilt>
+							<gx:fovy>35</gx:fovy>
+							<range>96.48929641629366</range>
+							<altitudeMode>absolute</altitudeMode>
+						</LookAt>
+						<styleUrl>#__managed_style_24351ED98E410F58F0E4</styleUrl>
+						<Polygon>
+							<outerBoundaryIs>
+								<LinearRing>
+									<coordinates>
+										101.4431275195426,0.5359507940997108,0 101.4431564063065,0.5361620087167916,0 101.4432024999645,0.5365071934247688,0 101.443229964821,0.5366535956228214,0 101.4432037700818,0.536694982606005,0 101.4431598573421,0.5367076459015284,0 101.4431119058506,0.536727631675101,0 101.4430236363752,0.5367644795080384,0 101.4426357934855,0.5369437190489786,0 101.4424197452219,0.5370425283909548,0 101.4421917554495,0.5371456589822486,0 101.4424730161413,0.5377708146449991,0 101.4425408099973,0.5379913205615695,0 101.4426275287252,0.5383444867607726,0 101.4426602025349,0.5384667262842895,0 101.4427912204827,0.5389287534552173,0 101.442660140061,0.5389801813298575,0 101.4425500169652,0.5390258838363963,0 101.442416539499,0.5391155925700047,0 101.4425118580063,0.5393295237826439,0 101.4425606153242,0.5394180637936258,0 101.4426292246369,0.5395774987574192,0 101.4427107548795,0.5397599061237878,0 101.4427538553378,0.5398531093427518,0 101.4428482067296,0.5400215141427753,0 101.4430514200777,0.5406458899908938,0 101.4419930800064,0.5408090265231215,0 101.441770147686,0.5408430515553634,0 101.4407372026995,0.5409333344847345,0 101.4398391286176,0.5410098806206691,0 101.4387581639474,0.5411357209194837,0 101.4382657738482,0.541195818181513,0 101.4375805142104,0.5413086771953066,0 101.4371448834166,0.5413801454627629,0 101.4370646064971,0.540822761386422,0 101.4370066733919,0.5404400648026679,0 101.4369484091976,0.5400772671686511,0 101.4369193227977,0.5398773396055445,0 101.436850271435,0.5394706908487256,0 101.4367975460647,0.539103787259969,0 101.4367309718235,0.5386536901744079,0 101.4366615875617,0.538237265124289,0 101.4365776982732,0.5376814038963654,0 101.4364853731231,0.5370792564957456,0 101.4363626754356,0.5363452993640602,0 101.4362424735292,0.5355674657614937,0 101.4362188170511,0.5353858311978457,0 101.4362148125551,0.5352606154380323,0 101.4366935956944,0.535276972874858,0 101.4371434684807,0.5352844188231917,0 101.4377131302145,0.5352937046695515,0 101.4382581981219,0.5353013336898024,0 101.4386154221931,0.5353057731786061,0 101.4390459937631,0.5353158688318775,0 101.4396764646473,0.5353274962336022,0 101.4399287805125,0.5353331107102633,0 101.4403082920517,0.5353371597923395,0 101.4409302611732,0.5353431936207554,0 101.4415225921842,0.53534923817494,0 101.441696732743,0.5353503802810125,0 101.4418954686223,0.5353346044851229,0 101.4419528784571,0.5353502531533143,0 101.4421191516528,0.5355447511036854,0 101.4423075188666,0.535795112684272,0 101.4424534520581,0.5359132369944836,0 101.4425811234056,0.5359582185469549,0 101.442783669494,0.5359711156282984,0 101.4429708030449,0.5359606893548089,0 101.4431275195426,0.5359507940997108,0 
+									</coordinates>
+								</LinearRing>
+							</outerBoundaryIs>
+						</Polygon>
+					</Placemark>
+				</Folder>
+				<Folder id="0079232E534101D00DBB">
+					<name>KAMPUNG BARU</name>
+					<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+					<Placemark id="0F7E98DE044101B3642F">
+						<name>KAMPUNG BARU</name>
+						<description><![CDATA[<div>Kelurahan Kampung Baru<br></div>]]></description>
+						<LookAt>
+							<longitude>101.4279200103022</longitude>
+							<latitude>0.5352670189770045</latitude>
+							<altitude>6.798191724351305</altitude>
+							<heading>20.419622801652</heading>
+							<tilt>3.746606638138338</tilt>
+							<gx:fovy>35</gx:fovy>
+							<range>161.8096816999605</range>
+							<altitudeMode>absolute</altitudeMode>
+						</LookAt>
+						<styleUrl>#__managed_style_0C9F364A2A410F58F0E0</styleUrl>
+						<Polygon>
+							<outerBoundaryIs>
+								<LinearRing>
+									<coordinates>
+										101.4277439224139,0.5351446539504555,0 101.427899356453,0.5351445500437757,0 101.428164605563,0.5351467799694147,0 101.4285261892264,0.5351466781686864,0 101.4290263344663,0.5351504576846903,0 101.4295869158918,0.5351592866601135,0 101.4299759099207,0.5351628737117375,0 101.4305393848445,0.5351699882281845,0 101.4310517412336,0.5351775434672873,0 101.4316528005341,0.5351884461169593,0 101.4320182285118,0.5351934612894225,0 101.432489709221,0.5352015269371463,0 101.4328896402848,0.53520576871735,0 101.4334934660215,0.5352186612703124,0 101.4341558151967,0.5352325172395386,0 101.4346624117165,0.5352388367764139,0 101.435189049721,0.5352422250498206,0 101.4357146557283,0.535247005813446,0 101.436215724244,0.5352595764561878,0 101.4362185327479,0.5353831488246861,0 101.4362389239715,0.5355306647343783,0 101.4362802663134,0.5358062843914574,0 101.4363244669094,0.5361005960430221,0 101.4363752289419,0.5364246351817934,0 101.4364443748952,0.5368285032999144,0 101.4364969760396,0.5371502545363139,0 101.436556834304,0.5375457382619322,0 101.4366245075164,0.5379952164296218,0 101.4366908803411,0.538415882880137,0 101.4367811009866,0.538998494136644,0 101.4368343657583,0.5393555051168074,0 101.4369062378734,0.5397969924707785,0 101.4369734254805,0.5402355507958909,0 101.4370482096274,0.5407117087539705,0 101.4371112191967,0.5411461524888479,0 101.4371458193875,0.5413810768479521,0 101.436530672625,0.5414795138771172,0 101.4359481592954,0.5416746221821017,0 101.4352322818557,0.5419098202343622,0 101.4344240857351,0.5422469898386157,0 101.4338672392392,0.5424758342821776,0 101.4334915869074,0.5428163199497916,0 101.4331762038178,0.5432129931264538,0 101.4326227951347,0.5438056113778192,0 101.4325480294547,0.54388848266121,0 101.4323522044098,0.5440639146823477,0 101.4319979683124,0.5443834284256652,0 101.4312088657377,0.5447992466007762,0 101.4305803785565,0.5449817093888769,0 101.4295832384251,0.5451062669025202,0 101.4295426162937,0.5447649019950502,0 101.4295201351199,0.5446780418105389,0 101.4295100114543,0.5446425413253222,0 101.4293740948256,0.5443603795347017,0 101.429192047392,0.5441690388831011,0 101.4290355476741,0.5440320990074605,0 101.4288731702976,0.5436980862300316,0 101.4287650940108,0.5434778932882585,0 101.4286276774507,0.5431615836219371,0 101.4285849089493,0.5430642594926367,0 101.4283861052444,0.5427189097239673,0 101.4282045921787,0.542359224901745,0 101.4281569831011,0.5420934958731188,0 101.4281572589479,0.5419448000355492,0 101.4282076375181,0.541806227066245,0 101.4282159606033,0.5417748111914156,0 101.4282073340386,0.5415610383693455,0 101.4282614202421,0.5411893785744315,0 101.4282667045222,0.5411167358528162,0 101.428277029721,0.5409799700065254,0 101.4282847498409,0.5408188096466346,0 101.4282796596476,0.5406117318800294,0 101.4282234302376,0.540393734415502,0 101.4281238180619,0.5401339014800514,0 101.428040926642,0.5397930306813903,0 101.4279914445707,0.5393870716695188,0 101.4279078430505,0.538746724723308,0 101.4278073677075,0.5381014865874605,0 101.4277958333477,0.5375535440670864,0 101.4277974284581,0.5371399899072147,0 101.4277973822242,0.5368297356544399,0 101.4277890890696,0.5365710108090342,0 101.4277781879657,0.5362666812922706,0 101.4277612356867,0.5358032580374014,0 101.4277439224139,0.5351446539504555,0 
+									</coordinates>
+								</LinearRing>
+							</outerBoundaryIs>
+						</Polygon>
+					</Placemark>
+				</Folder>
+				<Folder id="046949E9FF4101D011DE">
+					<name>KAMPUNG DALAM</name>
+					<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+					<Placemark id="01F9D47F864101ADD16F">
+						<name>KMAPUNG DALAM</name>
+						<description><![CDATA[<div>Kelurahan Kampung Dalam<br></div>]]></description>
+						<LookAt>
+							<longitude>101.4425014566119</longitude>
+							<latitude>0.5391919686975984</latitude>
+							<altitude>4.443288016115227</altitude>
+							<heading>20.41970716070734</heading>
+							<tilt>3.746543825751864</tilt>
+							<gx:fovy>35</gx:fovy>
+							<range>54.91652298785085</range>
+							<altitudeMode>absolute</altitudeMode>
+						</LookAt>
+						<styleUrl>#__managed_style_17A401BD83410F58F0E4</styleUrl>
+						<Polygon>
+							<outerBoundaryIs>
+								<LinearRing>
+									<coordinates>
+										101.4475889805887,0.5360490879050466,0 101.4475911434406,0.5364338657748383,0 101.4475921962962,0.5367459909143727,0 101.4475950704934,0.5370689244860387,0 101.447596351232,0.537396334403711,0 101.4475979346633,0.5376692094367882,0 101.4475985473099,0.5379352471440887,0 101.4476004951116,0.5382550937882538,0 101.447602851134,0.538589735282729,0 101.447604065826,0.5388449242732978,0 101.4476061900516,0.5391877994335887,0 101.4473602736477,0.5391806056888749,0 101.4470449139607,0.5391733193851644,0 101.446511603577,0.5391590047744261,0 101.4464546127151,0.5391783513899839,0 101.445929200444,0.5393597915898427,0 101.4458243479199,0.5394105437910647,0 101.4454056175727,0.5396178192770783,0 101.4450783512572,0.5397773911848376,0 101.4445563226015,0.5400363213891676,0 101.4443151410653,0.5401342716096706,0 101.4439314624519,0.5402890576132726,0 101.4435497457283,0.5404440825784875,0 101.4430521783471,0.5406466465697503,0 101.4429580281941,0.5403574984487012,0 101.4428486924977,0.5400226517785289,0 101.4427537557413,0.5398527765303163,0 101.4426646502238,0.5396592903594798,0 101.4425635254307,0.5394231404407791,0 101.4425171676851,0.5393389850480216,0 101.4424164442981,0.5391163321367554,0 101.4425507953308,0.5390256985537688,0 101.4427915060434,0.5389300034724788,0 101.4427371720499,0.5387361114422722,0 101.4426630726684,0.5384777988841375,0 101.4426032833827,0.5382491253586887,0 101.4425426342846,0.5379988308156689,0 101.4424712011952,0.5377712272740693,0 101.4423868945683,0.537578714938411,0 101.4421918705993,0.537146002867949,0 101.4425152601054,0.5369996594442519,0 101.4428122477915,0.5368625853353711,0 101.4429283047782,0.536808463204999,0 101.4431599186891,0.5367087967556787,0 101.4432037427578,0.5366957336899344,0 101.4432301506584,0.536654108593333,0 101.4432010767464,0.5364962881467781,0 101.4431862841801,0.5363890925291056,0 101.4431277614017,0.5359519497822517,0 101.4434515962868,0.5359353162523443,0 101.4435759349078,0.535921832068222,0 101.4438078622779,0.5358947881876762,0 101.4440086222686,0.5358824882019719,0 101.4444231151326,0.5358969002427366,0 101.4447966213899,0.5359115935512742,0 101.4448579269296,0.5359285459351877,0 101.4451934903426,0.5359243270487528,0 101.4456472992305,0.5359228045582795,0 101.4459608323766,0.5359174331856671,0 101.4462336727371,0.5359141120912487,0 101.4465440998882,0.5359122994719581,0 101.4468666389962,0.5359102379072977,0 101.4472050979642,0.5359085411326557,0 101.4475880381993,0.5359065190580546,0 101.4475889805887,0.5360490879050466,0 
+									</coordinates>
+								</LinearRing>
+							</outerBoundaryIs>
+						</Polygon>
+					</Placemark>
+				</Folder>
+				<Folder id="0274AD27184101D01488">
+					<name>PADANG BULAN</name>
+					<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+					<Placemark id="09DDFFE65841019AC1B9">
+						<name>PADANG BULAN</name>
+						<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+						<LookAt>
+							<longitude>101.4278135071876</longitude>
+							<latitude>0.5319901196938855</latitude>
+							<altitude>7.936508026533973</altitude>
+							<heading>4.876577454189456</heading>
+							<tilt>0</tilt>
+							<gx:fovy>35</gx:fovy>
+							<range>73.86451177325398</range>
+							<altitudeMode>absolute</altitudeMode>
+						</LookAt>
+						<styleUrl>#__managed_style_2957D2CF45410F58F0E0</styleUrl>
+						<Polygon>
+							<outerBoundaryIs>
+								<LinearRing>
+									<coordinates>
+										101.4277998182805,0.5318831326695092,0 101.4277821406428,0.5305950227722444,0 101.4278047225213,0.5297782131947002,0 101.4277945162667,0.529033150981716,0 101.4277824576689,0.5281994096498159,0 101.4292507568724,0.5282010889363843,0 101.430148312147,0.5282113972538897,0 101.4313827602098,0.5282359233527749,0 101.4316227078855,0.5282414066512525,0 101.4323296407427,0.5282477494984518,0 101.4326337530982,0.5282465906670705,0 101.4328735472197,0.5282361466942176,0 101.4331041044248,0.5282115672810787,0 101.4331288925646,0.5281827686944098,0 101.4331315689724,0.5279456988317918,0 101.4338389054352,0.5279723488700951,0 101.4344355584543,0.5279867120522886,0 101.4344507507479,0.5284911675494155,0 101.4351942817126,0.5284917699279117,0 101.4355337091707,0.5284867139664534,0 101.4362930739644,0.5284729870135351,0 101.4370525621999,0.528457576627399,0 101.4376802427175,0.5284492007309655,0 101.4382382163737,0.5284484066337293,0 101.4388425201132,0.5284443586235539,0 101.4395772013947,0.5284409479841599,0 101.4404324890916,0.5284372287764859,0 101.4406776641262,0.5284367839136225,0 101.4413864768086,0.528407853571204,0 101.4419675927943,0.5283861662285987,0 101.4420568152383,0.5283828544041554,0 101.4424517113146,0.5283529263087464,0 101.4424932397777,0.5283841592605818,0 101.4425440395585,0.5289039787213125,0 101.4425786540821,0.5293752323485428,0 101.4426135262413,0.5298191800941947,0 101.44264944607,0.5302497896670092,0 101.4426786567794,0.5305969952221927,0 101.4427079820287,0.5309572230006188,0 101.442756679683,0.531589453969581,0 101.4427934371465,0.5320141986744873,0 101.4428139401001,0.5322086565712092,0 101.442484642998,0.5322353162481651,0 101.4422786994457,0.532244923366305,0 101.4420200631322,0.5322500562119026,0 101.4418670782569,0.5322649808440634,0 101.4411872143873,0.5322655425518603,0 101.4410797320855,0.5322685112115915,0 101.4410242131037,0.5322632520530514,0 101.4409930720047,0.5322404106119568,0 101.4409780336236,0.5322007577813916,0 101.4409466883204,0.5320638340406203,0 101.4404314165935,0.5320863653636019,0 101.4402081315597,0.532079992691704,0 101.4397971487343,0.5320981596321407,0 101.4395868228999,0.5321144455247286,0 101.4393928419655,0.5321274427338322,0 101.4391776834751,0.5321339889451958,0 101.4388063655328,0.5321456570372911,0 101.4383582430624,0.5321623488213196,0 101.4380525716962,0.5321722734812691,0 101.4375585984965,0.532192080428461,0 101.4371652405276,0.5322087478464874,0 101.4369615368343,0.5322190128563226,0 101.4368596302423,0.5322273703740058,0 101.4367563066163,0.5322367338587886,0 101.4365496905543,0.5322443396147905,0 101.4363462395084,0.532246160773938,0 101.4362394250941,0.5322515696501665,0 101.4361376280883,0.5322578779378846,0 101.4360539404711,0.5322593394042309,0 101.4360232813458,0.5322568196889131,0 101.435940338867,0.5322530521154527,0 101.435690951137,0.5321423412650065,0 101.4355039125499,0.5321198809159658,0 101.4353204530994,0.5320988227368915,0 101.4351344861109,0.532078284311428,0 101.4345006448737,0.532028513158991,0 101.4344382483837,0.5320330427347276,0 101.4344328487959,0.5320821888710418,0 101.4339750761217,0.5320664769300262,0 101.4336280811982,0.5320528181586961,0 101.433233443819,0.5320375098556376,0 101.4327147461459,0.5320202002516564,0 101.4323617550605,0.5320138709899811,0 101.4320305763679,0.5320090794551259,0 101.4320328155842,0.5319100932062633,0 101.4316187072113,0.5318993431136569,0 101.4316246161181,0.5315021392995353,0 101.4306857072504,0.5314917740785331,0 101.4304495495845,0.5314892824778567,0 101.4300179848159,0.5314597979516681,0 101.4299906628802,0.5314369279578763,0 101.4295218239501,0.5314171575855094,0 101.4294165902155,0.5314119070868961,0 101.4294013566893,0.5317017617244463,0 101.4293915404466,0.5318819441401018,0 101.4287433513661,0.5318598218526628,0 101.4286303205639,0.5318554098839535,0 101.4279908459427,0.5318769013587954,0 101.4277998182805,0.5318831326695092,0 
+									</coordinates>
+								</LinearRing>
+							</outerBoundaryIs>
+						</Polygon>
+					</Placemark>
+					<Folder id="0B635D41BC4105A54068">
+						<name>RW 001</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="022EAE41414105410818">
+							<name>RW 001 Padang Bulan</name>
+							<LookAt>
+								<longitude>101.4406550926479</longitude>
+								<latitude>0.5287121201282282</latitude>
+								<altitude>11.25200938440263</altitude>
+								<heading>0</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>133.0199627304137</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_2F50D08C80410F58F0E3</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4406715525671,0.5284349802576679,0 101.4410340171312,0.5284226722344751,0 101.441538346986,0.5284032862834159,0 101.4420521454081,0.528382999286833,0 101.4424516432899,0.5283532313530913,0 101.4424924129777,0.5283848617289923,0 101.4425387286739,0.5288453495268972,0 101.4425717305774,0.5292777400778079,0 101.4425875379966,0.5294912433369137,0 101.4426017770299,0.5296789092125287,0 101.4426183064258,0.5298798463540075,0 101.4426530849039,0.5302943653682635,0 101.4427043102636,0.5309087017234437,0 101.4427350595502,0.5313266093294149,0 101.4427969417443,0.5320486858929432,0 101.4428114316992,0.532210275958508,0 101.4424822041647,0.5322357625513403,0 101.4420226026812,0.5322504555060016,0 101.4418669734407,0.5322670693575793,0 101.4411741380984,0.5322662005470098,0 101.4410796793393,0.5322688318621087,0 101.4410247735527,0.5322639823949764,0 101.4409926446044,0.5322406043315062,0 101.4409762200835,0.5321954060964341,0 101.4409470423704,0.532064153666301,0 101.4409551349106,0.5320195613382427,0 101.4409431863583,0.531883789360596,0 101.4409191144537,0.5315997357419712,0 101.4408851432433,0.5313198291116333,0 101.4408701208547,0.5310431581305669,0 101.4408505572232,0.5307660544122955,0 101.4408362624572,0.5304773053315543,0 101.4408230896257,0.530263587646963,0 101.4408125781274,0.5300387503468258,0 101.4407871471051,0.5298101454859864,0 101.4407641160121,0.5295567055394589,0 101.4407434833188,0.5293619224791215,0 101.440725411383,0.5291128826092771,0 101.4407007502123,0.5288262590314562,0 101.4406783149622,0.5285367161724837,0 101.4406715525671,0.5284349802576679,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="07F366F4A74105A9C51E">
+							<name>RT 001 RW 001 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4419840149484</longitude>
+								<latitude>0.5286971816539799</latitude>
+								<altitude>10.7755926992585</altitude>
+								<heading>354.9491411168141</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>228.6886446525751</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_23E385D268410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4424491484349,0.5283624288363133,0 101.4424888518306,0.5283831229340291,0 101.4426250384537,0.5298954790607961,0 101.4415738475036,0.5299007273549504,0 101.4415721384101,0.5298583041312191,0 101.4415442715621,0.5296211710712867,0 101.441746727076,0.5296045102255105,0 101.4417320707455,0.5293649563622742,0 101.4416616932322,0.5293765622011979,0 101.4416062894554,0.529146592612035,0 101.4414985131689,0.5291786544177755,0 101.4414350978656,0.5288629601517508,0 101.4414777734285,0.5287237006343177,0 101.441468398065,0.5284054838888875,0 101.4424491484349,0.5283624288363133,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0E4045E12B4105AB65B7">
+							<name>RT 002 RW 001 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4416130591966</longitude>
+								<latitude>0.5288593491633957</latitude>
+								<altitude>11.07949979686861</altitude>
+								<heading>354.9491263331072</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>183.8030679756412</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_24351ED98E410F58F0E4</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.441475644754,0.5287224204478879,0 101.4414293628424,0.5289103271489413,0 101.4412372003306,0.5289541900009597,0 101.4412889553331,0.5292080993710626,0 101.4412184777674,0.5292420366296499,0 101.441256216237,0.529452662568628,0 101.4412157393946,0.5294674170115221,0 101.4410869247929,0.5295141959074342,0 101.4408487668851,0.5295332898039021,0 101.4407527392017,0.5295018377131493,0 101.4406722501861,0.5284419007185479,0 101.4414709498293,0.528400875552926,0 101.441475644754,0.5287224204478879,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0E33778CBC4105AD5390">
+							<name>RT 003 RW 001 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4425667999405</longitude>
+								<latitude>0.5311613538926578</latitude>
+								<altitude>9.393250258501286</altitude>
+								<heading>354.9491118220895</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>230.2064065690502</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_1D5A16CB66410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.440752024445,0.529501224158935,0 101.4408476994098,0.5295339289176085,0 101.4410894425266,0.5295139106306825,0 101.4412585999303,0.529451420583132,0 101.4412189418954,0.5292447944116792,0 101.441291417052,0.5292077461663852,0 101.4412370901787,0.5289544371005617,0 101.4414298909167,0.5289098676911618,0 101.4414372719959,0.5288761446057775,0 101.4414995229109,0.5291787989518989,0 101.4416053560748,0.5291479973690537,0 101.4416626057765,0.5293742537122259,0 101.441733750782,0.5293624089096636,0 101.4417476669547,0.5296032488615784,0 101.4415447479257,0.5296225813542439,0 101.4415713773951,0.5298541732381781,0 101.4415738581119,0.5298988882350288,0 101.4426231946575,0.5298957556822855,0 101.4427058571572,0.5309408074286404,0 101.44273653042,0.5313284135397454,0 101.4428178457499,0.5322097070365028,0 101.4420273107705,0.532242838075897,0 101.4418600778424,0.5322626686122198,0 101.4411808866875,0.5322653526787036,0 101.4410825775881,0.5322684510904966,0 101.4410251835188,0.5322635818433066,0 101.4409950917534,0.5322391490786315,0 101.4409456956215,0.5320635905967135,0 101.4409593269982,0.5320186390838978,0 101.440882003894,0.5312571421907725,0 101.4408418177193,0.5305941073201885,0 101.4408040429703,0.5299574902926246,0 101.440752024445,0.529501224158935,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="0CF23B7FCE4105AFF781">
+						<name>RW 002</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="066D0451094105426A79">
+							<name>RW 002 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4393757948978</longitude>
+								<latitude>0.5295074541805347</latitude>
+								<altitude>11.49956160201337</altitude>
+								<heading>0</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>632.5009721157403</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_2957D2CF45410F58F0E0</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4406658883992,0.5284442570765828,0 101.4407488405771,0.5295015530659404,0 101.4374142440111,0.5295962526542646,0 101.4373687749114,0.5284506527599363,0 101.4406658883992,0.5284442570765828,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="03AA8BA79F410F7A8E8F">
+							<name>RT 001 RW 002 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4382514746881</longitude>
+								<latitude>0.5289559212246974</latitude>
+								<altitude>10.89137384059057</altitude>
+								<heading>3.274043851074186</heading>
+								<tilt>0.2751603113826043</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>317.8438764810562</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_2957D2CF45410F58F0E0</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4373697530715,0.5284526515783231,0 101.4383037772874,0.5284490256247405,0 101.4383440399725,0.5290837712443915,0 101.4383506361168,0.5295696896364915,0 101.4374155434068,0.5295975094473764,0 101.4373697530715,0.5284526515783231,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0DC5682C2F410F7BBF08">
+							<name>RT 002 RW 002 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4392220996426</longitude>
+								<latitude>0.5293528838805739</latitude>
+								<altitude>11.12393584396069</altitude>
+								<heading>3.274043838879382</heading>
+								<tilt>0.2751554603788887</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>205.7725581463819</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_006A4446E9410F7BCDCC</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4383501669804,0.5295713404576755,0 101.4383457724593,0.5290883768537465,0 101.4383046950198,0.5284491599098243,0 101.4392551905192,0.5284439169024049,0 101.439261866662,0.5287379341421321,0 101.4392699110408,0.5290607968624458,0 101.4392842264291,0.5295408112910209,0 101.4383501669804,0.5295713404576755,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0E2474EF04410F7C67AF">
+							<name>RT 003 RW 002 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4395954415222</longitude>
+								<latitude>0.5293060046835658</latitude>
+								<altitude>11.52435485857714</altitude>
+								<heading>3.274043839241088</heading>
+								<tilt>0.275158021974503</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>265.1800597021793</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_03EC46FAAE410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4392783507496,0.5293164217978671,0 101.439252919011,0.5284443606800089,0 101.4406664208908,0.5284399222511839,0 101.4407500950479,0.5294963077266377,0 101.4392850684972,0.5295419448893616,0 101.4392783507496,0.5293164217978671,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="086ACCED4A4105B0A8A8">
+						<name>RW 003</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0A1BFB3F02410543E0BB">
+							<name>RW 003 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4393517151463</longitude>
+								<latitude>0.5312624786171692</latitude>
+								<altitude>11.32196565323606</altitude>
+								<heading>0</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>446.9968305902876</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_23E385D268410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4392747925623,0.5321263692577578,0 101.4392767389964,0.5317823506302138,0 101.4393380938911,0.5315458932178255,0 101.4391238100335,0.5315291951401345,0 101.4391181799135,0.5309309721938577,0 101.4387949840893,0.5309130213488767,0 101.4387872208634,0.5306091919348171,0 101.4386995255175,0.5306107578160454,0 101.4387023634478,0.5305054038220153,0 101.4386720243064,0.529562052225895,0 101.4407490919679,0.5294963205598663,0 101.4408897283369,0.5314086960338616,0 101.440958768693,0.5320189473585345,0 101.4409482102653,0.5320625016871782,0 101.4396642287971,0.5321095901043824,0 101.4392747925623,0.5321263692577578,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="02853226694105B0C798">
+						<name>RW 004</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0441C060E74105447779">
+							<name>RW 004 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4380744286625</longitude>
+								<latitude>0.5298967548639674</latitude>
+								<altitude>10.84300665677173</altitude>
+								<heading>0</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>447.4758188586567</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_119F98A320410F58F0E0</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4386705902619,0.5295582943163984,0 101.4386978163563,0.5306081850466172,0 101.4387922744227,0.5306110980131219,0 101.4387952945508,0.5309142807005502,0 101.4391206268752,0.5309282814489998,0 101.4391211517266,0.5315297118479074,0 101.4393406761001,0.5315437146585553,0 101.4392731701159,0.5317886679256001,0 101.4392781511034,0.5318693366562125,0 101.4392750274282,0.5321344950018831,0 101.4375058346476,0.5321957558664414,0 101.4374123797955,0.5295949207219041,0 101.4386705902619,0.5295582943163984,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="04845FDEF64105B0CA9F">
+						<name>RW 005</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="03D60959D1410546DF73">
+							<name>RW 005 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4368771017685</longitude>
+								<latitude>0.5290422543743174</latitude>
+								<altitude>9.991728034587222</altitude>
+								<heading>-3.640453577672342</heading>
+								<tilt>0.4066204141356875</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>384.2958848758644</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_2F50D08C80410F58F0E3</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4374720257743,0.5312305604648619,0 101.436377438694,0.5312443302462628,0 101.4359414878062,0.5312018887954684,0 101.4358549056081,0.5312848183010269,0 101.4353178574706,0.5311793915631433,0 101.4349558434584,0.5311275697266489,0 101.4349573744316,0.5310034850143097,0 101.4344352564466,0.5309814597815447,0 101.4344537586015,0.5284932195574443,0 101.4373701851187,0.5284524181602978,0 101.4374720257743,0.5312305604648619,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="02FDDDE45D4105B0CCF8">
+						<name>RW 006</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0E79A685DB410644BDFE">
+							<name>RW 006</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4352033634939</longitude>
+								<latitude>0.5316343847292427</latitude>
+								<altitude>9.994668078548587</altitude>
+								<heading>0</heading>
+								<tilt>0</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>425.4746217319918</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_15B8EC3DFD410F58F0E3</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4344384522752,0.5314906871281231,0 101.4344314363413,0.5312484377005121,0 101.4344397745845,0.5309843106831695,0 101.4349546690015,0.5309984609882357,0 101.4349499675462,0.5311290468493404,0 101.4358477176156,0.5312863675709486,0 101.435939807932,0.5312055118262037,0 101.4363869941082,0.531248120643867,0 101.4374701252492,0.5312416063778533,0 101.437504624226,0.532194496285637,0 101.4367777474536,0.5322437964045751,0 101.436070959204,0.5322641846704114,0 101.4359426428726,0.5322505509323672,0 101.4357011371938,0.5321452954721169,0 101.4345009332661,0.5320293993199922,0 101.434440093417,0.5320383826560064,0 101.4344384522752,0.5314906871281231,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="0ABD2F85B44105B1FF76">
+						<name>RW 007</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="021033F54A41059EA948">
+							<name>RW 007 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4345259508428</longitude>
+								<latitude>0.5295565790148026</latitude>
+								<altitude>10.06675005889537</altitude>
+								<heading>-3.640453626438543</heading>
+								<tilt>0.4066877963812962</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>1440.513944541744</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_0CD6A7F43C410F99901C</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4344460349479,0.5279707806913363,0 101.4344256468348,0.5304016527413812,0 101.4335488480371,0.5306436931362085,0 101.4330304102951,0.5307724215076856,0 101.4329849653384,0.5307875719157764,0 101.4330169129464,0.5305531492775664,0 101.4330749841313,0.5302028257509299,0 101.4316194568382,0.5298113260317637,0 101.4316122382066,0.529004945165631,0 101.4316451660884,0.5282426005834091,0 101.4325626832482,0.5282446010667017,0 101.4326696305068,0.5282446863951057,0 101.4328264363624,0.5282371001625983,0 101.4328710413545,0.5282330392778868,0 101.4331062168813,0.5282161573166427,0 101.4331305073029,0.5281856709057292,0 101.4331319304927,0.5279454853113379,0 101.4344460349479,0.5279707806913363,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="0B61FEC57B4105B21791">
+						<name>RW 008</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="053367CFE3410625275B">
+							<name>RW 008 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4318345161216</longitude>
+								<latitude>0.5305071394307396</latitude>
+								<altitude>9.059195969412793</altitude>
+								<heading>0</heading>
+								<tilt>0</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>2284.988479269378</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_03F42CAAEC410F99D0A6</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.430109792316,0.5282096075765663,0 101.4300929462964,0.5303746273118448,0 101.4300210394195,0.5314267168789174,0 101.4294335812569,0.5314156331367916,0 101.4293949993463,0.5318809660501516,0 101.4286025030752,0.5318533644761242,0 101.4278043222052,0.5318922082635352,0 101.4277950185517,0.528208622121581,0 101.430109792316,0.5282096075765663,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="0E264667194105B21AB6">
+						<name>RW 009</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0A8E3CA87D4106265E58">
+							<name>RW 009 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4325650228499</longitude>
+								<latitude>0.531395874399663</latitude>
+								<altitude>8.837010515314439</altitude>
+								<heading>0</heading>
+								<tilt>0</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>571.9036021416106</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_01F4089184410F58F0E6</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4316124281903,0.5298104242436334,0 101.4330818232983,0.530212833713645,0 101.4329894541096,0.5307976996840137,0 101.4344231389929,0.5304027497728956,0 101.4344408829685,0.530985336984324,0 101.4344301576589,0.5311692458373453,0 101.4344397082435,0.5314148048261301,0 101.4344330196828,0.5320834464780375,0 101.4320207299188,0.5320120853699669,0 101.4320237754823,0.531908870904056,0 101.4316198967621,0.5319028413305122,0 101.4316124281903,0.5298104242436334,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="029ECAFF194105A087FC">
+						<name>RW 010</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0EC39F588C41059F9D0C">
+							<name>RW 010 Padang Bulan</name>
+							<LookAt>
+								<longitude>101.4317740656739</longitude>
+								<latitude>0.5306910957876083</latitude>
+								<altitude>8.973468115198415</altitude>
+								<heading>-3.640453626713686</heading>
+								<tilt>0.4066613655010921</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>1026.473759677901</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_1D5A16CB66410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4316062540071,0.5290167775724364,0 101.4316105918649,0.5298088202301493,0 101.431613451048,0.5304696130587893,0 101.4316223049894,0.5315062043929452,0 101.4305396327048,0.5314935404866475,0 101.4300191160665,0.5314604802410328,0 101.4299963242683,0.5314364108469036,0 101.4300530301211,0.5309345485129165,0 101.4301021753146,0.529775871302784,0 101.4301125435194,0.5282110272913678,0 101.4316479725399,0.5282403339351537,0 101.4316062540071,0.5290167775724364,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0AC9FEB6544105A1DF08">
+							<name>RT 001 RW 010 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4311092567621</longitude>
+								<latitude>0.5294182709515045</latitude>
+								<altitude>9.103937941294276</altitude>
+								<heading>-3.640453589654693</heading>
+								<tilt>0.4066224964356809</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>417.4836344455252</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_2957D2CF45410F58F0E0</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4301103373146,0.5282166246476999,0 101.4316423429182,0.5282373039510733,0 101.4316220063631,0.5286376309639458,0 101.4316047092286,0.5289961366686442,0 101.4315985117408,0.5294974180146321,0 101.4310343608395,0.5294875597805657,0 101.4310279797586,0.5296448507951423,0 101.4308272965439,0.5296277943375808,0 101.4301048737684,0.5295942410749299,0 101.4301103373146,0.5282166246476999,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="09FACA469A4105A2A689">
+							<name>RT 002 RW 010 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4307194045574</longitude>
+								<latitude>0.5309256567303265</latitude>
+								<altitude>6.908786814167451</altitude>
+								<heading>-3.640453592631704</heading>
+								<tilt>0.4066196477280027</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>372.905717222493</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_03EC46FAAE410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4299936331841,0.5314410297551666,0 101.4300517145864,0.5309308340802651,0 101.4302103048624,0.530954928896036,0 101.4308982430072,0.5309613697125819,0 101.4316173198727,0.5309955680353324,0 101.4316275209736,0.5315011455717331,0 101.4299936331841,0.5314410297551666,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0BBB4AD5D54105A3D194">
+							<name>RT 004 RW 010 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4307724450057</longitude>
+								<latitude>0.5309441167837708</latitude>
+								<altitude>7.165489761334404</altitude>
+								<heading>-3.640453588163405</heading>
+								<tilt>0.4066129609652453</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>268.1867737791254</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_119F98A320410F58F0E0</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4300540068398,0.5309293502844843,0 101.4300809617512,0.5303878687295381,0 101.4303004045823,0.5303968652018126,0 101.4303015693535,0.5302239012726874,0 101.430674547057,0.5302477411876308,0 101.4306852951263,0.5300992936812003,0 101.430902645931,0.5301124016674748,0 101.4308933129334,0.5302751805178805,0 101.4316057457313,0.5302950069087766,0 101.4316152608316,0.5309987604486592,0 101.4307447761479,0.5309582513855431,0 101.4305174240992,0.530962102044869,0 101.4302152341615,0.5309597856516698,0 101.4300540068398,0.5309293502844843,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0085551C284105A472A1">
+							<name>RT 003 RW 010 Padang Bulan</name>
+							<description><![CDATA[<div>Kelurahan Padang Bulan<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4308104585503</longitude>
+								<latitude>0.5300929624594365</latitude>
+								<altitude>7.350275930794544</altitude>
+								<heading>-3.640453588705235</heading>
+								<tilt>0.406612948788322</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>268.0020019570293</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_299907D641410F58F0E8</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4300799639695,0.5303840647926941,0 101.4301006711428,0.5297934366679877,0 101.4301052391033,0.5295919859647532,0 101.4308383190578,0.5296288893492218,0 101.4310259235985,0.5296422000248652,0 101.4310345990955,0.5294866369606981,0 101.4316015861074,0.5294959463413828,0 101.4316008708514,0.5302926540196222,0 101.4308952862653,0.5302753190821674,0 101.4309027150128,0.5301096066511621,0 101.4306897821853,0.5300994664870133,0 101.4306739954518,0.5302482622778808,0 101.4303053138244,0.5302282134302756,0 101.4303025791785,0.5303997604716862,0 101.4300799639695,0.5303840647926941,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+				</Folder>
+				<Folder id="0BD1C4250B4101D016FE">
+					<name>PADANG TERUBUK</name>
+					<open>1</open>
+					<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+					<Placemark id="0BCC180851410191BA5C">
+						<name>PADANG TERUBUK</name>
+						<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+						<LookAt>
+							<longitude>101.4409681465332</longitude>
+							<latitude>0.5323569002134256</latitude>
+							<altitude>10.36973887286386</altitude>
+							<heading>9.264475248386175</heading>
+							<tilt>1.873158539744235</tilt>
+							<gx:fovy>35</gx:fovy>
+							<range>241.2076772827641</range>
+							<altitudeMode>absolute</altitudeMode>
+						</LookAt>
+						<styleUrl>#__managed_style_03EC46FAAE410F58F0E1</styleUrl>
+						<Polygon>
+							<outerBoundaryIs>
+								<LinearRing>
+									<coordinates>
+										101.4409788486425,0.5322039679375595,0 101.4409926598302,0.5322400244619208,0 101.4410245342614,0.5322623211975533,0 101.4410797462019,0.532267818865549,0 101.4412761001593,0.5322643088666071,0 101.4418671437038,0.5322642362022476,0 101.4420214837066,0.5322501505779955,0 101.4422800834481,0.5322453410984579,0 101.4424788236351,0.5322352935735674,0 101.4428129253917,0.5322081646910996,0 101.4428230656709,0.5322856631536977,0 101.4428369070044,0.5325593853442604,0 101.4428709172477,0.532913972713157,0 101.4429037825292,0.5333118610877029,0 101.4429355113209,0.5337240149225905,0 101.4429654445272,0.5341647587414875,0 101.4429968745901,0.5346305491826191,0 101.443038778156,0.535097363747854,0 101.4430843068373,0.5355555185437941,0 101.4431274016667,0.5359515019256293,0 101.4429416554077,0.5359623399278218,0 101.4427801758619,0.5359701465437892,0 101.4425826979299,0.5359572665902953,0 101.442451614204,0.5359119705996056,0 101.4423061042448,0.5357943900023742,0 101.4421188677616,0.5355445488888539,0 101.4419512352896,0.5353498100832104,0 101.4418997211356,0.5353350867134238,0 101.4416914472401,0.5353508059168858,0 101.4411248990732,0.5353460831982295,0 101.4404140996138,0.535338139227355,0 101.4398131570444,0.5353306126821258,0 101.4391225176226,0.5353165458591754,0 101.4384247900867,0.5353042904536929,0 101.4375525147441,0.5352908689308751,0 101.4366951373575,0.5352764900103621,0 101.4360149024778,0.5352521073630769,0 101.4354033388028,0.5352434555215216,0 101.4346463606945,0.535239433386652,0 101.4337165477523,0.5352263192483925,0 101.4333937607644,0.5352156440373507,0 101.4328845256385,0.5352057624411183,0 101.4325372523328,0.5352014673233481,0 101.4318051572125,0.5351905564532354,0 101.430982687936,0.5351760456100715,0 101.430192477969,0.5351658916527444,0 101.4292310005419,0.53515364318519,0 101.4285384925776,0.535147427879731,0 101.4277432720045,0.5351452426747043,0 101.4277541186524,0.5348014351262941,0 101.4277749981845,0.5341445320063093,0 101.4277940149069,0.5334383329910126,0 101.427800870161,0.5318833923060353,0 101.4281503580232,0.5318724694037201,0 101.4286294492164,0.5318559524288456,0 101.4290790745336,0.5318696786097351,0 101.4293918405039,0.5318813600755784,0 101.4294171882802,0.5314122603552532,0 101.4299915636225,0.5314382796209853,0 101.4300188556983,0.5314589808087791,0 101.4304446236706,0.5314891412189424,0 101.4309221224252,0.5314938677458281,0 101.4316250003135,0.531503275320781,0 101.431620114241,0.5318997091459565,0 101.4320318699462,0.5319106722625323,0 101.4320298384338,0.5320088584325628,0 101.432770232819,0.5320208529879765,0 101.4335175828243,0.5320483490176405,0 101.4343986547776,0.5320815957067923,0 101.4344325165701,0.5320816894096279,0 101.4344380011044,0.5320336884737794,0 101.4345046677624,0.5320284830878063,0 101.4351578078991,0.5320807399874738,0 101.4353599842105,0.5321026068488505,0 101.4356926015883,0.5321424398256732,0 101.4358396941736,0.5322078711390651,0 101.435938778291,0.5322521762780914,0 101.4360589367744,0.5322589212703229,0 101.4361550097411,0.5322575781558079,0 101.436349117343,0.532245996703107,0 101.4365539264335,0.5322445920502239,0 101.4367753171232,0.5322358879244558,0 101.4369816463468,0.5322171122498652,0 101.4375128620111,0.5321943548814613,0 101.4382437928043,0.5321659101153184,0 101.4388076705987,0.5321467224418761,0 101.4392547615721,0.5321312119747443,0 101.4393744822035,0.5321274833073408,0 101.4394868303299,0.5321214714690585,0 101.4397153877077,0.5321039513349872,0 101.4397986623757,0.5320977635708901,0 101.4402289009395,0.5320798226620925,0 101.4404283957561,0.5320867718853339,0 101.4409473889812,0.5320636663777896,0 101.4409788486425,0.5322039679375595,0 
+									</coordinates>
+								</LinearRing>
+							</outerBoundaryIs>
+						</Polygon>
+					</Placemark>
+					<Folder id="020E334F454105B452EC">
+						<name>RW 001</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="02512441B7410BC05936">
+							<name>RT 003 RW 001 Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4416801489925</longitude>
+								<latitude>0.5325163648648</latitude>
+								<altitude>10.1441382877739</altitude>
+								<heading>1.5788037950338</heading>
+								<tilt>13.89507184015311</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>272.7642105870837</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_081FF1C6E3410F58F0E8</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4410775892309,0.532269247575995,0 101.4418721967332,0.5322672607532224,0 101.4419080769492,0.5328004340524589,0 101.4419535693954,0.5332780301906508,0 101.4420056403725,0.5338539379075241,0 101.4420161004861,0.5339844522376408,0 101.4418351492236,0.533987205476164,0 101.4416831721242,0.5339891367550603,0 101.4415479934791,0.5339643508779924,0 101.4413930113814,0.5339017023574365,0 101.4411346768513,0.5337806148730022,0 101.4410652656967,0.5337534545710317,0 101.4410666771644,0.5336928544143446,0 101.4410731518462,0.5335872395011244,0 101.4410131305152,0.5327420084543777,0 101.4409869205197,0.5324531093346384,0 101.4409869217433,0.5323136468593801,0 101.4410193436363,0.5322613968930525,0 101.4410775892309,0.532269247575995,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0AD9A17134410BC15E8E">
+							<name>RT 002 RW 001 Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4418896432936</longitude>
+								<latitude>0.5324422110690097</latitude>
+								<altitude>10.2380357548796</altitude>
+								<heading>6.000457960640783</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>111.6678542738191</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_122408B144410F58F0E8</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4418726897302,0.5322652175263669,0 101.4420211340205,0.5322495523235412,0 101.4423285540257,0.5322437310200075,0 101.442504228811,0.5322341586844883,0 101.4428162785764,0.5322094514247465,0 101.4428631343171,0.5328408643128153,0 101.442918965402,0.5335278345844922,0 101.4429543706723,0.5339966146600162,0 101.4425130472963,0.5340595365039725,0 101.4422074043038,0.5340881826888476,0 101.4420887897504,0.5341062290358183,0 101.4420154352317,0.5339836812267815,0 101.4419710699147,0.5334630505245713,0 101.4419326354965,0.5330536202105858,0 101.4419086501412,0.5328051720563474,0 101.4418726897302,0.5322652175263669,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="0D1110C05C410BC32034">
+							<name>RT 001 RW 001 Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4411934488977</longitude>
+								<latitude>0.5338150227924513</latitude>
+								<altitude>8.707095379928841</altitude>
+								<heading>6.000455073322912</heading>
+								<tilt>0</tilt>
+								<gx:fovy>35</gx:fovy>
+								<range>102.5063055092869</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_07027E4D4A410F58F0E4</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4413872430416,0.5338989358254836,0 101.4415484767741,0.5339663909452451,0 101.4416843230933,0.5339890567588662,0 101.4420152207497,0.5339847266401465,0 101.4420890814392,0.534106917060268,0 101.4422074105167,0.5340898583510726,0 101.4425181399628,0.5340611214453889,0 101.4429538069267,0.5339956773485203,0 101.4429769412639,0.5343435283827342,0 101.4430081709014,0.534758221467686,0 101.4430477435467,0.5351819650829802,0 101.4431285301943,0.5359514939114318,0 101.4427790110924,0.5359697963078011,0 101.4425833138518,0.5359580474599197,0 101.4424504956508,0.5359129015616154,0 101.4423044961095,0.5357939622003935,0 101.4421217510934,0.5355481349535295,0 101.4419505014923,0.5353489331250786,0 101.4418981520005,0.535336526572092,0 101.441692187314,0.5353521412661821,0 101.4406732954125,0.5353448991593613,0 101.4406669522876,0.5351341181072745,0 101.4406518881318,0.534584895116565,0 101.4406342833989,0.5341198287879654,0 101.4406432610639,0.534007380003956,0 101.440675361169,0.5339249014106912,0 101.4407326614142,0.5338861389601165,0 101.4408622548679,0.533844042697307,0 101.4409874839652,0.5337925421085246,0 101.4410653155266,0.5337544657928373,0 101.4413872430416,0.5338989358254836,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+						<Placemark id="03BDEA749E4110D2E61C">
+							<name>RW 001  Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan&nbsp;Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4428230923188</longitude>
+								<latitude>0.5322357051796685</latitude>
+								<altitude>9.765363717607816</altitude>
+								<heading>-0.03474712741375027</heading>
+								<tilt>0.9560429663094975</tilt>
+								<gx:fovy>34.999955</gx:fovy>
+								<range>96.74911151071683</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_0BDB0075C94110D35C73</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4428317113492,0.53243445183314,0 101.4428682767072,0.5328923822951043,0 101.4428954058618,0.5332064672614688,0 101.4429035792999,0.5333095344247625,0 101.4429180775453,0.5335047122262471,0 101.4429623560928,0.5341278490000217,0 101.4430065897952,0.5347288295505931,0 101.4430602368547,0.5353203035622759,0 101.4431252877829,0.5359517541073574,0 101.4427847415773,0.5359696511768304,0 101.4425827863687,0.5359582199997588,0 101.4424528419267,0.5359131794723855,0 101.4423080633556,0.5357961750465412,0 101.44212601056,0.5355531023512515,0 101.4419514408725,0.5353495242985251,0 101.4419011985572,0.5353356317045068,0 101.4416925837347,0.5353509258426432,0 101.4406718787145,0.5353425900553104,0 101.4406644202074,0.5350766442457793,0 101.4406538947895,0.5346881891171481,0 101.4406378545015,0.5342611878198432,0 101.4406331371104,0.5341257827862302,0 101.4406416069241,0.5340068331956342,0 101.4406749419362,0.5339251181698107,0 101.4407356321903,0.5338848749618069,0 101.4408494486004,0.5338493390822534,0 101.4410640167787,0.5337545775402355,0 101.4410738819615,0.5335893706004938,0 101.4410456395464,0.5332083643308798,0 101.4410148421448,0.5327898449809397,0 101.440988472421,0.5324725866945419,0 101.4409863441454,0.5323140770807346,0 101.4410216453212,0.5322630034635536,0 101.4410788210732,0.5322690575335705,0 101.4413243667242,0.5322665951142397,0 101.4418704099895,0.532266010424143,0 101.4420224323341,0.5322505279791152,0 101.4422725544223,0.5322456355554314,0 101.4428137965485,0.5322107933769815,0 101.4428317113492,0.53243445183314,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="07254393E24105B4638E">
+						<name>RW 002</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0E7B442A42410F78BA8F">
+							<name>RW 002 Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4394666042629</longitude>
+								<latitude>0.534135901926959</latitude>
+								<altitude>9.215881106155216</altitude>
+								<heading>3.274043905219505</heading>
+								<tilt>0.2751985168654379</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>1202.234501984494</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_03EC46FAAE410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4383541237059,0.5321621181603073,0 101.4386053954177,0.5321543949883331,0 101.4388627603069,0.5321449689474693,0 101.4390639231602,0.5321385801253811,0 101.4394329602779,0.532125426800318,0 101.4398153579076,0.5320971379063417,0 101.440229820241,0.5320803232011641,0 101.4404286143484,0.5320876661820446,0 101.4409484533933,0.5320632621592304,0 101.440992293122,0.5322413004919908,0 101.441019946297,0.5322623228352987,0 101.4409860508929,0.5323144491672117,0 101.4409874933204,0.5324639874246936,0 101.4410227360717,0.5328800655031668,0 101.4410491234345,0.5332445384759402,0 101.4410730285977,0.5335901769500817,0 101.4410638806657,0.533755451359946,0 101.4409583500425,0.5338047440577816,0 101.4408544694819,0.5338475788468896,0 101.4407332763002,0.5338854543798897,0 101.4406954534361,0.5339102942068084,0 101.4405953270718,0.5338537822485377,0 101.440537929761,0.5338375600879625,0 101.4403021954422,0.5338589324682632,0 101.4402688991643,0.5338665717769373,0 101.440233938645,0.5339412623609285,0 101.4402013931088,0.5339719343901144,0 101.4400992708286,0.5339790739476972,0 101.4400252989535,0.5339749687782336,0 101.4399753238384,0.5339610544421369,0 101.4400003834556,0.533838169341883,0 101.4399162214288,0.53380864191027,0 101.4397995301066,0.533785341898104,0 101.4397959949082,0.5337507521154246,0 101.4396710693648,0.5337260638214925,0 101.4395988807211,0.5337347082344009,0 101.4394655306725,0.5337453813439309,0 101.4393143774651,0.5337552869149806,0 101.4391683461367,0.5337572877474541,0 101.4391237626478,0.5337534745563356,0 101.4390777980349,0.5337457901838001,0 101.4390301442554,0.533766904120669,0 101.4387639986573,0.5337753568202896,0 101.4387349683155,0.533771038504359,0 101.4387222882918,0.5337426915794196,0 101.4386983026665,0.5337251810126359,0 101.4386546892322,0.5337145043917521,0 101.4384981490567,0.5337216261310903,0 101.4382439917399,0.5337403333342381,0 101.438159434017,0.5337484563508934,0 101.4381320741788,0.5337354979753296,0 101.4381256789946,0.533700221166963,0 101.4381211102456,0.5335831584366877,0 101.4381121613142,0.5335456916413911,0 101.4380260075278,0.5335157189207228,0 101.4379633983213,0.5334909632275382,0 101.4378652008461,0.5334470134827438,0 101.4377439606142,0.5334288142268518,0 101.4376089603045,0.5334171096864098,0 101.4375808002378,0.5334132344665932,0 101.4375503955088,0.5332151494932081,0 101.4375293398789,0.5329603859834009,0 101.4375205616258,0.5325826326560031,0 101.4375013736411,0.5321935755955292,0 101.4383541237059,0.5321621181603073,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="04294ED3B94105B46610">
+						<name>RW 003</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="07B27E1B3A410F80F8C8">
+							<name>RW 003  Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4379035165817</longitude>
+								<latitude>0.535406912802125</latitude>
+								<altitude>7.155418747823727</altitude>
+								<heading>3.665382953843169</heading>
+								<tilt>0.1957453352435325</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>230.3857316552967</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_1D5A16CB66410F58F0E1</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4376125011926,0.5352935154489439,0 101.4376100754715,0.5346876634996803,0 101.4377298710362,0.5346730833467106,0 101.43769148811,0.5340390134022537,0 101.4375085806885,0.5340434381933901,0 101.4375015064942,0.5338893914330289,0 101.437533533011,0.53385854850305,0 101.4375421541352,0.5337159249632508,0 101.4375794269569,0.5334156001191034,0 101.4378664786359,0.5334476054609625,0 101.4381110761087,0.5335454452020766,0 101.4381205634486,0.5335845748268273,0 101.4381244646912,0.5336981637073913,0 101.4381306987633,0.5337356289743604,0 101.4381598398623,0.5337496123498654,0 101.4386550546304,0.5337149915330599,0 101.4386972668043,0.5337259346319728,0 101.4387218419992,0.5337438094982134,0 101.438734809591,0.5337718983979746,0 101.4387612877874,0.5337763834688963,0 101.4390277235314,0.5337683573661571,0 101.4390757631864,0.5337460281544421,0 101.4391692563039,0.5337570631746648,0 101.4393307029633,0.5337551909732071,0 101.4396689812639,0.5337263288202543,0 101.439796156739,0.5337502788582557,0 101.4397991531916,0.5337859935962292,0 101.4399159530437,0.5338090513902276,0 101.4400005390419,0.5338383210082007,0 101.4399758181116,0.5339607815928702,0 101.4400249451888,0.5339756076384018,0 101.4400987122183,0.5339802296290524,0 101.4402004478152,0.5339720888564718,0 101.4402336803454,0.5339425725616431,0 101.440268238076,0.5338692088249294,0 101.4403034652275,0.5338582244530312,0 101.4405379759773,0.5338371722683793,0 101.4405995994684,0.5338556603386081,0 101.4406951904976,0.5339114212387625,0 101.4406750139762,0.533924990847821,0 101.4406433830182,0.5340059259972936,0 101.4406337813702,0.5341253100360798,0 101.4406467474495,0.5344638615949656,0 101.4406609732178,0.5349439647339609,0 101.4406722075646,0.5353422156756543,0 101.4394154373119,0.535322591648025,0 101.4376125011926,0.5352935154489439,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="0493D4E6574105B46818">
+						<name>RW004</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0ACF46EA3F410F8599AC">
+							<name>RW 004 Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4354218188533</longitude>
+								<latitude>0.5353082658562553</latitude>
+								<altitude>7.247824785074533</altitude>
+								<heading>-0.8108498661989695</heading>
+								<tilt>2.459385101314187</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>190.3490594188224</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_24351ED98E410F58F0E4</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4352772799948,0.5352425363782473,0 101.4352665871052,0.5351384947484004,0 101.4352033000672,0.5350626178404697,0 101.4349803919342,0.5348384384283381,0 101.4347014312813,0.5345886646726001,0 101.4343683396471,0.534302106238145,0 101.4340892957734,0.5340298973689054,0 101.4342332498036,0.5338102548010698,0 101.4343543914168,0.5336108287928422,0 101.4343795810535,0.5335635788201479,0 101.4343951850503,0.5334974117801151,0 101.4344007634167,0.5334364298471552,0 101.4344276884603,0.5331858394140103,0 101.4344360070672,0.5327837183922144,0 101.4344362682041,0.5325131272067096,0 101.4344334823282,0.5321659897192555,0 101.4344322748749,0.5320818917511868,0 101.4344382497785,0.5320331977188667,0 101.4345049633185,0.5320283995519069,0 101.4347449971546,0.5320476233703375,0 101.4350192687121,0.5320694891637219,0 101.4351602988135,0.5320808797774664,0 101.4354536166487,0.5321134659835467,0 101.4356930966539,0.5321421983048994,0 101.43583609931,0.5322060486389473,0 101.4359387847575,0.5322522194830148,0 101.4360601475481,0.5322591275846147,0 101.4360883946811,0.5322584773227368,0 101.436154589061,0.5322575676953254,0 101.4363526035545,0.5322460133554804,0 101.4365615703034,0.5322442793769405,0 101.436771892628,0.5322359486372104,0 101.4369882530135,0.5322165843919866,0 101.437482812967,0.5322035541831917,0 101.437503914487,0.5322389518640793,0 101.437517399128,0.532515921048228,0 101.4375294128801,0.5329617289601452,0 101.4375504171799,0.5332168411634621,0 101.4375807302688,0.5334129726165403,0 101.4375419448625,0.5337182998927922,0 101.4375336377426,0.533858601143568,0 101.4375016930024,0.5338892528343732,0 101.4375083254423,0.5340433355116621,0 101.4376913472212,0.5340390700156256,0 101.4377173991152,0.5344669091407681,0 101.4377296820641,0.5346730228544609,0 101.4376099618386,0.5346876120168521,0 101.437612496795,0.5352917456153954,0 101.4369843216416,0.5352809921896765,0 101.4367050237562,0.5352767421932469,0 101.4364525297473,0.5352675139040178,0 101.4359782925507,0.535251411381049,0 101.4354668392996,0.5352441586734176,0 101.4352772799948,0.5352425363782473,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="024C94CF3F4105B469C9">
+						<name>RW 005</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0A732010B6410F8A9DF8">
+							<name>RW 005 Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4318092926107</longitude>
+								<latitude>0.5352175160073879</latitude>
+								<altitude>7.370625335368568</altitude>
+								<heading>-0.8108498589887687</heading>
+								<tilt>2.431172034087878</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>35.10322750234992</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_0652302024410F8ABF91</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4317584932855,0.5351895165344586,0 101.4317650128288,0.5350025934143046,0 101.4317750340985,0.5348128512440964,0 101.4318076470288,0.5345514080680326,0 101.4318338972311,0.5342535159144235,0 101.431859703965,0.5339416476733458,0 101.4318526871526,0.533772541124049,0 101.4318726871612,0.5334554928081425,0 101.4318863082476,0.5334548322761106,0 101.4318996161514,0.5332292482817752,0 101.4316148815087,0.5332065587904481,0 101.4316241292866,0.5327818589302967,0 101.4316202363486,0.5318995904776085,0 101.4320317080782,0.5319105976233048,0 101.4320297872461,0.5320089676653382,0 101.4324101433663,0.5320149237372552,0 101.4326445294598,0.5320187330512364,0 101.4327242007906,0.5320201297976255,0 101.4331115272624,0.5320333429530792,0 101.4333988639778,0.5320439876161741,0 101.4343962135477,0.5320815678542486,0 101.4344323753959,0.532081582797278,0 101.4344336600077,0.5322056776600277,0 101.4344368606443,0.5326175927804351,0 101.434427754599,0.5331866351683022,0 101.4343955308113,0.5334973624151118,0 101.4343806380797,0.533564279088621,0 101.4340892216045,0.5340306878324586,0 101.4342601618243,0.5341969582053495,0 101.4343667172793,0.5343008178133782,0 101.4345310234251,0.5344421794893501,0 101.43462215089,0.5345208120245442,0 101.4347340759264,0.5346179994166214,0 101.4349295721526,0.53479332189308,0 101.4349833833778,0.5348412357293861,0 101.4351742846536,0.535033937807505,0 101.4352032582781,0.5350624159532373,0 101.4352661660656,0.5351382241495343,0 101.4352772785578,0.5352426087358439,0 101.4346877027263,0.5352396633453613,0 101.4343202314633,0.5352347910330831,0 101.434111807801,0.5352315358137072,0 101.433796177049,0.5352269833527306,0 101.4335977149072,0.5352227743225365,0 101.4334600612212,0.5352175112344619,0 101.4332507117486,0.5352127823208948,0 101.4329302921601,0.5352066508829991,0 101.4324842219493,0.5352006998405108,0 101.4318571153056,0.5351911946499058,0 101.4317584932855,0.5351895165344586,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+					<Folder id="0C4EBE4A734105B46B38">
+						<name>RW 006</name>
+						<open>1</open>
+						<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+						<Placemark id="0A3D9FE938410F98E17C">
+							<name>RW 006 Padang Terubuk</name>
+							<description><![CDATA[<div>Kelurahan Padang Terubuk<br></div>]]></description>
+							<LookAt>
+								<longitude>101.4298507478934</longitude>
+								<latitude>0.5333555014982363</latitude>
+								<altitude>7.151529764789942</altitude>
+								<heading>-0.6919986085157385</heading>
+								<tilt>2.728134185042041</tilt>
+								<gx:fovy>30</gx:fovy>
+								<range>791.1693010640738</range>
+								<altitudeMode>absolute</altitudeMode>
+							</LookAt>
+							<styleUrl>#__managed_style_24351ED98E410F58F0E4</styleUrl>
+							<Polygon>
+								<outerBoundaryIs>
+									<LinearRing>
+										<coordinates>
+											101.4277432979549,0.5351452333976321,0 101.4277644370481,0.5344803450160135,0 101.4277829676628,0.5338519673361433,0 101.4277964185662,0.5333462569812091,0 101.4277968466886,0.532753600051062,0 101.42780092352,0.5318833232298863,0 101.4286353550663,0.5318562141631302,0 101.4293910586306,0.5318812769834843,0 101.4294170427,0.5314113853308888,0 101.4299940567243,0.5314382063980765,0 101.430018409617,0.5314579718901746,0 101.4304486472784,0.5314887827043868,0 101.4309069892657,0.5314937075408837,0 101.4316251389294,0.5315033111320667,0 101.4316202599745,0.5318999130196759,0 101.4316222539413,0.5322909962591372,0 101.4316237480179,0.5327820756418281,0 101.431614904078,0.5332068009109433,0 101.4319010923679,0.5332299019296897,0 101.4318860846893,0.5334547001993823,0 101.4318728148424,0.5334554463594132,0 101.4318528471663,0.5337726469333893,0 101.4318594107123,0.5339424655032046,0 101.4318073400825,0.5345523903386238,0 101.4317745201297,0.5348192395325789,0 101.4317586482908,0.535189448488538,0 101.4303591317301,0.535169308720723,0 101.4287596055169,0.5351500920729444,0 101.4277432979549,0.5351452333976321,0 
+										</coordinates>
+									</LinearRing>
+								</outerBoundaryIs>
+							</Polygon>
+						</Placemark>
+					</Folder>
+				</Folder>
+				<Folder id="00E5B64C594101D01DCE">
+					<name>SAGO</name>
+					<open>1</open>
+					<styleUrl>#__managed_style_00631C312D410F58F0DE</styleUrl>
+					<Placemark id="0BEC0BF90C4101A15117">
+						<name>SAGO</name>
+						<description><![CDATA[<div>Kelurahan Sago<br></div>]]></description>
+						<LookAt>
+							<longitude>101.4427325135398</longitude>
+							<latitude>0.5324920947313877</latitude>
+							<altitude>10.14665143611737</altitude>
+							<heading>4.876577453531717</heading>
+							<tilt>0</tilt>
+							<gx:fovy>35</gx:fovy>
+							<range>83.39981671066198</range>
+							<altitudeMode>absolute</altitudeMode>
+						</LookAt>
+						<styleUrl>#__managed_style_1D5A16CB66410F58F0E1</styleUrl>
+						<Polygon>
+							<outerBoundaryIs>
+								<LinearRing>
+									<coordinates>
+										101.4428142690662,0.5322095301054723,0 101.4428501486028,0.5322546620339864,0 101.442897579399,0.5322776393555175,0 101.443014634387,0.5322802836792107,0 101.4432231857256,0.5322694733273488,0 101.4435425048506,0.5322647393110099,0 101.4439694166646,0.532259677554368,0 101.4443590720659,0.5322575495154545,0 101.4447600917052,0.5322553209071917,0 101.4453348468454,0.5322544490922092,0 101.445891817675,0.5322516264292709,0 101.4463963407895,0.5322460634669166,0 101.4468918416405,0.532241804809108,0 101.4475692583099,0.5322348746316871,0 101.4475735244423,0.532940646174099,0 101.4475737683389,0.5334974541193322,0 101.4475804624636,0.5344206752044235,0 101.4475850868852,0.5354179615014387,0 101.4475873755541,0.5359064742998523,0 101.4470136320085,0.5359095741520594,0 101.4462015539025,0.5359144506989375,0 101.4455145354383,0.5359250354052236,0 101.444921947961,0.5359260235266601,0 101.4448583324793,0.5359294025905869,0 101.4447962732989,0.5359124523884788,0 101.4444958615503,0.5358997616048706,0 101.4440068336001,0.5358827562017794,0 101.443799538143,0.5358953422963749,0 101.4434492088568,0.535936086304676,0 101.4431271059626,0.5359511378453289,0 101.4430808453167,0.5355257598091884,0 101.4430524528011,0.5352427787002013,0 101.4430220325964,0.5349035013330286,0 101.4429903902659,0.5345498424404174,0 101.4429642519936,0.5341600851057331,0 101.4429435616434,0.5338404995645034,0 101.4429098684188,0.53339691084972,0 101.4429032159299,0.5332962293888636,0 101.4428903722111,0.5331696962299151,0 101.4428696425915,0.5328991351332671,0 101.442843564749,0.5326330996420982,0 101.4428358992482,0.5325454335548023,0 101.4428300238527,0.5324103799980908,0 101.4428142690662,0.5322095301054723,0 
+									</coordinates>
+								</LinearRing>
+							</outerBoundaryIs>
+						</Polygon>
+					</Placemark>
+				</Folder>
+			</Folder>
+		</Folder>
+	</Folder>
+</Document>
+</kml>
