@@ -99,7 +99,7 @@
         .logo-text span { color: rgba(255,255,255,0.8); font-size: 14px; }
         .header-actions { display: flex; gap: 12px; align-items: center; }
         
-        /* Tombol Refresh yang diperbagus */
+        /* TOMBOL REFRESH */
         .btn-refresh {
             background: rgba(255,255,255,0.15);
             color: var(--white);
@@ -173,7 +173,66 @@
             justify-content: center;
             border: 2px solid var(--primary);
         }
-        
+
+        /* ============================================= */
+        /* TOMBOL LIHAT JADWAL OP - MENCOLOK            */
+        /* ============================================= */
+        .btn-jadwal {
+            background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+            color: #1a202c;
+            border: none;
+            padding: 0 20px;
+            height: 48px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(253, 160, 133, 0.4);
+            text-decoration: none;
+            letter-spacing: 0.3px;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-jadwal::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .btn-jadwal:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(253, 160, 133, 0.6);
+            background: linear-gradient(135deg, #f8d05e 0%, #fc8f6b 100%);
+        }
+        .btn-jadwal:hover::after {
+            opacity: 1;
+        }
+        .btn-jadwal:active {
+            transform: scale(0.97);
+        }
+        .btn-jadwal i {
+            font-size: 18px;
+            color: #1a202c;
+        }
+        .btn-jadwal .jadwal-badge {
+            background: #1a202c;
+            color: #fda085;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 50px;
+            margin-left: 2px;
+        }
+
         .main-content { max-width: 1400px; margin: 0 auto; padding: 24px; }
         .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin-bottom: 24px; }
         .stat-card { background: var(--white); padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow-sm); display: flex; align-items: center; gap: 16px; transition: var(--transition); }
@@ -278,11 +337,18 @@
         @media (max-width: 768px) {
             .header-content { flex-direction: column; align-items: stretch; gap: 12px; }
             .logo-section { justify-content: center; }
-            .header-actions { justify-content: center; }
+            .header-actions { justify-content: center; flex-wrap: wrap; }
             .stats-grid { grid-template-columns: 1fr 1fr; }
             .filter-group input, .filter-group select { min-width: 120px; flex: 1 1 auto; }
             .card-slider { height: 200px; }
             .logo-text h1 { font-size: 18px; }
+            
+            .btn-jadwal {
+                padding: 0 16px;
+                height: 42px;
+                font-size: 13px;
+            }
+            .btn-jadwal i { font-size: 15px; }
             
             .cards-grid { 
                 grid-template-columns: 1fr 1fr; 
@@ -329,6 +395,14 @@
             .logo-text span { font-size: 11px; }
             .countdown-timer { font-size: 10px; padding: 3px 8px; flex-wrap: wrap; }
             .btn-refresh { width: 36px; height: 36px; font-size: 14px; }
+            .btn-jadwal {
+                padding: 0 12px;
+                height: 36px;
+                font-size: 11px;
+                gap: 4px;
+            }
+            .btn-jadwal i { font-size: 13px; }
+            .btn-jadwal .jadwal-badge { font-size: 8px; padding: 1px 6px; }
         }
         
         @media (max-width: 360px) {
@@ -346,6 +420,13 @@
             .card-badge { font-size: 8px; padding: 2px 6px; }
             .countdown-timer { font-size: 9px; padding: 2px 6px; }
             .btn-refresh { width: 32px; height: 32px; font-size: 12px; }
+            .btn-jadwal {
+                padding: 0 10px;
+                height: 32px;
+                font-size: 10px;
+                gap: 3px;
+            }
+            .btn-jadwal i { font-size: 11px; }
         }
 
         /* ========================================== */
@@ -429,6 +510,16 @@
                 </div>
             </div>
             <div class="header-actions">
+                <!-- TOMBOL LIHAT JADWAL OP - MENCOLOK -->
+                <a href="https://senapelan.github.io/Home/publik/senapelankencana/operatorparit/jadwalopparit.html" 
+                   class="btn-jadwal" 
+                   target="_blank"
+                   title="Lihat Jadwal Operasional Petugas">
+                    <i class="fas fa-calendar-alt"></i>
+                    Lihat Jadwal OP
+                    <span class="jadwal-badge">NEW</span>
+                </a>
+                
                 <button class="btn-refresh" id="btnRefresh" title="Refresh Data">
                     <i class="fas fa-sync-alt refresh-icon"></i>
                     <i class="fas fa-spinner refresh-spinner"></i>
@@ -927,97 +1018,96 @@
         // ============================================
         // FUNGSI DETERMINE STATUS
         // ============================================
- function determineStatus(item) {
-    const tanggal = item['Hari/Tanggal'] || item['tanggal'] || '';
-    const jamMulai = item['Jam Mulai'] || '';
-    const jamSelesai = item['Jam Selesai'] || '';
-    const jumlahPersonil = parseInt(item['Jumlah Personil']) || 0;
-    
-    // Jika jumlah personil 0 = Hari Libur
-    if (jumlahPersonil === 0) {
-        return 'Hari Libur';
-    }
-    
-    // Parsing tanggal
-    const eventDate = parseDateYMD(tanggal);
-    if (!eventDate) return 'Belum Selesai';
-    
-    // Waktu sekarang (WIB)
-    const now = getNowWIB();
-    const today = getTodayWIB();
-    const todayStr = formatDateWIB(today);
-    const eventDateStr = formatDateWIB(eventDate);
-    
-    // Fungsi untuk mengubah waktu (HH:MM) ke menit
-    function parseTimeToMinutes(timeStr) {
-        if (!timeStr) return null;
-        // Format: "08:00" atau "15:00"
-        if (typeof timeStr === 'string' && timeStr.includes(':')) {
-            const parts = timeStr.split(':');
-            if (parts.length === 2) {
-                return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+        function determineStatus(item) {
+            const tanggal = item['Hari/Tanggal'] || item['tanggal'] || '';
+            const jamMulai = item['Jam Mulai'] || '';
+            const jamSelesai = item['Jam Selesai'] || '';
+            const jumlahPersonil = parseInt(item['Jumlah Personil']) || 0;
+            
+            // Jika jumlah personil 0 = Hari Libur
+            if (jumlahPersonil === 0) {
+                return 'Hari Libur';
             }
-        }
-        return null;
-    }
-    
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
-    const startMinutes = parseTimeToMinutes(jamMulai);
-    const endMinutes = parseTimeToMinutes(jamSelesai);
-    
-    // ========================================
-    // LOGIKA UNTUK HARI KEMAREN (< hari ini)
-    // ========================================
-    if (eventDateStr < todayStr) {
-        // Jika ada jam selesai, sudah pasti sudah bekerja
-        if (jamSelesai) {
-            return 'Sudah Bekerja';
-        }
-        // Jika tidak ada jam selesai, gunakan status yang tersimpan
-        const existingStatus = item['Status'] || '';
-        if (existingStatus === 'Sudah Bekerja' || existingStatus === 'Belum Selesai') {
-            return existingStatus;
-        }
-        return 'Sudah Bekerja'; // Default untuk hari kemaren
-    }
-    
-    // ========================================
-    // LOGIKA UNTUK HARI INI (= hari ini)
-    // ========================================
-    if (eventDateStr === todayStr) {
-        // Case 1: Belum waktunya mulai
-        if (startMinutes !== null && nowMinutes < startMinutes) {
-            return 'Menunggu Jadwal';
-        }
-        
-        // Case 2: Sudah melewati jam selesai
-        if (endMinutes !== null && nowMinutes >= endMinutes) {
-            return 'Sudah Bekerja';
-        }
-        
-        // Case 3: Sedang dalam jam kerja
-        if (startMinutes !== null && endMinutes !== null && 
-            nowMinutes >= startMinutes && nowMinutes < endMinutes) {
+            
+            // Parsing tanggal
+            const eventDate = parseDateYMD(tanggal);
+            if (!eventDate) return 'Belum Selesai';
+            
+            // Waktu sekarang (WIB)
+            const now = getNowWIB();
+            const today = getTodayWIB();
+            const todayStr = formatDateWIB(today);
+            const eventDateStr = formatDateWIB(eventDate);
+            
+            // Fungsi untuk mengubah waktu (HH:MM) ke menit
+            function parseTimeToMinutes(timeStr) {
+                if (!timeStr) return null;
+                if (typeof timeStr === 'string' && timeStr.includes(':')) {
+                    const parts = timeStr.split(':');
+                    if (parts.length === 2) {
+                        return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+                    }
+                }
+                return null;
+            }
+            
+            const nowMinutes = now.getHours() * 60 + now.getMinutes();
+            const startMinutes = parseTimeToMinutes(jamMulai);
+            const endMinutes = parseTimeToMinutes(jamSelesai);
+            
+            // ========================================
+            // LOGIKA UNTUK HARI KEMAREN (< hari ini)
+            // ========================================
+            if (eventDateStr < todayStr) {
+                // Jika ada jam selesai, sudah pasti sudah bekerja
+                if (jamSelesai) {
+                    return 'Sudah Bekerja';
+                }
+                // Jika tidak ada jam selesai, gunakan status yang tersimpan
+                const existingStatus = item['Status'] || '';
+                if (existingStatus === 'Sudah Bekerja' || existingStatus === 'Belum Selesai') {
+                    return existingStatus;
+                }
+                return 'Sudah Bekerja'; // Default untuk hari kemaren
+            }
+            
+            // ========================================
+            // LOGIKA UNTUK HARI INI (= hari ini)
+            // ========================================
+            if (eventDateStr === todayStr) {
+                // Case 1: Belum waktunya mulai
+                if (startMinutes !== null && nowMinutes < startMinutes) {
+                    return 'Menunggu Jadwal';
+                }
+                
+                // Case 2: Sudah melewati jam selesai
+                if (endMinutes !== null && nowMinutes >= endMinutes) {
+                    return 'Sudah Bekerja';
+                }
+                
+                // Case 3: Sedang dalam jam kerja
+                if (startMinutes !== null && endMinutes !== null && 
+                    nowMinutes >= startMinutes && nowMinutes < endMinutes) {
+                    return 'Belum Selesai';
+                }
+                
+                // Fallback: jika ada jam selesai tapi tidak terdeteksi
+                if (jamSelesai) {
+                    return 'Sudah Bekerja';
+                }
+                
+                return 'Belum Selesai';
+            }
+            
+            // ========================================
+            // LOGIKA UNTUK HARI BESOK (> hari ini)
+            // ========================================
+            if (eventDateStr > todayStr) {
+                return 'Menunggu Jadwal';
+            }
+            
             return 'Belum Selesai';
         }
-        
-        // Fallback: jika ada jam selesai tapi tidak terdeteksi
-        if (jamSelesai) {
-            return 'Sudah Bekerja';
-        }
-        
-        return 'Belum Selesai';
-    }
-    
-    // ========================================
-    // LOGIKA UNTUK HARI BESOK (> hari ini)
-    // ========================================
-    if (eventDateStr > todayStr) {
-        return 'Menunggu Jadwal';
-    }
-    
-    return 'Belum Selesai';
-}
 
         // ============================================
         // LOAD DATA
