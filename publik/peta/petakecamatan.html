@@ -579,6 +579,8 @@ function getGoogleDriveImageUrl(url) {
 
 var map, kmlLayer, markerLayers = {}, allData = [];
 var wilayahData = {}; // Data dari sheet WILAYAH_ADMIN
+var wilayahLayer = null; // Layer untuk batas wilayah dari sheet
+var satelliteLayer = null; // Layer untuk citra satelit
 
 // ============================================================
 // INISIALISASI MAP
@@ -591,10 +593,18 @@ function initMap() {
         zoomControl: true
     });
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Base layer: OpenStreetMap
+    var osmLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
-    }).addTo(map);
+    });
+    osmLayer.addTo(map);
+
+    // Satellite layer (ESRI)
+    satelliteLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        attribution: '© Esri',
+        maxZoom: 19
+    });
 
     L.control.zoom({ position: 'topright' }).addTo(map);
     L.control.scale({ position: 'bottomleft', metric: true, imperial: false }).addTo(map);
@@ -656,6 +666,7 @@ function initMap() {
     loadWilayahAdmin().then(function() {
         loadKML();
         loadData();
+        buildLayerControlsBase();
     });
 }
 
@@ -673,9 +684,10 @@ function loadWilayahAdmin() {
             if (data.error) throw new Error(data.error);
             
             wilayahData = {};
+            var wilayahList = [];
+            
             if (data.data && data.data.length > 0) {
                 data.data.forEach(function(item) {
-                    // Gunakan ID_POLYGON sebagai key
                     var key = item.id_polygon || item.id || '';
                     if (key) {
                         wilayahData[key] = {
@@ -688,29 +700,219 @@ function loadWilayahAdmin() {
                             deskripsi: item.deskripsi || '',
                             icon: item.popup_icon || '🏛️'
                         };
-                    }
-                    
-                    // Juga mapping berdasarkan nama (fallback)
-                    var nama = (item.nama_wilayah || '').toLowerCase().trim();
-                    if (nama) {
-                        wilayahData[nama] = wilayahData[key] || {
-                            warnaGaris: item.warna_garis || '#1976d2',
-                            warnaFill: item.warna_fill || '#1976d2',
-                            opacityFill: parseFloat(item.opacity_fill) || 0.15,
-                            deskripsi: item.deskripsi || '',
-                            icon: item.popup_icon || '🏛️'
-                        };
+                        wilayahList.push({
+                            id: key,
+                            nama: item.nama_wilayah || item.nama || '',
+                            tingkat: item.tingkat || '',
+                            induk: item.induk || ''
+                        });
                     }
                 });
             }
             
             console.log('✅ Wilayah Admin dimuat:', Object.keys(wilayahData).length, 'data');
-            return wilayahData;
+            return wilayahList;
         })
         .catch(function(error) {
             console.error('❌ Gagal load wilayah:', error);
-            return {};
+            return [];
         });
+}
+
+// ============================================================
+// BUILD LAYER CONTROLS BASE (Satelit & Batas Wilayah)
+// ============================================================
+
+function buildLayerControlsBase() {
+    var container = document.getElementById('layerControls');
+    
+    // === GROUP: BASE MAP ===
+    var baseGroup = document.createElement('div');
+    baseGroup.className = 'layer-group';
+    
+    var baseHeader = document.createElement('div');
+    baseHeader.className = 'layer-group-header';
+    baseHeader.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span class="color-dot" style="background:#1976d2;"></span><span>🗺️ BASE MAP</span><span class="count-badge">2</span></div><span class="toggle-icon">▼</span>';
+    baseHeader.addEventListener('click', function() {
+        var body = this.nextElementSibling;
+        body.classList.toggle('hidden');
+        var icon = this.querySelector('.toggle-icon');
+        icon.classList.toggle('collapsed');
+    });
+    baseGroup.appendChild(baseHeader);
+    
+    var baseBody = document.createElement('div');
+    baseBody.className = 'layer-group-body';
+    
+    // OSM (default, selalu aktif)
+    var osmItem = document.createElement('div');
+    osmItem.className = 'layer-item active';
+    osmItem.style.borderLeftColor = '#1976d2';
+    osmItem.innerHTML = '<input type="radio" name="baselayer" value="osm" checked /><span>🌍 OpenStreetMap</span>';
+    baseBody.appendChild(osmItem);
+    
+    // Satellite
+    var satItem = document.createElement('div');
+    satItem.className = 'layer-item';
+    satItem.style.borderLeftColor = '#388E3C';
+    satItem.innerHTML = '<input type="radio" name="baselayer" value="satellite" /><span>🛰️ Citra Satelit</span>';
+    satItem.querySelector('input').addEventListener('change', function() {
+        if (this.checked) {
+            map.removeLayer(map._layers[Object.keys(map._layers).find(function(k) { 
+                return map._layers[k] instanceof L.TileLayer && map._layers[k]._url && map._layers[k]._url.indexOf('openstreetmap') !== -1;
+            })]);
+            // Cari dan hapus OSM layer
+            for (var key in map._layers) {
+                if (map._layers[key] instanceof L.TileLayer) {
+                    var url = map._layers[key]._url || '';
+                    if (url.indexOf('openstreetmap') !== -1) {
+                        map.removeLayer(map._layers[key]);
+                    }
+                }
+            }
+            if (!map.hasLayer(satelliteLayer)) {
+                satelliteLayer.addTo(map);
+            }
+        }
+    });
+    baseBody.appendChild(satItem);
+    
+    // OSM item
+    osmItem.querySelector('input').addEventListener('change', function() {
+        if (this.checked) {
+            if (map.hasLayer(satelliteLayer)) {
+                map.removeLayer(satelliteLayer);
+            }
+            // Cari dan tambahkan OSM layer
+            var hasOsm = false;
+            for (var key in map._layers) {
+                if (map._layers[key] instanceof L.TileLayer) {
+                    var url = map._layers[key]._url || '';
+                    if (url.indexOf('openstreetmap') !== -1) {
+                        hasOsm = true;
+                    }
+                }
+            }
+            if (!hasOsm) {
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    maxZoom: 19,
+                    attribution: '© OpenStreetMap'
+                }).addTo(map);
+            }
+        }
+    });
+    
+    baseGroup.appendChild(baseBody);
+    container.appendChild(baseGroup);
+    
+    // === GROUP: BATAS WILAYAH ===
+    var wilayahGroup = document.createElement('div');
+    wilayahGroup.className = 'layer-group';
+    
+    var wilayahHeader = document.createElement('div');
+    wilayahHeader.className = 'layer-group-header';
+    var totalWilayah = Object.keys(wilayahData).length;
+    wilayahHeader.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span class="color-dot" style="background:#D32F2F;"></span><span>📐 BATAS WILAYAH</span><span class="count-badge">' + totalWilayah + '</span></div><span class="toggle-icon collapsed">▼</span>';
+    wilayahHeader.addEventListener('click', function() {
+        var body = this.nextElementSibling;
+        body.classList.toggle('hidden');
+        var icon = this.querySelector('.toggle-icon');
+        icon.classList.toggle('collapsed');
+    });
+    // Default collapsed
+    wilayahGroup.appendChild(wilayahHeader);
+    
+    var wilayahBody = document.createElement('div');
+    wilayahBody.className = 'layer-group-body hidden'; // collapsed by default
+    
+    // All checkbox
+    var allWilayah = document.createElement('div');
+    allWilayah.className = 'layer-item active';
+    allWilayah.style.borderLeftColor = '#D32F2F';
+    allWilayah.innerHTML = '<input type="checkbox" checked id="wilayahAll" /><span style="font-weight:500;font-size:12px;">🏛️ Semua Wilayah</span>';
+    var allCheckbox = allWilayah.querySelector('input');
+    allCheckbox.addEventListener('change', function() {
+        var checked = this.checked;
+        wilayahBody.querySelectorAll('input[data-wilayah="true"]').forEach(function(cb) {
+            cb.checked = checked;
+            cb.dispatchEvent(new Event('change'));
+        });
+    });
+    wilayahBody.appendChild(allWilayah);
+    
+    // Tampilkan setiap wilayah dari sheet WILAYAH_ADMIN
+    var sortedWilayah = Object.keys(wilayahData).sort();
+    sortedWilayah.forEach(function(id) {
+        var w = wilayahData[id];
+        if (!w || !w.nama) return;
+        
+        var item = document.createElement('div');
+        item.className = 'layer-item active';
+        item.style.borderLeftColor = w.warnaGaris || '#1976d2';
+        var icon = w.icon || '📍';
+        item.innerHTML = '<input type="checkbox" checked data-wilayah="true" data-wilayah-id="' + id + '" /><span class="sub-dot" style="background:' + (w.warnaGaris || '#1976d2') + ';"></span><span>' + icon + ' ' + w.nama + '</span><span class="item-count">' + (w.tingkat || '') + '</span>';
+        
+        var checkbox = item.querySelector('input');
+        checkbox.addEventListener('change', function() {
+            toggleWilayahLayer(this.dataset.wilayahId, this.checked);
+        });
+        
+        wilayahBody.appendChild(item);
+    });
+    
+    wilayahGroup.appendChild(wilayahBody);
+    container.appendChild(wilayahGroup);
+}
+
+// ============================================================
+// TOGGLE WILAYAH LAYER (dari sheet WILAYAH_ADMIN)
+// ============================================================
+
+function toggleWilayahLayer(wilayahId, visible) {
+    // Cari polygon dengan ID yang sesuai di kmlLayer
+    if (!kmlLayer) return;
+    
+    var found = false;
+    kmlLayer.eachLayer(function(layer) {
+        if (layer.feature && layer.feature.properties) {
+            var layerId = layer.feature.properties.id || layer.feature.id || '';
+            if (layerId === wilayahId) {
+                found = true;
+                if (visible) {
+                    if (!map.hasLayer(layer)) {
+                        map.addLayer(layer);
+                    }
+                } else {
+                    if (map.hasLayer(layer)) {
+                        map.removeLayer(layer);
+                    }
+                }
+            }
+        }
+    });
+    
+    // Jika tidak ditemukan berdasarkan ID, coba berdasarkan nama
+    if (!found && wilayahData[wilayahId]) {
+        var targetNama = wilayahData[wilayahId].nama || '';
+        if (targetNama) {
+            kmlLayer.eachLayer(function(layer) {
+                if (layer.feature && layer.feature.properties) {
+                    var name = layer.feature.properties.name || layer.feature.properties.Nama || '';
+                    if (name === targetNama) {
+                        if (visible) {
+                            if (!map.hasLayer(layer)) {
+                                map.addLayer(layer);
+                            }
+                        } else {
+                            if (map.hasLayer(layer)) {
+                                map.removeLayer(layer);
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
 }
 
 // ============================================================
@@ -745,23 +947,27 @@ function loadKML() {
                         // Ambil nama dari feature
                         if (layer.feature && layer.feature.properties) {
                             name = layer.feature.properties.name || layer.feature.properties.Nama || 'Wilayah';
+                            layerId = layer.feature.properties.id || layer.feature.id || '';
                         }
                         
                         // Cari data wilayah berdasarkan ID atau nama
                         var wilayah = null;
                         var nameLower = name.toLowerCase().trim();
                         
-                        // Coba cari berdasarkan nama (case insensitive)
-                        Object.keys(wilayahData).forEach(function(key) {
-                            var keyLower = key.toLowerCase().trim();
-                            if (keyLower === nameLower || nameLower.indexOf(keyLower) !== -1 || keyLower.indexOf(nameLower) !== -1) {
-                                wilayah = wilayahData[key];
-                            }
-                        });
+                        // Coba cari berdasarkan ID
+                        if (layerId && wilayahData[layerId]) {
+                            wilayah = wilayahData[layerId];
+                        }
                         
-                        // Jika tidak ditemukan, coba berdasarkan nama persis
+                        // Jika tidak, cari berdasarkan nama
                         if (!wilayah) {
-                            wilayah = wilayahData[name] || null;
+                            Object.keys(wilayahData).forEach(function(key) {
+                                var keyLower = key.toLowerCase().trim();
+                                var w = wilayahData[key];
+                                if (w && w.nama && w.nama.toLowerCase().trim() === nameLower) {
+                                    wilayah = w;
+                                }
+                            });
                         }
                         
                         // Apply style dari sheet atau default
@@ -831,7 +1037,7 @@ function loadData() {
             
             createAdditionalStats();
             updateStats(allData);
-            buildLayerControls(allData);
+            buildLayerControlsMarkers(allData);
             renderMarkers(allData);
             updateLegend(allData);
             
@@ -860,7 +1066,7 @@ function loadData() {
 }
 
 // ============================================================
-// FUNGSI-FUNGSI LAINNYA (SAMA SEPERTI SEBELUMNYA)
+// FUNGSI-FUNGSI LAINNYA
 // ============================================================
 
 function createAdditionalStats() {
@@ -920,9 +1126,26 @@ function updateStats(data) {
     });
 }
 
-function buildLayerControls(data) {
+function buildLayerControlsMarkers(data) {
     var container = document.getElementById('layerControls');
-    container.innerHTML = '';
+    
+    // === GROUP: DATA LOKASI ===
+    var markerGroup = document.createElement('div');
+    markerGroup.className = 'layer-group';
+    
+    var markerHeader = document.createElement('div');
+    markerHeader.className = 'layer-group-header';
+    markerHeader.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span class="color-dot" style="background:#FF6F00;"></span><span>📍 DATA LOKASI</span><span class="count-badge">' + data.length + '</span></div><span class="toggle-icon">▼</span>';
+    markerHeader.addEventListener('click', function() {
+        var body = this.nextElementSibling;
+        body.classList.toggle('hidden');
+        var icon = this.querySelector('.toggle-icon');
+        icon.classList.toggle('collapsed');
+    });
+    markerGroup.appendChild(markerHeader);
+    
+    var markerBody = document.createElement('div');
+    markerBody.className = 'layer-group-body';
     
     var groups = {};
     data.forEach(function(item) {
@@ -948,9 +1171,16 @@ function buildLayerControls(data) {
         
         var groupDiv = document.createElement('div');
         groupDiv.className = 'layer-group';
+        groupDiv.style.border = '1px solid #e8e8e8';
+        groupDiv.style.borderRadius = '8px';
+        groupDiv.style.marginBottom = '5px';
+        groupDiv.style.overflow = 'hidden';
         
         var header = document.createElement('div');
         header.className = 'layer-group-header';
+        header.style.background = '#f8f9fa';
+        header.style.padding = '6px 12px';
+        header.style.fontSize = '12px';
         header.innerHTML = '<div style="display:flex;align-items:center;gap:8px;"><span class="color-dot" style="background:' + color + ';"></span><span>' + icon + ' ' + kat + '</span><span class="count-badge">' + items.length + '</span></div><span class="toggle-icon">▼</span>';
         header.addEventListener('click', function() {
             var body = this.nextElementSibling;
@@ -1012,8 +1242,11 @@ function buildLayerControls(data) {
         });
         
         groupDiv.appendChild(body);
-        container.appendChild(groupDiv);
+        markerBody.appendChild(groupDiv);
     });
+    
+    markerGroup.appendChild(markerBody);
+    container.appendChild(markerGroup);
 }
 
 function renderMarkers(data) {
