@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Laporan Jadwal Petugas Operasi Pembersihan & Drainase</title>
+  
+  <style>
+    /* ============ RESET & BASE ============ */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Times New Roman', 'Calibri', 'Arial', serif;
+      background: #ffffff;
+      padding: 40px 20px;
+      color: #1a1a1a;
+    }
+    
+    /* ============ KOP SURAT / HEADER LAPORAN ============ */
+    .laporan-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px 50px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.08);
+      border: 1px solid #d0d0d0;
+    }
+    
+    /* Header dengan Logo */
+    .kop-laporan {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 3px double #1a237e;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+    
+    .kop-logo {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      flex: 1;
+    }
+    
+    .kop-logo img {
+      height: 80px;
+      width: auto;
+      object-fit: contain;
+    }
+    
+    .kop-logo-left {
+      justify-content: flex-start;
+      padding-left: 10px;
+    }
+    
+    .kop-logo-right {
+      justify-content: flex-end;
+      padding-right: 10px;
+    }
+    
+    .kop-tengah {
+      text-align: center;
+      flex: 2;
+      padding: 0 10px;
+    }
+    
+    .kop-tengah .instansi-1 {
+      font-size: 20px;
+      letter-spacing: 2px;
+      font-weight: bold;
+      color: #1a237e;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+    
+    .kop-tengah .instansi-2 {
+      font-size: 24px;
+      letter-spacing: 2px;
+      font-weight: bold;
+      color: #1a237e;
+      text-transform: uppercase;
+      line-height: 1.3;
+    }
+    
+    .kop-tengah .judul {
+      font-size: 15px;
+      font-weight: bold;
+      margin: 8px 0 2px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .kop-tengah .sub-judul {
+      font-size: 12px;
+      font-weight: normal;
+      color: #333;
+    }
+    
+    .kop-tengah .periode {
+      font-size: 12px;
+      margin-top: 3px;
+      color: #555;
+      font-weight: bold;
+    }
+    
+    /* ============ INFO LAPORAN ============ */
+    .info-laporan {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 15px;
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    
+    .info-laporan .label {
+      font-weight: bold;
+    }
+    
+    /* ============ TABEL ============ */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 10px 0 20px 0;
+    }
+    
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-family: 'Calibri', 'Arial', sans-serif;
+    }
+    
+    table th {
+      background: #1a237e;
+      color: white;
+      padding: 8px 10px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border: 1px solid #1a237e;
+      white-space: nowrap;
+    }
+    
+    table td {
+      padding: 7px 10px;
+      border: 1px solid #b0b0b0;
+      vertical-align: middle;
+      font-size: 12px;
+    }
+    
+    table tbody tr:nth-child(even) {
+      background: #f7f9fc;
+    }
+    
+    table tbody tr:nth-child(odd) {
+      background: #ffffff;
+    }
+    
+    table tbody tr:hover {
+      background: #e3eaf5;
+    }
+    
+    .text-left { text-align: left; }
+    .text-center { text-align: center; }
+    .text-right { text-align: right; }
+    
+    .col-no {
+      text-align: center;
+      width: 40px;
+      font-weight: bold;
+    }
+    
+    /* Status */
+    .status-cell {
+      text-align: center;
+      font-weight: bold;
+      font-size: 11px;
+    }
+    
+    .status-selesai { color: #1b5e20; }
+    .status-proses { color: #e65100; }
+    .status-belum { color: #b71c1c; }
+    .status-default { color: #424242; }
+    
+    /* ============ TTD / FOOTER ============ */
+    .ttd-section {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      display: flex;
+      justify-content: flex-end;
+    }
+    
+    .ttd-box {
+      text-align: center;
+      width: 300px;
+    }
+    
+    .ttd-box .ttd-tanggal {
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+    
+    .ttd-box .ttd-jabatan {
+      font-size: 14px;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-bottom: 5px;
+    }
+    
+    .ttd-box .ttd-dto {
+      font-size: 12px;
+      letter-spacing: 3px;
+      margin: 20px 0;
+    }
+    
+    .ttd-box .ttd-nama {
+      font-size: 14px;
+      font-weight: bold;
+      text-decoration: underline;
+      margin-top: 20px;
+    }
+    
+    .ttd-box .ttd-pangkat {
+      font-size: 12px;
+      margin-top: 3px;
+    }
+    
+    .ttd-box .ttd-nip {
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    
+    /* ============ LOADING & ERROR ============ */
+    .loading-state {
+      text-align: center;
+      padding: 60px 20px;
+      font-family: 'Calibri', 'Arial', sans-serif;
+    }
+    
+    .loading-state .spinner {
+      display: inline-block;
+      width: 30px;
+      height: 30px;
+      border: 3px solid #e0e0e0;
+      border-top: 3px solid #1a237e;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .loading-state p {
+      margin-top: 12px;
+      color: #666;
+      font-size: 14px;
+    }
+    
+    .error-state {
+      background: #ffebee;
+      color: #c62828;
+      padding: 20px;
+      border: 1px solid #c62828;
+      border-radius: 4px;
+      font-family: 'Calibri', 'Arial', sans-serif;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 50px 20px;
+      color: #888;
+      font-family: 'Calibri', 'Arial', sans-serif;
+      font-size: 15px;
+    }
+    
+    /* ============ TOMBOL ============ */
+    .toolbar {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .toolbar-left {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    
+    /* Filter Bulan */
+    .filter-bulan {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+    }
+    
+    .filter-bulan label {
+      font-size: 12px;
+      font-weight: bold;
+      color: #333;
+      font-family: 'Calibri', 'Arial', sans-serif;
+    }
+    
+    .filter-bulan select {
+      padding: 5px 10px;
+      border: 1px solid #b0b0b0;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: 'Calibri', 'Arial', sans-serif;
+      background: white;
+      cursor: pointer;
+    }
+    
+    .filter-bulan select:focus {
+      outline: none;
+      border-color: #1a237e;
+    }
+    
+    .btn-laporan {
+      padding: 6px 16px;
+      border: 1px solid #1a237e;
+      background: white;
+      color: #1a237e;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: 'Calibri', 'Arial', sans-serif;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    
+    .btn-laporan:hover {
+      background: #1a237e;
+      color: white;
+    }
+    
+    .btn-laporan.print {
+      border-color: #2e7d32;
+      color: #2e7d32;
+    }
+    
+    .btn-laporan.print:hover {
+      background: #2e7d32;
+      color: white;
+    }
+    
+    .btn-laporan.danger {
+      border-color: #c62828;
+      color: #c62828;
+    }
+    
+    .btn-laporan.danger:hover {
+      background: #c62828;
+      color: white;
+    }
+    
+    .btn-laporan.active-filter {
+      background: #1a237e;
+      color: white;
+    }
+    
+    .search-input {
+      padding: 6px 12px;
+      border: 1px solid #b0b0b0;
+      border-radius: 3px;
+      font-size: 12px;
+      font-family: 'Calibri', 'Arial', sans-serif;
+      width: 200px;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: #1a237e;
+    }
+    
+    .badge-count {
+      font-size: 12px;
+      color: #555;
+      font-family: 'Calibri', 'Arial', sans-serif;
+    }
+    
+    /* ============ PRINT STYLE ============ */
+    @media print {
+      /* Reset body untuk print */
+      body {
+        background: white !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        width: 100% !important;
+      }
+      
+      .laporan-container {
+        box-shadow: none !important;
+        border: none !important;
+        padding: 15px 20px !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+        width: 100% !important;
+      }
+      
+      /* Toolbar dan tombol hilang saat print */
+      .toolbar,
+      .no-print {
+        display: none !important;
+      }
+      
+      /* ===== PERBAIKAN HEADER PRINT ===== */
+      .kop-laporan {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+        border-bottom: 3px double #000 !important;
+        padding-bottom: 10px !important;
+        margin-bottom: 15px !important;
+        flex-direction: row !important;
+      }
+      
+      .kop-logo {
+        display: flex !important;
+        align-items: center !important;
+        flex: 1 !important;
+        gap: 10px !important;
+      }
+      
+      .kop-logo img {
+        height: 60px !important;
+        width: auto !important;
+        object-fit: contain !important;
+        display: block !important;
+      }
+      
+      .kop-logo-left {
+        justify-content: flex-start !important;
+        padding-left: 5px !important;
+      }
+      
+      .kop-logo-right {
+        justify-content: flex-end !important;
+        padding-right: 5px !important;
+      }
+      
+      .kop-tengah {
+        text-align: center !important;
+        flex: 2 !important;
+        padding: 0 10px !important;
+      }
+      
+      .kop-tengah .instansi-1 {
+        font-size: 16px !important;
+        color: #000 !important;
+      }
+      
+      .kop-tengah .instansi-2 {
+        font-size: 20px !important;
+        color: #000 !important;
+      }
+      
+      .kop-tengah .judul {
+        font-size: 13px !important;
+      }
+      
+      .kop-tengah .sub-judul {
+        font-size: 11px !important;
+      }
+      
+      .kop-tengah .periode {
+        font-size: 11px !important;
+      }
+      
+      /* Info laporan */
+      .info-laporan {
+        font-size: 11px !important;
+        padding: 5px 0 !important;
+        border-bottom: 1px solid #000 !important;
+        margin-bottom: 10px !important;
+      }
+      
+      /* ===== PERBAIKAN TABEL UNTUK PRINT ===== */
+      .table-wrapper {
+        overflow: visible !important;
+        margin: 5px 0 10px 0 !important;
+      }
+      
+      table {
+        font-size: 10px !important;
+        width: 100% !important;
+        table-layout: auto !important;
+        page-break-inside: auto !important;
+      }
+      
+      table th {
+        background: #1a237e !important;
+        color: white !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        border: 1px solid #000 !important;
+        padding: 4px 6px !important;
+        font-size: 9px !important;
+      }
+      
+      table td {
+        border: 1px solid #000 !important;
+        padding: 4px 6px !important;
+        font-size: 10px !important;
+      }
+      
+      table tbody tr:nth-child(even) {
+        background: #f7f9fc !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+      }
+      
+      table tbody tr:nth-child(odd) {
+        background: #ffffff !important;
+      }
+      
+      /* Header tabel berulang di setiap halaman */
+      thead {
+        display: table-header-group !important;
+      }
+      
+      /* Baris tabel tidak terpotong */
+      tbody tr {
+        page-break-inside: avoid !important;
+        page-break-after: auto !important;
+      }
+      
+      /* Kolom tidak terpotong */
+      table td, table th {
+        white-space: normal !important;
+        word-wrap: break-word !important;
+      }
+      
+      /* ===== PERBAIKAN UKURAN KOLOM ===== */
+      table th:nth-child(1), table td:nth-child(1) { width: 30px !important; }
+      table th:nth-child(2), table td:nth-child(2) { width: 120px !important; }
+      table th:nth-child(3), table td:nth-child(3) { width: 150px !important; }
+      table th:nth-child(4), table td:nth-child(4) { width: 35px !important; }
+      table th:nth-child(5), table td:nth-child(5) { width: 35px !important; }
+      table th:nth-child(6), table td:nth-child(6) { width: 100px !important; }
+      table th:nth-child(7), table td:nth-child(7) { width: 110px !important; }
+      table th:nth-child(8), table td:nth-child(8) { width: 110px !important; }
+      table th:nth-child(9), table td:nth-child(9) { width: 60px !important; }
+      table th:nth-child(10), table td:nth-child(10) { width: 60px !important; }
+      table th:nth-child(11), table td:nth-child(11) { width: 100px !important; }
+      
+      /* TTD */
+      .ttd-section {
+        margin-top: 30px !important;
+        padding-top: 15px !important;
+        border-top: 1px solid #000 !important;
+      }
+      
+      .ttd-box {
+        width: 250px !important;
+      }
+      
+      .ttd-box .ttd-tanggal {
+        font-size: 11px !important;
+        margin-bottom: 10px !important;
+      }
+      
+      .ttd-box .ttd-jabatan {
+        font-size: 12px !important;
+      }
+      
+      .ttd-box .ttd-dto {
+        font-size: 11px !important;
+        margin: 10px 0 !important;
+      }
+      
+      .ttd-box .ttd-nama {
+        font-size: 12px !important;
+      }
+      
+      .ttd-box .ttd-pangkat,
+      .ttd-box .ttd-nip {
+        font-size: 10px !important;
+      }
+      
+      /* Status badge di print */
+      .status-selesai { color: #1b5e20 !important; }
+      .status-proses { color: #e65100 !important; }
+      .status-belum { color: #b71c1c !important; }
+      .status-default { color: #424242 !important; }
+      
+      /* Sembunyikan elemen yang tidak perlu */
+      .no-print {
+        display: none !important;
+      }
+    }
+    
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 768px) {
+      .laporan-container {
+        padding: 15px;
+      }
+      
+      .kop-laporan {
+        flex-direction: column;
+        gap: 10px;
+      }
+      
+      .kop-logo img {
+        height: 50px;
+      }
+      
+      .kop-tengah .instansi-1 {
+        font-size: 16px;
+      }
+      
+      .kop-tengah .instansi-2 {
+        font-size: 18px;
+      }
+      
+      .kop-tengah .judul {
+        font-size: 13px;
+      }
+      
+      .kop-tengah .sub-judul {
+        font-size: 11px;
+      }
+      
+      table {
+        font-size: 11px;
+      }
+      
+      table th, table td {
+        padding: 5px 6px;
+      }
+      
+      .search-input {
+        width: 100%;
+      }
+      
+      .toolbar {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .toolbar-left {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .filter-bulan {
+        flex-direction: column;
+        align-items: stretch;
+      }
+      
+      .ttd-section {
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="laporan-container">
+  
+  <!-- ====== KOP LAPORAN ====== -->
+  <div class="kop-laporan">
+    <!-- Logo Kiri -->
+    <div class="kop-logo kop-logo-left">
+      <img src="https://senapelan.github.io/Home/assets/metatag/logopemko/PEMKO%20512px.png" 
+           alt="Logo Pemko Pekanbaru" 
+           onerror="this.style.display='none'">
+    </div>
+    
+    <!-- Teks Tengah -->
+    <div class="kop-tengah">
+      <div class="instansi-1">PEMERINTAH KOTA PEKANBARU</div>
+      <div class="instansi-2">KECAMATAN SENAPELAN</div>
+      <div style="height:5px;"></div>
+      <div class="judul">Laporan Jadwal Petugas Operasi</div>
+      <div class="sub-judul">Pembersihan &amp; Drainase Kecamatan Senapelan</div>
+      <div class="periode">Periode : Januari - Desember 2024</div>
+    </div>
+    
+    <!-- Logo Kanan -->
+    <div class="kop-logo kop-logo-right">
+      <img src="https://senapelan.github.io/Home/assets/metatag/operatorparit/opparitsenapelan512.png" 
+           alt="Logo OP Drainase Senapelan" 
+           onerror="this.style.display='none'">
+    </div>
+  </div>
+  
+  <!-- ====== TOOLBAR ====== -->
+  <div class="toolbar no-print">
+    <div class="toolbar-left">
+      <!-- Filter Bulan -->
+      <div class="filter-bulan">
+        <label for="bulanFilter">📅 Filter Bulan:</label>
+        <select id="bulanFilter" onchange="applyFilterBulan()">
+          <option value="semua">Semua Bulan</option>
+          <option value="01">Januari</option>
+          <option value="02">Februari</option>
+          <option value="03">Maret</option>
+          <option value="04">April</option>
+          <option value="05">Mei</option>
+          <option value="06">Juni</option>
+          <option value="07">Juli</option>
+          <option value="08">Agustus</option>
+          <option value="09">September</option>
+          <option value="10">Oktober</option>
+          <option value="11">November</option>
+          <option value="12">Desember</option>
+        </select>
+        <button class="btn-laporan" onclick="applyFilterBulan()">Terapkan</button>
+        <button class="btn-laporan danger" onclick="resetFilterBulan()">Reset</button>
+      </div>
+      
+      <input type="text" class="search-input" id="searchInput" 
+             placeholder="🔍 Cari data..." 
+             onkeyup="if(event.key==='Enter') applyFilter()">
+      <button class="btn-laporan" onclick="applyFilter()">Cari</button>
+      
+      <span class="badge-count" id="totalData">Total: 0 data</span>
+      <span style="font-size:11px;color:#888;" id="filterInfo"></span>
+    </div>
+    <div>
+      <button class="btn-laporan" onclick="refreshData()">🔄 Refresh</button>
+      <button class="btn-laporan print" onclick="window.print()">🖨️ Cetak</button>
+    </div>
+  </div>
+  
+  <!-- ====== INFO LAPORAN ====== -->
+  <div class="info-laporan">
+    <span><span class="label">Tanggal Cetak :</span> <span id="tanggalCetak">-</span></span>
+    <span><span class="label">Periode :</span> <span id="periodeTampil">Semua</span></span>
+    <span><span class="label">Status :</span> <span id="statusInfo">Semua</span></span>
+    <span><span class="label">Jumlah Data :</span> <span id="jumlahData">0</span></span>
+  </div>
+  
+  <!-- ====== TABEL ====== -->
+  <div class="table-wrapper" id="tableContainer">
+    <div class="loading-state">
+      <div class="spinner"></div>
+      <p>Sedang memuat data...</p>
+    </div>
+  </div>
+  
+  <!-- ====== TTD ====== -->
+  <div class="ttd-section">
+    <div class="ttd-box">
+      <div class="ttd-tanggal">Pekanbaru, <span id="ttdTanggal">-</span></div>
+      <div class="ttd-jabatan">CAMAT SENAPELAN</div>
+      <div class="ttd-dto">D.T.O</div>
+      <div class="ttd-nama">REIN RIZKA KARVY, S. STP., M.Si</div>
+      <div class="ttd-pangkat">Pembina (IV/a)</div>
+      <div class="ttd-nip">NIP. 19910521 201206 2 001</div>
+    </div>
+  </div>
+  
+</div>
+
+<script>
+  // ============ JAVASCRIPT ============
+  
+  // GANTI dengan URL Web App Anda!
+  const API_URL = 'https://script.google.com/macros/s/AKfycbyZNaBg3QMQSHrW_uIqGQaNRX4HVYpOZ50qtARhu0CY6ghgI0L43qIc4fkkdcLrvmAn/exec';
+  
+  let allData = [];
+  let currentFilterBulan = 'semua';
+  let currentSearchKeyword = '';
+  
+  // Nama bulan dalam Bahasa Indonesia
+  const NAMA_BULAN = {
+    '01': 'Januari', '02': 'Februari', '03': 'Maret', '04': 'April',
+    '05': 'Mei', '06': 'Juni', '07': 'Juli', '08': 'Agustus',
+    '09': 'September', '10': 'Oktober', '11': 'November', '12': 'Desember'
+  };
+  
+  // Nama hari dalam Bahasa Indonesia
+  const NAMA_HARI = {
+    'Sunday': 'Minggu', 'Monday': 'Senin', 'Tuesday': 'Selasa',
+    'Wednesday': 'Rabu', 'Thursday': 'Kamis', 'Friday': 'Jumat',
+    'Saturday': 'Sabtu'
+  };
+  
+  /**
+   * Format tanggal dari ISO 8601 ke format yang diinginkan
+   * Contoh: "2026-08-01T17:00:00.000Z" => "Jumat, 01 Agustus 2026"
+   */
+  function formatTanggal(tanggalStr) {
+    if (!tanggalStr || tanggalStr === '-' || tanggalStr === '') {
+      return '-';
+    }
+    
+    try {
+      // Parse tanggal ISO
+      const date = new Date(tanggalStr);
+      
+      // Cek apakah tanggal valid
+      if (isNaN(date.getTime())) {
+        return tanggalStr;
+      }
+      
+      const hari = NAMA_HARI[date.toLocaleDateString('en-US', { weekday: 'long' })];
+      const tanggal = String(date.getDate()).padStart(2, '0');
+      const bulan = NAMA_BULAN[String(date.getMonth() + 1).padStart(2, '0')];
+      const tahun = date.getFullYear();
+      
+      return `${hari}, ${tanggal} ${bulan} ${tahun}`;
+    } catch (e) {
+      return tanggalStr;
+    }
+  }
+  
+  /**
+   * Ekstrak bulan dari tanggal ISO
+   */
+  function getBulanFromDate(tanggalStr) {
+    if (!tanggalStr || tanggalStr === '-' || tanggalStr === '') {
+      return null;
+    }
+    
+    try {
+      const date = new Date(tanggalStr);
+      if (isNaN(date.getTime())) {
+        return null;
+      }
+      return String(date.getMonth() + 1).padStart(2, '0');
+    } catch (e) {
+      return null;
+    }
+  }
+  
+  /**
+   * Inisialisasi
+   */
+  document.addEventListener('DOMContentLoaded', function() {
+    // Set filter ke bulan berjalan
+    const now = new Date();
+    const bulanSekarang = String(now.getMonth() + 1).padStart(2, '0');
+    
+    // Set dropdown ke bulan berjalan
+    document.getElementById('bulanFilter').value = bulanSekarang;
+    currentFilterBulan = bulanSekarang;
+    
+    // Update label periode di info
+    document.getElementById('periodeTampil').textContent = NAMA_BULAN[bulanSekarang];
+    
+    loadData();
+    setTanggal();
+  });
+  
+  /**
+   * Set tanggal
+   */
+  function setTanggal() {
+    const now = new Date();
+    const options = { day: '2-digit', month: 'long', year: 'numeric' };
+    const tanggal = now.toLocaleDateString('id-ID', options);
+    document.getElementById('tanggalCetak').textContent = tanggal;
+    document.getElementById('ttdTanggal').textContent = tanggal;
+  }
+  
+  /**
+   * Load data dari API
+   */
+  async function loadData() {
+    showLoading(true);
+    
+    try {
+      const response = await fetch(`${API_URL}?action=getJadwal&t=${Date.now()}`);
+      const result = await response.json();
+      
+      if (result.status === 'success') {
+        allData = result.data || [];
+        applyAllFilters();
+      } else {
+        showError('Gagal memuat data: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      showError('Error: ' + error.message);
+    } finally {
+      showLoading(false);
+    }
+  }
+  
+  /**
+   * Filter data berdasarkan bulan dan keyword
+   */
+  function getFilteredData() {
+    let filtered = allData;
+    
+    // Filter by bulan
+    if (currentFilterBulan !== 'semua') {
+      filtered = filtered.filter(function(item) {
+        const bulan = getBulanFromDate(item.hariTanggal);
+        return bulan === currentFilterBulan;
+      });
+    }
+    
+    // Filter by keyword
+    if (currentSearchKeyword) {
+      const keyword = currentSearchKeyword.toLowerCase();
+      filtered = filtered.filter(function(item) {
+        return (item.lokasi || '').toLowerCase().includes(keyword) ||
+               (item.kelurahan || '').toLowerCase().includes(keyword) ||
+               (item.penanggungJawab || '').toLowerCase().includes(keyword) ||
+               (item.koordinator || '').toLowerCase().includes(keyword) ||
+               (item.status || '').toLowerCase().includes(keyword) ||
+               (item.keterangan || '').toLowerCase().includes(keyword) ||
+               (item.hariTanggal || '').toLowerCase().includes(keyword);
+      });
+    }
+    
+    return filtered;
+  }
+  
+  /**
+   * Apply semua filter
+   */
+  function applyAllFilters() {
+    const filtered = getFilteredData();
+    renderTable(filtered);
+    updateInfo(filtered);
+    
+    // Update periode tampilan
+    let periodeText = 'Semua';
+    if (currentFilterBulan !== 'semua') {
+      periodeText = NAMA_BULAN[currentFilterBulan] || currentFilterBulan;
+    }
+    document.getElementById('periodeTampil').textContent = periodeText;
+    
+    // Update filter info
+    let infoText = '';
+    if (currentFilterBulan !== 'semua') {
+      infoText += `Bulan: ${NAMA_BULAN[currentFilterBulan]}`;
+    }
+    if (currentSearchKeyword) {
+      infoText += (infoText ? ' | ' : '') + `Pencarian: "${currentSearchKeyword}"`;
+    }
+    document.getElementById('filterInfo').textContent = infoText;
+  }
+  
+  /**
+   * Filter berdasarkan bulan
+   */
+  function applyFilterBulan() {
+    const select = document.getElementById('bulanFilter');
+    currentFilterBulan = select.value;
+    applyAllFilters();
+  }
+  
+  /**
+   * Reset filter bulan
+   */
+  function resetFilterBulan() {
+    document.getElementById('bulanFilter').value = 'semua';
+    currentFilterBulan = 'semua';
+    document.getElementById('searchInput').value = '';
+    currentSearchKeyword = '';
+    applyAllFilters();
+  }
+  
+  /**
+   * Filter berdasarkan keyword (pencarian)
+   */
+  function applyFilter() {
+    const keyword = document.getElementById('searchInput').value.trim();
+    currentSearchKeyword = keyword;
+    applyAllFilters();
+  }
+  
+  /**
+   * Render tabel
+   */
+  function renderTable(data) {
+    const container = document.getElementById('tableContainer');
+    
+    if (!data || data.length === 0) {
+      container.innerHTML = `
+        <div class="empty-state">
+          <p>📭 Tidak ada data yang ditemukan</p>
+          <p style="font-size:13px;margin-top:5px;">
+            ${currentFilterBulan !== 'semua' ? 'Untuk bulan ' + (NAMA_BULAN[currentFilterBulan] || currentFilterBulan) : 'Belum ada data'}
+          </p>
+        </div>
+      `;
+      return;
+    }
+    
+    let html = `
+      <table>
+        <thead>
+          <tr>
+            <th style="width:35px;">No</th>
+            <th style="min-width:150px;">Hari / Tanggal</th>
+            <th style="min-width:180px;">Lokasi / Rute</th>
+            <th style="width:40px;">RT</th>
+            <th style="width:40px;">RW</th>
+            <th style="min-width:110px;">Kelurahan</th>
+            <th style="min-width:130px;">Penanggung Jawab</th>
+            <th style="min-width:130px;">Koordinator</th>
+            <th style="min-width:80px;">Kinerja</th>
+            <th style="width:80px;">Status</th>
+            <th style="min-width:130px;">Keterangan</th>
+          </tr>
+        </thead>
+        <tbody>
+    `;
+    
+    data.forEach(function(item, index) {
+      // Format tanggal
+      const tanggalFormatted = formatTanggal(item.hariTanggal);
+      
+      // Status
+      let statusText = item.status || '-';
+      let statusClass = 'status-default';
+      let statusDisplay = statusText;
+      
+      if (statusText.toLowerCase().includes('selesai') || statusText.toLowerCase().includes('done')) {
+        statusClass = 'status-selesai';
+        statusDisplay = 'SELESAI';
+      } else if (statusText.toLowerCase().includes('proses') || statusText.toLowerCase().includes('progress')) {
+        statusClass = 'status-proses';
+        statusDisplay = 'PROSES';
+      } else if (statusText.toLowerCase().includes('belum') || statusText.toLowerCase().includes('pending')) {
+        statusClass = 'status-belum';
+        statusDisplay = 'BELUM';
+      }
+      
+      // Kinerja
+      let kinerjaText = item.kinerja || '-';
+      let kinerjaColor = '#333';
+      if (kinerjaText.toLowerCase().includes('baik')) kinerjaColor = '#1b5e20';
+      else if (kinerjaText.toLowerCase().includes('cukup')) kinerjaColor = '#e65100';
+      else if (kinerjaText.toLowerCase().includes('kurang')) kinerjaColor = '#b71c1c';
+      
+      html += `
+        <tr>
+          <td class="col-no">${index + 1}</td>
+          <td>${tanggalFormatted}</td>
+          <td>${item.lokasi || '-'}</td>
+          <td class="text-center">${item.rt || '-'}</td>
+          <td class="text-center">${item.rw || '-'}</td>
+          <td>${item.kelurahan || '-'}</td>
+          <td>${item.penanggungJawab || '-'}</td>
+          <td>${item.koordinator || '-'}</td>
+          <td style="color:${kinerjaColor};font-weight:bold;text-align:center;">${kinerjaText}</td>
+          <td class="status-cell ${statusClass}">${statusDisplay}</td>
+          <td style="font-size:11px;color:#555;">${item.keterangan || '-'}</td>
+        </tr>
+      `;
+    });
+    
+    html += `
+        </tbody>
+      </table>
+    `;
+    
+    container.innerHTML = html;
+  }
+  
+  /**
+   * Update info laporan
+   */
+  function updateInfo(data) {
+    const total = data.length;
+    document.getElementById('totalData').textContent = `Total: ${total} data`;
+    document.getElementById('jumlahData').textContent = total;
+    
+    // Hitung status
+    let selesai = 0, proses = 0, belum = 0;
+    data.forEach(function(item) {
+      const status = (item.status || '').toLowerCase();
+      if (status.includes('selesai') || status.includes('done')) selesai++;
+      else if (status.includes('proses') || status.includes('progress')) proses++;
+      else belum++;
+    });
+    
+    document.getElementById('statusInfo').textContent = 
+      `Selesai: ${selesai} | Proses: ${proses} | Belum: ${belum}`;
+  }
+  
+  /**
+   * Refresh data
+   */
+  function refreshData() {
+    loadData();
+  }
+  
+  /**
+   * Show loading
+   */
+  function showLoading(show) {
+    // Loading state sudah di handle di HTML
+  }
+  
+  /**
+   * Show error
+   */
+  function showError(message) {
+    const container = document.getElementById('tableContainer');
+    container.innerHTML = `
+      <div class="error-state">
+        <strong>⚠️ ERROR:</strong> ${message}
+        <br><br>
+        <button class="btn-laporan" onclick="refreshData()">🔄 Coba Lagi</button>
+      </div>
+    `;
+  }
+  
+  /**
+   * Auto refresh setiap 5 menit
+   */
+  setInterval(function() {
+    loadData();
+  }, 300000);
+  
+</script>
+
+</body>
+</html>
