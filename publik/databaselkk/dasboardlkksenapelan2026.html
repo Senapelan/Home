@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard LKK</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; }
+        
+        .header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .header h1 { font-size: 24px; }
+        .header .subtitle { opacity: 0.8; font-size: 14px; }
+        
+        .stats {
+            display: flex;
+            gap: 30px;
+            background: rgba(255,255,255,0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+        }
+        .stats div { text-align: center; }
+        .stats .number { font-size: 22px; font-weight: bold; }
+        .stats .label { font-size: 11px; opacity: 0.8; }
+
+        .filters {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: flex-end;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .filters .group { flex: 1; min-width: 200px; }
+        .filters label { 
+            display: block; 
+            font-size: 13px; 
+            font-weight: 500; 
+            color: #555; 
+            margin-bottom: 5px; 
+        }
+        .filters select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
+        }
+        .filters select:focus { border-color: #0d47a1; outline: none; }
+        .filters .actions { display: flex; gap: 10px; }
+        
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-primary { background: #0d47a1; color: white; }
+        .btn-primary:hover { background: #1565c0; }
+        .btn-secondary { background: #e0e0e0; color: #333; }
+        .btn-secondary:hover { background: #bdbdbd; }
+
+        /* Cards Grid Normal */
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* ============================================
+           GROUP BY RW - TAMPILAN HORIZONTAL
+           ============================================ */
+        .rw-group {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .rw-header {
+            background: linear-gradient(135deg, #1a237e, #0d47a1);
+            color: white;
+            padding: 15px 20px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .rw-header:hover { background: linear-gradient(135deg, #0d47a1, #1565c0); }
+        .rw-header h2 { font-size: 18px; }
+        .rw-header .count { 
+            background: rgba(255,255,255,0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 14px;
+        }
+        .rw-header .toggle-icon {
+            font-size: 20px;
+            transition: transform 0.3s;
+        }
+        .rw-header .toggle-icon.collapsed { transform: rotate(-90deg); }
+
+        .rw-body {
+            padding: 15px 20px;
+            transition: all 0.3s;
+        }
+        .rw-body.hidden { display: none; }
+
+        /* Sub Group (RW itu sendiri atau RT) */
+        .sub-group {
+            margin-bottom: 15px;
+            padding: 0 5px;
+        }
+        .sub-group:last-child { margin-bottom: 0; }
+        
+        .sub-group-header {
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #2e7d32;
+            cursor: pointer;
+        }
+        .sub-group-header:hover { background: #e8f5e9; }
+        .sub-group-header .title { font-weight: 600; color: #2e7d32; font-size: 14px; }
+        .sub-group-header .count { font-size: 13px; color: #666; }
+        .sub-group-header .toggle-icon {
+            font-size: 16px;
+            transition: transform 0.3s;
+        }
+        .sub-group-header .toggle-icon.collapsed { transform: rotate(-90deg); }
+
+        /* Sub Group Body - Horizontal Flex Wrap */
+        .sub-group-body {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            padding: 5px 0;
+            transition: all 0.3s;
+        }
+        .sub-group-body.hidden { display: none; }
+
+        /* CARDS - Horizontal dengan max 5 per baris */
+        .sub-group-body .card {
+            flex: 1 1 calc(20% - 15px);
+            min-width: 180px;
+            max-width: calc(20% - 15px);
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid #f0f0f0;
+        }
+        .sub-group-body .card:hover { 
+            transform: translateY(-4px); 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12); 
+        }
+
+        .card-photo {
+            width: 100%;
+            height: 180px;
+            background: #e8eaf6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+        .card-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .card-photo .placeholder {
+            font-size: 40px;
+            opacity: 0.3;
+        }
+
+        .card-body {
+            padding: 12px 15px;
+        }
+        .card-body .name {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #1a237e;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-body .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .tag {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .tag-primary { background: #e8eaf6; color: #0d47a1; }
+        .tag-success { background: #e8f5e9; color: #2e7d32; }
+        .tag-info { background: #e3f2fd; color: #0d47a1; }
+        .tag-warning { background: #fff3e0; color: #e65100; }
+
+        /* Label Ketua di dalam sub-group */
+        .sub-group-label {
+            font-size: 12px;
+            color: #888;
+            font-weight: 500;
+            padding: 2px 10px;
+            background: #fff3e0;
+            border-radius: 12px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        /* ============================================
+           RESPONSIVE - Max 5 cards per row
+           ============================================ */
+        @media (min-width: 1400px) {
+            .sub-group-body .card { flex: 1 1 calc(20% - 15px); max-width: calc(20% - 15px); }
+        }
+        @media (min-width: 1200px) and (max-width: 1399px) {
+            .sub-group-body .card { flex: 1 1 calc(25% - 15px); max-width: calc(25% - 15px); }
+        }
+        @media (min-width: 992px) and (max-width: 1199px) {
+            .sub-group-body .card { flex: 1 1 calc(33.333% - 15px); max-width: calc(33.333% - 15px); }
+        }
+        @media (min-width: 576px) and (max-width: 991px) {
+            .sub-group-body .card { flex: 1 1 calc(50% - 15px); max-width: calc(50% - 15px); }
+        }
+        @media (max-width: 575px) {
+            .sub-group-body .card { flex: 1 1 100%; max-width: 100%; }
+            .card-photo { height: 200px; }
+            .card-body .name { white-space: normal; }
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #666;
+        }
+        .loading::after {
+            content: '...';
+            animation: dots 1.5s steps(4) infinite;
+        }
+        @keyframes dots { 0%,20%{content:''}40%{content:'.'}60%{content:'..'}80%,100%{content:'...'} }
+
+        .error {
+            background: #ffebee;
+            color: #c62828;
+            padding: 20px;
+            border-radius: 12px;
+            border-left: 4px solid #c62828;
+        }
+        .no-data {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .modal.active { display: flex; align-items: flex-start; justify-content: center; }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            max-width: 1000px;
+            width: 100%;
+            margin: 40px auto;
+            padding: 30px;
+            position: relative;
+            animation: slideIn 0.3s;
+        }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            background: #f5f5f5;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .modal-close:hover { background: #e0e0e0; transform: rotate(90deg); }
+        .modal-header {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f5f5f5;
+            flex-wrap: wrap;
+        }
+        .modal-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #0d47a1;
+            flex-shrink: 0;
+        }
+        .modal-title { flex: 1; }
+        .modal-title h2 { font-size: 22px; color: #1a237e; margin-bottom: 5px; }
+        .modal-title .sub { color: #666; font-size: 14px; }
+        .modal-actions { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .modal-actions .btn { padding: 8px 16px; font-size: 13px; }
+        
+        .progress-section {
+            background: #f5f5f5;
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .progress-section .header { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0d47a1, #42a5f5);
+            border-radius: 5px;
+            transition: width 0.6s;
+        }
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; font-size: 14px; }
+        table td { padding: 10px 12px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
+        table td:first-child { font-weight: 500; color: #555; width: 180px; }
+        table tr:hover td { background: #fafafa; }
+        .link { color: #0d47a1; text-decoration: none; }
+        .link:hover { text-decoration: underline; }
+
+        .photo-thumbnail-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .photo-thumbnail-wrap .thumb-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 5px;
+            background: white;
+            text-align: center;
+        }
+        .photo-thumbnail-wrap .thumb-item img {
+            max-width: 200px;
+            max-height: 150px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+        .photo-thumbnail-wrap .thumb-item .label {
+            font-size: 11px;
+            color: #666;
+            padding: 4px 0;
+        }
+
+        .mode-indicator {
+            background: #e3f2fd;
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            border-left: 4px solid #0d47a1;
+        }
+        .mode-indicator.active { display: flex; }
+        .mode-indicator .label { font-weight: 600; color: #0d47a1; }
+
+        @media (max-width: 768px) {
+            body { padding: 12px; }
+            .header { flex-direction: column; text-align: center; }
+            .stats { width: 100%; justify-content: space-around; }
+            .filters { flex-direction: column; }
+            .filters .actions { width: 100%; }
+            .filters .actions button { flex: 1; }
+            .cards { grid-template-columns: 1fr; }
+            .modal-content { padding: 20px; }
+            .modal-header { flex-direction: column; align-items: center; text-align: center; }
+            .modal-photo { width: 80px; height: 80px; }
+            .photo-thumbnail-wrap .thumb-item img { max-width: 150px; max-height: 120px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header">
+        <div>
+            <h1>📊 Dashboard LKK</h1>
+            <div class="subtitle">Monitoring Data Lembaga Ketahanan Keluarga</div>
+        </div>
+        <div class="stats">
+            <div><div class="number" id="totalData">0</div><div class="label">Total Data</div></div>
+            <div><div class="number" id="totalRT">0</div><div class="label">RT</div></div>
+            <div><div class="number" id="totalRW">0</div><div class="label">RW</div></div>
+        </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters">
+        <div class="group">
+            <label for="filterJenis">Jenis LKK</label>
+            <select id="filterJenis">
+                <option value="">Semua Jenis</option>
+            </select>
+        </div>
+        <div class="group">
+            <label for="filterTingkat">Tingkatan LKK</label>
+            <select id="filterTingkat">
+                <option value="">Semua Tingkatan</option>
+            </select>
+        </div>
+        <div class="actions">
+            <button class="btn btn-primary" onclick="applyFilters()">🔍 Tampilkan</button>
+            <button class="btn btn-secondary" onclick="resetFilters()">↺ Reset</button>
+            <button class="btn btn-secondary" onclick="loadData()">⟳ Refresh</button>
+        </div>
+    </div>
+
+    <!-- MODE INDICATOR -->
+    <div class="mode-indicator" id="modeIndicator">
+        <span class="label">📂 Mode Tampilan: Group by RW → RT (Horizontal)</span>
+        <span style="font-size:13px;color:#666;">Max 5 card per baris</span>
+    </div>
+
+    <!-- CARDS -->
+    <div id="cardsContainer"><div class="loading">⏳ Memuat data</div></div>
+
+    <!-- MODAL -->
+    <div class="modal" id="detailModal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal()">✕</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // KONFIGURASI
+        // ============================================
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzm3jbvO1Tl0eeZYorse34qtyvNSO29py2wN7zYcaUp_fvc5CbhwQZHHunPLV-7X0kalg/exec';
+        
+        let allData = [];
+        let filteredData = [];
+        let isGroupMode = false;
+
+        // ============================================
+        // FUNGSI UTAMA
+        // ============================================
+        async function loadData() {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '<div class="loading">⏳ Memuat data</div>';
+
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    allData = result.data || [];
+                    if (allData.length === 0) {
+                        container.innerHTML = '<div class="no-data">📭 Tidak ada data ditemukan</div>';
+                        return;
+                    }
+                    populateFilters();
+                    applyFilters();
+                } else {
+                    container.innerHTML = `<div class="error"><strong>❌ Gagal memuat data:</strong><br>${result.error || 'Unknown error'}</div>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<div class="error"><strong>❌ Gagal terhubung ke server:</strong><br>${error.message}</div>`;
+                console.error('Error:', error);
+            }
+        }
+
+        // ============================================
+        // FILTER
+        // ============================================
+        function populateFilters() {
+            const jenisSelect = document.getElementById('filterJenis');
+            const uniqueJenis = [...new Set(allData.map(d => d.JENIS_LKK).filter(Boolean))].sort();
+            
+            jenisSelect.innerHTML = '<option value="">Semua Jenis</option>';
+            uniqueJenis.forEach(j => {
+                const opt = document.createElement('option');
+                opt.value = j;
+                opt.textContent = j;
+                jenisSelect.appendChild(opt);
+            });
+            
+            const separator = document.createElement('option');
+            separator.disabled = true;
+            separator.textContent = '──────────';
+            jenisSelect.appendChild(separator);
+            
+            const rtOption = document.createElement('option');
+            rtOption.value = 'RT_RW_MODE';
+            rtOption.textContent = '📂 RT dan RW';
+            rtOption.style.fontWeight = 'bold';
+            rtOption.style.color = '#0d47a1';
+            jenisSelect.appendChild(rtOption);
+
+            const tingkatSelect = document.getElementById('filterTingkat');
+            const uniqueTingkat = [...new Set(allData.map(d => d.TINGKATAN_LKK).filter(Boolean))].sort();
+            tingkatSelect.innerHTML = '<option value="">Semua Tingkatan</option>';
+            uniqueTingkat.forEach(t => {
+                const opt = document.createElement('option');
+                opt.value = t;
+                opt.textContent = t;
+                tingkatSelect.appendChild(opt);
+            });
+        }
+
+        function applyFilters() {
+            const jenis = document.getElementById('filterJenis').value;
+            const tingkat = document.getElementById('filterTingkat').value;
+
+            isGroupMode = (jenis === 'RT_RW_MODE');
+
+            filteredData = allData.filter(d => {
+                let match = true;
+                if (jenis && jenis !== 'RT_RW_MODE' && d.JENIS_LKK !== jenis) match = false;
+                if (tingkat && d.TINGKATAN_LKK !== tingkat) match = false;
+                return match;
+            });
+
+            renderCards();
+            updateStats();
+            updateModeIndicator();
+        }
+
+        function resetFilters() {
+            document.getElementById('filterJenis').value = '';
+            document.getElementById('filterTingkat').value = '';
+            applyFilters();
+        }
+
+        function updateStats() {
+            document.getElementById('totalData').textContent = filteredData.length;
+            const uniqueRT = [...new Set(filteredData.map(d => String(d.RT).trim()).filter(Boolean))];
+            document.getElementById('totalRT').textContent = uniqueRT.length;
+            const uniqueRW = [...new Set(filteredData.map(d => String(d.RW).trim()).filter(Boolean))];
+            document.getElementById('totalRW').textContent = uniqueRW.length;
+        }
+
+        function updateModeIndicator() {
+            const indicator = document.getElementById('modeIndicator');
+            if (isGroupMode) {
+                indicator.classList.add('active');
+            } else {
+                indicator.classList.remove('active');
+            }
+        }
+
+        // ============================================
+        // RENDER CARDS
+        // ============================================
+        function renderCards() {
+            const container = document.getElementById('cardsContainer');
+            
+            if (filteredData.length === 0) {
+                container.innerHTML = '<div class="no-data">📭 Tidak ada data</div>';
+                return;
+            }
+
+            if (isGroupMode) {
+                renderGroupByRW(container);
+            } else {
+                renderNormalGrid(container);
+            }
+        }
+
+        // ============================================
+        // RENDER NORMAL GRID
+        // ============================================
+        function renderNormalGrid(container) {
+            container.innerHTML = '<div class="cards" id="cardsGrid"></div>';
+            const grid = document.getElementById('cardsGrid');
+            filteredData.forEach((item, index) => {
+                grid.appendChild(createCard(item, index));
+            });
+        }
+
+// ============================================
+// RENDER GROUP BY RW → RT (HORIZONTAL)
+// RW sebagai HEADER, lalu RW itu sendiri, lalu RT
+// Label menggunakan JABATAN dari setiap card
+// ============================================
+function renderGroupByRW(container) {
+    // 1. Group by RW
+    const rwGroups = {};
+    filteredData.forEach(item => {
+        const rw = String(item.RW).trim() || 'Unknown';
+        if (!rwGroups[rw]) rwGroups[rw] = [];
+        rwGroups[rw].push(item);
+    });
+
+    // 2. Sort RW dari terkecil
+    const sortedRW = Object.keys(rwGroups).sort((a, b) => {
+        if (a === 'Unknown') return 1;
+        if (b === 'Unknown') return -1;
+        return parseInt(a) - parseInt(b);
+    });
+
+    container.innerHTML = '';
+
+    // 3. Loop setiap RW
+    sortedRW.forEach(rw => {
+        const items = rwGroups[rw];
+        
+        // 4. Pisahkan data berdasarkan RT
+        //    - RT kosong -> masuk ke group "RW itu sendiri"
+        //    - RT ada angka -> masuk ke group RT masing-masing
+        const groups = {};
+        items.forEach(item => {
+            const rt = String(item.RT).trim();
+            const key = rt === '' ? 'RW_ITSELF' : rt;
+            if (!groups[key]) groups[key] = [];
+            groups[key].push(item);
+        });
+
+        // 5. Urutkan keys: RW_ITSELF dulu, lalu RT dari terkecil
+        const sortedKeys = Object.keys(groups).sort((a, b) => {
+            if (a === 'RW_ITSELF') return -1;
+            if (b === 'RW_ITSELF') return 1;
+            return parseInt(a) - parseInt(b);
+        });
+
+        // 6. Buat RW Group - RW sebagai HEADER
+        const rwDiv = document.createElement('div');
+        rwDiv.className = 'rw-group';
+        
+        let html = `
+            <div class="rw-header" onclick="toggleRW(this)">
+                <h2>🏘️ RW ${rw}</h2>
+                <div style="display:flex;align-items:center;gap:15px;">
+                    <span class="count">${items.length} orang</span>
+                    <span class="toggle-icon">▼</span>
+                </div>
+            </div>
+            <div class="rw-body" id="rw-body-${rw}">
+        `;
+
+        // 7. Loop setiap group (RW_ITSELF dulu, lalu RT)
+        sortedKeys.forEach(key => {
+            const groupItems = groups[key];
+            
+            // Tentukan title
+            let title = '';
+            if (key === 'RW_ITSELF') {
+                title = `RW ${rw}`;
+            } else {
+                title = `RT ${key}`;
+            }
+            
+            // 8. Group by JABATAN di dalam sub-group
+            const jabatanGroups = {};
+            groupItems.forEach(item => {
+                const jabatan = String(item.JABATAN).trim() || 'Unknown';
+                if (!jabatanGroups[jabatan]) jabatanGroups[jabatan] = [];
+                jabatanGroups[jabatan].push(item);
+            });
+
+            // Sort JABATAN
+            const sortedJabatan = Object.keys(jabatanGroups).sort();
+            
+            html += `
+                <div class="sub-group">
+                    <div class="sub-group-header" onclick="toggleSubGroup(this)">
+                        <span class="title">📌 ${title}</span>
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span class="count">${groupItems.length} orang</span>
+                            <span class="toggle-icon">▼</span>
+                        </div>
+                    </div>
+            `;
+
+            // 9. Loop setiap JABATAN
+            sortedJabatan.forEach(jabatan => {
+                const jabatanItems = jabatanGroups[jabatan];
+                
+                html += `
+                    <div style="padding: 0 5px; margin-bottom: 8px;">
+                        <span class="sub-group-label">👤 ${jabatan}</span>
+                    </div>
+                    <div class="sub-group-body" id="sub-body-${rw}-${key}-${jabatan}">
+                        ${jabatanItems.map((item, idx) => {
+                            const globalIndex = filteredData.indexOf(item);
+                            return createCardHTML(item, globalIndex);
+                        }).join('')}
+                    </div>
+                `;
+            });
+
+            html += `</div>`;
+        });
+
+        html += `</div>`;
+        rwDiv.innerHTML = html;
+        container.appendChild(rwDiv);
+    });
+
+    // Attach click events untuk cards
+    document.querySelectorAll('.card').forEach(card => {
+        card.addEventListener('click', function() {
+            const idx = parseInt(this.dataset.index);
+            if (idx >= 0 && idx < filteredData.length) {
+                showDetail(filteredData[idx]);
+            }
+        });
+    });
+}
+
+        // ============================================
+        // TOGGLE FUNCTIONS
+        // ============================================
+        function toggleRW(el) {
+            const body = el.nextElementSibling;
+            const icon = el.querySelector('.toggle-icon');
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                icon.classList.remove('collapsed');
+            } else {
+                body.classList.add('hidden');
+                icon.classList.add('collapsed');
+            }
+        }
+
+        function toggleSubGroup(el) {
+            const parent = el.closest('.sub-group');
+            if (!parent) return;
+            const body = parent.querySelector('.sub-group-body');
+            const icon = el.querySelector('.toggle-icon');
+            if (!body || !icon) return;
+            
+            if (body.classList.contains('hidden')) {
+                body.classList.remove('hidden');
+                icon.classList.remove('collapsed');
+            } else {
+                body.classList.add('hidden');
+                icon.classList.add('collapsed');
+            }
+        }
+
+        // ============================================
+        // CREATE CARD
+        // ============================================
+        function getGoogleDriveThumbnail(url) {
+            if (!url || !String(url).startsWith('http')) return null;
+            
+            let thumbnailUrl = url;
+            const match = url.match(/\/d\/(.+?)\/|id=(.+?)(&|$)/);
+            if (match) {
+                const fileId = match[1] || match[2];
+                if (fileId) {
+                    thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+                }
+            }
+            const match2 = url.match(/[?&]id=([^&]+)/);
+            if (match2) {
+                thumbnailUrl = `https://drive.google.com/thumbnail?id=${match2[1]}&sz=w800`;
+            }
+            return thumbnailUrl;
+        }
+
+        function createCard(item, index) {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = createCardHTML(item, index);
+            card.addEventListener('click', () => showDetail(item));
+            return card;
+        }
+
+        function createCardHTML(item, index) {
+            const photoUrl = getGoogleDriveThumbnail(item.LINK_FOTO_PROFIL) || '';
+            const name = item.NAMA_LENGKAP || 'Nama tidak tersedia';
+            const jenis = item.JENIS_LKK || '-';
+            const tingkat = item.TINGKATAN_LKK || '-';
+            const rt = item.RT || '-';
+            const rw = item.RW || '-';
+            const jabatan = item.JABATAN || '-';
+
+            return `
+                <div class="card" data-index="${index}">
+                    <div class="card-photo">
+                        ${photoUrl ? 
+                            `<img src="${photoUrl}" alt="${name}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'>📷</div>'">` : 
+                            `<div class="placeholder">📷</div>`
+                        }
+                    </div>
+                    <div class="card-body">
+                        <div class="name">${name}</div>
+                        <div class="tags">
+                            <span class="tag tag-primary">${jenis}</span>
+                            <span class="tag tag-success">${tingkat}</span>
+                            <span class="tag tag-info">${jabatan}</span>
+                            <span class="tag tag-warning">RT ${rt}</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // DETAIL MODAL
+        // ============================================
+        function getThumbnailUrl(url) {
+            if (!url || !String(url).startsWith('http')) return null;
+            
+            let thumbnailUrl = url;
+            const match = url.match(/\/d\/(.+?)\/|id=(.+?)(&|$)/);
+            if (match) {
+                const fileId = match[1] || match[2];
+                if (fileId) {
+                    thumbnailUrl = `https://drive.google.com/thumbnail?id=${fileId}&sz=w800`;
+                }
+            }
+            const match2 = url.match(/[?&]id=([^&]+)/);
+            if (match2) {
+                thumbnailUrl = `https://drive.google.com/thumbnail?id=${match2[1]}&sz=w800`;
+            }
+            return thumbnailUrl;
+        }
+
+        function calculateProgress(data) {
+            const fields = [
+                'NAMA_LENGKAP', 'NO_NIK', 'NO_KK', 'ALAMAT', 'TEMPAT_LAHR',
+                'TANGGAL_LAHIR', 'JENIS_KELAMIN', 'AGAMA', 'PENDIDIKAN_TERAKHIR',
+                'RT', 'RW', 'JENIS_LKK', 'TINGKATAN_LKK', 'JABATAN', 'STATUS',
+                'NO_HP', 'NO_REKENING', 'AWAL MENJABAT', 'SISA_MASA_JABATAN',
+                'ALAMAT_EMAIL', 'LINK_FOTO_PROFIL', 'LINK-BERKAS_SK', 'LINK_FOTO_KTP',
+                'LINK_FOTO_KK', 'LINK_BUKU_REKENING', 'LINK_FOTO_BPJS', 'LINK_FOTO_NPWP'
+            ];
+            let filled = 0;
+            fields.forEach(f => { if (data[f] && String(data[f]).trim() !== '') filled++; });
+            return Math.round((filled / fields.length) * 100);
+        }
+
+        function showDetail(data) {
+            const modal = document.getElementById('detailModal');
+            const body = document.getElementById('modalBody');
+            if (!modal || !body) return;
+
+            const progress = calculateProgress(data);
+            const fields = [
+                { key: 'NAMA_LENGKAP', label: 'Nama Lengkap' },
+                { key: 'NO_NIK', label: 'NIK' },
+                { key: 'NO_KK', label: 'No KK' },
+                { key: 'ALAMAT', label: 'Alamat' },
+                { key: 'TEMPAT_LAHR', label: 'Tempat Lahir' },
+                { key: 'TANGGAL_LAHIR', label: 'Tanggal Lahir' },
+                { key: 'JENIS_KELAMIN', label: 'Jenis Kelamin' },
+                { key: 'AGAMA', label: 'Agama' },
+                { key: 'PENDIDIKAN_TERAKHIR', label: 'Pendidikan Terakhir' },
+                { key: 'RT', label: 'RT' },
+                { key: 'RW', label: 'RW' },
+                { key: 'JENIS_LKK', label: 'Jenis LKK' },
+                { key: 'TINGKATAN_LKK', label: 'Tingkatan LKK' },
+                { key: 'JABATAN', label: 'Jabatan' },
+                { key: 'STATUS', label: 'Status' },
+                { key: 'NO_HP', label: 'No HP' },
+                { key: 'NO_REKENING', label: 'No Rekening' },
+                { key: 'AWAL MENJABAT', label: 'Awal Menjabat' },
+                { key: 'SISA_MASA_JABATAN', label: 'Sisa Masa Jabatan' },
+                { key: 'ALAMAT_EMAIL', label: 'Email' },
+                { key: 'LINK_FOTO_PROFIL', label: 'Foto Profil' },
+                { key: 'LINK-BERKAS_SK', label: 'SK' },
+                { key: 'LINK_FOTO_KTP', label: 'Foto KTP' },
+                { key: 'LINK_FOTO_KK', label: 'Foto KK' },
+                { key: 'LINK_BUKU_REKENING', label: 'Buku Rekening' },
+                { key: 'LINK_FOTO_BPJS', label: 'Foto BPJS' },
+                { key: 'LINK_FOTO_NPWP', label: 'Foto NPWP' }
+            ];
+
+            const photoFields = [
+                { key: 'LINK_FOTO_PROFIL', label: 'Foto Profil' },
+                { key: 'LINK-BERKAS_SK', label: 'SK' },
+                { key: 'LINK_FOTO_KTP', label: 'KTP' },
+                { key: 'LINK_FOTO_KK', label: 'KK' },
+                { key: 'LINK_BUKU_REKENING', label: 'Buku Rekening' },
+                { key: 'LINK_FOTO_BPJS', label: 'BPJS' },
+                { key: 'LINK_FOTO_NPWP', label: 'NPWP' }
+            ];
+
+            let thumbnails = '';
+            photoFields.forEach(f => {
+                const url = data[f.key];
+                const thumbUrl = getThumbnailUrl(url);
+                if (thumbUrl) {
+                    thumbnails += `
+                        <div class="thumb-item">
+                            <img src="${thumbUrl}" alt="${f.label}" loading="lazy" onerror="this.style.display='none'">
+                            <div class="label">${f.label}</div>
+                        </div>
+                    `;
+                }
+            });
+
+            let rows = '';
+            fields.forEach(f => {
+                let value = data[f.key];
+                if (value === undefined || value === null || String(value).trim() === '') value = '-';
+                else {
+                    value = String(value);
+                    if (value.startsWith('http')) {
+                        const thumb = getThumbnailUrl(value);
+                        value = `<a href="${value}" target="_blank" class="link">🔗 Buka Link</a>`;
+                        if (thumb) {
+                            value += `<br><img src="${thumb}" style="max-width:200px;max-height:150px;border-radius:8px;margin-top:5px;object-fit:cover;" onerror="this.style.display='none'">`;
+                        }
+                    }
+                }
+                rows += `<tr><td><strong>${f.label}</strong></td><td>${value}</td></tr>`;
+            });
+
+            const photo = getThumbnailUrl(data.LINK_FOTO_PROFIL) || '';
+            const name = data.NAMA_LENGKAP || 'Nama tidak tersedia';
+            const jenis = data.JENIS_LKK || '-';
+            const tingkat = data.TINGKATAN_LKK || '-';
+            const jabatan = data.JABATAN || '-';
+            const rt = data.RT || '-';
+            const rw = data.RW || '-';
+
+            body.innerHTML = `
+                <div class="modal-header">
+                    ${photo ? 
+                        `<img class="modal-photo" src="${photo}" alt="${name}" onerror="this.style.display='none'">` :
+                        `<div class="modal-photo" style="background:#e8eaf6;display:flex;align-items:center;justify-content:center;font-size:40px;">📷</div>`
+                    }
+                    <div class="modal-title">
+                        <h2>${name}</h2>
+                        <div class="sub">${jenis} | ${tingkat} | ${jabatan}</div>
+                        <div class="sub">RT ${rt} / RW ${rw}</div>
+                        <div class="modal-actions">
+                            <button class="btn btn-success" onclick="downloadData()">📥 Download CSV</button>
+                            <button class="btn btn-primary" onclick="window.print()">🖨️ Print</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="progress-section">
+                    <div class="header"><span><strong>📊 Kelengkapan Data</strong></span><span style="color:#0d47a1;font-weight:600;">${progress}%</span></div>
+                    <div class="progress-bar"><div class="fill" style="width:${progress}%"></div></div>
+                </div>
+                ${thumbnails ? `
+                    <div style="margin-bottom:20px;">
+                        <h3 style="font-size:16px;color:#1a237e;margin-bottom:10px;">📸 Dokumen</h3>
+                        <div class="photo-thumbnail-wrap">${thumbnails}</div>
+                    </div>
+                ` : ''}
+                <div class="table-wrap"><table><tbody>${rows}</tbody></table></div>
+            `;
+
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            window._currentData = data;
+        }
+
+        function downloadData() {
+            const data = window._currentData;
+            if (!data) { alert('Tidak ada data'); return; }
+
+            const fields = ['NAMA_LENGKAP','NO_NIK','NO_KK','ALAMAT','TEMPAT_LAHR','TANGGAL_LAHIR','JENIS_KELAMIN','AGAMA','PENDIDIKAN_TERAKHIR','RT','RW','JENIS_LKK','TINGKATAN_LKK','JABATAN','STATUS','NO_HP','NO_REKENING','AWAL MENJABAT','SISA_MASA_JABATAN','ALAMAT_EMAIL','LINK_FOTO_PROFIL','LINK-BERKAS_SK','LINK_FOTO_KTP','LINK_FOTO_KK','LINK_BUKU_REKENING','LINK_FOTO_BPJS','LINK_FOTO_NPWP'];
+            const labels = ['Nama Lengkap','NIK','No KK','Alamat','Tempat Lahir','Tanggal Lahir','Jenis Kelamin','Agama','Pendidikan Terakhir','RT','RW','Jenis LKK','Tingkatan LKK','Jabatan','Status','No HP','No Rekening','Awal Menjabat','Sisa Masa Jabatan','Email','Foto Profil','SK','Foto KTP','Foto KK','Buku Rekening','Foto BPJS','Foto NPWP'];
+
+            let csv = 'Field,Value\n';
+            fields.forEach((key, index) => {
+                let value = data[key] || '';
+                csv += `"${labels[index] || key}","${value}"\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `data_${(data.NAMA_LENGKAP || 'unknown').replace(/[^a-zA-Z0-9]/g, '_')}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detailModal');
+            if (modal) { modal.classList.remove('active'); document.body.style.overflow = 'auto'; }
+        }
+
+        // ============================================
+        // EVENT LISTENERS
+        // ============================================
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('detailModal').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeModal();
+            });
+            loadData();
+        });
+    </script>
+
+</body>
+</html>
