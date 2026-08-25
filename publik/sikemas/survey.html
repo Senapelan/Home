@@ -271,7 +271,7 @@
 
 <script>
 // ==================== KONFIGURASI ====================
-const API_URL = 'https://script.google.com/macros/s/AKfycbzHDdAs_jre_QHKXjtro6rh_L_gnpCGCtLisPmQkhz-56bGyxxbSyeObVFJei9WTaJ24g/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzNQSJR-meSXabOgT3F1i67TdNROmRm95I9PTaJgXV_19LAUJtT5JNtxrhLpKFU1W21/exec';
 
 // ==================== AMBIL PARAMETER URL ====================
 function getUrlParams() {
@@ -292,7 +292,6 @@ function showGreeting() {
 
 // ==================== SUBMIT RESPON ====================
 async function submitRespon(respon) {
-  // Sembunyikan pertanyaan, tampilkan loading
   document.getElementById('questionSection').classList.add('hidden');
   document.getElementById('loadingSection').classList.remove('hidden');
   
@@ -307,20 +306,15 @@ async function submitRespon(respon) {
   };
   
   try {
-    // Kirim ke backend
     await fetch(API_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data)
     });
-    
-    // Tampilkan hasil
     showThanks(respon);
-    
   } catch (error) {
     console.error('Error:', error);
-    // Tetap tampilkan thanks meskipun error
     showThanks(respon);
   }
 }
@@ -345,7 +339,6 @@ async function showThanks(respon) {
     message.textContent = 'Kami akan terus berbenah untuk lebih baik.';
   }
   
-  // Ambil link dari backend
   try {
     const response = await fetch(API_URL + '?action=getSurveyLinks');
     const result = await response.json();
@@ -363,7 +356,6 @@ async function showThanks(respon) {
   
   document.getElementById('thanksSection').classList.remove('hidden');
   
-  // Scroll ke bawah untuk lihat link
   setTimeout(() => {
     document.getElementById('thanksSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, 300);
@@ -373,5 +365,6 @@ async function showThanks(respon) {
 showGreeting();
 console.log('Survey loaded with params:', getUrlParams());
 </script>
+
 </body>
 </html>
