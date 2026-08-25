@@ -1,0 +1,1028 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0d6efd">
+  <meta property="og:title" content="SIKEMAS - Sistem Kepuasan Masyarakat Kecamatan Senapelan">
+  <meta property="og:image" content="https://senapelan.github.io/Home/assets/metatag/sikemas/sikemas512x512.png">
+  <meta property="og:type" content="website">
+  <link rel="icon" href="https://senapelan.github.io/Home/assets/metatag/sikemas/sikemas512x512.png" type="image/png">
+  <title>SIKEMAS - Sistem Kepuasan Masyarakat</title>
+  
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    * { font-family: 'Poppins', sans-serif; }
+    body {
+      background: #f0f4f8;
+      margin-bottom: 80px;
+    }
+    .navbar-app {
+      background: linear-gradient(135deg, #0d6efd, #0a58ca);
+      padding: 12px 0;
+      box-shadow: 0 2px 15px rgba(13, 110, 253, 0.3);
+    }
+    .navbar-app .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: white;
+      text-decoration: none;
+    }
+    .navbar-app .brand img {
+      width: 42px;
+      height: 42px;
+      border-radius: 10px;
+      background: white;
+      padding: 4px;
+    }
+    .navbar-app .brand span {
+      font-weight: 600;
+      font-size: 1.1rem;
+      line-height: 1.2;
+    }
+    .navbar-app .brand small {
+      display: block;
+      font-weight: 300;
+      font-size: 0.7rem;
+      opacity: 0.9;
+    }
+    .content-page {
+      padding: 20px 15px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .card-custom {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+      padding: 24px;
+      border: none;
+      margin-bottom: 20px;
+    }
+    .card-custom .card-title {
+      font-weight: 600;
+      font-size: 1.2rem;
+      color: #1a2332;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .card-custom .card-title i { color: #0d6efd; }
+    
+    .form-control, .form-select {
+      border-radius: 10px;
+      border: 1.5px solid #e2e8f0;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+      transition: all 0.3s ease;
+      padding-right: 40px;
+    }
+    .form-control:focus, .form-select:focus {
+      border-color: #0d6efd;
+      box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+    }
+    .form-control.is-valid {
+      border-color: #22c55e;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2322c55e' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 18px;
+    }
+    .form-control.is-invalid {
+      border-color: #ef4444;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23ef4444' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      background-size: 18px;
+    }
+    .form-label {
+      font-weight: 500;
+      font-size: 0.85rem;
+      color: #475569;
+      margin-bottom: 4px;
+    }
+    .required-star { color: #dc3545; margin-left: 2px; }
+    .invalid-feedback { font-size: 0.75rem; margin-top: 4px; }
+    
+    .btn-primary-custom {
+      background: linear-gradient(135deg, #0d6efd, #0a58ca);
+      border: none;
+      border-radius: 10px;
+      padding: 12px 30px;
+      font-weight: 600;
+      color: white;
+      width: 100%;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+    .btn-primary-custom:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(13, 110, 253, 0.35);
+      color: white;
+    }
+    .btn-primary-custom:disabled {
+      opacity: 0.6;
+      transform: none;
+    }
+    
+    .submit-feedback {
+      margin-top: 12px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      display: none;
+      animation: fadeSlide 0.4s ease;
+    }
+    .submit-feedback.success {
+      display: block;
+      background: #dcfce7;
+      color: #166534;
+      border: 1px solid #86efac;
+    }
+    .submit-feedback.error {
+      display: block;
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #fca5a5;
+    }
+    .submit-feedback i { margin-right: 8px; }
+    @keyframes fadeSlide {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .scroll-top { scroll-margin-top: 20px; }
+    
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.08);
+      padding: 8px 0;
+      z-index: 1000;
+      border-top: 1px solid #eef2f7;
+    }
+    .bottom-nav .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      text-decoration: none;
+      font-size: 0.65rem;
+      transition: all 0.2s;
+      padding: 4px 0;
+      cursor: pointer;
+      border: none;
+      background: none;
+      width: 100%;
+    }
+    .bottom-nav .nav-item i {
+      font-size: 1.3rem;
+      margin-bottom: 2px;
+      transition: all 0.2s;
+    }
+    .bottom-nav .nav-item.active { color: #0d6efd; }
+    .bottom-nav .nav-item.active i { transform: scale(1.1); }
+    .bottom-nav .nav-item:hover { color: #0d6efd; }
+    
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+      border: 1px solid #eef2f7;
+    }
+    .table-custom {
+      margin-bottom: 0;
+      font-size: 0.82rem;
+    }
+    .table-custom th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #1a2332;
+      border-bottom: 2px solid #e2e8f0;
+      white-space: nowrap;
+      padding: 8px 10px;
+    }
+    .table-custom td {
+      padding: 8px 10px;
+      vertical-align: middle;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .table-custom tr:hover { background: #f8fafc; }
+    
+    .btn-wa {
+      background: #25D366;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      transition: all 0.2s;
+      white-space: nowrap;
+      text-decoration: none;
+      display: inline-block;
+    }
+    .btn-wa:hover {
+      background: #1da851;
+      color: white;
+      transform: scale(1.05);
+    }
+    .btn-wa i { margin-right: 3px; }
+    
+    /* Status Badge */
+    .badge-status {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-weight: 500;
+      font-size: 0.7rem;
+      display: inline-block;
+    }
+    .badge-status.puas {
+      background: #dcfce7;
+      color: #166534;
+    }
+    .badge-status.tidak-puas {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    .badge-status.belum {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    .loading-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    
+    .empty-state {
+      text-align: center;
+      padding: 40px 20px;
+      color: #94a3b8;
+    }
+    .empty-state i { font-size: 3rem; margin-bottom: 15px; opacity: 0.5; }
+    .counter-badge {
+      background: #0d6efd;
+      color: white;
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      margin-left: 8px;
+    }
+    
+    .loading-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255,255,255,0.8);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .loading-overlay.show { display: flex; }
+    .loading-overlay .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #0d6efd;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @media (max-width: 576px) {
+      .content-page { padding: 15px 10px; }
+      .card-custom { padding: 18px; }
+      .navbar-app .brand span { font-size: 0.9rem; }
+      .table-custom { font-size: 0.7rem; }
+      .table-custom th, .table-custom td { padding: 5px 6px; }
+      .btn-wa { font-size: 0.6rem; padding: 3px 6px; }
+      .bottom-nav .nav-item { font-size: 0.55rem; }
+      .bottom-nav .nav-item i { font-size: 1.1rem; }
+      .badge-status { font-size: 0.6rem; padding: 2px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading Overlay -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="navbar-app">
+  <div class="container">
+    <a href="#" class="brand">
+      <img src="https://senapelan.github.io/Home/assets/metatag/sikemas/sikemas512x512.png" alt="SIKEMAS">
+      <div>
+        <span>SIKEMAS</span>
+        <small>Sistem Kepuasan Masyarakat - Kecamatan Senapelan</small>
+      </div>
+    </a>
+  </div>
+</nav>
+
+<!-- CONTENT -->
+<div class="content-page" id="appContent"></div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav" id="bottomNav">
+  <div class="container">
+    <div class="row">
+      <div class="col-4">
+        <button class="nav-item active" data-page="input" id="navInput">
+          <i class="fas fa-pen-to-square"></i>
+          <span>Input</span>
+        </button>
+      </div>
+      <div class="col-4">
+        <button class="nav-item" data-page="pengunjung" id="navPengunjung">
+          <i class="fas fa-users"></i>
+          <span>Pengunjung</span>
+        </button>
+      </div>
+      <div class="col-4">
+        <button class="nav-item" data-page="status" id="navStatus">
+          <i class="fas fa-clipboard-check"></i>
+          <span>Status SKM</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- SCRIPTS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ==================== KONFIGURASI ====================
+const API_URL = 'https://script.google.com/macros/s/AKfycbz3rsFrjoQPg1cPCTxgZdJJOrUTftI4KwMpQ_l9KQMJKxyGITCAXtnfrGXw9AOXKGpm_A/exec';
+
+// ==================== GLOBAL STATE ====================
+let currentPage = 'input';
+let dropdownData = null;
+let pengunjungData = [];
+
+// ==================== UTILITY ====================
+function showLoading(show) {
+  const overlay = document.getElementById('loadingOverlay');
+  if (overlay) overlay.classList.toggle('show', show);
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '-';
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+  } catch { return dateStr; }
+}
+
+function convertToWhatsApp(phone) {
+  if (!phone) return '';
+  let cleaned = String(phone).replace(/\D/g, '');
+  if (!cleaned || cleaned.length === 0) return '';
+  if (cleaned.startsWith('62')) return cleaned;
+  if (cleaned.startsWith('0')) cleaned = '62' + cleaned.substring(1);
+  else if (!cleaned.startsWith('62')) cleaned = '62' + cleaned;
+  return cleaned;
+}
+
+function buildSurveyLink(nama, hp, tujuan, linkTemplate) {
+  if (!linkTemplate) {
+    linkTemplate = 'https://senapelan.github.io/Home/publik/sikemas/survey.html?nama={nama}&hp={hp}&tujuan={tujuan}';
+  }
+  return linkTemplate
+    .replace(/{nama}/g, encodeURIComponent(String(nama)))
+    .replace(/{hp}/g, encodeURIComponent(String(hp)))
+    .replace(/{tujuan}/g, encodeURIComponent(String(tujuan)));
+}
+
+// ==================== API CALLS ====================
+function apiGet(action) {
+  return new Promise((resolve, reject) => {
+    const callbackName = 'jsonp_callback_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+    window[callbackName] = function(data) {
+      delete window[callbackName];
+      if (script.parentNode) document.body.removeChild(script);
+      resolve(data);
+    };
+    const script = document.createElement('script');
+    script.src = `${API_URL}?action=${action}&callback=${callbackName}`;
+    script.onerror = function() {
+      delete window[callbackName];
+      if (script.parentNode) document.body.removeChild(script);
+      reject(new Error('Gagal terhubung ke server.'));
+    };
+    const timeout = setTimeout(() => {
+      delete window[callbackName];
+      if (script.parentNode) document.body.removeChild(script);
+      reject(new Error('Timeout: Server tidak merespon'));
+    }, 30000);
+    const originalCallback = window[callbackName];
+    window[callbackName] = function(data) {
+      clearTimeout(timeout);
+      originalCallback(data);
+    };
+    document.body.appendChild(script);
+  });
+}
+
+async function apiPost(data) {
+  try {
+    await fetch(API_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+    return { success: true, message: 'Data berhasil disimpan! ✅' };
+  } catch (error) {
+    console.error('POST Error:', error);
+    throw new Error('Gagal mengirim data: ' + error.message);
+  }
+}
+
+// ==================== LOAD DROPDOWN ====================
+async function loadDropdown() {
+  showLoading(true);
+  try {
+    const result = await apiGet('getDropdown');
+    if (result.success) {
+      dropdownData = result.data;
+      populateDropdown();
+    }
+  } catch (e) {
+    console.error(e);
+  } finally {
+    showLoading(false);
+  }
+}
+
+function populateDropdown() {
+  const select = document.getElementById('tujuanBerkunjung');
+  if (!select || !dropdownData) return;
+  select.innerHTML = '<option value="">Pilih Tujuan Berkunjung</option>';
+  if (dropdownData.tujuan && dropdownData.tujuan.length > 0) {
+    dropdownData.tujuan.forEach(item => {
+      const opt = document.createElement('option');
+      opt.value = item;
+      opt.textContent = item;
+      select.appendChild(opt);
+    });
+  }
+}
+
+// ==================== RENDER PAGES ====================
+function renderPage(page) {
+  currentPage = page;
+  const container = document.getElementById('appContent');
+  
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.page === page);
+  });
+
+  if (page === 'input') {
+    container.innerHTML = getInputPageHTML();
+    populateDropdown();
+    const dateInput = document.getElementById('tanggalLahir');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.max = today;
+    }
+    initValidation();
+    const form = document.getElementById('formInput');
+    if (form) {
+      const newForm = form.cloneNode(true);
+      form.parentNode.replaceChild(newForm, form);
+      newForm.addEventListener('submit', handleSubmit);
+    }
+  } else if (page === 'pengunjung') {
+    container.innerHTML = getPengunjungPageHTML();
+    loadPengunjungData();
+  } else if (page === 'status') {
+    container.innerHTML = getStatusPageHTML();
+    loadStatusData();
+  }
+}
+
+// ==================== VALIDASI ====================
+function initValidation() {
+  const fields = document.querySelectorAll('#formInput .form-control, #formInput .form-select');
+  fields.forEach(field => {
+    field.addEventListener('blur', function() { validateField(this); });
+    field.addEventListener('input', function() {
+      if (this.classList.contains('is-valid') || this.classList.contains('is-invalid')) {
+        validateField(this);
+      }
+    });
+  });
+}
+
+function validateField(field) {
+  const isRequired = field.hasAttribute('required');
+  const value = field.value.trim();
+  
+  if (isRequired && !value) {
+    field.classList.remove('is-valid');
+    field.classList.add('is-invalid');
+    return;
+  }
+  
+  if (field.id === 'nik' || field.id === 'noKk') {
+    const clean = value.replace(/\s/g, '');
+    if (value && clean.length !== 16) {
+      field.classList.remove('is-valid');
+      field.classList.add('is-invalid');
+      return;
+    }
+  }
+  
+  if (field.id === 'nomorHp') {
+    const clean = value.replace(/\s/g, '');
+    if (value && (clean.length < 10 || clean.length > 15)) {
+      field.classList.remove('is-valid');
+      field.classList.add('is-invalid');
+      return;
+    }
+  }
+  
+  if (value) {
+    field.classList.remove('is-invalid');
+    field.classList.add('is-valid');
+  } else {
+    field.classList.remove('is-valid');
+  }
+}
+
+// ==================== INPUT PAGE HTML ====================
+function getInputPageHTML() {
+  return `
+    <div class="card-custom scroll-top" id="formCard">
+      <div class="card-title">
+        <i class="fas fa-user-plus"></i>
+        Form Input Data Pengunjung
+        <span class="badge bg-primary ms-auto" style="font-size:0.7rem; font-weight:400;">
+          <i class="fas fa-asterisk text-danger me-1"></i> Wajib diisi
+        </span>
+      </div>
+      
+      <form id="formInput" novalidate>
+        <div class="row g-3">
+          <div class="col-12">
+            <label class="form-label">Nomor HP <span class="required-star">*</span></label>
+            <input type="text" class="form-control" id="nomorHp" placeholder="085216120885" required pattern="[0-9]{10,15}">
+            <div class="invalid-feedback">Masukkan 10-15 digit nomor HP</div>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label">Nama Lengkap <span class="required-star">*</span></label>
+            <input type="text" class="form-control" id="nama" placeholder="Masukkan nama lengkap" required>
+            <div class="invalid-feedback">Nama wajib diisi</div>
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label">NIK <span class="text-muted">(Opsional)</span></label>
+            <input type="text" class="form-control" id="nik" placeholder="16 digit NIK" pattern="[0-9]{16}">
+            <div class="invalid-feedback">NIK harus 16 digit</div>
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label">No KK <span class="text-muted">(Opsional)</span></label>
+            <input type="text" class="form-control" id="noKk" placeholder="16 digit No KK" pattern="[0-9]{16}">
+            <div class="invalid-feedback">No KK harus 16 digit</div>
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label">Tempat Lahir <span class="required-star">*</span></label>
+            <input type="text" class="form-control" id="tempatLahir" placeholder="Kota/Kabupaten" required>
+            <div class="invalid-feedback">Tempat lahir wajib diisi</div>
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label">Tanggal Lahir <span class="required-star">*</span></label>
+            <input type="date" class="form-control" id="tanggalLahir" required>
+            <div class="invalid-feedback">Tanggal lahir wajib diisi</div>
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label">Agama <span class="required-star">*</span></label>
+            <select class="form-select" id="agama" required>
+              <option value="">Pilih Agama</option>
+              <option value="Islam">Islam</option>
+              <option value="Kristen">Kristen</option>
+              <option value="Katolik">Katolik</option>
+              <option value="Hindu">Hindu</option>
+              <option value="Buddha">Buddha</option>
+              <option value="Konghucu">Konghucu</option>
+            </select>
+            <div class="invalid-feedback">Agama wajib dipilih</div>
+          </div>
+          
+          <div class="col-md-6">
+            <label class="form-label">Jenis Kelamin <span class="required-star">*</span></label>
+            <select class="form-select" id="jenisKelamin" required>
+              <option value="">Pilih Jenis Kelamin</option>
+              <option value="Laki-laki">Laki-laki</option>
+              <option value="Perempuan">Perempuan</option>
+            </select>
+            <div class="invalid-feedback">Jenis kelamin wajib dipilih</div>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label">Pekerjaan <span class="required-star">*</span></label>
+            <input type="text" class="form-control" id="pekerjaan" placeholder="Pekerjaan" required>
+            <div class="invalid-feedback">Pekerjaan wajib diisi</div>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label">Alamat <span class="required-star">*</span></label>
+            <textarea class="form-control" id="alamat" rows="2" placeholder="Alamat lengkap" required></textarea>
+            <div class="invalid-feedback">Alamat wajib diisi</div>
+          </div>
+          
+          <div class="col-12">
+            <label class="form-label">Tujuan Berkunjung <span class="required-star">*</span></label>
+            <select class="form-select" id="tujuanBerkunjung" required>
+              <option value="">Memuat data...</option>
+            </select>
+            <div class="invalid-feedback">Tujuan berkunjung wajib dipilih</div>
+          </div>
+          
+          <div class="col-12 mt-3">
+            <button type="submit" class="btn btn-primary-custom" id="btnSubmit">
+              <i class="fas fa-paper-plane me-2"></i>
+              Kirim Data
+            </button>
+            <div class="submit-feedback" id="submitFeedback"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+  `;
+}
+
+// ==================== PENGUNJUNG PAGE HTML ====================
+function getPengunjungPageHTML() {
+  return `
+    <div class="card-custom">
+      <div class="card-title">
+        <i class="fas fa-users"></i>
+        Daftar Pengunjung
+        <span class="counter-badge" id="totalPengunjung">0</span>
+        <button class="btn btn-sm btn-outline-primary ms-auto" onclick="loadPengunjungData()" style="border-radius:8px;">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+      <div id="pengunjungList">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Memuat...</span>
+          </div>
+          <p class="mt-2 text-muted">Memuat data pengunjung...</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ==================== STATUS SKM PAGE HTML ====================
+function getStatusPageHTML() {
+  return `
+    <div class="card-custom">
+      <div class="card-title">
+        <i class="fas fa-clipboard-check"></i>
+        Status Respon Survey
+        <span class="counter-badge" id="totalStatus">0</span>
+        <button class="btn btn-sm btn-outline-primary ms-auto" onclick="loadStatusData()" style="border-radius:8px;">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+      <div id="statusList">
+        <div class="text-center py-4">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Memuat...</span>
+          </div>
+          <p class="mt-2 text-muted">Memuat data status...</p>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ==================== LOAD PENGUNJUNG ====================
+async function loadPengunjungData() {
+  const container = document.getElementById('pengunjungList');
+  const counter = document.getElementById('totalPengunjung');
+  
+  showLoading(true);
+  try {
+    const result = await apiGet('getPengunjung');
+    if (result.success && result.data && result.data.length > 0) {
+      pengunjungData = result.data;
+      if (counter) counter.textContent = pengunjungData.length;
+      renderPengunjungTable(pengunjungData);
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-users-slash"></i>
+          <p>${result.message || 'Belum ada data pengunjung'}</p>
+          <button class="btn btn-primary btn-sm mt-3" onclick="renderPage('input')">
+            <i class="fas fa-plus me-1"></i> Tambah Data
+          </button>
+        </div>
+      `;
+      if (counter) counter.textContent = '0';
+    }
+  } catch (e) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-triangle text-danger"></i>
+        <p>Error: ${e.message}</p>
+        <button class="btn btn-primary btn-sm mt-3" onclick="loadPengunjungData()">
+          <i class="fas fa-refresh me-1"></i> Coba Lagi
+        </button>
+      </div>
+    `;
+  } finally {
+    showLoading(false);
+  }
+}
+
+function renderPengunjungTable(data) {
+  const container = document.getElementById('pengunjungList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = `<div class="empty-state"><i class="fas fa-users-slash"></i><p>Belum ada data</p></div>`;
+    return;
+  }
+
+  let html = `
+    <div class="table-wrapper">
+      <table class="table table-custom">
+        <thead><tr><th>#</th><th>Nama</th><th>HP</th><th>Tujuan</th><th>Waktu</th><th>Aksi</th></tr></thead>
+        <tbody>
+  `;
+
+  data.slice().reverse().forEach((row, index) => {
+    const no = row['No'] || (index + 1);
+    const nama = row['Nama'] || '-';
+    const hp = row['Nomor HP'] || '-';
+    const tujuan = row['Tujuan Berkunjung'] || '-';
+    const waktu = row['Timestamp'] ? formatDate(row['Timestamp']) : '-';
+    
+    const hpString = String(hp);
+    const waNumber = hpString !== '-' && hpString !== '' ? convertToWhatsApp(hpString) : '';
+    
+    const linkTemplate = dropdownData?.linkSkm || 'https://senapelan.github.io/Home/publik/sikemas/survey.html?nama={nama}&hp={hp}&tujuan={tujuan}';
+    const surveyLink = buildSurveyLink(nama, hpString, tujuan, linkTemplate);
+    
+    const waMessage = encodeURIComponent(
+      `Halo ${nama}, terimakasih telah mengunjungi Kecamatan Senapelan, mohon luangkan waktu untuk mengisi survey Kepuasan Masyarakat dengan mengklik link ini : ${surveyLink}`
+    );
+    const waUrl = `https://wa.me/${waNumber}?text=${waMessage}`;
+
+    html += `
+      <tr>
+        <td><strong>${no}</strong></td>
+        <td><strong>${nama}</strong></td>
+        <td>${hp}</td>
+        <td><span class="badge bg-info bg-opacity-10 text-info">${tujuan}</span></td>
+        <td>${waktu}</td>
+        <td>
+          ${waNumber ? `<a href="${waUrl}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> Kirim</a>` : '-'}
+        </td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+// ==================== LOAD STATUS SKM ====================
+async function loadStatusData() {
+  const container = document.getElementById('statusList');
+  const counter = document.getElementById('totalStatus');
+  
+  showLoading(true);
+  try {
+    const result = await apiGet('getStatusSKM');
+    if (result.success && result.data && result.data.length > 0) {
+      if (counter) counter.textContent = result.data.length;
+      renderStatusTable(result.data);
+    } else {
+      container.innerHTML = `
+        <div class="empty-state">
+          <i class="fas fa-clipboard-list"></i>
+          <p>${result.message || 'Belum ada data pengunjung'}</p>
+          <button class="btn btn-primary btn-sm mt-3" onclick="renderPage('input')">
+            <i class="fas fa-plus me-1"></i> Tambah Data
+          </button>
+        </div>
+      `;
+      if (counter) counter.textContent = '0';
+    }
+  } catch (e) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-exclamation-triangle text-danger"></i>
+        <p>Error: ${e.message}</p>
+        <button class="btn btn-primary btn-sm mt-3" onclick="loadStatusData()">
+          <i class="fas fa-refresh me-1"></i> Coba Lagi
+        </button>
+      </div>
+    `;
+  } finally {
+    showLoading(false);
+  }
+}
+
+function renderStatusTable(data) {
+  const container = document.getElementById('statusList');
+  if (!container) return;
+
+  if (!data || data.length === 0) {
+    container.innerHTML = `<div class="empty-state"><i class="fas fa-clipboard-list"></i><p>Belum ada data</p></div>`;
+    return;
+  }
+
+  let html = `
+    <div class="table-wrapper">
+      <table class="table table-custom">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nama</th>
+            <th>HP</th>
+            <th>Tujuan</th>
+            <th>Status</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody>
+  `;
+
+  data.slice().reverse().forEach((row, index) => {
+    const no = row.no || (index + 1);
+    const nama = row.nama || '-';
+    const hp = row.hp || '-';
+    const tujuan = row.tujuan || '-';
+    const status = row.status || 'Belum Merespon';
+    
+    let statusBadge = '';
+    if (status === 'Puas') {
+      statusBadge = `<span class="badge-status puas"><i class="fas fa-smile me-1"></i> Puas</span>`;
+    } else if (status === 'Tidak Puas') {
+      statusBadge = `<span class="badge-status tidak-puas"><i class="fas fa-frown me-1"></i> Tidak Puas</span>`;
+    } else {
+      statusBadge = `<span class="badge-status belum"><i class="fas fa-clock me-1"></i> Belum Merespon</span>`;
+    }
+    
+    const hpString = String(hp);
+    const waNumber = hpString !== '-' && hpString !== '' ? convertToWhatsApp(hpString) : '';
+    
+    const linkTemplate = dropdownData?.linkSkm || 'https://senapelan.github.io/Home/publik/sikemas/survey.html?nama={nama}&hp={hp}&tujuan={tujuan}';
+    const surveyLink = buildSurveyLink(nama, hpString, tujuan, linkTemplate);
+    const waMessage = encodeURIComponent(
+      `Halo ${nama}, terimakasih telah mengunjungi Kecamatan Senapelan, mohon luangkan waktu untuk mengisi survey Kepuasan Masyarakat dengan mengklik link ini : ${surveyLink}`
+    );
+    const waUrl = `https://wa.me/${waNumber}?text=${waMessage}`;
+    
+    let actionButton = '';
+    if (status === 'Belum Merespon' && waNumber) {
+      actionButton = `<a href="${waUrl}" target="_blank" class="btn btn-wa"><i class="fab fa-whatsapp"></i> Kirim</a>`;
+    } else if (status === 'Puas' || status === 'Tidak Puas') {
+      actionButton = `<span class="text-muted" style="font-size:0.7rem;"><i class="fas fa-check-circle text-success"></i> Selesai</span>`;
+    } else {
+      actionButton = '-';
+    }
+
+    html += `
+      <tr>
+        <td><strong>${no}</strong></td>
+        <td><strong>${nama}</strong></td>
+        <td>${hp}</td>
+        <td><span class="badge bg-info bg-opacity-10 text-info">${tujuan}</span></td>
+        <td>${statusBadge}</td>
+        <td>${actionButton}</td>
+      </tr>
+    `;
+  });
+
+  html += `</tbody></table></div>`;
+  container.innerHTML = html;
+}
+
+// ==================== HANDLE SUBMIT ====================
+async function handleSubmit(e) {
+  e.preventDefault();
+  const form = document.getElementById('formInput');
+  const btn = document.getElementById('btnSubmit');
+  const feedback = document.getElementById('submitFeedback');
+  
+  feedback.className = 'submit-feedback';
+  feedback.style.display = 'none';
+  
+  if (!form.checkValidity()) {
+    form.classList.add('was-validated');
+    return;
+  }
+  
+  let nomorHp = document.getElementById('nomorHp').value.trim().replace(/\s/g, '').replace(/\D/g, '');
+  if (nomorHp.startsWith('0')) nomorHp = '62' + nomorHp.substring(1);
+  else if (!nomorHp.startsWith('62') && nomorHp.length > 0) nomorHp = '62' + nomorHp;
+  
+  const data = {
+    nomorHp: nomorHp,
+    nama: document.getElementById('nama').value.trim(),
+    nik: document.getElementById('nik').value.trim().replace(/\s/g, ''),
+    noKk: document.getElementById('noKk').value.trim().replace(/\s/g, ''),
+    tempatLahir: document.getElementById('tempatLahir').value.trim(),
+    tanggalLahir: document.getElementById('tanggalLahir').value,
+    agama: document.getElementById('agama').value,
+    jenisKelamin: document.getElementById('jenisKelamin').value,
+    pekerjaan: document.getElementById('pekerjaan').value.trim(),
+    alamat: document.getElementById('alamat').value.trim(),
+    tujuanBerkunjung: document.getElementById('tujuanBerkunjung').value,
+  };
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading-spinner"></span> Menyimpan...';
+  
+  try {
+    const result = await apiPost(data);
+    
+    feedback.className = 'submit-feedback success';
+    feedback.innerHTML = `<i class="fas fa-check-circle"></i> ${result.message}`;
+    feedback.style.display = 'block';
+    
+    form.reset();
+    form.classList.remove('was-validated');
+    document.querySelectorAll('.form-control, .form-select').forEach(el => {
+      el.classList.remove('is-valid', 'is-invalid');
+    });
+    
+    const dateInput = document.getElementById('tanggalLahir');
+    if (dateInput) {
+      const today = new Date().toISOString().split('T')[0];
+      dateInput.max = today;
+    }
+    
+    populateDropdown();
+    
+    document.getElementById('formCard').scrollIntoView({ 
+      behavior: 'smooth', 
+      block: 'start' 
+    });
+    
+    document.getElementById('nomorHp').focus();
+    
+  } catch (e) {
+    feedback.className = 'submit-feedback error';
+    feedback.innerHTML = `<i class="fas fa-exclamation-circle"></i> Error: ${e.message}`;
+    feedback.style.display = 'block';
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane me-2"></i> Kirim Data';
+  }
+}
+
+// ==================== NAVIGATION ====================
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.bottom-nav .nav-item').forEach(el => {
+    el.addEventListener('click', function() {
+      const page = this.dataset.page;
+      if (page !== currentPage) renderPage(page);
+    });
+  });
+  
+  loadDropdown().then(() => renderPage('input'));
+});
+</script>
+
+</body>
+</html>
