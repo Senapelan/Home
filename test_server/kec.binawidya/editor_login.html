@@ -243,7 +243,13 @@
     }
     .table-toolbar .hint{font-size:12px;color:var(--muted)}
 
-    .table-wrap{overflow:auto;max-height:68vh;position:relative}
+    /* TABLE TANPA BATAS TINGGI (TAMPIL SEMUA) */
+    .table-wrap{
+      overflow-x: auto; 
+      overflow-y: hidden; 
+      position:relative;
+      width: 100%;
+    }
     table{width:100%;border-collapse:separate;border-spacing:0;font-size:13.5px}
 
     thead th{
@@ -323,7 +329,7 @@
     .name-meta{min-width:0}
     .name-meta .sub{font-size:11.5px;color:var(--muted);margin-top:1px}
 
-    /* ============ TUTORIAL CONTAINER (BARU) ============ */
+    /* ============ TUTORIAL CONTAINER ============ */
     .tutorial-card {
       background: var(--card);
       border: 1px solid var(--border);
@@ -511,10 +517,13 @@
         padding: 14px;
         /* Jarak aman atas (Notifikasi) & bawah (Menu Navigasi HP) */
         padding-top: calc(14px + env(safe-area-inset-top, 24px));
-        padding-bottom: 20px; 
+        /* Padding bawah ditambah agar panduan/tabel paling bawah tidak tertutup menu */
+        padding-bottom: calc(100px + env(safe-area-inset-bottom, 24px)); 
       }
       h1{font-size:20px}
       .logo-badge{width:44px;height:44px;font-size:22px}
+      
+      /* Sembunyikan beberapa kolom di HP agar tidak terlalu lebar */
       thead th:nth-child(8),
       thead th:nth-child(10),
       thead th:nth-child(13),
@@ -525,13 +534,6 @@
       tbody td:nth-child(13),
       tbody td:nth-child(14),
       tbody td:nth-child(16){display:none}
-
-      /* PERHITUNGAN TINGGI TABEL DI HP */
-      /* Dikurangi tinggi header, statistik, search, tutorial, dan menu bawah */
-      .table-wrap {
-        max-height: calc(100vh - 450px) !important; 
-        /* Jika masih mentok ke bawah, naikkan angka 450 menjadi 470 atau 500 */
-      }
     }
     @media(max-width:600px){
       .grid{grid-template-columns:1fr}
@@ -641,7 +643,7 @@
       </div>
     </div>
 
-    <!-- ===== KONTAINER TUTORIAL (BARU) ===== -->
+    <!-- ===== KONTAINER TUTORIAL ===== -->
     <div class="tutorial-card">
       <h3>💡 Panduan Penggunaan</h3>
       
