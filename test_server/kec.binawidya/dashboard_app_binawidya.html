@@ -7,9 +7,18 @@
 
 <script>
 (function(){
-  const u = sessionStorage.getItem('username');
-  if (!u) {
-    document.documentElement.innerHTML = '<head><title>Redirect…</title></head><body></body>';
+  try {
+    const raw = localStorage.getItem('app_session_v1');
+    const s = raw ? JSON.parse(raw) : null;
+    const valid = s && s.data && s.data.username &&
+                  (s.mode === 'long' || !s.expiresAt || Date.now() <= s.expiresAt);
+    if (!valid) {
+      localStorage.removeItem('app_session_v1');
+      document.documentElement.innerHTML = '<head><title>Redirect…</title></head><body></body>';
+      location.replace('loginApp.html');
+    }
+  } catch (_) {
+    localStorage.removeItem('app_session_v1');
     location.replace('loginApp.html');
   }
 })();
@@ -306,7 +315,6 @@
     display:none !important;
   }
   
-  /* Memastikan halaman iframe memenuhi area main */
   body.layanan-open #page-iframe {
     flex:1;
     display:flex !important;
@@ -406,6 +414,17 @@
   .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 22px rgba(79,70,229,.4)}
   .btn-primary:disabled{opacity:.6;cursor:not-allowed}
 
+  /* Tombol Batal Edit */
+  .btn-cancel-edit{
+    background:var(--card-2);border:1px solid var(--danger);color:var(--danger);
+    border-radius:10px;padding:9px 16px;font-size:12.5px;font-weight:600;
+    cursor:pointer;font-family:inherit;width:100%;justify-content:center;
+    display:none;align-items:center;gap:6px;margin-bottom:16px;
+    transition:all .15s;
+  }
+  .btn-cancel-edit.show{display:inline-flex}
+  .btn-cancel-edit:hover{background:var(--danger);color:#fff}
+
   .list-item{
     display:flex;align-items:center;gap:12px;
     padding:12px 14px;border-radius:12px;background:var(--card-2);
@@ -420,11 +439,15 @@
   .list-item .li-meta{min-width:0;flex:1}
   .list-item .li-meta .nm{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .list-item .li-meta .lk{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .btn-del{
-    background:var(--danger-soft);color:var(--danger);border:none;
-    border-radius:8px;padding:8px 10px;font-size:13px;cursor:pointer;
-    transition:all .15s;flex-shrink:0;font-family:inherit;
+  .li-actions{display:flex;gap:6px;flex-shrink:0}
+  .btn-edit, .btn-del{
+    border:none;border-radius:8px;padding:8px 10px;font-size:13px;
+    cursor:pointer;transition:all .15s;font-family:inherit;flex-shrink:0;
   }
+  .btn-edit{background:var(--primary-soft);color:var(--primary)}
+  .btn-edit:hover{background:var(--primary);color:#fff}
+  html[data-theme="dark"] .btn-edit{color:var(--primary-2)}
+  .btn-del{background:var(--danger-soft);color:var(--danger)}
   .btn-del:hover{background:var(--danger);color:#fff}
 
   /* ================= MODAL ================= */
@@ -555,38 +578,19 @@
     .main{padding:16px 12px 90px}
   }
 
-  /* Tombol Logout Mobile (Hanya tampil di layar kecil) */
   .btn-logout-mobile {
-    display: none;
-    height: 42px;
-    width: 42px;
-    border-radius: 12px;
-    background: var(--danger-soft);
-    color: var(--danger);
-    border: 1px solid transparent;
-    font-size: 18px;
-    cursor: pointer;
-    align-items: center;
-    justify-content: center;
-    box-shadow: var(--shadow-sm);
-    transition: all .15s;
+    display: none; height: 42px; width: 42px; border-radius: 12px;
+    background: var(--danger-soft); color: var(--danger); border: 1px solid transparent;
+    font-size: 18px; cursor: pointer; align-items: center; justify-content: center;
+    box-shadow: var(--shadow-sm); transition: all .15s;
   }
-  .btn-logout-mobile:hover {
-    background: var(--danger);
-    color: #fff;
-  }
-
-  @media(max-width: 820px) {
-    .btn-logout-mobile {
-      display: inline-flex;
-    }
-  }
+  .btn-logout-mobile:hover { background: var(--danger); color: #fff; }
+  @media(max-width: 820px) { .btn-logout-mobile { display: inline-flex; } }
 </style>
 </head>
 <body>
 
 <div class="app">
-
   <aside class="sidebar">
     <div class="sb-brand">
       <div class="sb-logo" id="brandLogo">🏛️</div>
@@ -598,18 +602,10 @@
 
     <nav class="sb-nav" id="sbNav">
       <div class="nav-label">Menu Utama</div>
-      <button class="nav-item active" data-page="profile">
-        <span class="ic">👤</span> <span>Profile</span>
-      </button>
-      <button class="nav-item" data-page="editorLogin" id="navEditorLogin" style="display:none">
-        <span class="ic">🛠️</span> <span>Editor Login</span>
-      </button>
-      <button class="nav-item" data-page="aplikasi">
-        <span class="ic">📱</span> <span>Aplikasi</span>
-      </button>
-      <button class="nav-item" data-page="editor" id="navEditor" style="display:none">
-        <span class="ic">⚙️</span> <span>Editor</span>
-      </button>
+      <button class="nav-item active" data-page="profile"><span class="ic">👤</span> <span>Profile</span></button>
+      <button class="nav-item" data-page="editorLogin" id="navEditorLogin" style="display:none"><span class="ic">🛠️</span> <span>Buat/Edit Akun</span></button>
+      <button class="nav-item" data-page="aplikasi"><span class="ic">📱</span> <span>Aplikasi</span></button>
+      <button class="nav-item" data-page="editor" id="navEditor" style="display:none"><span class="ic">⚙️</span> <span>Editor</span></button>
       <div id="dynamicMenus"></div>
     </nav>
 
@@ -626,20 +622,17 @@
   </aside>
 
   <main class="main">
-
-    <!-- ===== PROFILE ===== -->
     <section class="page show" id="page-profile">
       <div class="page-head">
         <div>
           <h2>Profile Saya</h2>
           <p>Lengkapi data profil Anda. Setiap isian tersimpan otomatis saat berpindah field.</p>
         </div>
-                <div class="head-actions">
+        <div class="head-actions">
           <button class="btn-lock" id="btnLock" onclick="toggleLock()">
             <span id="lockIcon">🔒</span> <span id="lockText">Kunci Data</span>
           </button>
           <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Ganti tema">🌙</button>
-          <!-- TOMBOL LOGOUT KHUSUS MOBILE -->
           <button class="btn-logout-mobile" onclick="logout()" title="Keluar">⏻</button>
         </div>
       </div>
@@ -658,7 +651,6 @@
           <input type="file" id="fileFoto" accept="image/*" style="display:none"/>
           <h3 id="pcName">—</h3>
           <span class="role-badge user" id="pcRole">USER</span>
-
           <div class="info-row"><span class="lbl">Username</span><span class="val" id="pcUsername">—</span></div>
           <div class="info-row"><span class="lbl">Email</span><span class="val" id="pcEmail">—</span></div>
           <div class="info-row"><span class="lbl">NIP</span><span class="val" id="pcNip">—</span></div>
@@ -667,39 +659,19 @@
 
         <div class="card form-card">
           <h3>✏️ Edit Profile</h3>
-          <p class="sub">Data tersimpan otomatis ke spreadsheet saat Anda meninggalkan field.</p>
-
+          <p class="sub">Data otomatis tersimpan.</p>
           <div class="form-grid">
-            <div class="fg">
-              <label>Nama <span class="saved-tag" id="tag_NAMA">✓ tersimpan</span></label>
-              <input id="f_NAMA" data-field="NAMA" placeholder="Nama lengkap"/>
-            </div>
-            <div class="fg">
-              <label>NIP <span class="saved-tag" id="tag_NIP">✓ tersimpan</span></label>
-              <input id="f_NIP" data-field="NIP" placeholder="Nomor induk pegawai"/>
-            </div>
-            <div class="fg">
-              <label>Jabatan <span class="saved-tag" id="tag_JABATAN">✓ tersimpan</span></label>
-              <input id="f_JABATAN" data-field="JABATAN" placeholder="Jabatan"/>
-            </div>
-            <div class="fg">
-              <label>Pangkat / Gol <span class="saved-tag" id="tag_PANGKAT_GOL">✓ tersimpan</span></label>
-              <input id="f_PANGKAT_GOL" data-field="PANGKAT_GOL" placeholder="Contoh: Penata / III-c"/>
-            </div>
-            <div class="fg full">
-              <label>Instansi <span class="saved-tag" id="tag_INSTANSI">✓ tersimpan</span></label>
-              <input id="f_INSTANSI" data-field="INSTANSI" placeholder="Instansi / unit kerja"/>
-            </div>
-            <div class="fg full">
-              <label>Alamat <span class="saved-tag" id="tag_ALAMAT">✓ tersimpan</span></label>
-              <textarea id="f_ALAMAT" data-field="ALAMAT" placeholder="Alamat lengkap"></textarea>
-            </div>
+            <div class="fg"><label>Nama <span class="saved-tag" id="tag_NAMA">✓ tersimpan</span></label><input id="f_NAMA" data-field="NAMA" placeholder="Nama lengkap"/></div>
+            <div class="fg"><label>NIP <span class="saved-tag" id="tag_NIP">✓ tersimpan</span></label><input id="f_NIP" data-field="NIP" placeholder="Nomor induk pegawai"/></div>
+            <div class="fg"><label>Jabatan <span class="saved-tag" id="tag_JABATAN">✓ tersimpan</span></label><input id="f_JABATAN" data-field="JABATAN" placeholder="Jabatan"/></div>
+            <div class="fg"><label>Pangkat / Gol <span class="saved-tag" id="tag_PANGKAT_GOL">✓ tersimpan</span></label><input id="f_PANGKAT_GOL" data-field="PANGKAT_GOL" placeholder="Contoh: Penata / III-c"/></div>
+            <div class="fg full"><label>Instansi <span class="saved-tag" id="tag_INSTANSI">✓ tersimpan</span></label><input id="f_INSTANSI" data-field="INSTANSI" placeholder="Instansi / unit kerja"/></div>
+            <div class="fg full"><label>Alamat <span class="saved-tag" id="tag_ALAMAT">✓ tersimpan</span></label><textarea id="f_ALAMAT" data-field="ALAMAT" placeholder="Alamat lengkap"></textarea></div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ===== APLIKASI ===== -->
     <section class="page" id="page-aplikasi">
       <div class="page-head">
         <div>
@@ -716,7 +688,6 @@
       </div>
     </section>
 
-    <!-- ===== GLOBAL IFRAME (LAYANAN & EDITOR LOGIN) ===== -->
     <section class="page" id="page-iframe">
       <div class="layanan-bar">
         <span class="ttl" id="iframeTitle">Layanan</span>
@@ -724,13 +695,10 @@
         <button class="btn-close" onclick="tutupIframe()">✕ Tutup</button>
       </div>
       <div class="layanan-iframe-wrap">
-        <iframe id="iframeGlobal" src="about:blank"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals"
-          referrerpolicy="no-referrer-when-downgrade"></iframe>
+        <iframe id="iframeGlobal" src="about:blank" sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-modals" referrerpolicy="no-referrer-when-downgrade"></iframe>
       </div>
     </section>
 
-    <!-- ===== EDITOR ===== -->
     <section class="page" id="page-editor">
       <div class="page-head">
         <div>
@@ -740,7 +708,6 @@
       </div>
 
       <div class="editor-grid">
-        <!-- BRAND ICON -->
         <div class="card editor-card" style="grid-column:1/-1; margin-bottom:22px;">
           <h3>🏛️ Brand Icon (Sidebar)</h3>
           <p class="sub">Ubah icon "Pusat Data" di kiri atas. Disimpan di folder ICON APLIKASI BINAWIDYA.</p>
@@ -753,54 +720,46 @@
           <button class="btn-primary" onclick="saveBrandIcon()" id="btnSaveBrand" style="max-width:400px;">💾 Simpan Brand</button>
         </div>
 
-        <!-- MENU -->
         <div class="card editor-card">
-          <h3>🧭 Menu Sidebar</h3>
-          <p class="sub">Tambah menu dengan icon. Icon disimpan di folder Drive terpisah.</p>
-
+          <h3>🧭 <span id="menuFormTitle">Menu Sidebar</span></h3>
+          <p class="sub">Tambah atau edit menu dengan icon. Icon disimpan di folder Drive terpisah.</p>
           <div class="inline-form">
             <input id="mNama" placeholder="Nama menu" class="full"/>
             <input id="mLink" placeholder="Link (https://...)" class="full"/>
           </div>
-
           <div class="icon-row">
             <div class="icon-prev" id="mIconPrev">🔗</div>
             <div class="icon-info" id="mIconInfo">Belum ada icon. Pakai emoji default 🔗.</div>
             <button type="button" class="btn-pick" onclick="document.getElementById('mIcon').click()">📁 Pilih</button>
           </div>
           <input type="file" id="mIcon" accept="image/*" style="display:none" onchange="pickIcon(this, 'mIconPrev', 'mIconInfo')"/>
-
-          <button class="btn-primary" onclick="addMenu()" id="btnAddMenu">➕ Tambah Menu</button>
+          <button class="btn-primary" onclick="saveMenu()" id="btnAddMenu">➕ Tambah Menu</button>
+          <button class="btn-cancel-edit" id="btnCancelMenu" onclick="resetMenuForm()">✕ Batal Edit</button>
           <div id="menuList"></div>
         </div>
 
-        <!-- APLIKASI -->
         <div class="card editor-card">
-          <h3>📱 Aplikasi</h3>
-          <p class="sub">Tambah aplikasi dengan icon. Icon disimpan di folder Drive terpisah.</p>
-
+          <h3>📱 <span id="appFormTitle">Aplikasi</span></h3>
+          <p class="sub">Tambah atau edit aplikasi dengan icon. Icon disimpan di folder Drive terpisah.</p>
           <div class="inline-form">
             <input id="aNama" placeholder="Nama aplikasi" class="full"/>
             <input id="aLink" placeholder="Link (https://...)" class="full"/>
           </div>
-
           <div class="icon-row">
             <div class="icon-prev" id="aIconPrev">📱</div>
             <div class="icon-info" id="aIconInfo">Belum ada icon. Pakai emoji default 📱.</div>
             <button type="button" class="btn-pick" onclick="document.getElementById('aIcon').click()">📁 Pilih</button>
           </div>
           <input type="file" id="aIcon" accept="image/*" style="display:none" onchange="pickIcon(this, 'aIconPrev', 'aIconInfo')"/>
-
-          <button class="btn-primary" onclick="addAplikasi()" id="btnAddApp">➕ Tambah Aplikasi</button>
+          <button class="btn-primary" onclick="saveAplikasi()" id="btnAddApp">➕ Tambah Aplikasi</button>
+          <button class="btn-cancel-edit" id="btnCancelApp" onclick="resetAppForm()">✕ Batal Edit</button>
           <div id="appList"></div>
         </div>
       </div>
     </section>
-
   </main>
 </div>
 
-<!-- ===== BOTTOM NAV ===== -->
 <nav class="bottom-nav">
   <div class="bn-inner" id="bnInner">
     <button class="bn-item active" data-page="profile"><span class="ic">👤</span><span>Profile</span></button>
@@ -810,7 +769,6 @@
   </div>
 </nav>
 
-<!-- ===== MODAL PASSWORD ===== -->
 <div class="modal-bg" id="modalLock">
   <div class="modal">
     <div class="modal-head">
@@ -820,9 +778,7 @@
     <div class="modal-body">
       <label for="lockPwd">Masukkan Password</label>
       <input id="lockPwd" type="password" placeholder="Password login Anda" autocomplete="current-password"/>
-      <p style="font-size:12px;color:var(--muted);margin:10px 0 0">
-        Password yang sama dengan password login Anda.
-      </p>
+      <p style="font-size:12px;color:var(--muted);margin:10px 0 0">Password yang sama dengan password login Anda.</p>
     </div>
     <div class="modal-foot">
       <button type="button" class="btn-ghost" onclick="closeLockModal()">Batal</button>
@@ -837,19 +793,107 @@
 /* ============================================================
    KONFIGURASI
    ============================================================ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbwZyPWq9zZubz_2ZmUZ9bWXIKhXokXCjfA5NDTIoJ1or6n8obI0vCIav7verVd59hIs/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbz4kJaE6KLt9DVM-lAjMRivmQRGjTzBlwLGazqH0fJIiYLVgiHlefDqFzWSZFe5dnzw/exec';
+
+/* ============================================================
+   SESSION HELPER (localStorage + mode short/long)
+   ============================================================ */
+const Session = (function () {
+  const KEY       = 'app_session_v1';
+  const SHORT_TTL = 60 * 60 * 1000; // 1 jam
+  const FIELDS    = [
+    'nama_user','username','email','role','id_user',
+    'jabatan','kategori','wilayah','no_hp','foto_profil'
+  ];
+
+  function _read() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.data || !obj.data.username) {
+        localStorage.removeItem(KEY);
+        return null;
+      }
+      if (obj.mode === 'short' && obj.expiresAt && Date.now() > obj.expiresAt) {
+        localStorage.removeItem(KEY);
+        return null;
+      }
+      return obj;
+    } catch (_) {
+      localStorage.removeItem(KEY);
+      return null;
+    }
+  }
+  function _write(obj) {
+    try { localStorage.setItem(KEY, JSON.stringify(obj)); }
+    catch (e) { console.warn('Session: gagal simpan', e); }
+  }
+
+  return {
+    SHORT_TTL,
+    set(data, mode) {
+      mode = (mode === 'long') ? 'long' : 'short';
+      const clean = {};
+      FIELDS.forEach(k => clean[k] = (data && data[k] != null) ? String(data[k]) : '');
+      _write({
+        data: clean,
+        mode: mode,
+        expiresAt: (mode === 'short') ? (Date.now() + SHORT_TTL) : null,
+        createdAt: Date.now()
+      });
+    },
+    get(field) {
+      const s = _read();
+      if (!s) return null;
+      return s.data[field] != null ? s.data[field] : null;
+    },
+    all() {
+      const s = _read();
+      return s ? Object.assign({}, s.data) : null;
+    },
+    mode() {
+      const s = _read();
+      return s ? s.mode : null;
+    },
+    setField(field, value) {
+      const s = _read();
+      if (!s) return false;
+      s.data[field] = value == null ? '' : String(value);
+      _write(s);
+      return true;
+    },
+    touch() {
+      const s = _read();
+      if (!s) return false;
+      if (s.mode === 'short') {
+        s.expiresAt = Date.now() + SHORT_TTL;
+        _write(s);
+      }
+      return true;
+    },
+    remaining() {
+      const s = _read();
+      if (!s || s.mode !== 'short' || !s.expiresAt) return 0;
+      return Math.max(0, s.expiresAt - Date.now());
+    },
+    clear() {
+      localStorage.removeItem(KEY);
+    }
+  };
+})();
 
 /* ============================================================
    STATE
    ============================================================ */
 const U = {
-  username:    sessionStorage.getItem('username') || '',
-  nama:        sessionStorage.getItem('nama_user') || '',
-  email:       sessionStorage.getItem('email') || '',
-  role:        sessionStorage.getItem('role') || 'User',
-  foto_profil: sessionStorage.getItem('foto_profil') || '',
-  jabatan:     sessionStorage.getItem('jabatan') || '',
-  id_user:     sessionStorage.getItem('id_user') || ''
+  username:    Session.get('username')    || '',
+  nama:        Session.get('nama_user')   || '',
+  email:       Session.get('email')       || '',
+  role:        Session.get('role')        || 'User',
+  foto_profil: Session.get('foto_profil') || '',
+  jabatan:     Session.get('jabatan')     || '',
+  id_user:     Session.get('id_user')     || ''
 };
 let PROFILE = {};
 let PROFILE_LOCKED = false;
@@ -857,6 +901,12 @@ let ICON_MENU_FILE = null;
 let ICON_APP_FILE = null;
 let ICON_BRAND_FILE = null;
 let IFRAME_URL = '';
+
+/* STATE EDIT MENU & APLIKASI */
+let EDIT_MENU_ID = null;
+let EDIT_MENU_ICON_URL = '';
+let EDIT_APP_ID = null;
+let EDIT_APP_ICON_URL = '';
 
 /* ============================================================
    UTIL
@@ -903,7 +953,6 @@ async function api(payload){
   return json;
 }
 
-/* Baca file → dataURL */
 function fileToDataUrl(file){
   return new Promise((resolve, reject) => {
     const r = new FileReader();
@@ -929,7 +978,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (!['Admin','User'].includes(U.role)){
     U.role = 'User';
-    sessionStorage.setItem('role','User');
+    Session.setField('role','User');
   }
 
   renderSidebarIdentity();
@@ -944,7 +993,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('[data-page]').forEach(btn => {
     btn.addEventListener('click', () => {
       const p = btn.dataset.page;
-      if (p === 'editorLogin') bukaIframe('Editor Login', 'https://senapelan.github.io/Home/editor_login.html');
+      if (p === 'editorLogin') bukaIframe('Buat/Edit Akun', 'editor_login.html');
       else navigate(p, btn);
     });
   });
@@ -981,6 +1030,32 @@ document.addEventListener('DOMContentLoaded', () => {
   loadProfile();
   loadMenu();
   loadAplikasi();
+
+  setInterval(() => {
+    if (Session.mode() !== 'short') return;
+    if (!Session.touch()) {
+      toast('Sesi berakhir. Silakan login ulang.', 'error');
+      setTimeout(() => location.replace('loginApp.html'), 1200);
+    }
+  }, 30 * 1000);
+
+  ['click','keydown','scroll','touchstart'].forEach(evt => {
+    window.addEventListener(evt, () => {
+      if (Session.mode() === 'short') Session.touch();
+    }, { passive: true });
+  });
+
+  (function showRemaining(){
+    const el = $('sbRole');
+    if (!el) return;
+    if (Session.mode() === 'short') {
+      const rem = Session.remaining();
+      const m = Math.max(0, Math.round(rem / 60000));
+      el.title = 'Sesi berakhir dalam ~' + m + ' menit';
+    } else if (Session.mode() === 'long') {
+      el.title = 'Sesi tanpa batas (Ingat saya aktif)';
+    }
+  })();
 });
 
 /* ============================================================
@@ -1121,7 +1196,7 @@ function navigate(page, btn){
 }
 
 /* ============================================================
-   GLOBAL IFRAME (Layanan & Editor Login)
+   GLOBAL IFRAME (Layanan & Buat/Edit Akun)
    ============================================================ */
 function bukaIframe(title, url){
   IFRAME_URL = url;
@@ -1135,7 +1210,6 @@ function bukaIframe(title, url){
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
 
-  // Tandai menu aktif jika dari sidebar dinamis
   document.querySelectorAll('.nav-item').forEach(b => {
     if (b.dataset.dynName === title) b.classList.add('active');
   });
@@ -1186,7 +1260,7 @@ async function loadProfile(){
 
     if (PROFILE.FOTO_URL) {
       U.foto_profil = PROFILE.FOTO_URL;
-      sessionStorage.setItem('foto_profil', PROFILE.FOTO_URL);
+      Session.setField('foto_profil', PROFILE.FOTO_URL);
       renderAvatar();
     }
   } catch (err){
@@ -1263,7 +1337,7 @@ async function handleUpload(input){
     renderPhoto(res.url);
     
     U.foto_profil = res.url;
-    sessionStorage.setItem('foto_profil', res.url);
+    Session.setField('foto_profil', res.url);
     renderAvatar();
     
     toast('Foto berhasil diunggah', 'success');
@@ -1350,8 +1424,6 @@ async function confirmLock(){
     }
 
     const target = !PROFILE_LOCKED;
-    
-    // Kirim hanya status LOCKED, backend akan menggabungkannya dengan data lama
     const payload = Object.assign({}, PROFILE);
     payload.LOCKED = target;
 
@@ -1500,9 +1572,52 @@ function pickIcon(input, prevId, infoId){
 }
 
 /* ============================================================
-   EDITOR — MENU
+   EDITOR — MENU (CRUD)
    ============================================================ */
-async function addMenu(){
+function resetMenuForm(){
+  EDIT_MENU_ID = null;
+  EDIT_MENU_ICON_URL = '';
+  $('mNama').value = '';
+  $('mLink').value = '';
+  $('mIcon').value = '';
+  ICON_MENU_FILE = null;
+  $('mIconPrev').textContent = '🔗';
+  $('mIconInfo').textContent = 'Belum ada icon. Pakai emoji default 🔗.';
+  
+  $('menuFormTitle').textContent = 'Menu Sidebar';
+  $('btnAddMenu').textContent = '➕ Tambah Menu';
+  $('btnCancelMenu').classList.remove('show');
+}
+
+function editMenu(id){
+  if (!window._MENU_DATA) return;
+  const m = window._MENU_DATA.find(x => String(x.ID) === String(id));
+  if (!m) return;
+  
+  EDIT_MENU_ID = id;
+  EDIT_MENU_ICON_URL = m.ICON_URL || '';
+  $('mNama').value = m.NAMA_MENU || '';
+  $('mLink').value = m.LINK_MENU || '';
+  $('mIcon').value = '';
+  ICON_MENU_FILE = null;
+  
+  if (m.ICON_URL) {
+    $('mIconPrev').innerHTML = '<img src="'+esc(m.ICON_URL)+'" alt=""/>';
+    $('mIconInfo').textContent = '✓ Icon saat ini. Pilih baru untuk mengganti.';
+  } else {
+    $('mIconPrev').textContent = '🔗';
+    $('mIconInfo').textContent = 'Belum ada icon. Pakai emoji default 🔗.';
+  }
+
+  $('menuFormTitle').textContent = 'Edit Menu';
+  $('btnAddMenu').textContent = '💾 Update Menu';
+  $('btnCancelMenu').classList.add('show');
+  
+  $('mNama').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  $('mNama').focus();
+}
+
+async function saveMenu(){
   const nama = $('mNama').value.trim();
   const link = $('mLink').value.trim();
   if (!nama || !link) { toast('Nama & link wajib', 'error'); return; }
@@ -1513,36 +1628,47 @@ async function addMenu(){
   btn.textContent = 'Menyimpan...';
 
   try {
-    let iconUrl = '';
+    let iconUrl = EDIT_MENU_ICON_URL;
+    let dataUrlToSend = null;
 
     if (ICON_MENU_FILE){
       btn.textContent = 'Upload icon...';
-      const dataUrl = await fileToDataUrl(ICON_MENU_FILE);
+      dataUrlToSend = await fileToDataUrl(ICON_MENU_FILE);
       const up = await api({
         action: 'uploadIcon',
         username: U.username,
-        nama_folder: nama,
-        dataUrl: dataUrl
+        nama_folder: nama, // Sesuai permintaan: pakai nama menu
+        dataUrl: dataUrlToSend
       });
       iconUrl = up.url || '';
     }
 
     btn.textContent = 'Simpan menu...';
-    await api({
-      action: 'addMenu',
-      nama_menu: nama,
-      link_menu: link,
-      icon_url: iconUrl
-    });
+    
+    if (EDIT_MENU_ID) {
+      const res = await api({
+        action: 'updateMenu',
+        id: EDIT_MENU_ID,
+        nama_menu: nama,
+        link_menu: link,
+        icon_url: iconUrl,
+        dataUrl: dataUrlToSend,
+        username: U.username
+      });
+      if (res.oldFileError) toast('Menu diperbarui, tapi icon lama gagal dihapus: ' + res.oldFileError, 'error');
+      else if (res.oldFileTrashed) toast('Menu diperbarui (icon lama dipindah ke Trash)', 'success');
+      else toast('Menu diperbarui', 'success');
+    } else {
+      await api({
+        action: 'addMenu',
+        nama_menu: nama,
+        link_menu: link,
+        icon_url: iconUrl
+      });
+      toast('Menu ditambahkan', 'success');
+    }
 
-    $('mNama').value = '';
-    $('mLink').value = '';
-    $('mIcon').value = '';
-    ICON_MENU_FILE = null;
-    $('mIconPrev').textContent = '🔗';
-    $('mIconInfo').textContent = 'Belum ada icon. Pakai emoji default 🔗.';
-
-    toast('Menu ditambahkan', 'success');
+    resetMenuForm();
     loadMenu();
     loadEditorLists();
 
@@ -1550,24 +1676,71 @@ async function addMenu(){
     toast('Gagal: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = oldLabel;
+    if (!EDIT_MENU_ID) btn.textContent = oldLabel;
+    else btn.textContent = '💾 Update Menu';
   }
 }
 
 async function deleteMenu(id){
-  if (!confirm('Hapus menu ini?')) return;
+  if (!confirm('Hapus menu ini beserta file icon-nya?\nTindakan tidak bisa dibatalkan.')) return;
   try {
-    await api({ action:'deleteMenu', id });
-    toast('Menu dihapus', 'success');
+    const res = await api({ action:'deleteMenu', id });
+    if (res.fileError) toast('Menu dihapus, tapi file gagal dihapus: ' + res.fileError, 'error');
+    else if (res.fileTrashed) toast('Menu + icon dihapus', 'success');
+    else toast('Menu dihapus (tanpa icon)', 'success');
+    if (EDIT_MENU_ID === id) resetMenuForm();
     loadMenu();
     loadEditorLists();
-  } catch (err){ toast('Gagal: '+err.message, 'error'); }
+  } catch (err){ toast('Gagal hapus: '+err.message, 'error'); }
 }
 
 /* ============================================================
-   EDITOR — APLIKASI
+   EDITOR — APLIKASI (CRUD)
    ============================================================ */
-async function addAplikasi(){
+function resetAppForm(){
+  EDIT_APP_ID = null;
+  EDIT_APP_ICON_URL = '';
+  $('aNama').value = '';
+  $('aLink').value = '';
+  $('aIcon').value = '';
+  ICON_APP_FILE = null;
+  $('aIconPrev').textContent = '📱';
+  $('aIconInfo').textContent = 'Belum ada icon. Pakai emoji default 📱.';
+
+  $('appFormTitle').textContent = 'Aplikasi';
+  $('btnAddApp').textContent = '➕ Tambah Aplikasi';
+  $('btnCancelApp').classList.remove('show');
+}
+
+function editAplikasi(id){
+  if (!window._APP_DATA) return;
+  const a = window._APP_DATA.find(x => String(x.ID) === String(id));
+  if (!a) return;
+
+  EDIT_APP_ID = id;
+  EDIT_APP_ICON_URL = a.ICON_URL || '';
+  $('aNama').value = a.NAMA_APLIKASI || '';
+  $('aLink').value = a.LINK_APLIKASI || '';
+  $('aIcon').value = '';
+  ICON_APP_FILE = null;
+
+  if (a.ICON_URL) {
+    $('aIconPrev').innerHTML = '<img src="'+esc(a.ICON_URL)+'" alt=""/>';
+    $('aIconInfo').textContent = '✓ Icon saat ini. Pilih baru untuk mengganti.';
+  } else {
+    $('aIconPrev').textContent = '📱';
+    $('aIconInfo').textContent = 'Belum ada icon. Pakai emoji default 📱.';
+  }
+
+  $('appFormTitle').textContent = 'Edit Aplikasi';
+  $('btnAddApp').textContent = '💾 Update Aplikasi';
+  $('btnCancelApp').classList.add('show');
+  
+  $('aNama').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  $('aNama').focus();
+}
+
+async function saveAplikasi(){
   const nama = $('aNama').value.trim();
   const link = $('aLink').value.trim();
   if (!nama || !link) { toast('Nama & link wajib', 'error'); return; }
@@ -1578,36 +1751,47 @@ async function addAplikasi(){
   btn.textContent = 'Menyimpan...';
 
   try {
-    let iconUrl = '';
+    let iconUrl = EDIT_APP_ICON_URL;
+    let dataUrlToSend = null;
 
     if (ICON_APP_FILE){
       btn.textContent = 'Upload icon...';
-      const dataUrl = await fileToDataUrl(ICON_APP_FILE);
+      dataUrlToSend = await fileToDataUrl(ICON_APP_FILE);
       const up = await api({
         action: 'uploadIcon',
         username: U.username,
-        nama_folder: nama,
-        dataUrl: dataUrl
+        nama_folder: nama, // Sesuai permintaan: pakai nama aplikasi
+        dataUrl: dataUrlToSend
       });
       iconUrl = up.url || '';
     }
 
     btn.textContent = 'Simpan aplikasi...';
-    await api({
-      action: 'addAplikasi',
-      nama_aplikasi: nama,
-      link_aplikasi: link,
-      icon_url: iconUrl
-    });
+    
+    if (EDIT_APP_ID) {
+      const res = await api({
+        action: 'updateAplikasi',
+        id: EDIT_APP_ID,
+        nama_aplikasi: nama,
+        link_aplikasi: link,
+        icon_url: iconUrl,
+        dataUrl: dataUrlToSend,
+        username: U.username
+      });
+      if (res.oldFileError) toast('Aplikasi diperbarui, tapi icon lama gagal dihapus: ' + res.oldFileError, 'error');
+      else if (res.oldFileTrashed) toast('Aplikasi diperbarui (icon lama dipindah ke Trash)', 'success');
+      else toast('Aplikasi diperbarui', 'success');
+    } else {
+      await api({
+        action: 'addAplikasi',
+        nama_aplikasi: nama,
+        link_aplikasi: link,
+        icon_url: iconUrl
+      });
+      toast('Aplikasi ditambahkan', 'success');
+    }
 
-    $('aNama').value = '';
-    $('aLink').value = '';
-    $('aIcon').value = '';
-    ICON_APP_FILE = null;
-    $('aIconPrev').textContent = '📱';
-    $('aIconInfo').textContent = 'Belum ada icon. Pakai emoji default 📱.';
-
-    toast('Aplikasi ditambahkan', 'success');
+    resetAppForm();
     loadAplikasi();
     loadEditorLists();
 
@@ -1615,18 +1799,22 @@ async function addAplikasi(){
     toast('Gagal: ' + err.message, 'error');
   } finally {
     btn.disabled = false;
-    btn.textContent = oldLabel;
+    if (!EDIT_APP_ID) btn.textContent = oldLabel;
+    else btn.textContent = '💾 Update Aplikasi';
   }
 }
 
 async function deleteAplikasi(id){
-  if (!confirm('Hapus aplikasi ini?')) return;
+  if (!confirm('Hapus aplikasi ini beserta file icon-nya?\nTindakan tidak bisa dibatalkan.')) return;
   try {
-    await api({ action:'deleteAplikasi', id });
-    toast('Aplikasi dihapus', 'success');
+    const res = await api({ action:'deleteAplikasi', id });
+    if (res.fileError) toast('Aplikasi dihapus, tapi file gagal dihapus: ' + res.fileError, 'error');
+    else if (res.fileTrashed) toast('Aplikasi + icon dihapus', 'success');
+    else toast('Aplikasi dihapus (tanpa icon)', 'success');
+    if (EDIT_APP_ID === id) resetAppForm();
     loadAplikasi();
     loadEditorLists();
-  } catch (err){ toast('Gagal: '+err.message, 'error'); }
+  } catch (err){ toast('Gagal hapus: '+err.message, 'error'); }
 }
 
 /* ============================================================
@@ -1639,8 +1827,12 @@ async function loadEditorLists(){
       api({ action:'getMenu' }),
       api({ action:'getAplikasi' })
     ]);
-    renderMenuList(m.data || []);
-    renderAppList(a.data || []);
+    
+    window._MENU_DATA = m.data || [];
+    window._APP_DATA = a.data || [];
+    
+    renderMenuList(window._MENU_DATA);
+    renderAppList(window._APP_DATA);
   } catch (err){ console.warn(err.message); }
 }
 
@@ -1655,7 +1847,10 @@ function renderMenuList(rows){
     return '<div class="list-item">'+
       '<div class="li-ic">'+iconHTML(icon, '🧭')+'</div>'+
       '<div class="li-meta"><div class="nm">'+esc(m.NAMA_MENU)+'</div><div class="lk">'+esc(m.LINK_MENU)+'</div></div>'+
-      '<button class="btn-del" onclick="deleteMenu(\''+esc(m.ID)+'\')">🗑️</button>'+
+      '<div class="li-actions">'+
+        '<button class="btn-edit" onclick="editMenu(\''+esc(m.ID)+'\')" title="Edit">✏️</button>'+
+        '<button class="btn-del" onclick="deleteMenu(\''+esc(m.ID)+'\')" title="Hapus">🗑️</button>'+
+      '</div>'+
     '</div>';
   }).join('');
 }
@@ -1671,7 +1866,10 @@ function renderAppList(rows){
     return '<div class="list-item">'+
       '<div class="li-ic">'+iconHTML(icon, '📱')+'</div>'+
       '<div class="li-meta"><div class="nm">'+esc(a.NAMA_APLIKASI)+'</div><div class="lk">'+esc(a.LINK_APLIKASI)+'</div></div>'+
-      '<button class="btn-del" onclick="deleteAplikasi(\''+esc(a.ID)+'\')">🗑️</button>'+
+      '<div class="li-actions">'+
+        '<button class="btn-edit" onclick="editAplikasi(\''+esc(a.ID)+'\')" title="Edit">✏️</button>'+
+        '<button class="btn-del" onclick="deleteAplikasi(\''+esc(a.ID)+'\')" title="Hapus">🗑️</button>'+
+      '</div>'+
     '</div>';
   }).join('');
 }
@@ -1681,7 +1879,8 @@ function renderAppList(rows){
    ============================================================ */
 function logout(){
   if (!confirm('Keluar dari aplikasi?')) return;
-  sessionStorage.clear();
+  Session.clear();
+  try { sessionStorage.clear(); } catch(_) {}
   location.replace('loginApp.html');
 }
 </script>

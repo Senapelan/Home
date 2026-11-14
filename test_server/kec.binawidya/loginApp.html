@@ -145,7 +145,7 @@
     text-align: center;
     color: #888;
     font-size: 13px;
-    margin-bottom: 30px;
+    margin-bottom: 25px;
   }
 
   .input-group {
@@ -181,6 +181,35 @@
     font-weight: 500;
   }
 
+  /* ===== REMEMBER ME ===== */
+  .remember-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: -6px;
+    margin-bottom: 14px;
+    user-select: none;
+  }
+  .remember-row input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: #667eea;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .remember-row label {
+    font-size: 13px;
+    color: #555;
+    cursor: pointer;
+    line-height: 1.4;
+  }
+  .remember-row label small {
+    display: block;
+    color: #999;
+    font-size: 11px;
+    margin-top: 2px;
+  }
+
   .btn-login {
     width: 100%;
     padding: 14px;
@@ -192,7 +221,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s;
-    margin-top: 10px;
+    margin-top: 4px;
     letter-spacing: 0.5px;
   }
 
@@ -229,24 +258,25 @@
 
   /* ====================== RESPONSIVE ====================== */
   @media (max-width: 768px) {
-    .container { height: 620px; }
+    .container { height: 640px; }
 
     .container.active .logo-box {
       width: 100%;
-      height: 240px;
+      height: 220px;
       border-radius: 20px 20px 0 0;
     }
 
-    .logo-box img.logo { width: 80px; height: 80px; margin-bottom: 10px; }
-    .logo-box h1 { font-size: 20px; margin-bottom: 8px; }
-    .logo-box p  { font-size: 12px; margin-bottom: 15px; }
+    .logo-box img.logo { width: 70px; height: 70px; margin-bottom: 8px; }
+    .logo-box h1 { font-size: 18px; margin-bottom: 6px; }
+    .logo-box p  { font-size: 12px; margin-bottom: 10px; }
 
     .form-box {
       width: 100% !important;
-      height: calc(100% - 240px) !important;
-      top: 240px;
+      height: calc(100% - 220px) !important;
+      top: 220px;
       transform: translateY(30px);
       opacity: 0;
+      padding: 30px 25px;
     }
 
     .container.active .form-box {
@@ -276,7 +306,7 @@
   <div class="form-box">
     <form id="loginForm" autocomplete="off">
       <h2>Login</h2>
-      <p class="subtitle">Tulis Username dan pasword<br>(pastikan anda sudah di konfirmasi Admin)</p>
+      <p class="subtitle">Tulis Username dan password<br>(pastikan anda sudah di konfirmasi Admin)</p>
 
       <div class="input-group">
         <label for="username">Username</label>
@@ -286,6 +316,14 @@
       <div class="input-group">
         <label for="pasword">Password</label>
         <input type="password" id="pasword" name="pasword" required />
+      </div>
+
+      <div class="remember-row">
+        <input type="checkbox" id="rememberMe" />
+        <label for="rememberMe">
+          Ingat saya
+          <small>tekan ini untuk mengingat login.</small>
+        </label>
       </div>
 
       <button type="submit" class="btn-login" id="btnLogin">LOGIN</button>
@@ -304,14 +342,129 @@ const API_URL       = "https://script.google.com/macros/s/AKfycbxi0orwaOONjbrkyy
 const DASHBOARD_URL = "dashboard_app_binawidya.html";
 
 /* ============================================================
+   SESSION HELPER
+   - mode "short"  → expiry 1 jam (untuk PC)
+   - mode "long"   → tanpa expiry (Remember me, untuk HP)
+   Disimpan di localStorage agar sesi bertahan saat tab ditutup.
+   ============================================================ */
+const Session = (function () {
+  const KEY         = 'app_session_v1';
+  const SHORT_TTL   = 60 * 60 * 1000; // 1 jam
+  const FIELDS      = [
+    'nama_user','username','email','role','id_user',
+    'jabatan','kategori','wilayah','no_hp','foto_profil'
+  ];
+
+  function _read() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.data || !obj.data.username) {
+        localStorage.removeItem(KEY);
+        return null;
+      }
+      // obj.mode === 'short' → cek expiry
+      if (obj.mode === 'short' && obj.expiresAt && Date.now() > obj.expiresAt) {
+        localStorage.removeItem(KEY);
+        return null;
+      }
+      return obj;
+    } catch (_) {
+      localStorage.removeItem(KEY);
+      return null;
+    }
+  }
+
+  function _write(obj) {
+    try { localStorage.setItem(KEY, JSON.stringify(obj)); }
+    catch (e) { console.warn('Session: gagal simpan', e); }
+  }
+
+  return {
+    SHORT_TTL,
+    /** Simpan sesi baru.
+     *  mode: 'short' (1 jam) atau 'long' (tanpa expiry) */
+    set(data, mode) {
+      mode = (mode === 'long') ? 'long' : 'short';
+      const clean = {};
+      FIELDS.forEach(k => clean[k] = (data && data[k] != null) ? String(data[k]) : '');
+      _write({
+        data: clean,
+        mode: mode,
+        expiresAt: (mode === 'short') ? (Date.now() + SHORT_TTL) : null,
+        createdAt: Date.now()
+      });
+    },
+    get(field) {
+      const s = _read();
+      if (!s) return null;
+      return s.data[field] != null ? s.data[field] : null;
+    },
+    all() {
+      const s = _read();
+      return s ? Object.assign({}, s.data) : null;
+    },
+    mode() {
+      const s = _read();
+      return s ? s.mode : null;
+    },
+    setField(field, value) {
+      const s = _read();
+      if (!s) return false;
+      s.data[field] = value == null ? '' : String(value);
+      _write(s);
+      return true;
+    },
+    /** Perpanjang expiry — hanya untuk mode 'short' */
+    touch() {
+      const s = _read();
+      if (!s) return false;
+      if (s.mode === 'short') {
+        s.expiresAt = Date.now() + SHORT_TTL;
+        _write(s);
+      }
+      return true;
+    },
+    remaining() {
+      const s = _read();
+      if (!s || s.mode !== 'short' || !s.expiresAt) return 0;
+      return Math.max(0, s.expiresAt - Date.now());
+    },
+    clear() {
+      localStorage.removeItem(KEY);
+    }
+  };
+})();
+
+/* ============================================================
    ELEMEN
    ============================================================ */
-const container = document.getElementById("container");
-const btnOpen   = document.getElementById("btnOpen");
-const btnBack   = document.getElementById("btnBack");
-const form      = document.getElementById("loginForm");
-const btnLogin  = document.getElementById("btnLogin");
-const msgBox    = document.getElementById("message");
+const container  = document.getElementById("container");
+const btnOpen    = document.getElementById("btnOpen");
+const btnBack    = document.getElementById("btnBack");
+const form       = document.getElementById("loginForm");
+const btnLogin   = document.getElementById("btnLogin");
+const msgBox     = document.getElementById("message");
+const rememberMe = document.getElementById("rememberMe");
+
+/* ============================================================
+   AUTO-REDIRECT kalau sesi masih valid (biar user tidak login ulang)
+   ============================================================ */
+(function autoRedirect() {
+  const u = Session.get('username');
+  if (u) {
+    window.location.replace(DASHBOARD_URL);
+  }
+})();
+
+/* ============================================================
+   INGAT CHECKBOX terakhir (biar konsisten saat login ulang)
+   ============================================================ */
+try {
+  const last = localStorage.getItem('remember_pref');
+  if (last === '1') rememberMe.checked = true;
+} catch(_) {}
 
 /* ============================================================
    ANIMASI SLIDE
@@ -325,6 +478,10 @@ btnBack.addEventListener("click", () => {
   container.classList.remove("active");
   msgBox.className = "message";
   form.reset();
+  // restore remember preference
+  try {
+    if (localStorage.getItem('remember_pref') === '1') rememberMe.checked = true;
+  } catch(_) {}
 });
 
 /* ============================================================
@@ -343,6 +500,7 @@ form.addEventListener("submit", async (e) => {
 
   const username = document.getElementById("username").value.trim();
   const pasword  = document.getElementById("pasword").value.trim();
+  const remember = rememberMe.checked;
 
   if (!username || !pasword) {
     showMessage("Username dan Password wajib diisi", "error");
@@ -354,7 +512,6 @@ form.addEventListener("submit", async (e) => {
   msgBox.className = "message";
 
   try {
-    // Kirim JSON via text/plain agar bebas CORS preflight
     const res = await fetch(API_URL, {
       method : "POST",
       headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -369,17 +526,22 @@ form.addEventListener("submit", async (e) => {
     if (data.success) {
       showMessage("Login berhasil! Mengalihkan...", "success");
 
-      // Simpan data sesi
-      sessionStorage.setItem("nama_user",   data.nama_user || "");
-      sessionStorage.setItem("username",    data.username  || username);
-      sessionStorage.setItem("email",       data.email     || "");
-      sessionStorage.setItem("role",        data.role      || "User");
-      sessionStorage.setItem("id_user",     data.id_user   || "");
-      sessionStorage.setItem("jabatan",     data.jabatan   || "");
-      sessionStorage.setItem("kategori",    data.kategori  || "");
-      sessionStorage.setItem("wilayah",     data.wilayah   || "");
-      sessionStorage.setItem("no_hp",       data.no_hp     || "");
-      sessionStorage.setItem("foto_profil", data.foto_profil || "");
+      // Simpan sesi: remember = mode 'long' (tanpa expiry), else 'short' (1 jam)
+      Session.set({
+        nama_user:   data.nama_user   || "",
+        username:    data.username    || username,
+        email:       data.email       || "",
+        role:        data.role        || "User",
+        id_user:     data.id_user     || "",
+        jabatan:     data.jabatan     || "",
+        kategori:    data.kategori    || "",
+        wilayah:     data.wilayah     || "",
+        no_hp:       data.no_hp       || "",
+        foto_profil: data.foto_profil || ""
+      }, remember ? 'long' : 'short');
+
+      // Simpan preferensi checkbox untuk login berikutnya
+      try { localStorage.setItem('remember_pref', remember ? '1' : '0'); } catch(_) {}
 
       setTimeout(() => { window.location.href = DASHBOARD_URL; }, 700);
     } else {
