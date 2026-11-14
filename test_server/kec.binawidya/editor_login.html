@@ -449,7 +449,6 @@
         padding: 14px;
         /* Jarak aman atas (Notifikasi) & bawah (Menu Navigasi HP) */
         padding-top: calc(14px + env(safe-area-inset-top, 24px));
-        /* Padding bawah cukup 20px karena tabelnya sudah dipendekkan */
         padding-bottom: 20px; 
       }
       h1{font-size:20px}
@@ -465,9 +464,11 @@
       tbody td:nth-child(14),
       tbody td:nth-child(16){display:none}
 
-      /* KUNCI UTAMA: Pendekkan tinggi maksimal tabel agar tidak tertutup menu bawah */
+      /* PERHITUNGAN TINGGI TABEL DI HP */
+      /* Dikurangi tinggi header, statistik, search, dan menu bawah */
       .table-wrap {
-        max-height: 50vh; /* Di HP, tabel maksimal setinggi 50% layar */
+        max-height: calc(100vh - 420px) !important; 
+        /* Jika masih mentok ke bawah, naikkan angka 420 menjadi 440 atau 450 */
       }
     }
     @media(max-width:600px){
