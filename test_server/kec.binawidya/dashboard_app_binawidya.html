@@ -85,7 +85,7 @@
   }
 
   *{box-sizing:border-box}
-  html,body{height:100%}
+    html,body{height:100%; overflow-x: hidden;}
   body{
     font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
     background:var(--bg-grad);
@@ -94,7 +94,7 @@
   }
 
   /* ================= LAYOUT ================= */
-  .app{display:flex;min-height:100vh}
+   .app{display:flex;min-height:100vh; width:100%; overflow-x: clip;}
 
   .sidebar{
     width:var(--sidebar-w);flex-shrink:0;
@@ -440,6 +440,11 @@
     width:100%;height:100%;border:none;display:block;background:#fff;
   }
 
+  /* Sembunyikan Bottom Nav saat layanan terbuka */
+  body.layanan-open .bottom-nav {
+    display: none !important;
+  }
+
   /* --- PREMIUM BAR LOADER --- */
   .iframe-loader {
     position: absolute;
@@ -695,7 +700,7 @@
   .toast.error{background:linear-gradient(135deg,#dc2626,#ef4444)}
   .toast.info{background:linear-gradient(135deg,#2563eb,#4f46e5)}
 
-  /* ================= BOTTOM NAV ================= */
+  /* ================= BOTTOM NAV & APP DRAWER ================= */
   .bottom-nav{
     display:none;position:fixed;bottom:0;left:0;right:0;
     background:var(--card);border-top:1px solid var(--border);
@@ -703,7 +708,7 @@
     box-shadow:0 -6px 20px rgba(15,23,42,.08);
     overflow-x:auto;
   }
-  .bottom-nav .bn-inner{display:flex;justify-content:flex-start;align-items:center;gap:2px;min-width:max-content}
+    .bottom-nav .bn-inner{display:flex;justify-content:center;align-items:center;gap:2px;min-width:max-content;width:100%;}
   .bn-item{
     display:flex;flex-direction:column;align-items:center;gap:3px;
     padding:8px 10px;border-radius:10px;border:none;background:transparent;
@@ -716,6 +721,90 @@
   html[data-theme="dark"] .bn-item.active{color:var(--primary-2)}
   .bn-item.active .ic img{filter:none}
 
+  /* APP DRAWER MOBILE */
+  .app-drawer-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(15,23,42,.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 99;
+    align-items: flex-end;
+    justify-content: center;
+    animation: fadeIn .2s ease;
+  }
+  .app-drawer-overlay.show { display: flex; }
+
+  .app-drawer {
+    background: var(--card);
+    width: 100%;
+    border-radius: 24px 24px 0 0;
+    padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: slideUpDrawer .3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: 0 -10px 40px rgba(0,0,0,.2);
+  }
+
+  @keyframes slideUpDrawer {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
+  .app-drawer-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding: 0 8px;
+  }
+  .app-drawer-head h3 { margin: 0; font-size: 16px; font-weight: 800; }
+
+  .app-drawer-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px 10px;
+  }
+
+  .drawer-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--text);
+  }
+
+  .drawer-item .di-ic {
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    background: var(--card-2);
+    border: 1px solid var(--border-2);
+    display: grid;
+    place-items: center;
+    font-size: 24px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    transition: transform .2s;
+  }
+  .drawer-item .di-ic img { width: 100%; height: 100%; object-fit: cover; }
+  .drawer-item:active .di-ic { transform: scale(0.9); }
+  
+  .drawer-item span {
+    font-size: 11px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+  }
+
   /* ================= RESPONSIVE & SAFE AREA (HP) ================= */
   @media(max-width:960px){
     .profile-grid{grid-template-columns:1fr}
@@ -724,18 +813,16 @@
   }
   
   @media(max-width:820px){
-    /* Sembunyikan sidebar, munculkan bottom nav */
     .sidebar{display:none}
     .bottom-nav{display:block}
     
-    /* Jarak aman Atas/Bawah untuk Notifikasi HP */
     .main {
       padding-top: calc(20px + env(safe-area-inset-top, 24px)) !important;
       padding-bottom: calc(90px + env(safe-area-inset-bottom, 12px)) !important;
       padding-left: 16px;
       padding-right: 16px;
       width: 100%;
-      overflow-x: hidden; /* Mematikan scroll horizontal */
+      overflow-x: hidden;
     }
     .layanan-bar {
       padding-top: calc(14px + env(safe-area-inset-top, 24px)) !important;
@@ -744,7 +831,6 @@
       padding-bottom: calc(6px + env(safe-area-inset-bottom, 12px)) !important;
     }
 
-    /* Perbaikan Grid & Form agar tidak melebar di HP */
     .page-head h2{font-size:19px}
     .form-grid{grid-template-columns:1fr}
     
@@ -762,54 +848,29 @@
       box-sizing: border-box;
     }
 
-    /* Paksa input & form mengecil */
-    .inline-form { 
-      display: flex; 
-      flex-direction: column; 
-      width: 100%; 
-    }
-    .inline-form input { 
-      width: 100% !important; 
-      box-sizing: border-box; 
-    }
+    .inline-form { display: flex; flex-direction: column; width: 100%; }
+    .inline-form input { width: 100% !important; box-sizing: border-box; }
     
-    .icon-row {
-      display: flex;
-      flex-wrap: wrap;
-      width: 100%;
-      box-sizing: border-box;
-    }
-    .icon-row .icon-info {
-      flex: 1 1 100%;
-      margin-top: 5px;
-      margin-bottom: 5px;
-      word-break: break-word;
-    }
+    .icon-row { display: flex; flex-wrap: wrap; width: 100%; box-sizing: border-box; }
+    .icon-row .icon-info { flex: 1 1 100%; margin-top: 5px; margin-bottom: 5px; word-break: break-word; }
     
-    /* Paksa tombol & kartu di dalam editor */
     .btn-primary, .btn-cancel-edit, .card {
       width: 100% !important;
       max-width: 100%;
       box-sizing: border-box;
     }
     
-    .list-item {
-      width: 100%;
-      box-sizing: border-box;
-    }
+    .list-item { width: 100%; box-sizing: border-box; }
 
-    /* PERBAIKAN IFRAME AGAR TIDAK TERTUTUP BOTTOM NAV */
     body.layanan-open .main {
       padding-bottom: 0 !important;
       height: 100vh !important;
     }
     body.layanan-open #page-iframe {
-      height: calc(100vh - 64px) !important; /* 64px adalah tinggi menu bawah */
+      height: 100vh !important;
       padding-bottom: 0 !important;
     }
-    .layanan-iframe-wrap{
-      height: 100% !important;
-    }
+    .layanan-iframe-wrap{ height: 100% !important; }
   }
   
   @media(max-width:480px){
@@ -869,7 +930,7 @@
         </div>
         <div class="head-actions">
           <button class="btn-lock" id="btnLock" onclick="toggleLock()">
-            <span id="lockIcon">🔒</span> <span id="lockText">Kunci Data</span>
+            <span id="lockIcon">🔒</span> <span id="lockText">Edit Profil</span>
           </button>
           <button class="theme-toggle" id="themeBtn" onclick="toggleTheme()" title="Ganti tema">🌙</button>
           <button class="btn-logout-mobile" onclick="logout()" title="Keluar">⏻</button>
@@ -878,7 +939,7 @@
 
       <div class="lock-notice">
         <span style="font-size:18px">🔒</span>
-        <span>Data Anda sedang terkunci. Klik tombol <b>Buka Kunci</b> dan masukkan password untuk mengedit.</span>
+        <span>Edit Data Anda dan Simpan Data Anda<span>
       </div>
 
       <div class="profile-grid">
@@ -934,7 +995,6 @@
         <button class="btn-close" onclick="tutupIframe()">✕ Tutup</button>
       </div>
       <div class="layanan-iframe-wrap">
-        <!-- Animasi Loading Premium -->
         <div class="iframe-loader" id="iframeLoader">
           <div class="loader-container">
             <div class="loader-icon" id="loaderIcon">📱</div>
@@ -1010,14 +1070,30 @@
   </main>
 </div>
 
+<!-- ===== BOTTOM NAV ===== -->
 <nav class="bottom-nav">
   <div class="bn-inner" id="bnInner">
     <button class="bn-item active" data-page="profile"><span class="ic">👤</span><span>Profile</span></button>
     <button class="bn-item" data-page="editorLogin" id="bnEditorLogin" style="display:none"><span class="ic">🛠️</span><span>Akun</span></button>
     <button class="bn-item" data-page="aplikasi"><span class="ic">📱</span><span>Aplikasi</span></button>
     <button class="bn-item" data-page="editor" id="bnEditor" style="display:none"><span class="ic">⚙️</span><span>Editor</span></button>
+    <!-- Tombol Layanan (Mobile) -->
+    <button class="bn-item" id="bnLayanan" onclick="openAppDrawer()"><span class="ic">🗂️</span><span>Layanan</span></button>
   </div>
 </nav>
+
+<!-- ===== APP DRAWER MOBILE ===== -->
+<div class="app-drawer-overlay" id="appDrawer" onclick="closeAppDrawer(event)">
+  <div class="app-drawer" onclick="event.stopPropagation()">
+    <div class="app-drawer-head">
+      <h3>Menu Layanan</h3>
+      <button class="close-x" onclick="closeAppDrawer()" style="width:28px;height:28px;">✕</button>
+    </div>
+    <div class="app-drawer-grid" id="drawerGrid">
+      <!-- Item grid akan dimuat lewat JS -->
+    </div>
+  </div>
+</div>
 
 <div class="modal-bg" id="modalLock">
   <div class="modal">
@@ -1158,6 +1234,9 @@ let EDIT_MENU_ICON_URL = '';
 let EDIT_APP_ID = null;
 let EDIT_APP_ICON_URL = '';
 
+/* DATA UNTUK DRAWER MOBILE */
+let ALL_MENUS = [];
+
 /* ============================================================
    UTIL
    ============================================================ */
@@ -1265,7 +1344,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const fi = $('fileFoto');
   if (pw && fi){
     pw.addEventListener('click', () => {
-      if (PROFILE_LOCKED) { toast('Data terkunci. Buka kunci dulu.', 'info'); return; }
+      if (PROFILE_LOCKED) { toast('Edit Profile?. tekan tombol Edit Profile.', 'info'); return; }
       fi.click();
     });
     fi.addEventListener('change', e => handleUpload(e.target));
@@ -1446,12 +1525,15 @@ function navigate(page, btn){
 }
 
 /* ============================================================
-   GLOBAL IFRAME (Premium Loader)
+   GLOBAL IFRAME & APP DRAWER
    ============================================================ */
 function bukaIframe(title, url, iconUrl) {
   IFRAME_URL = url;
   $('iframeTitle').textContent = title;
   
+  // Tutup drawer jika lagi terbuka
+  closeAppDrawer();
+
   const loader = $('iframeLoader');
   const barFill = $('loaderBarFill');
   const textPct = $('loaderText');
@@ -1511,10 +1593,8 @@ function bukaIframe(title, url, iconUrl) {
   document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
   document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
 
+  // Highlight di sidebar (jika desktop)
   document.querySelectorAll('.nav-item').forEach(b => {
-    if (b.dataset.dynName === title) b.classList.add('active');
-  });
-  document.querySelectorAll('.bn-item').forEach(b => {
     if (b.dataset.dynName === title) b.classList.add('active');
   });
 }
@@ -1540,6 +1620,35 @@ function reloadIframe(){
   const iconFloat = $('loaderIcon');
   const iconSrc = iconFloat.querySelector('img') ? iconFloat.querySelector('img').src : '';
   bukaIframe($('iframeTitle').textContent, IFRAME_URL, iconSrc);
+}
+
+/* ============================================================
+   APP DRAWER (MENU MOBILE)
+   ============================================================ */
+function openAppDrawer() {
+  $('appDrawer').classList.add('show');
+}
+
+function closeAppDrawer(e) {
+  if (e && e.target !== e.currentTarget) return;
+  $('appDrawer').classList.remove('show');
+}
+
+function renderDrawerMenus(rows) {
+  const grid = $('drawerGrid');
+  if (!rows.length) {
+    grid.innerHTML = '<p style="color:var(--muted);font-size:12.5px;grid-column:1/-1;text-align:center;">Belum ada menu layanan.</p>';
+    return;
+  }
+  grid.innerHTML = rows.map(m => {
+    const icon = m.ICON_URL || '';
+    const nama = m.NAMA_MENU || '';
+    const link = m.LINK_MENU || '#';
+    return '<button class="drawer-item" onclick="bukaIframe(\''+esc(nama).replace(/'/g,"\\'")+'\', \''+esc(link)+'\', \''+esc(icon)+'\')">'+
+      '<div class="di-ic">'+iconHTML(icon, '🔗')+'</div>'+
+      '<span>'+esc(nama)+'</span>'+
+    '</button>';
+  }).join('');
 }
 
 /* ============================================================
@@ -1672,7 +1781,7 @@ function setLocked(locked){
 
   if (locked){
     icon.textContent = '🔓';
-    text.textContent = 'Buka Kunci';
+    text.textContent = 'Edit Profil';
     btn.classList.add('locked');
     ['f_NAMA','f_NIP','f_JABATAN','f_PANGKAT_GOL','f_INSTANSI','f_ALAMAT'].forEach(id => {
       const el = $(id);
@@ -1682,7 +1791,7 @@ function setLocked(locked){
     if (ta) ta.setAttribute('readonly','readonly');
   } else {
     icon.textContent = '🔒';
-    text.textContent = 'Kunci Data';
+    text.textContent = 'Simpan Data';
     btn.classList.remove('locked');
     ['f_NAMA','f_NIP','f_JABATAN','f_PANGKAT_GOL','f_INSTANSI','f_ALAMAT'].forEach(id => {
       const el = $(id);
@@ -1694,15 +1803,15 @@ function setLocked(locked){
 function toggleLock(){
   if (!PROFILE_LOCKED){
     $('lockModalIcon').textContent = '🔒';
-    $('lockModalTitle').textContent = 'Kunci Data';
-    $('btnLockConfirm').textContent = '🔒 Kunci Sekarang';
+    $('lockModalTitle').textContent = 'Simpan Data';
+    $('btnLockConfirm').textContent = '🔒 Konfirmasi';
     $('lockPwd').value = '';
     $('modalLock').classList.add('show');
     setTimeout(()=> $('lockPwd').focus(), 80);
   } else {
     $('lockModalIcon').textContent = '🔓';
-    $('lockModalTitle').textContent = 'Buka Kunci Data';
-    $('btnLockConfirm').textContent = '🔓 Buka Kunci';
+    $('lockModalTitle').textContent = 'Edit Profil';
+    $('btnLockConfirm').textContent = '🔓 Konfirmasi';
     $('lockPwd').value = '';
     $('modalLock').classList.add('show');
     setTimeout(()=> $('lockPwd').focus(), 80);
@@ -1758,12 +1867,14 @@ async function confirmLock(){
 }
 
 /* ============================================================
-   MENU
+   MENU & APLIKASI
    ============================================================ */
 async function loadMenu(){
   try {
     const res = await api({ action:'getMenu' });
-    renderDynamicMenus(res.data || []);
+    ALL_MENUS = res.data || [];
+    renderDynamicMenus(ALL_MENUS);
+    renderDrawerMenus(ALL_MENUS);
   } catch (err){
     console.warn('getMenu:', err.message);
   }
@@ -1778,9 +1889,7 @@ function iconHTML(iconUrl, fallback){
 
 function renderDynamicMenus(rows){
   const wrap = $('dynamicMenus');
-  const bnWrap = $('bnInner');
   wrap.querySelectorAll('[data-dyn]').forEach(n => n.remove());
-  bnWrap.querySelectorAll('[data-dyn]').forEach(n => n.remove());
   if (!rows.length) return;
 
   const label = document.createElement('div');
@@ -1805,20 +1914,9 @@ function renderDynamicMenus(rows){
       bukaIframe(nama, link, icon);
     };
     wrap.appendChild(btn);
-
-    const bn = document.createElement('button');
-    bn.className = 'bn-item';
-    bn.setAttribute('data-dyn','1');
-    bn.setAttribute('data-dyn-name', nama);
-    bn.innerHTML = '<span class="ic">'+iconHTML(icon, '🔗')+'</span><span>'+esc(nama)+'</span>';
-    bn.onclick = () => bukaIframe(nama, link, icon);
-    bnWrap.appendChild(bn);
   });
 }
 
-/* ============================================================
-   APLIKASI
-   ============================================================ */
 async function loadAplikasi(){
   try {
     const res = await api({ action:'getAplikasi' });
@@ -1842,7 +1940,6 @@ function renderApps(rows){
     const link = esc(a.LINK_APLIKASI || '#');
     const icon = a.ICON_URL || '';
     
-    // Panggil bukaIframe (tanpa target blank)
     return '<a class="app-card" href="javascript:void(0)" onclick="bukaIframe(\''+nama.replace(/'/g, "\\'")+'\', \''+link+'\', \''+icon+'\')" title="'+nama+'">'+
       '<div class="app-ic">'+iconHTML(icon, '📱')+'</div>'+
       '<h4>'+nama+'</h4>'+
