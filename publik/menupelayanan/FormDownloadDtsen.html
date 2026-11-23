@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unduhan Berkas - SIKS-NG Operator Padang Terubuk</title>
+    <!-- Import Font Google (Plus Jakarta Sans untuk kesan modern & premium) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Import Icon FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* --- RESET & VARIABEL --- */
+        :root {
+            --primary: #4F46E5; /* Warna biru/ungu tombol Masuk */
+            --primary-hover: #4338CA;
+            --primary-light: #EEF2FF;
+            --secondary: #10B981; /* Warna hijau tombol SIKS-GIS */
+            --secondary-hover: #059669;
+            --secondary-light: #ECFDF5;
+            --bg-dark: #1E293B;
+            --bg-body: #F1F5F9;
+            --text-main: #1E293B;
+            --text-muted: #64748B;
+            --white: #FFFFFF;
+            --border: #E2E8F0;
+            --shadow-card: 0 20px 40px -10px rgba(0, 0, 0, 0.1);
+            --radius-card: 24px;
+            --radius-input: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: url('https://images.unsplash.com/photo-1555421689-d68471e189f2?q=80&w=2070&auto=format&fit=crop'); /* Background gelap elegan */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        /* Overlay gelap agar teks terbaca jelas */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.7); /* Warna biru gelap transparan */
+            backdrop-filter: blur(4px);
+            z-index: 0;
+        }
+
+        /* --- KARTU UTAMA (Mirip desain login SIKS-NG) --- */
+        .download-container {
+            background: var(--white);
+            width: 100%;
+            max-width: 550px;
+            border-radius: var(--radius-card);
+            padding: 40px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            z-index: 1;
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- HEADER --- */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        /* Ukuran Logo diatur agar seimbang */
+        .logo-pemko {
+            height: 55px;
+            object-fit: contain;
+        }
+
+        .logo-siks {
+            height: 35px; /* Disesuaikan agar sejajar dengan logo pemko */
+            object-fit: contain;
+        }
+        
+        .logo-divider {
+            width: 1px;
+            height: 40px;
+            background-color: var(--border);
+            margin: 0 10px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .header h1 span {
+            font-size: 28px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* --- BADGE OPERATOR --- */
+        .operator-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: var(--primary-light);
+            color: var(--primary);
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            margin-top: 12px;
+        }
+        
+        .operator-badge i {
+            margin-right: 8px;
+        }
+
+        /* --- LIST UNDUHAN --- */
+        .download-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .download-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-input);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            background-color: var(--white);
+        }
+
+        .download-item:hover {
+            border-color: var(--primary);
+            background-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -10px rgba(79, 70, 229, 0.2);
+        }
+
+        .item-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 20px;
+        }
+
+        .icon-dtsen {
+            background-color: #FEF2F2;
+            color: #EF4444;
+        }
+
+        .icon-stpjm {
+            background-color: #EFF6FF;
+            color: #3B82F6;
+        }
+
+        .item-text h3 {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .item-text p {
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .download-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #F8FAFC;
+            color: var(--text-muted);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .download-item:hover .download-btn {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        /* --- TOMBOL BAWAH --- */
+        .btn-back {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding: 16px;
+            background-color: var(--secondary-light);
+            color: var(--secondary-hover);
+            border: 1.5px solid transparent;
+            border-radius: var(--radius-input);
+            font-size: 15px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .btn-back:hover {
+            background-color: var(--secondary);
+            color: var(--white);
+            box-shadow: 0 8px 16px -4px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-back i {
+            margin-right: 8px;
+        }
+
+        /* --- FOOTER --- */
+        .footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        /* --- RESPONSIF UNTUK MOBILE --- */
+        @media (max-width: 480px) {
+            .download-container {
+                padding: 24px;
+                border-radius: 20px;
+                margin: 10px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .logo-pemko {
+                height: 45px;
+            }
+            
+            .logo-siks {
+                height: 28px;
+            }
+
+            .download-item {
+                padding: 14px 16px;
+            }
+
+            .icon-box {
+                width: 40px;
+                height: 40px;
+                font-size: 16px;
+            }
+
+            .item-text h3 {
+                font-size: 14px;
+            }
+            
+            .item-text p {
+                font-size: 11px;
+            }
+
+            .btn-back {
+                padding: 14px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main class="download-container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="logo-container">
+                <!-- Logo Pemko -->
+                <img src="https://senapelan.github.io/Home/assets/metatag/logopemko/PEMKO%20512px.png" alt="Logo Pemko" class="logo-pemko">
+                
+                <div class="logo-divider"></div>
+                
+                <!-- Logo SIKS-NG -->
+                <img src="https://dokar.kendalkab.go.id/upload/berita/1662362642unnamed.png" alt="Logo SIKS-NG" class="logo-siks">
+            </div>
+            
+            <h1>Unduh Berkas <span>👋</span></h1>
+            <p>Pusat Unduhan Dokumen Pendukung</p>
+            
+            <div class="operator-badge">
+                <i class="fa-solid fa-user-shield"></i>
+                Operator Kelurahan Padang Terubuk
+            </div>
+        </header>
+
+        <!-- List Unduhan -->
+        <div class="download-list">
+            
+            <!-- Item 1: FORM DTSEN -->
+            <a href="https://drive.google.com/file/d/1JG5MFWEVvTMjWxWOYrJKPgpw9X1DLe3E/view" target="_blank" class="download-item">
+                <div class="item-info">
+                    <div class="icon-box icon-dtsen">
+                        <i class="fa-regular fa-file-excel"></i>
+                    </div>
+                    <div class="item-text">
+                        <h3>FORM DTSEN</h3>
+                        <p>Data Tunggal Sosial & Ekonomi Nasional</p>
+                    </div>
+                </div>
+                <div class="download-btn">
+                    <i class="fa-solid fa-download"></i>
+                </div>
+            </a>
+
+            <!-- Item 2: STPJM RW -->
+            <a href="https://drive.google.com/file/d/19FAFBHnmwgVzaBQBf4erh1XdM7ihgde2/view" target="_blank" class="download-item">
+                <div class="item-info">
+                    <div class="icon-box icon-stpjm">
+                        <i class="fa-regular fa-file-pdf"></i>
+                    </div>
+                    <div class="item-text">
+                        <h3>STPJM RW</h3>
+                        <p>Surat Tanda Penerimaan Jaminan Mutu</p>
+                    </div>
+                </div>
+                <div class="download-btn">
+                    <i class="fa-solid fa-download"></i>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Tombol Kembali (Link dikosongkan menggunakan #) -->
+        <a href="#" class="btn-back">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke SIKS-NG
+        </a>
+
+        <!-- Footer -->
+        <footer class="footer">
+            &copy; 2026 Kementerian Sosial RI - SIKS-NG<br>
+            Halaman Unduhan Operator Padang Terubuk
+        </footer>
+    </main>
+
+</body>
+</html>
