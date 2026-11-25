@@ -1,0 +1,1640 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<title>Pendataan Sarana & Prasarana — Binawidya</title>
+
+<!-- ===== SESSION GUARD ===== -->
+<script>
+(function(){
+  try {
+    const raw = localStorage.getItem('app_session_v1');
+    const s = raw ? JSON.parse(raw) : null;
+    const valid = s && s.data && s.data.username &&
+                  (s.mode === 'long' || !s.expiresAt || Date.now() <= s.expiresAt);
+    if (!valid) {
+      localStorage.removeItem('app_session_v1');
+      document.documentElement.innerHTML = '<head><title>Redirect…</title></head><body></body>';
+      location.replace('login.html');
+    }
+  } catch (_) {
+    localStorage.removeItem('app_session_v1');
+    location.replace('login.html');
+  }
+})();
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Leaflet -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<style>
+:root{
+  --bg:#f6f7fb;
+  --bg-grad:radial-gradient(1200px 600px at 10% -10%,#e0e7ff 0%,transparent 60%),
+            radial-gradient(900px 500px at 110% 10%,#fce7f3 0%,transparent 55%),
+            #f6f7fb;
+  --card:#ffffff;
+  --card-2:#fbfcfe;
+  --border:#e6e8ef;
+  --border-2:#eef0f6;
+  --text:#0f172a;
+  --text-2:#475569;
+  --muted:#94a3b8;
+  --primary:#4f46e5;
+  --primary-2:#6366f1;
+  --primary-soft:#eef2ff;
+  --success:#10b981;
+  --success-soft:#d1fae5;
+  --danger:#ef4444;
+  --danger-soft:#fee2e2;
+  --warn:#f59e0b;
+  --warn-soft:#fef3c7;
+  --info:#2563eb;
+  --info-soft:#dbeafe;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.06);
+  --shadow:0 4px 14px rgba(15,23,42,.08),0 2px 4px rgba(15,23,42,.04);
+  --shadow-lg:0 20px 50px rgba(15,23,42,.18);
+  --radius:16px;
+  --radius-sm:12px;
+}
+html[data-theme="dark"]{
+  --bg:#0b1020;
+  --bg-grad:radial-gradient(1000px 500px at 10% -10%,#1e1b4b 0%,transparent 60%),
+            radial-gradient(900px 500px at 110% 10%,#3b0764 0%,transparent 55%),
+            #0b1020;
+  --card:#111827;
+  --card-2:#0f172a;
+  --border:#1f2937;
+  --border-2:#1a2231;
+  --text:#e5e7eb;
+  --text-2:#cbd5e1;
+  --muted:#64748b;
+  --primary:#818cf8;
+  --primary-2:#a5b4fc;
+  --primary-soft:#1e1b4b;
+  --success:#34d399;
+  --success-soft:#064e3b;
+  --danger:#f87171;
+  --danger-soft:#450a0a;
+  --warn:#fbbf24;
+  --warn-soft:#451a03;
+  --info:#60a5fa;
+  --info-soft:#1e3a8a;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.4);
+  --shadow:0 6px 20px rgba(0,0,0,.5);
+  --shadow-lg:0 24px 60px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+html,body{height:100%;overflow-x:hidden}
+body{
+  font-family:'Inter',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  background:var(--bg-grad);margin:0;color:var(--text);min-height:100vh;
+  transition:background .4s ease,color .3s ease;
+  padding-bottom:40px;
+}
+.wrap{max-width:1400px;margin:0 auto;padding:20px}
+
+/* ===== HEADER ===== */
+.header{
+  display:flex;justify-content:space-between;align-items:flex-start;
+  gap:14px;flex-wrap:wrap;margin-bottom:20px;
+}
+.header .title-block{display:flex;align-items:center;gap:14px}
+.logo-badge{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,var(--primary),#8b5cf6);
+  display:grid;place-items:center;font-size:24px;color:#fff;
+  box-shadow:0 8px 24px rgba(79,70,229,.35);flex-shrink:0;
+}
+h1{font-size:22px;font-weight:800;letter-spacing:-.02em;margin:0}
+.sub{font-size:13px;color:var(--text-2);margin-top:4px}
+.header-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.icon-btn{
+  width:42px;height:42px;border-radius:12px;padding:0;font-size:18px;
+  background:var(--card);border:1px solid var(--border);
+  color:var(--text-2);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;
+  transition:all .15s;box-shadow:var(--shadow-sm);
+}
+.icon-btn:hover{background:var(--card-2);color:var(--text)}
+
+/* ===== BUTTONS ===== */
+button{font-family:inherit;cursor:pointer;border:none}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;
+  transition:all .15s;white-space:nowrap;
+}
+.btn:disabled{opacity:.6;cursor:not-allowed}
+.btn-primary{
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  color:#fff;box-shadow:0 6px 18px rgba(79,70,229,.35);
+}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 10px 24px rgba(79,70,229,.45)}
+.btn-secondary{
+  background:var(--card);color:var(--text-2);
+  border:1px solid var(--border);box-shadow:var(--shadow-sm);
+}
+.btn-secondary:hover:not(:disabled){background:var(--card-2);color:var(--text);border-color:var(--primary)}
+.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-2)}
+.btn-ghost:hover{background:var(--card);color:var(--text)}
+.btn-danger{background:linear-gradient(135deg,#ef4444,#f97316);color:#fff;box-shadow:0 6px 18px rgba(239,68,68,.28)}
+.btn-danger:hover:not(:disabled){box-shadow:0 10px 24px rgba(239,68,68,.4)}
+.btn-success{background:linear-gradient(135deg,#059669,#10b981);color:#fff;box-shadow:0 6px 18px rgba(16,185,129,.28)}
+.btn-warn{background:linear-gradient(135deg,#f59e0b,#f97316);color:#fff;box-shadow:0 6px 18px rgba(245,158,11,.28)}
+.btn-sm{padding:7px 12px;font-size:12.5px;border-radius:9px}
+.btn-icon{width:36px;height:36px;padding:0;font-size:15px}
+
+/* ===== ALERT ===== */
+.alert{
+  padding:16px 20px;border-radius:14px;margin-bottom:18px;
+  display:flex;align-items:flex-start;gap:12px;font-size:14px;
+}
+.alert.warn{background:var(--warn-soft);border:1px solid var(--warn);color:#92400e}
+.alert.error{background:var(--danger-soft);border:1px solid var(--danger);color:#991b1b}
+.alert.info{background:var(--info-soft);border:1px solid var(--info);color:#1e40af}
+html[data-theme="dark"] .alert.warn{color:#fbbf24}
+html[data-theme="dark"] .alert.error{color:#f87171}
+html[data-theme="dark"] .alert.info{color:#60a5fa}
+.alert .ico{font-size:20px;flex-shrink:0}
+.alert h3{margin:0 0 4px;font-size:15px;font-weight:700}
+.alert p{margin:0;font-size:13px;line-height:1.6}
+.alert .actions{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+
+/* ===== TOOLBAR ===== */
+.toolbar{
+  display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;align-items:center;
+}
+.search-wrap{position:relative;flex:1;min-width:220px}
+.search-wrap svg{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;color:var(--muted);pointer-events:none;
+}
+.search-wrap input{
+  width:100%;padding:12px 14px 12px 42px;border-radius:12px;
+  border:1px solid var(--border);background:var(--card);color:var(--text);
+  font-size:14px;font-family:inherit;box-shadow:var(--shadow-sm);transition:all .2s;
+}
+.search-wrap input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 4px rgba(79,70,229,.12)}
+select.filter{
+  padding:11px 14px;border-radius:12px;border:1px solid var(--border);
+  background:var(--card);color:var(--text);font-size:13px;font-family:inherit;
+  cursor:pointer;min-width:150px;
+}
+select.filter:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(79,70,229,.12)}
+.stat-pill{
+  background:var(--primary-soft);color:var(--primary);
+  padding:9px 14px;border-radius:12px;font-size:13px;font-weight:600;
+  white-space:nowrap;
+}
+html[data-theme="dark"] .stat-pill{color:var(--primary-2)}
+
+/* ===== TABLE ===== */
+.table-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);
+}
+.table-toolbar{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:16px 20px;border-bottom:1px solid var(--border);
+  flex-wrap:wrap;gap:10px;
+}
+.table-toolbar h3{margin:0;font-size:15px;font-weight:700}
+.table-toolbar .hint{font-size:12px;color:var(--muted)}
+.table-wrap{overflow-x:auto;width:100%}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:13px}
+thead th{
+  background:var(--card-2);color:var(--text-2);
+  padding:12px 14px;text-align:left;position:sticky;top:0;
+  white-space:nowrap;font-weight:600;font-size:11.5px;
+  letter-spacing:.03em;text-transform:uppercase;
+  border-bottom:1px solid var(--border);z-index:2;
+}
+tbody td{
+  padding:12px 14px;border-bottom:1px solid var(--border-2);
+  vertical-align:middle;color:var(--text);background:var(--card);
+}
+tbody tr:hover td{background:var(--card-2)}
+tbody tr:last-child td{border-bottom:none}
+
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  padding:4px 10px;border-radius:999px;
+  font-size:11px;font-weight:700;white-space:nowrap;
+}
+.badge .dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.badge.s-draft{background:var(--border-2);color:var(--text-2)}
+.badge.s-wait{background:var(--warn-soft);color:var(--warn)}
+.badge.s-verified{background:var(--info-soft);color:var(--info)}
+.badge.s-revisi{background:var(--danger-soft);color:var(--danger)}
+.badge.s-selesai{background:var(--success-soft);color:var(--success)}
+.badge.j-sarana{background:var(--primary-soft);color:var(--primary)}
+.badge.j-prasarana{background:var(--warn-soft);color:var(--warn)}
+.badge.k-baik{background:var(--success-soft);color:var(--success)}
+.badge.k-rusak-ringan{background:var(--warn-soft);color:var(--warn)}
+.badge.k-rusak-berat{background:var(--danger-soft);color:var(--danger)}
+.badge.k-tidak-ditemukan{background:var(--border-2);color:var(--muted)}
+
+.actions-cell{display:flex;gap:5px;flex-wrap:wrap}
+.tbl-photo{
+  width:40px;height:40px;border-radius:8px;object-fit:cover;
+  border:1px solid var(--border);cursor:pointer;
+}
+.tbl-photo-multi{display:flex;gap:3px}
+
+/* ===== EMPTY / LOADER ===== */
+.empty{text-align:center;padding:60px 20px;color:var(--text-2)}
+.empty .ico{
+  width:72px;height:72px;border-radius:22px;margin:0 auto 16px;
+  background:var(--primary-soft);display:grid;place-items:center;font-size:32px;
+}
+.empty h3{margin:0 0 6px;font-size:16px;font-weight:700;color:var(--text)}
+.empty p{margin:0;font-size:13px;color:var(--muted);max-width:400px;margin:0 auto}
+
+.skeleton{padding:20px}
+.sk-row{height:44px;background:linear-gradient(90deg,var(--border-2) 0%,var(--border) 50%,var(--border-2) 100%);
+  background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:8px;margin-bottom:10px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+/* ===== MODAL ===== */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(15,23,42,.55);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;
+  z-index:100;padding:20px;animation:fadeIn .18s ease;
+}
+.modal-bg.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{
+  background:var(--card);border-radius:20px;width:100%;max-width:720px;
+  max-height:92vh;overflow-y:auto;box-shadow:var(--shadow-lg);
+  border:1px solid var(--border);animation:slideUp .22s cubic-bezier(.2,.8,.2,1);
+}
+.modal.modal-lg{max-width:900px}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+.modal-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:20px 24px;border-bottom:1px solid var(--border);
+  position:sticky;top:0;background:var(--card);z-index:5;
+  border-radius:20px 20px 0 0;
+}
+.modal-head h2{margin:0;font-size:17px;font-weight:700;display:flex;align-items:center;gap:10px}
+.close-x{
+  background:var(--border-2);color:var(--text-2);border:none;
+  width:34px;height:34px;padding:0;border-radius:9px;font-size:15px;
+  display:grid;place-items:center;cursor:pointer;
+}
+.close-x:hover{background:var(--border);color:var(--text)}
+.modal-body{padding:22px 24px}
+.modal-foot{
+  display:flex;justify-content:flex-end;gap:10px;flex-wrap:wrap;
+  padding:16px 24px;border-top:1px solid var(--border);
+  position:sticky;bottom:0;background:var(--card);
+  border-radius:0 0 20px 20px;
+}
+@media(max-width:600px){.modal-foot{justify-content:stretch}.modal-foot .btn{flex:1}}
+
+/* ===== FORM ===== */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-grid .full{grid-column:1/-1}
+@media(max-width:600px){.form-grid{grid-template-columns:1fr}}
+.fg label{
+  display:block;font-size:11.5px;font-weight:600;color:var(--text-2);
+  margin-bottom:6px;letter-spacing:.03em;text-transform:uppercase;
+}
+.fg label .req{color:var(--danger);margin-left:2px}
+.fg input,.fg select,.fg textarea{
+  width:100%;padding:11px 14px;border-radius:10px;
+  border:1px solid var(--border);background:var(--card-2);
+  color:var(--text);font-size:14px;font-family:inherit;transition:all .15s;
+}
+.fg input:focus,.fg select:focus,.fg textarea:focus{
+  outline:none;border-color:var(--primary);background:var(--card);
+  box-shadow:0 0 0 4px rgba(79,70,229,.12);
+}
+.fg textarea{resize:vertical;min-height:70px}
+.fg .hint{font-size:11.5px;color:var(--muted);margin-top:5px;display:block}
+.fg input[readonly]{background:var(--border-2);color:var(--muted);cursor:not-allowed}
+
+/* ===== TIPE TOGGLE (Sarana / Prasarana) ===== */
+.tipe-toggle{
+  display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;
+}
+.tipe-btn{
+  padding:14px;border-radius:12px;border:2px solid var(--border);
+  background:var(--card-2);color:var(--text-2);font-size:14px;font-weight:700;
+  cursor:pointer;transition:all .15s;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+.tipe-btn:hover{border-color:var(--primary);color:var(--primary)}
+.tipe-btn.active{
+  background:linear-gradient(135deg,var(--primary),var(--primary-2));
+  color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(79,70,229,.35);
+}
+
+/* ===== UPLOAD FOTO ===== */
+.foto-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));
+  gap:10px;margin-top:10px;
+}
+.foto-item{
+  position:relative;aspect-ratio:1;border-radius:12px;overflow:hidden;
+  background:var(--card-2);border:1px dashed var(--border);
+  display:grid;place-items:center;cursor:pointer;transition:all .15s;
+}
+.foto-item:hover{border-color:var(--primary)}
+.foto-item.filled{border-style:solid;border-color:var(--border)}
+.foto-item img{width:100%;height:100%;object-fit:cover}
+.foto-item .empty-ico{font-size:28px;color:var(--muted)}
+.foto-item .del-btn{
+  position:absolute;top:5px;right:5px;
+  width:26px;height:26px;border-radius:50%;
+  background:var(--danger);color:#fff;border:none;
+  font-size:13px;cursor:pointer;display:grid;place-items:center;
+  box-shadow:0 2px 8px rgba(0,0,0,.3);z-index:2;
+}
+.foto-item .del-btn:hover{background:#dc2626}
+.foto-item .counter{
+  position:absolute;bottom:5px;left:5px;
+  background:rgba(15,23,42,.75);color:#fff;
+  font-size:10px;padding:2px 6px;border-radius:6px;font-weight:700;
+}
+.foto-item.loading{opacity:.5;pointer-events:none}
+
+/* ===== LEAFLET MAP ===== */
+.map-wrap{
+  border-radius:12px;overflow:hidden;border:1px solid var(--border);
+  height:280px;position:relative;margin-top:8px;
+}
+#map{width:100%;height:100%}
+.map-hint{
+  font-size:11.5px;color:var(--muted);margin-top:6px;
+  display:flex;align-items:center;gap:6px;
+}
+.coord-info{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;
+}
+
+/* ===== DETAIL VIEW ===== */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+@media(max-width:600px){.detail-grid{grid-template-columns:1fr}}
+.detail-item{
+  padding:12px;background:var(--card-2);border-radius:10px;
+  border:1px solid var(--border-2);
+}
+.detail-item .lbl{
+  font-size:10.5px;color:var(--muted);text-transform:uppercase;
+  font-weight:700;letter-spacing:.05em;margin-bottom:4px;
+}
+.detail-item .val{font-size:13.5px;color:var(--text);font-weight:600;word-break:break-word}
+.detail-photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px;margin-top:10px}
+.detail-photos img{
+  width:100%;aspect-ratio:1;object-fit:cover;border-radius:10px;
+  border:1px solid var(--border);cursor:pointer;
+}
+.catatan-box{
+  padding:14px 16px;background:var(--danger-soft);border-radius:12px;
+  border-left:4px solid var(--danger);margin-bottom:16px;
+}
+.catatan-box .lbl{
+  font-size:11px;font-weight:700;color:var(--danger);
+  text-transform:uppercase;margin-bottom:4px;
+}
+.catatan-box .txt{font-size:13.5px;color:var(--text);line-height:1.6}
+
+/* ===== TABS ===== */
+.tabs{
+  display:flex;gap:4px;margin-bottom:18px;padding:4px;
+  background:var(--card-2);border-radius:12px;border:1px solid var(--border);
+}
+.tab-btn{
+  flex:1;padding:10px 14px;border-radius:9px;border:none;
+  background:transparent;color:var(--text-2);font-size:13px;font-weight:600;
+  cursor:pointer;font-family:inherit;transition:all .15s;
+}
+.tab-btn.active{background:var(--card);color:var(--primary);box-shadow:var(--shadow-sm)}
+
+/* ===== LOG LIST ===== */
+.log-item{
+  display:flex;gap:12px;padding:12px 14px;border-radius:10px;
+  background:var(--card-2);border:1px solid var(--border-2);margin-bottom:8px;
+  font-size:12.5px;
+}
+.log-item .log-ic{
+  width:32px;height:32px;border-radius:9px;flex-shrink:0;
+  display:grid;place-items:center;font-size:15px;
+}
+.log-item .log-meta{flex:1;min-width:0}
+.log-item .log-meta .head{
+  display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:3px;
+}
+.log-item .log-meta .action-badge{
+  font-size:10px;font-weight:700;padding:2px 7px;border-radius:6px;
+  background:var(--primary-soft);color:var(--primary);text-transform:uppercase;
+}
+.log-item .log-meta .nm{font-weight:700;color:var(--text)}
+.log-item .log-meta .time{font-size:11px;color:var(--muted);margin-left:auto}
+.log-item .log-meta .detail{color:var(--text-2);margin-top:2px}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:24px;right:24px;padding:14px 20px;
+  border-radius:14px;color:#fff;font-size:14px;font-weight:600;
+  opacity:0;transform:translateY(20px) scale(.95);
+  transition:all .3s cubic-bezier(.2,.8,.2,1);
+  z-index:200;max-width:400px;box-shadow:var(--shadow-lg);
+  display:flex;align-items:center;gap:10px;pointer-events:none;
+}
+.toast.show{opacity:1;transform:translateY(0) scale(1)}
+.toast .ico{
+  width:24px;height:24px;border-radius:50%;
+  background:rgba(255,255,255,.22);
+  display:grid;place-items:center;font-size:13px;flex-shrink:0;
+}
+.toast.success{background:linear-gradient(135deg,#059669,#10b981)}
+.toast.error{background:linear-gradient(135deg,#dc2626,#ef4444)}
+.toast.info{background:linear-gradient(135deg,#2563eb,#4f46e5)}
+.toast.warn{background:linear-gradient(135deg,#f59e0b,#f97316)}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:768px){
+  .wrap{padding:14px}
+  h1{font-size:18px}
+  .logo-badge{width:44px;height:44px;font-size:20px}
+  .header{gap:10px}
+  .form-grid{grid-template-columns:1fr}
+  thead th:nth-child(9),tbody td:nth-child(9),
+  thead th:nth-child(10),tbody td:nth-child(10),
+  thead th:nth-child(11),tbody td:nth-child(11){display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="title-block">
+      <div class="logo-badge">🏛️</div>
+      <div>
+        <h1>Pendataan Sarana & Prasarana</h1>
+        <div class="sub" id="userInfo">Memuat…</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="themeBtn" onclick="toggleTheme()" title="Ganti tema">🌙</button>
+      <button class="btn btn-secondary" onclick="reloadPage()" title="Muat ulang">
+        <span>🔄</span> Refresh
+      </button>
+      <button class="btn btn-danger btn-sm" onclick="logout()" title="Keluar">
+        <span>⏻</span> Logout
+      </button>
+    </div>
+  </div>
+
+  <!-- LOADING -->
+  <div id="loading" class="skeleton">
+    <div class="sk-row"></div><div class="sk-row"></div><div class="sk-row"></div>
+  </div>
+
+  <!-- ALERT INSTANSI KOSONG -->
+  <div id="alertInstansi" class="alert warn" style="display:none">
+    <span class="ico">⚠️</span>
+    <div>
+      <h3>Nama Instansi masih kosong</h3>
+      <p>Untuk menggunakan halaman ini, Anda harus melengkapi <strong>Nama Instansi</strong> di halaman Profile terlebih dahulu.</p>
+      <div class="actions">
+        <button class="btn btn-primary btn-sm" onclick="gotoProfile()">📝 Ke Halaman Profile</button>
+        <button class="btn btn-secondary btn-sm" onclick="logout()">⏻ Logout</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div id="mainContent" style="display:none">
+
+    <!-- STATS PILL -->
+    <div class="toolbar" id="userToolbar">
+      <div class="search-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/>
+        </svg>
+        <input id="search" type="text" placeholder="Cari nama item, lokasi, penginput…" />
+      </div>
+      <select class="filter" id="filterStatus">
+        <option value="">Semua Status</option>
+        <option value="DRAFT">Draft</option>
+        <option value="MENUNGGU_VERIFIKASI">Menunggu Verifikasi</option>
+        <option value="VERIFIED">Verified</option>
+        <option value="REVISI">Revisi</option>
+        <option value="SELESAI">Selesai</option>
+      </select>
+      <select class="filter" id="filterJenis">
+        <option value="">Semua Jenis</option>
+        <option value="Sarana">Sarana</option>
+        <option value="Prasarana">Prasarana</option>
+      </select>
+      <span class="stat-pill" id="countInfo">0 data</span>
+      <button class="btn btn-primary" onclick="openFormAdd()">
+        <span>➕</span> Input Data Baru
+      </button>
+    </div>
+
+    <!-- ADMIN TOOLBAR -->
+    <div class="toolbar" id="adminToolbar" style="display:none">
+      <select class="filter" id="filterInstansi" style="min-width:220px">
+        <option value="">— Pilih Instansi —</option>
+      </select>
+      <span class="stat-pill" id="adminCount">0 instansi</span>
+      <button class="btn btn-secondary btn-sm" onclick="loadInstansiList()" title="Refresh daftar instansi">
+        🔄 Refresh Instansi
+      </button>
+      <div style="flex:1"></div>
+      <div class="tabs" style="max-width:320px;margin:0">
+        <button class="tab-btn active" data-tab="data" onclick="switchAdminTab('data')">📋 Data</button>
+        <button class="tab-btn" data-tab="log" onclick="switchAdminTab('log')">📜 Log</button>
+      </div>
+    </div>
+
+    <!-- TAB DATA -->
+    <div id="tabData">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <h3>📋 Daftar Sarana & Prasarana</h3>
+          <span class="hint" id="tableHint">Memuat…</span>
+        </div>
+        <div id="loader" class="skeleton" style="display:none">
+          <div class="sk-row"></div><div class="sk-row"></div><div class="sk-row"></div>
+        </div>
+        <div class="table-wrap" id="tblWrap" style="display:none">
+          <table>
+            <thead>
+              <tr>
+                <th>Jenis</th>
+                <th>Nama Item</th>
+                <th>Lokasi</th>
+                <th>Kondisi</th>
+                <th>Foto</th>
+                <th>Penginput</th>
+                <th>Status</th>
+                <th>Tanggal</th>
+                <th>Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tbody"></tbody>
+          </table>
+        </div>
+        <div id="empty" class="empty" style="display:none">
+          <div class="ico">📭</div>
+          <h3>Belum ada data</h3>
+          <p>Klik "Input Data Baru" untuk mulai.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB LOG (Admin) -->
+    <div id="tabLog" style="display:none">
+      <div class="table-card">
+        <div class="table-toolbar">
+          <h3>📜 Log Aktivitas</h3>
+          <button class="btn btn-secondary btn-sm" onclick="loadLog()">🔄 Refresh Log</button>
+        </div>
+        <div style="padding:16px" id="logList">
+          <p style="color:var(--muted);text-align:center;padding:30px">Memuat…</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ===== MODAL FORM ===== -->
+<div class="modal-bg" id="modalForm">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2><span id="modalFormIcon">➕</span> <span id="modalFormTitle">Input Data Baru</span></h2>
+      <button class="close-x" onclick="closeForm()">✕</button>
+    </div>
+    <form id="formSarpras" onsubmit="event.preventDefault();submitForm();">
+      <div class="modal-body">
+
+        <div class="fg" style="margin-bottom:16px">
+          <label>Jenis Data <span class="req">*</span></label>
+          <div class="tipe-toggle">
+            <button type="button" class="tipe-btn active" data-jenis="Sarana" onclick="pilihJenis('Sarana')">
+              🖥️ Sarana
+            </button>
+            <button type="button" class="tipe-btn" data-jenis="Prasarana" onclick="pilihJenis('Prasarana')">
+              🏗️ Prasarana
+            </button>
+          </div>
+        </div>
+
+        <div class="form-grid">
+
+          <!-- NAMA ITEM (dropdown dari master) -->
+          <div class="fg full">
+            <label>Nama Item <span class="req">*</span></label>
+            <select id="fNAMA_ITEM" required>
+              <option value="">— Pilih —</option>
+            </select>
+            <span class="hint" id="hintNamaItem">Pilih dari daftar yang tersedia</span>
+          </div>
+
+          <!-- FIELD SARANA -->
+          <div class="fg full" id="groupLokasiBarang">
+            <label>Lokasi Barang <span class="req">*</span></label>
+            <input id="fLOKASI_BARANG" placeholder="Contoh: Ruang Rapat Lantai 2" />
+          </div>
+
+          <!-- FIELD PRASARANA -->
+          <div class="fg full" id="groupAlamat" style="display:none">
+            <label>Alamat Lokasi <span class="req">*</span></label>
+            <input id="fALAMAT_LOKASI" placeholder="Contoh: Jl. Melati No. 5" />
+          </div>
+          <div class="fg" id="groupRT" style="display:none">
+            <label>RT <span class="req">*</span></label>
+            <input id="fRT" maxlength="3" inputmode="numeric" placeholder="001" />
+            <span class="hint">3 digit angka, contoh 001</span>
+          </div>
+          <div class="fg" id="groupRW" style="display:none">
+            <label>RW <span class="req">*</span></label>
+            <input id="fRW" maxlength="3" inputmode="numeric" placeholder="002" />
+            <span class="hint">3 digit angka, contoh 002</span>
+          </div>
+
+          <!-- PETA (hanya Prasarana) -->
+          <div class="fg full" id="groupMap" style="display:none">
+            <label>Lokasi di Peta <span class="req">*</span></label>
+            <div class="map-wrap"><div id="map"></div></div>
+            <div class="map-hint">🖱️ Klik peta untuk menentukan titik lokasi</div>
+            <div class="coord-info">
+              <div class="fg"><label>Latitude</label><input id="fLATITUDE" readonly placeholder="-" /></div>
+              <div class="fg"><label>Longitude</label><input id="fLONGITUDE" readonly placeholder="-" /></div>
+            </div>
+          </div>
+
+          <!-- KONDISI -->
+          <div class="fg full">
+            <label>Kondisi <span class="req">*</span></label>
+            <select id="fKONDISI" required>
+              <option value="">— Pilih —</option>
+              <option value="Baik">Baik</option>
+              <option value="Rusak Ringan">Rusak Ringan</option>
+              <option value="Rusak Berat">Rusak Berat</option>
+              <option value="Tidak Ditemukan">Tidak Ditemukan</option>
+            </select>
+          </div>
+
+          <!-- FOTO -->
+          <div class="fg full">
+            <label>Foto <span class="req">*</span> <small style="text-transform:none;font-weight:400;color:var(--muted)">(min 1, max 4)</small></label>
+            <div class="foto-grid" id="fotoGrid">
+              <div class="foto-item" data-slot="0" onclick="pickFoto(0)">
+                <span class="empty-ico">📷</span>
+              </div>
+              <div class="foto-item" data-slot="1" onclick="pickFoto(1)">
+                <span class="empty-ico">📷</span>
+              </div>
+              <div class="foto-item" data-slot="2" onclick="pickFoto(2)">
+                <span class="empty-ico">📷</span>
+              </div>
+              <div class="foto-item" data-slot="3" onclick="pickFoto(3)">
+                <span class="empty-ico">📷</span>
+              </div>
+            </div>
+            <input type="file" id="fotoInput" accept="image/*" style="display:none" />
+          </div>
+
+        </div>
+
+      </div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" onclick="closeForm()">Batal</button>
+        <button type="submit" class="btn btn-primary" id="btnSave">💾 Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- ===== MODAL DETAIL / VERIFIKASI ===== -->
+<div class="modal-bg" id="modalDetail">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2>🔍 Detail Data</h2>
+      <button class="close-x" onclick="closeDetail()">✕</button>
+    </div>
+    <div class="modal-body" id="detailBody"></div>
+    <div class="modal-foot" id="detailFoot"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL REVISI (Admin) ===== -->
+<div class="modal-bg" id="modalRevisi">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>✏️ Kembalikan untuk Revisi</h2>
+      <button class="close-x" onclick="closeRevisi()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="fg">
+        <label>Catatan untuk User <span class="req">*</span></label>
+        <textarea id="revisiCatatan" rows="4" placeholder="Tuliskan apa yang harus diperbaiki…"></textarea>
+        <span class="hint">Wajib diisi. User akan melihat catatan ini.</span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" onclick="closeRevisi()">Batal</button>
+      <button type="button" class="btn btn-warn" id="btnRevisiConfirm" onclick="confirmRevisi()">✏️ Kirim Revisi</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL SELESAI (Admin) ===== -->
+<div class="modal-bg" id="modalFinish">
+  <div class="modal">
+    <div class="modal-head">
+      <h2>✅ Selesaikan Data</h2>
+      <button class="close-x" onclick="closeFinish()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p style="font-size:13.5px;color:var(--text-2);margin:0 0 14px">
+        Setelah diselesaikan, data ini <strong>permanen</strong> dan hanya bisa dihapus. Tidak bisa diedit atau direvisi lagi.
+      </p>
+      <div class="fg">
+        <label>Catatan (opsional)</label>
+        <textarea id="finishCatatan" rows="3" placeholder="Catatan tambahan (tidak wajib)…"></textarea>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button type="button" class="btn btn-ghost" onclick="closeFinish()">Batal</button>
+      <button type="button" class="btn btn-success" id="btnFinishConfirm" onclick="confirmFinish()">✅ Selesaikan</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MODAL IMAGE VIEWER ===== -->
+<div class="modal-bg" id="modalImg" onclick="closeImgView(event)">
+  <img id="imgViewer" src="" style="max-width:92vw;max-height:92vh;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.6)" />
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ============================================================ */
+const API_URL = 'https://script.google.com/macros/s/AKfycbyE63pPuVV7AT0V3TDp_ZZY2uYpxOACZc-DlMxoT_s4jQJaaQNFVZtNkhIFgOeRHzvecw/exec';
+/* ============================================================ */
+
+/* ===== SESSION ===== */
+const Session = (function () {
+  const KEY = 'app_session_v1';
+  function _read() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      if (!raw) return null;
+      const obj = JSON.parse(raw);
+      if (!obj || !obj.data || !obj.data.username) { localStorage.removeItem(KEY); return null; }
+      if (obj.mode === 'short' && obj.expiresAt && Date.now() > obj.expiresAt) {
+        localStorage.removeItem(KEY); return null;
+      }
+      return obj;
+    } catch (_) { localStorage.removeItem(KEY); return null; }
+  }
+  return {
+    get(field){ const s=_read(); return s ? (s.data[field]||null) : null; },
+    all(){ const s=_read(); return s ? Object.assign({},s.data) : null; },
+    clear(){ localStorage.removeItem(KEY); }
+  };
+})();
+
+/* ===== STATE ===== */
+const U = {
+  username: Session.get('username') || '',
+  nama: Session.get('nama_user') || '',
+  role: Session.get('role') || 'User'
+};
+let INIT = null;
+let MASTER_SARANA = [];
+let MASTER_PRASARANA = [];
+let ALL_DATA = [];
+let CURRENT_INSTANSI = '';
+let IS_ADMIN = false;
+let ADMIN_INSTANSI = '';
+let ADMIN_TAB = 'data';
+
+/* Form state */
+let FORM_MODE = 'add';     // 'add' | 'edit'
+let EDIT_ID = null;
+let FORM_JENIS = 'Sarana';
+let FOTO_STATE = [null, null, null, null]; // dataUrl atau null
+let FOTO_ORIGINAL = ['', '', '', '']; // URL lama (untuk edit)
+let CURRENT_PICK_SLOT = 0;
+let MAP = null;
+let MARKER = null;
+
+/* Detail state */
+let DETAIL_ID = null;
+
+/* Revisi/Finish state */
+let REVISI_ID = null;
+let FINISH_ID = null;
+
+/* ===== UTIL ===== */
+function $(id){ return document.getElementById(id); }
+function esc(v){
+  return (v==null?'':v.toString())
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function toast(msg, type){
+  const el = $('toast');
+  const icons = { success:'✓', error:'✕', info:'ℹ', warn:'⚠' };
+  el.innerHTML = '<span class="ico">'+(icons[type]||'ℹ')+'</span><span>'+esc(msg)+'</span>';
+  el.className = 'toast '+(type||'info')+' show';
+  clearTimeout(el._t);
+  el._t = setTimeout(()=> el.className = 'toast '+(type||'info'), 3500);
+}
+
+/* ===== API ===== */
+async function api(payload){
+  const res = await fetch(API_URL, {
+    method:'POST',
+    headers:{ 'Content-Type':'text/plain;charset=utf-8' },
+    body: JSON.stringify(payload)
+  });
+  const text = await res.text();
+  let json;
+  try { json = JSON.parse(text); }
+  catch(_) { throw new Error('Respon bukan JSON: ' + text.slice(0,150)); }
+  if (json.ok === false) throw new Error(json.error || json.message || 'Gagal');
+  return json;
+}
+
+/* ===== THEME ===== */
+function initTheme(){
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  $('themeBtn').textContent = saved === 'dark' ? '☀️' : '🌙';
+}
+function toggleTheme(){
+  const cur = document.documentElement.getAttribute('data-theme');
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  $('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+/* ===== NAV ===== */
+function logout(){
+  if (!confirm('Keluar dari aplikasi?')) return;
+  Session.clear();
+  try { sessionStorage.clear(); } catch(_) {}
+  location.replace('login.html');
+}
+function gotoProfile(){
+  location.href = 'dashboard.html';
+}
+function reloadPage(){ location.reload(); }
+
+/* ===== INIT ===== */
+async function initApp(){
+  initTheme();
+  if (!U.username){
+    location.replace('login.html'); return;
+  }
+  try {
+    const res = await api({ action:'sarprasInit', username: U.username });
+    if (!res.ok) throw new Error(res.error || 'Init gagal');
+
+    INIT = res;
+    IS_ADMIN = !!res.isAdmin;
+    CURRENT_INSTANSI = res.instansi || '';
+    MASTER_SARANA = res.master_sarana || [];
+    MASTER_PRASARANA = res.master_prasarana || [];
+
+    $('userInfo').innerHTML =
+      '<strong>'+esc(U.nama || U.username)+'</strong>' +
+      ' &middot; '+esc(CURRENT_INSTANSI) +
+      ' &middot; <span style="color:var(--primary);font-weight:700">'+esc(res.user.role)+'</span>';
+
+    $('loading').style.display = 'none';
+    $('mainContent').style.display = 'block';
+
+    // Setup admin toolbar
+    if (IS_ADMIN){
+      $('adminToolbar').style.display = 'flex';
+      $('userToolbar').style.display = 'none';
+      await loadInstansiList();
+    }
+
+    // Setup map
+    setTimeout(initMap, 200);
+
+    // Load data
+    if (!IS_ADMIN) await loadData();
+  } catch (err){
+    $('loading').style.display = 'none';
+    if ((err.message || '').indexOf('INSTANSI_EMPTY') >= 0){
+      $('alertInstansi').style.display = 'flex';
+    } else {
+      toast('Gagal init: ' + err.message, 'error');
+      $('loading').style.display = 'block';
+      $('loading').innerHTML = '<div class="alert error"><span class="ico">❌</span><div><h3>Gagal memuat</h3><p>'+esc(err.message)+'</p></div></div>';
+    }
+  }
+}
+
+/* ===== LOAD DATA (user) ===== */
+async function loadData(){
+  showLoader(true);
+  try {
+    const res = await api({ action:'sarprasList', username: U.username });
+    ALL_DATA = res.data || [];
+    CURRENT_INSTANSI = res.instansi || CURRENT_INSTANSI;
+    renderTable();
+  } catch (err){
+    toast('Gagal load: ' + err.message, 'error');
+    showEmpty('❌ Gagal memuat', err.message);
+  } finally {
+    showLoader(false);
+  }
+}
+
+/* ===== LOAD DATA (admin, per instansi) ===== */
+async function loadDataAdmin(instansi){
+  if (!instansi){ ALL_DATA = []; renderTable(); return; }
+  showLoader(true);
+  try {
+    const res = await api({ action:'sarprasList', username: U.username, instansi: instansi });
+    ALL_DATA = res.data || [];
+    ADMIN_INSTANSI = instansi;
+    renderTable();
+  } catch (err){
+    toast('Gagal load: ' + err.message, 'error');
+    showEmpty('❌ Gagal memuat', err.message);
+  } finally {
+    showLoader(false);
+  }
+}
+
+/* ===== LOAD INSTANSI LIST (Admin) ===== */
+async function loadInstansiList(){
+  try {
+    const res = await api({ action:'sarprasListInstansi', username: U.username });
+    const list = res.data || [];
+    const sel = $('filterInstansi');
+    sel.innerHTML = '<option value="">— Pilih Instansi —</option>' +
+      list.map(i => '<option value="'+esc(i)+'">'+esc(i)+'</option>').join('');
+    $('adminCount').textContent = list.length + ' instansi';
+    sel.onchange = () => {
+      const v = sel.value;
+      if (v) loadDataAdmin(v);
+      else { ALL_DATA = []; renderTable(); }
+    };
+  } catch (err){
+    toast('Gagal load instansi: ' + err.message, 'error');
+  }
+}
+
+/* ===== RENDER TABLE ===== */
+function showLoader(on){
+  $('loader').style.display = on ? 'block' : 'none';
+  $('tblWrap').style.display = on ? 'none' : 'block';
+  if (on) $('empty').style.display = 'none';
+}
+function showEmpty(title, msg){
+  $('tblWrap').style.display = 'none';
+  $('loader').style.display = 'none';
+  const e = $('empty');
+  e.style.display = 'block';
+  e.querySelector('h3').textContent = title;
+  e.querySelector('p').textContent = msg || '';
+}
+
+function statusBadge(st){
+  const map = {
+    DRAFT:               { cls:'s-draft',    txt:'Draft' },
+    MENUNGGU_VERIFIKASI: { cls:'s-wait',     txt:'Menunggu' },
+    VERIFIED:            { cls:'s-verified', txt:'Verified' },
+    REVISI:              { cls:'s-revisi',   txt:'Revisi' },
+    SELESAI:             { cls:'s-selesai',  txt:'Selesai' }
+  };
+  const m = map[st] || { cls:'s-draft', txt:st };
+  return '<span class="badge '+m.cls+'"><span class="dot"></span>'+esc(m.txt)+'</span>';
+}
+function jenisBadge(j){
+  return '<span class="badge '+(j==='Sarana'?'j-sarana':'j-prasarana')+'">'+esc(j)+'</span>';
+}
+function kondisiBadge(k){
+  const m = { 'Baik':'k-baik', 'Rusak Ringan':'k-rusak-ringan', 'Rusak Berat':'k-rusak-berat', 'Tidak Ditemukan':'k-tidak-ditemukan' };
+  return '<span class="badge '+(m[k]||'k-baik')+'">'+esc(k)+'</span>';
+}
+
+function renderTable(){
+  const q = ($('search').value || '').toLowerCase().trim();
+  const fs = $('filterStatus').value;
+  const fj = $('filterJenis').value;
+
+  let data = ALL_DATA.filter(r => {
+    if (fs && String(r.STATUS||'') !== fs) return false;
+    if (fj && String(r.JENIS||'') !== fj) return false;
+    if (q){
+      const hay = [r.NAMA_ITEM,r.LOKASI_BARANG,r.ALAMAT_LOKASI,r.NAMA_PENGINPUT,r.USERNAME].join(' ').toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    return true;
+  });
+
+  $('countInfo').textContent = data.length + ' / ' + ALL_DATA.length + ' data';
+  $('tableHint').textContent = (IS_ADMIN ? 'Instansi: ' + (ADMIN_INSTANSI||'—') : CURRENT_INSTANSI) + ' · ' + ALL_DATA.length + ' data';
+
+  if (data.length === 0){
+    showEmpty(ALL_DATA.length===0?'Belum ada data':'Tidak ada hasil',
+              ALL_DATA.length===0?'Klik "Input Data Baru" untuk mulai.':'Coba ubah filter/pencarian.');
+    return;
+  }
+  $('empty').style.display = 'none';
+  $('tblWrap').style.display = 'block';
+
+  $('tbody').innerHTML = data.map(r => {
+    const fotos = [r.FOTO_URL_1,r.FOTO_URL_2,r.FOTO_URL_3,r.FOTO_URL_4].filter(u => u);
+    const photoThumb = fotos.length
+      ? '<div class="tbl-photo-multi">' + fotos.slice(0,2).map(u =>
+          '<img class="tbl-photo" src="'+esc(u)+'" onclick="viewImg(\''+esc(u)+'\')" />'
+        ).join('') + (fotos.length>2?'<span style="align-self:center;font-size:11px;color:var(--muted);margin-left:3px">+'+ (fotos.length-2) +'</span>':'') + '</div>'
+      : '<span style="color:var(--muted);font-size:11px">—</span>';
+
+    return '<tr>'+
+      '<td>'+jenisBadge(r.JENIS)+'</td>'+
+      '<td><div style="font-weight:600">'+esc(r.NAMA_ITEM)+'</div><div style="font-size:11px;color:var(--muted)">'+esc(r.KATEGORI_ITEM||'')+'</div></td>'+
+      '<td style="font-size:12px">'+esc(r.JENIS==='Prasarana'?r.ALAMAT_LOKASI:r.LOKASI_BARANG)+'</td>'+
+      '<td>'+kondisiBadge(r.KONDISI)+'</td>'+
+      '<td>'+photoThumb+'</td>'+
+      '<td style="font-size:12px">'+esc(r.NAMA_PENGINPUT||r.USERNAME)+'</td>'+
+      '<td>'+statusBadge(r.STATUS)+'</td>'+
+      '<td style="font-size:11px;color:var(--muted)">'+esc((r.UPDATED_AT||r.CREATED_AT||'').toString().substring(0,16))+'</td>'+
+      '<td><div class="actions-cell">'+
+        '<button class="btn btn-secondary btn-sm btn-icon" title="Detail" onclick="openDetail(\''+esc(r.ID)+'\')">👁️</button>'+
+        renderActions(r)+
+      '</div></td>'+
+    '</tr>';
+  }).join('');
+}
+
+function renderActions(r){
+  const st = String(r.STATUS||'');
+  const isAdmin = IS_ADMIN;
+  let html = '';
+
+  if (isAdmin){
+    if (st === 'MENUNGGU_VERIFIKASI'){
+      html += '<button class="btn btn-success btn-sm" title="Verifikasi" onclick="verifyData(\''+esc(r.ID)+'\')">✅</button>';
+      html += '<button class="btn btn-warn btn-sm" title="Revisi" onclick="openRevisi(\''+esc(r.ID)+'\')">✏️</button>';
+    } else if (st === 'VERIFIED'){
+      html += '<button class="btn btn-warn btn-sm" title="Revisi" onclick="openRevisi(\''+esc(r.ID)+'\')">✏️</button>';
+      html += '<button class="btn btn-success btn-sm" title="Selesai" onclick="openFinish(\''+esc(r.ID)+'\')">✅</button>';
+    }
+    if (st !== 'SELESAI'){
+      // Admin bisa hapus semua
+      html += '<button class="btn btn-danger btn-sm btn-icon" title="Hapus" onclick="deleteData(\''+esc(r.ID)+'\')">🗑️</button>';
+    } else {
+      html += '<button class="btn btn-danger btn-sm btn-icon" title="Hapus" onclick="deleteData(\''+esc(r.ID)+'\')">🗑️</button>';
+    }
+  } else {
+    // User
+    if (st === 'DRAFT' || st === 'REVISI'){
+      html += '<button class="btn btn-secondary btn-sm btn-icon" title="Edit" onclick="openFormEdit(\''+esc(r.ID)+'\')">✏️</button>';
+      html += '<button class="btn btn-primary btn-sm" title="Submit" onclick="submitData(\''+esc(r.ID)+'\')">📤</button>';
+      html += '<button class="btn btn-danger btn-sm btn-icon" title="Hapus" onclick="deleteData(\''+esc(r.ID)+'\')">🗑️</button>';
+    }
+  }
+  return html;
+}
+
+/* ===== SEARCH/FILTER ===== */
+document.addEventListener('DOMContentLoaded', () => {
+  initApp();
+  $('search').addEventListener('input', renderTable);
+  $('filterStatus').addEventListener('change', renderTable);
+  $('filterJenis').addEventListener('change', renderTable);
+});
+
+/* ===== ADMIN TAB ===== */
+function switchAdminTab(tab){
+  ADMIN_TAB = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  $('tabData').style.display = tab === 'data' ? 'block' : 'none';
+  $('tabLog').style.display = tab === 'log' ? 'block' : 'none';
+  if (tab === 'log') loadLog();
+}
+
+async function loadLog(){
+  const el = $('logList');
+  el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px">Memuat…</p>';
+  try {
+    const res = await api({ action:'sarprasLog', username: U.username, limit: 200 });
+    const rows = res.data || [];
+    if (!rows.length){
+      el.innerHTML = '<p style="color:var(--muted);text-align:center;padding:30px">Belum ada log.</p>';
+      return;
+    }
+    const iconMap = {
+      OPEN_PAGE:'🚪', LIST:'📋', ADD:'➕', UPDATE:'✏️', DELETE:'🗑️',
+      SUBMIT:'📤', VERIFY:'✅', REVISE:'✏️', FINISH:'🏁'
+    };
+    el.innerHTML = rows.map(l => {
+      const ic = iconMap[l.ACTION] || 'ℹ️';
+      const badgeColor = l.STATUS === 'OK' ? 'var(--success)' : l.STATUS === 'ERROR' ? 'var(--danger)' : 'var(--warn)';
+      return '<div class="log-item">'+
+        '<div class="log-ic" style="background:var(--primary-soft)">'+ic+'</div>'+
+        '<div class="log-meta">'+
+          '<div class="head">'+
+            '<span class="action-badge" style="background:'+badgeColor+'20;color:'+badgeColor+'">'+esc(l.ACTION)+'</span>'+
+            '<span class="nm">'+esc(l.NAMA_USER||l.USERNAME)+'</span>'+
+            '<span style="color:var(--muted)">('+esc(l.ROLE)+')</span>'+
+            '<span class="time">'+esc(l.TIMESTAMP)+'</span>'+
+          '</div>'+
+          '<div class="detail">'+esc(l.DETAIL||'')+' &middot; <em>'+esc(l.SHEET_TARGET||'')+'</em></div>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+  } catch (err){
+    el.innerHTML = '<p style="color:var(--danger);text-align:center;padding:30px">Gagal: '+esc(err.message)+'</p>';
+  }
+}
+
+/* ===== FORM ===== */
+function openFormAdd(){
+  FORM_MODE = 'add';
+  EDIT_ID = null;
+  FOTO_STATE = [null,null,null,null];
+  FOTO_ORIGINAL = ['','','',''];
+  $('modalFormIcon').textContent = '➕';
+  $('modalFormTitle').textContent = 'Input Data Baru';
+  resetForm();
+  pilihJenis('Sarana');
+  setTimeout(initMap, 150);
+  $('modalForm').classList.add('show');
+}
+
+async function openFormEdit(id){
+  try {
+    const res = await api({ action:'sarprasGetById', username: U.username, id: id, instansi: ADMIN_INSTANSI||'' });
+    const d = res.data;
+    FORM_MODE = 'edit';
+    EDIT_ID = id;
+    $('modalFormIcon').textContent = '✏️';
+    $('modalFormTitle').textContent = 'Edit Data: ' + id;
+    resetForm();
+    pilihJenis(d.JENIS);
+    $('fNAMA_ITEM').value = d.NAMA_ITEM || '';
+    $('fKONDISI').value = d.KONDISI || '';
+    if (d.JENIS === 'Sarana'){
+      $('fLOKASI_BARANG').value = d.LOKASI_BARANG || '';
+    } else {
+      $('fALAMAT_LOKASI').value = d.ALAMAT_LOKASI || '';
+      $('fRT').value = (d.RT||'').toString().replace(/^'/,'');
+      $('fRW').value = (d.RW||'').toString().replace(/^'/,'');
+      $('fLATITUDE').value = d.LATITUDE || '';
+      $('fLONGITUDE').value = d.LONGITUDE || '';
+      setTimeout(() => {
+        initMap();
+        if (d.LATITUDE && d.LONGITUDE){
+          setMapMarker(parseFloat(d.LATITUDE), parseFloat(d.LONGITUDE));
+        }
+      }, 200);
+    }
+    // Load foto lama
+    const urls = [d.FOTO_URL_1,d.FOTO_URL_2,d.FOTO_URL_3,d.FOTO_URL_4];
+    FOTO_ORIGINAL = urls.map(u => u || '');
+    for (let i=0;i<4;i++){
+      if (urls[i]) renderFotoSlot(i, urls[i], true);
+    }
+    $('modalForm').classList.add('show');
+  } catch (err){
+    toast('Gagal load data: ' + err.message, 'error');
+  }
+}
+
+function resetForm(){
+  ['fNAMA_ITEM','fLOKASI_BARANG','fALAMAT_LOKASI','fRT','fRW','fLATITUDE','fLONGITUDE','fKONDISI'].forEach(id => {
+    const el = $(id); if (el) el.value = '';
+  });
+  FOTO_STATE = [null,null,null,null];
+  FOTO_ORIGINAL = ['','','',''];
+  for (let i=0;i<4;i++) renderFotoSlot(i, null, false);
+  $('fotoInput').value = '';
+  if (MARKER && MAP){ MAP.removeLayer(MARKER); MARKER = null; }
+}
+
+function pilihJenis(j){
+  FORM_JENIS = j;
+  document.querySelectorAll('.tipe-btn').forEach(b => b.classList.toggle('active', b.dataset.jenis === j));
+
+  // Isi dropdown item
+  const master = j === 'Sarana' ? MASTER_SARANA : MASTER_PRASARANA;
+  const groups = {};
+  master.forEach(m => {
+    if (!groups[m.KATEGORI]) groups[m.KATEGORI] = [];
+    groups[m.KATEGORI].push(m.NAMA_ITEM);
+  });
+  let opts = '<option value="">— Pilih —</option>';
+  Object.keys(groups).forEach(kat => {
+    opts += '<optgroup label="'+esc(kat)+'">';
+    groups[kat].forEach(item => opts += '<option value="'+esc(item)+'">'+esc(item)+'</option>');
+    opts += '</optgroup>';
+  });
+  $('fNAMA_ITEM').innerHTML = opts;
+
+  // Toggle field
+  if (j === 'Sarana'){
+    $('groupLokasiBarang').style.display = 'block';
+    $('groupAlamat').style.display = 'none';
+    $('groupRT').style.display = 'none';
+    $('groupRW').style.display = 'none';
+    $('groupMap').style.display = 'none';
+    $('hintNamaItem').textContent = 'Pilih dari daftar Sarana';
+  } else {
+    $('groupLokasiBarang').style.display = 'none';
+    $('groupAlamat').style.display = 'block';
+    $('groupRT').style.display = 'block';
+    $('groupRW').style.display = 'block';
+    $('groupMap').style.display = 'block';
+    $('hintNamaItem').textContent = 'Pilih dari daftar Prasarana';
+    setTimeout(initMap, 150);
+  }
+}
+
+function closeForm(){
+  $('modalForm').classList.remove('show');
+}
+
+/* ===== FOTO UPLOAD ===== */
+function pickFoto(slot){
+  // kalau slot sudah ada gambar, tanya hapus
+  const item = document.querySelector('.foto-item[data-slot="'+slot+'"]');
+  if (item.classList.contains('filled')){
+    if (!confirm('Hapus foto ini?')) return;
+    FOTO_STATE[slot] = null;
+    FOTO_ORIGINAL[slot] = '';
+    renderFotoSlot(slot, null, false);
+    return;
+  }
+  CURRENT_PICK_SLOT = slot;
+  $('fotoInput').click();
+}
+
+$('fotoInput') && document.addEventListener('DOMContentLoaded', () => {
+  $('fotoInput').addEventListener('change', async (e) => {
+    const file = e.target.files && e.target.files[0];
+    if (!file) return;
+    if (!/^image\//.test(file.type)){ toast('File harus gambar', 'error'); return; }
+    if (file.size > 5*1024*1024){ toast('Maks 5MB', 'error'); return; }
+    try {
+      const dataUrl = await resizeImage(file, 800, 0.85);
+      const slot = CURRENT_PICK_SLOT;
+      FOTO_STATE[slot] = dataUrl;
+      renderFotoSlot(slot, dataUrl, false);
+    } catch (err){
+      toast('Gagal proses foto: ' + err.message, 'error');
+    }
+    e.target.value = '';
+  });
+});
+
+function renderFotoSlot(slot, url, isOriginal){
+  const item = document.querySelector('.foto-item[data-slot="'+slot+'"]');
+  if (!item) return;
+  if (url){
+    item.classList.add('filled');
+    item.innerHTML =
+      '<img src="'+esc(url)+'" alt="" />'+
+      '<button type="button" class="del-btn" onclick="event.stopPropagation();pickFoto('+slot+')">✕</button>'+
+      (isOriginal ? '' : '<span class="counter">baru</span>');
+  } else {
+    item.classList.remove('filled');
+    item.innerHTML = '<span class="empty-ico">📷</span>';
+  }
+}
+
+function resizeImage(file, maxWidth, quality){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Gagal baca file'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Gagal load gambar'));
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let w = img.width, h = img.height;
+        if (w > maxWidth){ h = Math.round(h * maxWidth / w); w = maxWidth; }
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/jpeg', quality));
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+/* ===== MAP ===== */
+function initMap(){
+  if (MAP) { setTimeout(()=> MAP.invalidateSize(), 100); return; }
+  const el = $('map');
+  if (!el) return;
+  MAP = L.map('map').setView([-6.2, 106.7], 11);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '© OpenStreetMap'
+  }).addTo(MAP);
+  MAP.on('click', (e) => {
+    const lat = e.latlng.lat.toFixed(6);
+    const lng = e.latlng.lng.toFixed(6);
+    $('fLATITUDE').value = lat;
+    $('fLONGITUDE').value = lng;
+    setMapMarker(parseFloat(lat), parseFloat(lng));
+  });
+  setTimeout(()=> MAP.invalidateSize(), 200);
+}
+function setMapMarker(lat, lng){
+  if (!MAP) return;
+  if (MARKER) MAP.removeLayer(MARKER);
+  MARKER = L.marker([lat, lng]).addTo(MAP);
+  MAP.setView([lat, lng], 16);
+}
+
+/* ===== SUBMIT FORM ===== */
+async function submitForm(){
+  if (!FORM_JENIS){ toast('Pilih jenis', 'error'); return; }
+  const item = $('fNAMA_ITEM').value;
+  if (!item){ toast('Nama item wajib', 'error'); return; }
+  const kondisi = $('fKONDISI').value;
+  if (!kondisi){ toast('Kondisi wajib', 'error'); return; }
+
+  const payload = { JENIS: FORM_JENIS, NAMA_ITEM: item, KONDISI: kondisi };
+
+  // ambil kategori dari master
+  const master = FORM_JENIS === 'Sarana' ? MASTER_SARANA : MASTER_PRASARANA;
+  const found = master.find(m => m.NAMA_ITEM === item);
+  payload.KATEGORI_ITEM = found ? found.KATEGORI : '';
+
+  if (FORM_JENIS === 'Sarana'){
+    const lok = $('fLOKASI_BARANG').value.trim();
+    if (!lok){ toast('Lokasi barang wajib', 'error'); return; }
+    payload.LOKASI_BARANG = lok;
+  } else {
+    const alamat = $('fALAMAT_LOKASI').value.trim();
+    const rt = $('fRT').value.trim();
+    const rw = $('fRW').value.trim();
+    const lat = $('fLATITUDE').value;
+    const lng = $('fLONGITUDE').value;
+    if (!alamat){ toast('Alamat wajib', 'error'); return; }
+    if (!rt){ toast('RT wajib', 'error'); return; }
+    if (!rw){ toast('RW wajib', 'error'); return; }
+    if (!lat || !lng){ toast('Klik peta untuk pilih koordinat', 'error'); return; }
+    payload.ALAMAT_LOKASI = alamat;
+    payload.RT = rt;
+    payload.RW = rw;
+    payload.LATITUDE = lat;
+    payload.LONGITUDE = lng;
+  }
+
+  // Cek foto: minimal 1 (state baru atau original)
+  const adaFoto = FOTO_STATE.some(f => f) || FOTO_ORIGINAL.some(u => u);
+  if (!adaFoto){ toast('Minimal 1 foto wajib', 'error'); return; }
+
+  // Kumpulkan foto baru
+  const newFotos = FOTO_STATE.map(f => f).filter(Boolean);
+
+  const btn = $('btnSave');
+  btn.disabled = true;
+  const oldLabel = btn.innerHTML;
+  btn.innerHTML = '⏳ Menyimpan…';
+
+  try {
+    if (FORM_MODE === 'add'){
+      const res = await api({
+        action: 'sarprasAdd',
+        username: U.username,
+        payload: payload,
+        fotos: newFotos
+      });
+      toast('Data berhasil ditambahkan: ' + (res.id||''), 'success');
+    } else {
+      // edit
+      // remove_foto: slot yang dulu ada original tapi sekarang FOTO_STATE null
+      const removeFotos = [];
+      for (let i=0;i<4;i++){
+        if (FOTO_ORIGINAL[i] && !FOTO_STATE[i]) removeFotos.push(i+1);
+      }
+      const res = await api({
+        action: 'sarprasUpdate',
+        username: U.username,
+        id: EDIT_ID,
+        instansi: ADMIN_INSTANSI || '',
+        payload: payload,
+        fotos: newFotos,
+        remove_foto: removeFotos
+      });
+      toast('Data diperbarui', 'success');
+    }
+    closeForm();
+    if (IS_ADMIN && ADMIN_INSTANSI) await loadDataAdmin(ADMIN_INSTANSI);
+    else await loadData();
+  } catch (err){
+    toast('Gagal: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = oldLabel;
+  }
+}
+
+/* ===== DETAIL ===== */
+async function openDetail(id){
+  try {
+    const res = await api({ action:'sarprasGetById', username: U.username, id: id, instansi: ADMIN_INSTANSI||'' });
+    const d = res.data;
+    DETAIL_ID = id;
+    const fotos = [d.FOTO_URL_1,d.FOTO_URL_2,d.FOTO_URL_3,d.FOTO_URL_4].filter(u => u);
+    let html = '';
+    if (d.STATUS === 'REVISI' && d.CATATAN_ADMIN){
+      html += '<div class="catatan-box"><div class="lbl">📝 Catatan Revisi Admin</div><div class="txt">'+esc(d.CATATAN_ADMIN)+'</div></div>';
+    }
+    html += '<div class="detail-grid">';
+    html += '<div class="detail-item"><div class="lbl">Jenis</div><div class="val">'+jenisBadge(d.JENIS)+'</div></div>';
+    html += '<div class="detail-item"><div class="lbl">Status</div><div class="val">'+statusBadge(d.STATUS)+'</div></div>';
+    html += '<div class="detail-item" style="grid-column:1/-1"><div class="lbl">Nama Item</div><div class="val">'+esc(d.NAMA_ITEM)+'</div></div>';
+    html += '<div class="detail-item" style="grid-column:1/-1"><div class="lbl">Kategori</div><div class="val">'+esc(d.KATEGORI_ITEM||'—')+'</div></div>';
+    if (d.JENIS === 'Sarana'){
+      html += '<div class="detail-item" style="grid-column:1/-1"><div class="lbl">Lokasi Barang</div><div class="val">'+esc(d.LOKASI_BARANG||'—')+'</div></div>';
+    } else {
+      html += '<div class="detail-item" style="grid-column:1/-1"><div class="lbl">Alamat</div><div class="val">'+esc(d.ALAMAT_LOKASI||'—')+'</div></div>';
+      html += '<div class="detail-item"><div class="lbl">RT</div><div class="val">'+esc((d.RT||'').toString().replace(/^'/,''))+'</div></div>';
+      html += '<div class="detail-item"><div class="lbl">RW</div><div class="val">'+esc((d.RW||'').toString().replace(/^'/,''))+'</div></div>';
+      html += '<div class="detail-item"><div class="lbl">Latitude</div><div class="val">'+esc(d.LATITUDE||'—')+'</div></div>';
+      html += '<div class="detail-item"><div class="lbl">Longitude</div><div class="val">'+esc(d.LONGITUDE||'—')+'</div></div>';
+    }
+    html += '<div class="detail-item"><div class="lbl">Kondisi</div><div class="val">'+kondisiBadge(d.KONDISI)+'</div></div>';
+    html += '<div class="detail-item"><div class="lbl">Penginput</div><div class="val">'+esc(d.NAMA_PENGINPUT||d.USERNAME)+'</div></div>';
+    html += '<div class="detail-item"><div class="lbl">Dibuat</div><div class="val" style="font-size:12px">'+esc(d.CREATED_AT||'—')+'</div></div>';
+    html += '<div class="detail-item"><div class="lbl">Diperbarui</div><div class="val" style="font-size:12px">'+esc(d.UPDATED_AT||'—')+'</div></div>';
+    if (d.VERIFIED_AT) html += '<div class="detail-item"><div class="lbl">Diverifikasi</div><div class="val" style="font-size:12px">'+esc(d.VERIFIED_AT)+' oleh '+esc(d.VERIFIED_BY||'')+'</div></div>';
+    if (d.FINISHED_AT) html += '<div class="detail-item"><div class="lbl">Diselesaikan</div><div class="val" style="font-size:12px">'+esc(d.FINISHED_AT)+' oleh '+esc(d.FINISHED_BY||'')+'</div></div>';
+    if (d.CATATAN_ADMIN && d.STATUS !== 'REVISI') html += '<div class="detail-item" style="grid-column:1/-1"><div class="lbl">Catatan Admin</div><div class="val" style="font-weight:400">'+esc(d.CATATAN_ADMIN)+'</div></div>';
+    html += '</div>';
+    if (fotos.length){
+      html += '<div><div class="lbl" style="font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">Foto ('+fotos.length+')</div>';
+      html += '<div class="detail-photos">'+fotos.map(u => '<img src="'+esc(u)+'" onclick="viewImg(\''+esc(u)+'\')" />').join('')+'</div></div>';
+    }
+    $('detailBody').innerHTML = html;
+
+    // Footer actions
+    let foot = '<button class="btn btn-ghost" onclick="closeDetail()">Tutup</button>';
+    if (IS_ADMIN){
+      if (d.STATUS === 'MENUNGGU_VERIFIKASI'){
+        foot += '<button class="btn btn-warn" onclick="closeDetail();openRevisi(\''+esc(d.ID)+'\')">✏️ Revisi</button>';
+        foot += '<button class="btn btn-success" onclick="closeDetail();verifyData(\''+esc(d.ID)+'\')">✅ Verifikasi</button>';
+      } else if (d.STATUS === 'VERIFIED'){
+        foot += '<button class="btn btn-warn" onclick="closeDetail();openRevisi(\''+esc(d.ID)+'\')">✏️ Revisi</button>';
+        foot += '<button class="btn btn-success" onclick="closeDetail();openFinish(\''+esc(d.ID)+'\')">🏁 Selesai</button>';
+      }
+    }
+    $('detailFoot').innerHTML = foot;
+    $('modalDetail').classList.add('show');
+  } catch (err){
+    toast('Gagal load detail: ' + err.message, 'error');
+  }
+}
+function closeDetail(){ $('modalDetail').classList.remove('show'); }
+
+/* ===== IMAGE VIEWER ===== */
+function viewImg(url){
+  $('imgViewer').src = url;
+  $('modalImg').classList.add('show');
+}
+function closeImgView(e){
+  if (e && e.target.id !== 'modalImg') return;
+  $('modalImg').classList.remove('show');
+  $('imgViewer').src = '';
+}
+
+/* ===== SUBMIT DATA (User) ===== */
+async function submitData(id){
+  if (!confirm('Submit data ini untuk diverifikasi Admin?')) return;
+  try {
+    await api({ action:'sarprasSubmit', username: U.username, id: id });
+    toast('Data disubmit untuk verifikasi', 'success');
+    await loadData();
+  } catch (err){
+    toast('Gagal: ' + err.message, 'error');
+  }
+}
+
+/* ===== DELETE ===== */
+async function deleteData(id){
+  if (!confirm('Hapus data ini? Foto di Drive juga akan dihapus. Tindakan tidak bisa dibatalkan.')) return;
+  try {
+    const res = await api({
+      action:'sarprasDelete',
+      username: U.username,
+      id: id,
+      instansi: ADMIN_INSTANSI || ''
+    });
+    if (res.fotoErrors && res.fotoErrors.length){
+      toast('Data dihapus, tapi sebagian foto gagal dihapus: ' + res.fotoErrors.join(', '), 'warn');
+    } else {
+      toast('Data + foto berhasil dihapus', 'success');
+    }
+    if (IS_ADMIN && ADMIN_INSTANSI) await loadDataAdmin(ADMIN_INSTANSI);
+    else await loadData();
+  } catch (err){
+    toast('Gagal hapus: ' + err.message, 'error');
+  }
+}
+
+/* ===== VERIFY (Admin) ===== */
+async function verifyData(id){
+  if (!ADMIN_INSTANSI){ toast('Pilih instansi dulu', 'error'); return; }
+  if (!confirm('Verifikasi data ini? Data akan terkunci sampai di-revisi.')) return;
+  try {
+    await api({ action:'sarprasVerify', username: U.username, id: id, instansi: ADMIN_INSTANSI });
+    toast('Data diverifikasi & terkunci', 'success');
+    await loadDataAdmin(ADMIN_INSTANSI);
+  } catch (err){
+    toast('Gagal: ' + err.message, 'error');
+  }
+}
+
+/* ===== REVISI (Admin) ===== */
+function openRevisi(id){
+  if (!ADMIN_INSTANSI){ toast('Pilih instansi dulu', 'error'); return; }
+  REVISI_ID = id;
+  $('revisiCatatan').value = '';
+  $('modalRevisi').classList.add('show');
+  setTimeout(()=> $('revisiCatatan').focus(), 100);
+}
+function closeRevisi(){ $('modalRevisi').classList.remove('show'); REVISI_ID = null; }
+async function confirmRevisi(){
+  const catatan = $('revisiCatatan').value.trim();
+  if (!catatan){ toast('Catatan wajib diisi', 'error'); return; }
+  const btn = $('btnRevisiConfirm');
+  btn.disabled = true; const old = btn.innerHTML; btn.innerHTML = '⏳…';
+  try {
+    await api({
+      action:'sarprasRevise',
+      username: U.username,
+      id: REVISI_ID,
+      instansi: ADMIN_INSTANSI,
+      catatan: catatan
+    });
+    toast('Data dikembalikan untuk revisi', 'success');
+    closeRevisi();
+    await loadDataAdmin(ADMIN_INSTANSI);
+  } catch (err){
+    toast('Gagal: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = old;
+  }
+}
+
+/* ===== FINISH (Admin) ===== */
+function openFinish(id){
+  if (!ADMIN_INSTANSI){ toast('Pilih instansi dulu', 'error'); return; }
+  FINISH_ID = id;
+  $('finishCatatan').value = '';
+  $('modalFinish').classList.add('show');
+}
+function closeFinish(){ $('modalFinish').classList.remove('show'); FINISH_ID = null; }
+async function confirmFinish(){
+  const catatan = $('finishCatatan').value.trim();
+  const btn = $('btnFinishConfirm');
+  btn.disabled = true; const old = btn.innerHTML; btn.innerHTML = '⏳…';
+  try {
+    await api({
+      action:'sarprasFinish',
+      username: U.username,
+      id: FINISH_ID,
+      instansi: ADMIN_INSTANSI,
+      catatan: catatan
+    });
+    toast('Data diselesaikan (permanen)', 'success');
+    closeFinish();
+    await loadDataAdmin(ADMIN_INSTANSI);
+  } catch (err){
+    toast('Gagal: ' + err.message, 'error');
+  } finally {
+    btn.disabled = false; btn.innerHTML = old;
+  }
+}
+</script>
+
+</body>
+</html>
