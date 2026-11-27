@@ -653,7 +653,7 @@
           <strong>Cara Menambahkan Akun Baru</strong><br>
           <ul>
             <li>Klik tombol biru <strong>"Tambah User"</strong> di pojok kanan atas.</li>
-            <li>Isi semua kolom yang ada tanda bintang <span style="color:var(--danger)">*</span> (Wajib diisi: Username, Password, Nama Lengkap).</li>
+            <li>Isi semua kolom yang ada tanda bintang <span style="color:var(--danger)">*</span> (Wajib diisi: Username, Password, Nama Lengkap, Instansi).</li>
             <li>Pilih Hak Akses (Admin/User) dan Status Akun.</li>
             <li>Klik tombol <strong>"💾 Simpan"</strong> untuk menyimpan data.</li>
           </ul>
@@ -746,6 +746,18 @@
               <label>Email</label>
               <input id="f_EMAIL" type="email" placeholder="email@contoh.com"/>
             </div>
+            
+            <!-- ===== TAMBAHAN: DROPDOWN INSTANSI ===== -->
+            <div class="fg full">
+              <label>Instansi <span class="req">*</span></label>
+              <select id="f_INSTANSI" required>
+                <option value="">— pilih instansi —</option>
+                <!-- Opsi akan diisi otomatis dari backend lewat loadOptions() -->
+              </select>
+              <span class="hint">Pilih instansi user. Wajib diisi.</span>
+            </div>
+            <!-- ======================================== -->
+
             <div class="fg">
               <label>Status Akun</label>
               <select id="f_STATUS_AKUN">
@@ -781,18 +793,20 @@
 
   <script>
     /* ============================================================
-     *  KONFIGURASI — URL .exec KAMU
+     *  KONFIGURASI — ISI DENGAN URL .EXEC BARU (LANGKAH 1)
      * ============================================================ */
-    const API_URL = 'https://script.google.com/macros/s/AKfycbxi0orwaOONjbrkyyqM-2R7M4vbgU_MSvZK1DCVnMjmkFr251JrtuZWcdGXgR1RpwCQVg/exec';
+    const API_URL = 'ISI_URL_EXEC_BACKEND_V2_REVISI_ANDA_DI_SINI';
 
     /* ============================================================ */
     const COLS = [
       'ID_USER','USERNAME','PASSWORD','NAMA_LENGKAP','KATEGORI',
       'HAK_AKSES','JABATAN','WILAYAH','NO_HP','EMAIL',
-      'STATUS_AKUN','TGL_DIBUAT','TERAKHIR_LOGIN','FOTO_PROFIL','CATATAN'
+      'STATUS_AKUN','TGL_DIBUAT','TERAKHIR_LOGIN','FOTO_PROFIL','CATATAN',
+      'INSTANSI'  // <-- TAMBAHAN
     ];
     let ALL = [];
     let EDIT_ID = null;
+    let INSTANSI_OPTIONS = []; // <-- Menyimpan daftar instansi dari backend
 
     /* ---------- UTIL ---------- */
     function toast(msg, type) {
@@ -836,6 +850,22 @@
       document.documentElement.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
       document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
+    }
+
+    /* ---------- LOAD OPTIONS (INSTANSI DROPDOWN) ---------- */
+    async function loadOptions() {
+      try {
+        const res = await fetch(API_URL + '?action=options&_t=' + Date.now());
+        const json = await res.json();
+        if (json.ok && Array.isArray(json.INSTANSI)) {
+          INSTANSI_OPTIONS = json.INSTANSI;
+          const sel = document.getElementById('f_INSTANSI');
+          sel.innerHTML = '<option value="">— pilih instansi —</option>' + 
+            INSTANSI_OPTIONS.map(i => `<option value="${esc(i)}">${esc(i)}</option>`).join('');
+        }
+      } catch (err) {
+        console.warn('Gagal load options instansi:', err);
+      }
     }
 
     /* ---------- READ ---------- */
@@ -983,6 +1013,7 @@
             ? '<a href="' + esc(r[13]) + '" target="_blank" rel="noopener" title="Buka foto">🔗</a>'
             : '<span class="cell-muted">—</span>') + '</td>' +
           '<td class="cell-muted">' + esc(r[14]||'—') + '</td>' +
+          '<td>' + esc(r[15]||'—') + '</td>' + // <-- Kolom INSTANSI
         '</tr>';
       }).join('');
     }
@@ -1044,7 +1075,13 @@
       if (!payload.USERNAME)     return toast('Username wajib diisi', 'error');
       if (!payload.PASSWORD)     return toast('Password wajib diisi', 'error');
       if (!payload.NAMA_LENGKAP) return toast('Nama lengkap wajib diisi', 'error');
+      if (!payload.INSTANSI)     return toast('Instansi wajib dipilih', 'error');
       if (/\s/.test(payload.USERNAME)) return toast('Username tidak boleh ada spasi', 'error');
+
+      // Validasi instansi harus dari list (meskipun dropdown sudah membatasi)
+      if (INSTANSI_OPTIONS.length > 0 && !INSTANSI_OPTIONS.includes(payload.INSTANSI)) {
+        return toast('Instansi tidak valid', 'error');
+      }
 
       const btn = document.getElementById('btnSave');
       btn.disabled = true;
@@ -1095,6 +1132,7 @@
         if (e.key === 'Escape') closeModal();
       });
 
+      loadOptions(); // <-- Load instansi terlebih dahulu
       loadData();
     });
   </script>
