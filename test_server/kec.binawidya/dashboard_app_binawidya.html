@@ -1247,7 +1247,7 @@
 /* ============================================================
    KONFIGURASI
    ============================================================ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbz7jvTrMuX51RLgWaHIlZ2tqmNwigT6is_Bm71kyG3Q16ydgEKdD3q8aW59Z_G5k3tw/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbyYqz6lr6ab0QCiUr709bnVo1cvVifgfz5f5Uwu4c9ktJWBhh3q-XH9Ep_8OEnjzGH8/exec';
 
 /* ============================================================
    SESSION HELPER
@@ -2512,10 +2512,9 @@ async function checkNIP() {
       return;
     }
 
-    if (res.konflik && res.hasil.length > 1) {
-      showNIPBadge('Konflik', 'warn');
-      openKonflikModal(res.hasil);
-      return;
+     // LANGSUNG AUTOFILL DATA PERTAMA TANPA CEK KONFLIK
+    if (res.hasil && res.hasil.length > 0) {
+      await autofillFromData(res.hasil[0].data, res.hasil[0].sumber);
     }
 
     await autofillFromData(res.hasil[0].data, res.hasil[0].sumber);
