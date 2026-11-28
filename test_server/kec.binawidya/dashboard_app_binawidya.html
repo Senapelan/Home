@@ -603,10 +603,14 @@
   .list-item .li-meta .nm{font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .list-item .li-meta .lk{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .li-actions{display:flex;gap:6px;flex-shrink:0}
-  .btn-edit, .btn-del{
+  
+  .btn-edit, .btn-del, .btn-up, .btn-down{
     border:none;border-radius:8px;padding:8px 10px;font-size:13px;
     cursor:pointer;transition:all .15s;font-family:inherit;flex-shrink:0;
   }
+  .btn-up, .btn-down { background:var(--card); border:1px solid var(--border); color:var(--text-2); }
+  .btn-up:hover:not(:disabled), .btn-down:hover:not(:disabled) { background:var(--primary-soft); color:var(--primary); border-color:var(--primary); }
+  
   .btn-edit{background:var(--primary-soft);color:var(--primary)}
   .btn-edit:hover{background:var(--primary);color:#fff}
   html[data-theme="dark"] .btn-edit{color:var(--primary-2)}
@@ -1220,34 +1224,13 @@
   </div>
 </div>
 
-<!-- ===== MODAL KONFLIK NIP ===== -->
-<div class="modal-bg" id="modalKonflik">
-  <div class="modal" style="max-width:820px;">
-    <div class="modal-head">
-      <h3>⚠️ NIP ditemukan di beberapa sumber</h3>
-      <button class="close-x" onclick="closeKonflikModal()" aria-label="Tutup">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="font-size:13px;color:var(--text-2);margin:0 0 12px;">
-        NIP ini ditemukan di lebih dari satu database dengan data yang berbeda. Silakan pilih data yang ingin digunakan.
-        Data yang dibuat lebih awal ditandai sebagai <strong>Rekomendasi</strong>.
-      </p>
-      <div class="konflik-grid" id="konflikGrid"></div>
-    </div>
-    <div class="modal-foot">
-      <button type="button" class="btn-ghost" onclick="closeKonflikModal()">Batal</button>
-      <button type="button" class="btn-primary" onclick="konfirmasiKonflik()" style="width:auto;margin:0">✓ Gunakan Pilihan</button>
-    </div>
-  </div>
-</div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 /* ============================================================
    KONFIGURASI
    ============================================================ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbyYqz6lr6ab0QCiUr709bnVo1cvVifgfz5f5Uwu4c9ktJWBhh3q-XH9Ep_8OEnjzGH8/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbwJjfnwqaCLkCadCgdB3hVY1kSRPcTaiuozJWElIhkbsfQxOgZtcmSAzVy_sq4jPMww/exec';
 
 /* ============================================================
    SESSION HELPER
@@ -1359,8 +1342,6 @@ let IFRAME_URL = '';
 /* ===== STATE AUTOFILL NIP ===== */
 let NIP_LOCKED = false;
 let NIP_CHECKING = false;
-let KONFLIK_HASIL = [];
-let KONFLIK_PILIHAN = null;
 
 /* STATE EDIT MENU & APLIKASI */
 let EDIT_MENU_ID = null;
@@ -1827,7 +1808,6 @@ async function loadProfile(){
       renderAvatar();
     }
 
-    // ===== Jika NIP sudah ada di PROFILE, kunci input NIP =====
     if (PROFILE.NIP && PROFILE.NIP.trim()) {
       NIP_LOCKED = true;
       const nipInput = document.getElementById('f_NIP');
@@ -1838,10 +1818,8 @@ async function loadProfile(){
       }
       try {
         const r = await api({ action: 'getNIPInfo', nip: PROFILE.NIP });
-        if (r.found && r.hasil.length > 0 && !r.konflik) {
-          showNIPBadge('✓ Terdaftar (' + r.hasil[0].sumber + ')', 'success');
-        } else if (r.konflik) {
-          showNIPBadge('⚠️ Konflik', 'warn');
+        if (r.found && r.hasil.length > 0) {
+          showNIPBadge('✓ Terdaftar', 'success');
         } else {
           showNIPBadge('NIP baru', 'info');
         }
@@ -2222,18 +2200,14 @@ async function saveMenu(){
     btn.textContent = 'Simpan menu...';
 
     if (EDIT_MENU_ID) {
-      const res = await api({
+      await api({
         action: 'updateMenu',
         id: EDIT_MENU_ID,
         nama_menu: nama,
         link_menu: link,
-        icon_url: iconUrl,
-        dataUrl: dataUrlToSend,
-        username: U.username
+        icon_url: iconUrl
       });
-      if (res.oldFileError) toast('Menu diperbarui, tapi icon lama gagal dihapus: ' + res.oldFileError, 'error');
-      else if (res.oldFileTrashed) toast('Menu diperbarui (icon lama dipindah ke Trash)', 'success');
-      else toast('Menu diperbarui', 'success');
+      toast('Menu diperbarui', 'success');
     } else {
       await api({
         action: 'addMenu',
@@ -2260,14 +2234,26 @@ async function saveMenu(){
 async function deleteMenu(id){
   if (!confirm('Hapus menu ini beserta file icon-nya?\nTindakan tidak bisa dibatalkan.')) return;
   try {
-    const res = await api({ action:'deleteMenu', id });
-    if (res.fileError) toast('Menu dihapus, tapi file gagal dihapus: ' + res.fileError, 'error');
-    else if (res.fileTrashed) toast('Menu + icon dihapus', 'success');
-    else toast('Menu dihapus (tanpa icon)', 'success');
+    await api({ action:'deleteMenu', id });
+    toast('Menu dihapus', 'success');
     if (EDIT_MENU_ID === id) resetMenuForm();
     loadMenu();
     loadEditorLists();
   } catch (err){ toast('Gagal hapus: '+err.message, 'error'); }
+}
+
+async function ubahUrutanMenu(id, arah) {
+  try {
+    const res = await api({ action: 'updateUrutanMenu', id: id, arah: arah });
+    if (res.ok) {
+      loadEditorLists();
+      loadMenu();
+    } else {
+      toast(res.error, 'error');
+    }
+  } catch (err) {
+    toast('Gagal ubah urutan: ' + err.message, 'error');
+  }
 }
 
 /* ============================================================
@@ -2345,18 +2331,14 @@ async function saveAplikasi(){
     btn.textContent = 'Simpan aplikasi...';
 
     if (EDIT_APP_ID) {
-      const res = await api({
+      await api({
         action: 'updateAplikasi',
         id: EDIT_APP_ID,
         nama_aplikasi: nama,
         link_aplikasi: link,
-        icon_url: iconUrl,
-        dataUrl: dataUrlToSend,
-        username: U.username
+        icon_url: iconUrl
       });
-      if (res.oldFileError) toast('Aplikasi diperbarui, tapi icon lama gagal dihapus: ' + res.oldFileError, 'error');
-      else if (res.oldFileTrashed) toast('Aplikasi diperbarui (icon lama dipindah ke Trash)', 'success');
-      else toast('Aplikasi diperbarui', 'success');
+      toast('Aplikasi diperbarui', 'success');
     } else {
       await api({
         action: 'addAplikasi',
@@ -2383,14 +2365,26 @@ async function saveAplikasi(){
 async function deleteAplikasi(id){
   if (!confirm('Hapus aplikasi ini beserta file icon-nya?\nTindakan tidak bisa dibatalkan.')) return;
   try {
-    const res = await api({ action:'deleteAplikasi', id });
-    if (res.fileError) toast('Aplikasi dihapus, tapi file gagal dihapus: ' + res.fileError, 'error');
-    else if (res.fileTrashed) toast('Aplikasi + icon dihapus', 'success');
-    else toast('Aplikasi dihapus (tanpa icon)', 'success');
+    await api({ action:'deleteAplikasi', id });
+    toast('Aplikasi dihapus', 'success');
     if (EDIT_APP_ID === id) resetAppForm();
     loadAplikasi();
     loadEditorLists();
   } catch (err){ toast('Gagal hapus: '+err.message, 'error'); }
+}
+
+async function ubahUrutanAplikasi(id, arah) {
+  try {
+    const res = await api({ action: 'updateUrutanAplikasi', id: id, arah: arah });
+    if (res.ok) {
+      loadEditorLists();
+      loadAplikasi();
+    } else {
+      toast(res.error, 'error');
+    }
+  } catch (err) {
+    toast('Gagal ubah urutan: ' + err.message, 'error');
+  }
 }
 
 /* ============================================================
@@ -2418,12 +2412,20 @@ function renderMenuList(rows){
     el.innerHTML = '<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">Belum ada menu.</p>';
     return;
   }
-  el.innerHTML = rows.map(m => {
+  
+  rows.sort((a, b) => (Number(a.URUTAN) || 0) - (Number(b.URUTAN) || 0));
+
+  el.innerHTML = rows.map((m, idx) => {
     const icon = m.ICON_URL || '';
+    const isFirst = idx === 0;
+    const isLast = idx === rows.length - 1;
+    
     return '<div class="list-item">'+
       '<div class="li-ic">'+iconHTML(icon, '🧭')+'</div>'+
       '<div class="li-meta"><div class="nm">'+esc(m.NAMA_MENU)+'</div><div class="lk">'+esc(m.LINK_MENU)+'</div></div>'+
       '<div class="li-actions">'+
+        '<button class="btn-up" onclick="ubahUrutanMenu(\''+esc(m.ID)+'\', \'naik\')" '+(isFirst?'disabled style="opacity:.3"':'')+'>⬆️</button>'+
+        '<button class="btn-down" onclick="ubahUrutanMenu(\''+esc(m.ID)+'\', \'turun\')" '+(isLast?'disabled style="opacity:.3"':'')+'>⬇️</button>'+
         '<button class="btn-edit" onclick="editMenu(\''+esc(m.ID)+'\')" title="Edit">✏️</button>'+
         '<button class="btn-del" onclick="deleteMenu(\''+esc(m.ID)+'\')" title="Hapus">🗑️</button>'+
       '</div>'+
@@ -2437,12 +2439,20 @@ function renderAppList(rows){
     el.innerHTML = '<p style="color:var(--muted);font-size:12.5px;margin:8px 0 0">Belum ada aplikasi.</p>';
     return;
   }
-  el.innerHTML = rows.map(a => {
+  
+  rows.sort((a, b) => (Number(a.URUTAN) || 0) - (Number(b.URUTAN) || 0));
+
+  el.innerHTML = rows.map((a, idx) => {
     const icon = a.ICON_URL || '';
+    const isFirst = idx === 0;
+    const isLast = idx === rows.length - 1;
+    
     return '<div class="list-item">'+
       '<div class="li-ic">'+iconHTML(icon, '📱')+'</div>'+
       '<div class="li-meta"><div class="nm">'+esc(a.NAMA_APLIKASI)+'</div><div class="lk">'+esc(a.LINK_APLIKASI)+'</div></div>'+
       '<div class="li-actions">'+
+        '<button class="btn-up" onclick="ubahUrutanAplikasi(\''+esc(a.ID)+'\', \'naik\')" '+(isFirst?'disabled style="opacity:.3"':'')+'>⬆️</button>'+
+        '<button class="btn-down" onclick="ubahUrutanAplikasi(\''+esc(a.ID)+'\', \'turun\')" '+(isLast?'disabled style="opacity:.3"':'')+'>⬇️</button>'+
         '<button class="btn-edit" onclick="editAplikasi(\''+esc(a.ID)+'\')" title="Edit">✏️</button>'+
         '<button class="btn-del" onclick="deleteAplikasi(\''+esc(a.ID)+'\')" title="Hapus">🗑️</button>'+
       '</div>'+
@@ -2512,12 +2522,10 @@ async function checkNIP() {
       return;
     }
 
-     // LANGSUNG AUTOFILL DATA PERTAMA TANPA CEK KONFLIK
+    // LANGSUNG AUTOFILL TANPA CEK KONFLIK
     if (res.hasil && res.hasil.length > 0) {
       await autofillFromData(res.hasil[0].data, res.hasil[0].sumber);
     }
-
-    await autofillFromData(res.hasil[0].data, res.hasil[0].sumber);
   } catch (err) {
     showNIPBadge('Gagal cek', 'error');
     toast('Gagal cek NIP: ' + err.message, 'error');
@@ -2595,92 +2603,13 @@ async function autofillFromData(data, sumber) {
 }
 
 /* ============================================================
-   MODAL KONFLIK NIP
+   MODAL KONFLIK NIP (TIDAK DIGUNAKAN LAGI)
    ============================================================ */
 function openKonflikModal(hasil) {
-  KONFLIK_HASIL = hasil || [];
-  KONFLIK_PILIHAN = null;
-
-  const grid = $('konflikGrid');
-  if (!grid) return;
-
-  const sorted = KONFLIK_HASIL.slice().sort((a, b) => {
-    const ta = a.created_at ? new Date(a.created_at).getTime() : 0;
-    const tb = b.created_at ? new Date(b.created_at).getTime() : 0;
-    return ta - tb;
-  });
-
-  grid.innerHTML = sorted.map((h, idx) => {
-    const d = h.data || {};
-    const isRekomendasi = idx === 0;
-    const id = 'kc_' + idx;
-
-    const row = (label, val) => {
-      if (val == null || val === '') return '';
-      return '<div class="kc-row"><span class="lbl">' + label + '</span>' +
-             '<span class="val">' + esc(val) + '</span></div>';
-    };
-
-    const tanggal = h.created_at
-      ? new Date(h.created_at).toLocaleString('id-ID', { dateStyle: 'medium', timeStyle: 'short' })
-      : 'Tidak diketahui';
-
-    return '<label class="konflik-card" for="' + id + '" data-idx="' + idx + '">' +
-      '<div class="kc-sumber">' + esc(h.sumber || 'Sumber') +
-        (isRekomendasi ? '<span class="kc-badge-rekomendasi">REKOMENDASI</span>' : '') +
-      '</div>' +
-      '<div class="kc-created">Dibuat: ' + esc(tanggal) + '</div>' +
-      row('Nama', d.NAMA) +
-      row('Jabatan', d.JABATAN) +
-      row('Pangkat/Gol', d.PANGKAT_GOL) +
-      row('Instansi', d.INSTANSI) +
-      row('Alamat', d.ALAMAT) +
-      '<input type="radio" name="konflikPilih" id="' + id + '" value="' + idx + '" style="display:none"/>' +
-    '</label>';
-  }).join('');
-
-  grid.querySelectorAll('.konflik-card').forEach(card => {
-    card.addEventListener('click', () => {
-      grid.querySelectorAll('.konflik-card').forEach(c => c.classList.remove('selected'));
-      card.classList.add('selected');
-      const idx = parseInt(card.dataset.idx, 10);
-      KONFLIK_PILIHAN = sorted[idx];
-    });
-  });
-
-  const first = grid.querySelector('.konflik-card');
-  if (first) {
-    first.classList.add('selected');
-    KONFLIK_PILIHAN = sorted[0];
-  }
-
-  $('modalKonflik').classList.add('show');
+  // Fungsi ini sengaja dikosongkan karena konflik sudah dihilangkan.
 }
-
-function closeKonflikModal() {
-  $('modalKonflik').classList.remove('show');
-  KONFLIK_HASIL = [];
-  KONFLIK_PILIHAN = null;
-  showNIPBadge('⚠️ Pilih data', 'warn');
-}
-
-async function konfirmasiKonflik() {
-  if (!KONFLIK_PILIHAN) {
-    toast('Silakan pilih salah satu data terlebih dahulu', 'error');
-    return;
-  }
-  const data = KONFLIK_PILIHAN.data || {};
-  const sumber = KONFLIK_PILIHAN.sumber || 'sumber terpilih';
-  closeKonflikModal();
-  await autofillFromData(data, sumber);
-}
-
-/* ============================================================
-   EXPORT (debug)
-   ============================================================ */
-window.checkNIP = checkNIP;
-window.closeKonflikModal = closeKonflikModal;
-window.konfirmasiKonflik = konfirmasiKonflik;
+function closeKonflikModal() {}
+async function konfirmasiKonflik() {}
 </script>
 </body>
 </html>
