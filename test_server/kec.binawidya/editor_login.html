@@ -300,14 +300,20 @@
               <span class="hint">Jika diisi, akan otomatis sinkron ke Profil user di Dashboard.</span>
             </div>
             
+            <!-- INSTANSI & JABATAN (UPDATED) -->
             <div class="fg">
-              <label>Kategori</label>
-              <select id="f_KATEGORI">
-                <option value="">— pilih —</option>
-                <option>Camat</option>
-                <option>Lurah</option>
+              <label>Instansi <span class="req">*</span></label>
+              <select id="f_INSTANSI" required onchange="onInstansiChange()">
+                <option value="">— pilih instansi —</option>
               </select>
             </div>
+            <div class="fg">
+              <label>Jabatan</label>
+              <select id="f_JABATAN">
+                <option value="">— pilih instansi dulu —</option>
+              </select>
+            </div>
+
             <div class="fg">
               <label>Hak Akses</label>
               <select id="f_HAK_AKSES">
@@ -316,19 +322,10 @@
                 <option>User</option>
               </select>
             </div>
-            <div class="fg"><label>Jabatan</label><input id="f_JABATAN" placeholder="Camat Kec. X / Lurah Kel. Y"/></div>
             <div class="fg"><label>Wilayah</label><input id="f_WILAYAH"/></div>
             <div class="fg"><label>No HP</label><input id="f_NO_HP" inputmode="tel" placeholder="08xx…"/></div>
             <div class="fg"><label>Email</label><input id="f_EMAIL" type="email" placeholder="email@contoh.com"/></div>
             
-            <div class="fg full">
-              <label>Instansi <span class="req">*</span></label>
-              <select id="f_INSTANSI" required>
-                <option value="">— pilih instansi —</option>
-              </select>
-              <span class="hint">Pilih instansi user. Wajib diisi.</span>
-            </div>
-
             <div class="fg">
               <label>Status Akun</label>
               <select id="f_STATUS_AKUN">
@@ -361,7 +358,7 @@
 
   <script>
     /* ============================================================ */
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzdIuk_HtGdoB5Ygl8OC1-w3QG2lJadf0qGCoKdxcyIqKa0AShx7oENU9LBLB6jzQw/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwoCL6XhbErTMma8W1ORlj6_2gvRIIr-kCPWlGnh8oppW6QdDF5knDo_aavH9wnVmhh/exec';
 
     /* ============================================================ */
     const COLS = [
@@ -372,7 +369,9 @@
     ];
     let ALL = [];
     let EDIT_ID = null;
-    let INSTANSI_OPTIONS = [];
+    
+    // Menyimpan data master dropdown
+    let MASTER_DROPDOWN = { instansi: [], jabatan: { kecamatan: [], kelurahan: [] } };
 
     /* ---------- UTIL ---------- */
     function toast(msg, type) {
@@ -416,19 +415,43 @@
       document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
     }
 
-    /* ---------- LOAD OPTIONS ---------- */
-    async function loadOptions() {
+    /* ---------- LOAD MASTER DROPDOWN ---------- */
+    async function loadMasterDropdown() {
       try {
-        const res = await fetch(API_URL + '?action=options&_t=' + Date.now());
+        const res = await fetch(API_URL + '?action=getMasterDropdown&_t=' + Date.now());
         const json = await res.json();
-        if (json.ok && Array.isArray(json.INSTANSI)) {
-          INSTANSI_OPTIONS = json.INSTANSI;
-          const sel = document.getElementById('f_INSTANSI');
-          sel.innerHTML = '<option value="">— pilih instansi —</option>' + 
-            INSTANSI_OPTIONS.map(i => `<option value="${esc(i)}">${esc(i)}</option>`).join('');
+        if (json.ok) {
+          MASTER_DROPDOWN = json.data;
+          
+          // Isi dropdown Instansi
+          const selInst = document.getElementById('f_INSTANSI');
+          selInst.innerHTML = '<option value="">— pilih instansi —</option>' + 
+            MASTER_DROPDOWN.instansi.map(i => `<option value="${esc(i.nama)}" data-tipe="${esc(i.tipe)}">${esc(i.nama)}</option>`).join('');
         }
       } catch (err) {
-        console.warn('Gagal load options instansi:', err);
+        console.warn('Gagal load master dropdown:', err);
+      }
+    }
+
+    function onInstansiChange() {
+      const selInst = document.getElementById('f_INSTANSI');
+      const selectedOption = selInst.options[selInst.selectedIndex];
+      const tipe = selectedOption ? selectedOption.dataset.tipe : '';
+      
+      const selJab = document.getElementById('f_JABATAN');
+      let listJab = [];
+      
+      if (tipe === 'KECAMATAN') {
+        listJab = MASTER_DROPDOWN.jabatan.kecamatan;
+      } else if (tipe === 'KELURAHAN') {
+        listJab = MASTER_DROPDOWN.jabatan.kelurahan;
+      }
+      
+      if (listJab.length > 0) {
+        selJab.innerHTML = '<option value="">— pilih jabatan —</option>' + 
+          listJab.map(j => `<option value="${esc(j)}">${esc(j)}</option>`).join('');
+      } else {
+        selJab.innerHTML = '<option value="">— pilih jabatan —</option>';
       }
     }
 
@@ -552,8 +575,8 @@
           '<td class="cell-muted">' + esc(r[12]||'—') + '</td>' +
           '<td>' + (r[13] ? '<a href="' + esc(r[13]) + '" target="_blank" rel="noopener" title="Buka foto">🔗</a>' : '<span class="cell-muted">—</span>') + '</td>' +
           '<td class="cell-muted">' + esc(r[14]||'—') + '</td>' +
-          '<td>' + esc(r[15]||'—') + '</td>' + // INSTANSI
-          '<td>' + esc(r[16]||'—') + '</td>' + // NIP
+          '<td>' + esc(r[15]||'—') + '</td>' +
+          '<td>' + esc(r[16]||'—') + '</td>' +
         '</tr>';
       }).join('');
     }
@@ -565,6 +588,7 @@
         if (el) el.value = '';
       });
       document.getElementById('f_STATUS_AKUN').value = 'Aktif';
+      document.getElementById('f_JABATAN').innerHTML = '<option value="">— pilih instansi dulu —</option>';
       EDIT_ID = null;
     }
     function openAdd() {
@@ -583,6 +607,12 @@
         const el = document.getElementById('f_' + c);
         if (el) el.value = r[i] == null ? '' : r[i];
       });
+      
+      // Set dropdown jabatan saat edit
+      onInstansiChange();
+      const selJab = document.getElementById('f_JABATAN');
+      if (selJab) selJab.value = r[6] || '';
+
       document.getElementById('modalEmoji').textContent = '✏️';
       document.getElementById('modalTitle').textContent = 'Edit User: ' + id;
       document.getElementById('modalBg').classList.add('show');
@@ -616,10 +646,6 @@
       if (!payload.NAMA_LENGKAP) return toast('Nama lengkap wajib diisi', 'error');
       if (!payload.INSTANSI)     return toast('Instansi wajib dipilih', 'error');
       if (/\s/.test(payload.USERNAME)) return toast('Username tidak boleh ada spasi', 'error');
-
-      if (INSTANSI_OPTIONS.length > 0 && !INSTANSI_OPTIONS.includes(payload.INSTANSI)) {
-        return toast('Instansi tidak valid', 'error');
-      }
 
       const btn = document.getElementById('btnSave');
       btn.disabled = true;
@@ -664,7 +690,9 @@
       document.addEventListener('keydown', e => {
         if (e.key === 'Escape') closeModal();
       });
-      loadOptions();
+      
+      // Panggil Master Dropdown & Data Tabel
+      loadMasterDropdown();
       loadData();
     });
   </script>
