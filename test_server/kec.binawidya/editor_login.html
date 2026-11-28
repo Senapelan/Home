@@ -157,7 +157,7 @@
     .fg label .req{color:var(--danger);margin-left:2px}
     .fg input,.fg select,.fg textarea{width:100%;padding:11px 14px;border-radius:10px; border:1px solid var(--border);background:var(--card-2); color:var(--text);font-size:14px;font-family:inherit; transition:all .15s ease;}
     .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--primary);background:var(--card); box-shadow:0 0 0 4px rgba(79,70,229,.12);}
-    .fg input[readonly]{background:var(--border-2);color:var(--muted);cursor:not-allowed;}
+    .fg input[readonly], .fg select:disabled{background:var(--border-2);color:var(--muted);cursor:not-allowed;}
     .fg textarea{resize:vertical;min-height:70px}
     .fg .hint{font-size:11.5px;color:var(--muted);margin-top:5px;display:block}
     .modal-foot{display:flex;justify-content:flex-end;gap:10px; padding:18px 26px;border-top:1px solid var(--border); position:sticky;bottom:0;background:var(--card); border-radius:0 0 20px 20px;}
@@ -175,14 +175,10 @@
       body{padding: 14px; padding-top: calc(14px + env(safe-area-inset-top, 24px)); padding-bottom: calc(100px + env(safe-area-inset-bottom, 24px)); }
       h1{font-size:20px}
       .logo-badge{width:44px;height:44px;font-size:22px}
-      thead th:nth-child(8), thead th:nth-child(10), thead th:nth-child(13), thead th:nth-child(14), thead th:nth-child(16),
-      tbody td:nth-child(8), tbody td:nth-child(10), tbody td:nth-child(13), tbody td:nth-child(14), tbody td:nth-child(16){display:none}
     }
     @media(max-width:600px){
       .grid{grid-template-columns:1fr}
-      thead th:nth-child(n+7), tbody td:nth-child(n+7){display:none}
       .stats{grid-template-columns:repeat(2,1fr)}
-      thead th.col-aksi, tbody td.col-aksi{width:90px;min-width:90px;max-width:90px}
     }
   </style>
 </head>
@@ -263,18 +259,6 @@
           </ul>
         </div>
       </div>
-      <div class="tutorial-step">
-        <div class="tutorial-icon" style="background:var(--warn-soft); color:var(--warn)">✏️</div>
-        <div class="tutorial-content">
-          <strong>Cara Mengedit Data Akun</strong><br>
-          <ul>
-            <li>Cari user pada tabel.</li>
-            <li>Pada kolom <strong>Aksi</strong>, klik <strong>✏️</strong>.</li>
-            <li>Ubah data yang ingin diperbarui.</li>
-            <li>Klik <strong>"💾 Simpan"</strong>.</li>
-          </ul>
-        </div>
-      </div>
     </div>
   </div>
 
@@ -293,14 +277,13 @@
             <div class="fg"><label>Password <span class="req">*</span></label><input id="f_PASSWORD" required autocomplete="new-password"/></div>
             <div class="fg"><label>Nama Lengkap <span class="req">*</span></label><input id="f_NAMA_LENGKAP" required placeholder="Nama pejabat"/></div>
             
-            <!-- FITUR NIP -->
             <div class="fg">
               <label>NIP</label>
               <input id="f_NIP" placeholder="Nomor Induk Pegawai (opsional)"/>
               <span class="hint">Jika diisi, akan otomatis sinkron ke Profil user di Dashboard.</span>
             </div>
             
-            <!-- INSTANSI & JABATAN (UPDATED) -->
+            <!-- INSTANSI & JABATAN -->
             <div class="fg">
               <label>Instansi <span class="req">*</span></label>
               <select id="f_INSTANSI" required onchange="onInstansiChange()">
@@ -309,8 +292,16 @@
             </div>
             <div class="fg">
               <label>Jabatan</label>
-              <select id="f_JABATAN">
+              <select id="f_JABATAN" onchange="onJabatanChange()">
                 <option value="">— pilih instansi dulu —</option>
+              </select>
+            </div>
+
+            <!-- PANGKAT / GOLONGAN -->
+            <div class="fg">
+              <label>Pangkat / Golongan</label>
+              <select id="f_PANGKAT_GOL">
+                <option value="">— pilih pangkat —</option>
               </select>
             </div>
 
@@ -357,21 +348,28 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    /* ============================================================ */
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwoCL6XhbErTMma8W1ORlj6_2gvRIIr-kCPWlGnh8oppW6QdDF5knDo_aavH9wnVmhh/exec';
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzbreo6Jch9gqmWvNvcO_BAMrgoWAlwCq6SuqlII_7yFKxij41conASVxseIIZnRknC/exec';
 
-    /* ============================================================ */
     const COLS = [
       'ID_USER','USERNAME','PASSWORD','NAMA_LENGKAP','KATEGORI',
       'HAK_AKSES','JABATAN','WILAYAH','NO_HP','EMAIL',
       'STATUS_AKUN','TGL_DIBUAT','TERAKHIR_LOGIN','FOTO_PROFIL','CATATAN',
-      'INSTANSI', 'NIP'
+      'INSTANSI', 'NIP', 'PANGKAT_GOL'
     ];
     let ALL = [];
     let EDIT_ID = null;
-    
-    // Menyimpan data master dropdown
     let MASTER_DROPDOWN = { instansi: [], jabatan: { kecamatan: [], kelurahan: [] } };
+
+    const MASTER_PANGKAT_PNS = [
+      "Juru Muda (I/a)", "Juru Muda Tingkat I (I/b)", "Juru (I/c)", "Juru Tingkat I (I/d)",
+      "Pengatur Muda (II/a)", "Pengatur Muda Tingkat I (II/b)", "Pengatur (II/c)", "Pengatur Tingkat I (II/d)",
+      "Penata Muda (III/a)", "Penata Muda Tingkat I (III/b)", "Penata (III/c)", "Penata Tingkat I (III/d)",
+      "Pembina (IV/a)", "Pembina Tingkat I (IV/b)", "Pembina Utama Muda (IV/c)", "Pembina Utama Madya (IV/d)", "Pembina Utama (IV/e)"
+    ];
+
+    const MASTER_PANGKAT_PPPK = [
+      "Juru Tingkat I / IV", "Pengatur Muda / V", "Penata Muda / IX"
+    ];
 
     /* ---------- UTIL ---------- */
     function toast(msg, type) {
@@ -415,15 +413,13 @@
       document.getElementById('themeBtn').textContent = next === 'dark' ? '☀️' : '🌙';
     }
 
-    /* ---------- LOAD MASTER DROPDOWN ---------- */
+    /* ---------- MASTER DROPDOWN ---------- */
     async function loadMasterDropdown() {
       try {
         const res = await fetch(API_URL + '?action=getMasterDropdown&_t=' + Date.now());
         const json = await res.json();
         if (json.ok) {
           MASTER_DROPDOWN = json.data;
-          
-          // Isi dropdown Instansi
           const selInst = document.getElementById('f_INSTANSI');
           selInst.innerHTML = '<option value="">— pilih instansi —</option>' + 
             MASTER_DROPDOWN.instansi.map(i => `<option value="${esc(i.nama)}" data-tipe="${esc(i.tipe)}">${esc(i.nama)}</option>`).join('');
@@ -441,18 +437,40 @@
       const selJab = document.getElementById('f_JABATAN');
       let listJab = [];
       
-      if (tipe === 'KECAMATAN') {
-        listJab = MASTER_DROPDOWN.jabatan.kecamatan;
-      } else if (tipe === 'KELURAHAN') {
-        listJab = MASTER_DROPDOWN.jabatan.kelurahan;
+      if (tipe === 'KECAMATAN') listJab = MASTER_DROPDOWN.jabatan.kecamatan;
+      else if (tipe === 'KELURAHAN') listJab = MASTER_DROPDOWN.jabatan.kelurahan;
+      
+      selJab.innerHTML = '<option value="">— pilih jabatan —</option>' + 
+        listJab.map(j => `<option value="${esc(j)}">${esc(j)}</option>`).join('');
+      
+      onJabatanChange(); // Reset pangkat jika jabatan berubah
+    }
+
+    function onJabatanChange() {
+      const selJab = document.getElementById('f_JABATAN');
+      const selPangkat = document.getElementById('f_PANGKAT_GOL');
+      const jabatan = selJab.value;
+      
+      if (jabatan === 'Pegawai NIB') {
+        selPangkat.innerHTML = '<option value="">— (Terkunci NIB) —</option>';
+        selPangkat.value = '';
+        selPangkat.disabled = true;
+        selPangkat.style.background = 'var(--border-2)';
+        return;
       }
       
-      if (listJab.length > 0) {
-        selJab.innerHTML = '<option value="">— pilih jabatan —</option>' + 
-          listJab.map(j => `<option value="${esc(j)}">${esc(j)}</option>`).join('');
-      } else {
-        selJab.innerHTML = '<option value="">— pilih jabatan —</option>';
-      }
+      selPangkat.disabled = false;
+      selPangkat.style.background = '';
+      
+      let options = '<option value="">— pilih pangkat —</option>';
+      options += '<optgroup label="PNS (Golongan I - IV)">';
+      MASTER_PANGKAT_PNS.forEach(p => { options += `<option value="${esc(p)}">${esc(p)}</option>`; });
+      options += '</optgroup>';
+      options += '<optgroup label="PPPK">';
+      MASTER_PANGKAT_PPPK.forEach(p => { options += `<option value="${esc(p)}">${esc(p)}</option>`; });
+      options += '</optgroup>';
+      
+      selPangkat.innerHTML = options;
     }
 
     /* ---------- READ ---------- */
@@ -471,7 +489,7 @@
         setConn('ok', 'Terhubung • ' + ALL.length + ' user');
       } catch (err) {
         setConn('err', 'Gagal konek');
-        showEmpty('❌ Gagal memuat data', err.message + '\n\nPastikan:\n1. URL .exec benar\n2. Deployment = Anyone\n3. Backend versi API JSON (?action=ping)');
+        showEmpty('❌ Gagal memuat data', err.message);
         toast('Gagal: ' + err.message, 'error');
       } finally {
         showLoader(false);
@@ -577,6 +595,7 @@
           '<td class="cell-muted">' + esc(r[14]||'—') + '</td>' +
           '<td>' + esc(r[15]||'—') + '</td>' +
           '<td>' + esc(r[16]||'—') + '</td>' +
+          '<td>' + esc(r[17]||'—') + '</td>' +
         '</tr>';
       }).join('');
     }
@@ -589,6 +608,9 @@
       });
       document.getElementById('f_STATUS_AKUN').value = 'Aktif';
       document.getElementById('f_JABATAN').innerHTML = '<option value="">— pilih instansi dulu —</option>';
+      document.getElementById('f_PANGKAT_GOL').innerHTML = '<option value="">— pilih pangkat —</option>';
+      document.getElementById('f_PANGKAT_GOL').disabled = false;
+      document.getElementById('f_PANGKAT_GOL').style.background = '';
       EDIT_ID = null;
     }
     function openAdd() {
@@ -608,10 +630,13 @@
         if (el) el.value = r[i] == null ? '' : r[i];
       });
       
-      // Set dropdown jabatan saat edit
       onInstansiChange();
       const selJab = document.getElementById('f_JABATAN');
       if (selJab) selJab.value = r[6] || '';
+
+      onJabatanChange();
+      const selPangkat = document.getElementById('f_PANGKAT_GOL');
+      if (selPangkat) selPangkat.value = r[17] || '';
 
       document.getElementById('modalEmoji').textContent = '✏️';
       document.getElementById('modalTitle').textContent = 'Edit User: ' + id;
@@ -691,7 +716,6 @@
         if (e.key === 'Escape') closeModal();
       });
       
-      // Panggil Master Dropdown & Data Tabel
       loadMasterDropdown();
       loadData();
     });
