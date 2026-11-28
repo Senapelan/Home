@@ -1250,7 +1250,7 @@ html[data-theme="dark"] .autofill-flash {
 /* ============================================================
    KONFIGURASI
    ============================================================ */
-const API_URL = 'https://script.google.com/macros/s/AKfycbx5e5PN5fx9rTw_FWiMSHYkX4-tKrvXJ_Ff5IE7ut2yndR6Fn_cUTLlbJ6oWQPVwrQk/exec';
+const API_URL = 'https://script.google.com/macros/s/AKfycbzdIuk_HtGdoB5Ygl8OC1-w3QG2lJadf0qGCoKdxcyIqKa0AShx7oENU9LBLB6jzQw/exec';
 
 /* ============================================================
    SESSION HELPER (localStorage + mode short/long)
@@ -1497,6 +1497,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (nipInput) {
     nipInput.addEventListener('blur', checkNIP);
     // Press Enter juga trigger cek
+    nipInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); nipInput.blur(); }
+    });
+  }
+
+   const nipInput = document.getElementById('f_NIP');
+  if (nipInput) {
+    nipInput.addEventListener('blur', checkNIP);
     nipInput.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') { e.preventDefault(); nipInput.blur(); }
     });
@@ -1830,6 +1838,28 @@ async function loadProfile(){
       U.foto_profil = PROFILE.FOTO_URL;
       Session.setField('foto_profil', PROFILE.FOTO_URL);
       renderAvatar();
+    }
+
+    // ===== Jika NIP sudah ada di PROFILE, kunci input NIP =====
+    if (PROFILE.NIP && PROFILE.NIP.trim()) {
+      NIP_LOCKED = true;
+      const nipInput = document.getElementById('f_NIP');
+      if (nipInput) {
+        nipInput.readOnly = true;
+        nipInput.style.background = 'var(--border-2)';
+        nipInput.style.cursor = 'not-allowed';
+      }
+      // Tampilkan badge sumber (opsional)
+      try {
+        const r = await api({ action: 'getNIPInfo', nip: PROFILE.NIP });
+        if (r.found && r.hasil.length > 0 && !r.konflik) {
+          showNIPBadge('✓ Terdaftar (' + r.hasil[0].sumber + ')', 'success');
+        } else if (r.konflik) {
+          showNIPBadge('⚠️ Konflik', 'warn');
+        } else {
+          showNIPBadge('NIP baru', 'info');
+        }
+      } catch (_) {}
     }
   } catch (err){
     console.warn('getProfile:', err.message);
